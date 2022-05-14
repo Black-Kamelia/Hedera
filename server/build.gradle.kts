@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
 }
 
-group = "io.slama"
+group = "com.kamelia"
 version = "0.0.1"
 application {
     mainClass.set("io.slama.jellyfish.ApplicationKt")
@@ -43,7 +43,7 @@ dependencies {
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
-        attributes["Main-Class"] = "io.slama.jellyfish.ApplicationKt"
+        attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
     }
     configurations["compileClasspath"].forEach {
         from(zipTree(it.absolutePath))

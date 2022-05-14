@@ -1,9 +1,11 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     kotlin("jvm") version "1.6.21"
 }
 
 group = "com.kamelia"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 project(":server")
 
@@ -19,14 +21,25 @@ tasks.test {
     useJUnitPlatform()
 }
 
+val isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+
+val npmCmd = "npm${if (isWindows) ".cmd" else ""}"
+val exportCmd = if (isWindows) "set" else "export"
+
 tasks.register<Delete>("npm-clean") {
     delete(file("client/dist"))
     delete(file("server/src/main/resources/static/"))
 }
 
+tasks.register<Exec>("npm-install") {
+    workingDir("client")
+    commandLine(npmCmd, "install")
+}
+
 tasks.register<Exec>("npm-generate") {
     workingDir("client")
-    commandLine("npm", "run", "generate")
+    commandLine(exportCmd, "NODE_OPTIONS=--openssl-legacy-provider")
+    commandLine(npmCmd, "run", "generate")
 }
 
 tasks.register<Copy>("bundle-client") {

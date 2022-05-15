@@ -1,6 +1,7 @@
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
+val kotlinVersion: String = project.properties["kotlin.version"] as String
+val ktorVersion: String = project.properties["ktor.version"] as String
+val exposedVersion: String = project.properties["exposed.version"] as String
+val logbackVersion: String = project.properties["logback.version"] as String
 
 plugins {
     application
@@ -9,9 +10,10 @@ plugins {
 }
 
 group = "com.kamelia"
-version = "0.0.1"
+version = project.properties["project.version"] as String
+
 application {
-    mainClass.set("io.slama.jellyfish.ApplicationKt")
+    mainClass.set("com.kamelia.jellyfish.ApplicationKt")
 }
 
 repositories {
@@ -20,24 +22,24 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-sessions-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("io.ktor", "ktor-server-core-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-auth-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-auth-jwt-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-sessions-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-host-common-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-content-negotiation-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-serialization-kotlinx-json-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-netty-jvm", ktorVersion)
+    implementation("ch.qos.logback", "logback-classic", logbackVersion)
 
-    implementation("org.jetbrains.exposed", "exposed-core", "0.37.3")
-    implementation("org.jetbrains.exposed", "exposed-dao", "0.37.3")
-    implementation("org.jetbrains.exposed", "exposed-jdbc", "0.37.3")
-    implementation("org.postgresql:postgresql:42.3.4")
+    implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
+    implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
+    implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
+    implementation("org.postgresql", "postgresql", "42.3.4")
     implementation("com.zaxxer", "HikariCP", "5.0.1")
 
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
+    testImplementation("org.jetbrains.kotlin", "kotlin-test-junit", kotlinVersion)
 }
 
 tasks.jar {
@@ -45,7 +47,7 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
     }
-    configurations["compileClasspath"].forEach {
-        from(zipTree(it.absolutePath))
+    configurations["compileClasspath"].forEach { file ->
+        from(zipTree(file.absolutePath))
     }
 }

@@ -1,11 +1,10 @@
 package com.kamelia.jellyfish
 
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.plugins.configureRouting
 import com.kamelia.jellyfish.plugins.configureSerialization
+import io.ktor.server.application.Application
+import io.ktor.server.netty.EngineMain
 
 fun main(args: Array<String>) = EngineMain.main(args)
 

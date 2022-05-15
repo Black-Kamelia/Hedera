@@ -12,7 +12,7 @@ You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and 
 
 👉 YES. Jellyfish will also be shipped in a Docker image.
 
-## ⭐️ Features
+## ⭐ Features
 
 - **User accounts** — You can create multiple accounts, or let users sign up.
   Each screenshots uploaded is bound to its user account.
@@ -26,10 +26,28 @@ You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and 
 
 *Coming soon*
 
-## ⚙️ How to update?
+## ⚙ How to update?
 
 *Coming soon*
 
 ## 📸 Screenshots
 
 *Coming soon*
+
+## ⇓ Dependencies
+
+### Core
+
+- [Kotlin](https://kotlinlang.org/) : A statically typed, modern, cross-platform, open-source programming language.
+- [Ktor](https://ktor.io/) : Kotlin backend microservices library.
+- [Exposed](https://github.com/JetBrains/Exposed) : Kotlin database ORM library.
+- [Nuxt](https://nuxtjs.org/) : JavaScript frontend framework based on Vue.js.
+
+### Building
+
+- [Gradle](https://gradle.org/) : Gradle is a build tool for Java and Kotlin.
+- [Docker](https://www.docker.com/) : Docker is a platform for developers to build, ship, and run software.
+- [Docker Compose](https://docs.docker.com/compose/overview/) : Docker Compose is a tool for defining and running multi-container applications.
+- [Node.js](https://nodejs.org/) v16.5.0 : Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+- [Gradle Node plugin](https://github.com/node-gradle/gradle-node-plugin/) : Gradle plugin for Node.js.
+    

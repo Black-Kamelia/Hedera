@@ -1,2 +1,2 @@
 rootProject.name = "Jellyfish"
-include("server")
+include("server", "client")

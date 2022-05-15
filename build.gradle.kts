@@ -1,52 +1,47 @@
-import org.apache.tools.ant.taskdefs.condition.Os
+import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
     kotlin("jvm") version "1.6.21"
+    id("com.github.node-gradle.node") version "3.3.0"
 }
 
 group = "com.kamelia"
-version = "0.0.1"
-
-project(":server")
+version = project.properties["project.version"] as String
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
+node {
+    version.set("16.15.0") // lts version
+    distBaseUrl.set("https://nodejs.org/dist")
+    download.set(true)
+    nodeProjectDir.set(file("${project.projectDir}/client"))
+    workDir.set(file("${project.projectDir}/.gradle/nodejs"))
 }
 
-tasks.test {
-    useJUnitPlatform()
+val npmClean = tasks.register<Delete>("npmClean") {
+    delete(file("${project.projectDir}/client/node_modules"))
+    delete(file("${project.projectDir}/client/dist"))
+    delete(file("${project.projectDir}/server/src/main/resources/static"))
 }
 
-val isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-
-val npmCmd = "npm${if (isWindows) ".cmd" else ""}"
-val exportCmd = if (isWindows) "set" else "export"
-
-tasks.register<Delete>("npm-clean") {
-    delete(file("client/dist"))
-    delete(file("server/src/main/resources/static/"))
+val npmBuild = tasks.register<NpmTask>("npmBuild") {
+    dependsOn(tasks.npmInstall)
+    npmCommand.set(listOf("run", "generate"))
+    ignoreExitValue.set(false)
 }
 
-tasks.register<Exec>("npm-install") {
-    workingDir("client")
-    commandLine(npmCmd, "install")
-}
-
-tasks.register<Exec>("npm-generate") {
-    workingDir("client")
-    commandLine(exportCmd, "NODE_OPTIONS=--openssl-legacy-provider")
-    commandLine(npmCmd, "run", "generate")
-}
-
-tasks.register<Copy>("bundle-client") {
+val bundleClient = tasks.register<Copy>("bundleClient") {
+    dependsOn(npmBuild)
     from("client/dist")
     into("server/src/main/resources/static")
 }
 
-tasks.findByName("clean")?.dependsOn("npm-clean")
-tasks.findByName("bundle-client")?.dependsOn("npm-generate")
-tasks.findByName("build")?.dependsOn("bundle-client")
+tasks.clean {
+    dependsOn(npmClean)
+}
+
+tasks.build {
+    dependsOn(bundleClient)
+}

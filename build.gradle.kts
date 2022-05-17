@@ -28,7 +28,7 @@ val npmClean = tasks.register<Delete>("npmClean") {
 
 val npmBuild = tasks.register<NpmTask>("npmBuild") {
     dependsOn(tasks.npmInstall)
-    npmCommand.set(listOf("run", "generate"))
+    npmCommand.set(listOf("run", "build"))
     ignoreExitValue.set(false)
 }
 

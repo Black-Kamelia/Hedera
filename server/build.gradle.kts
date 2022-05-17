@@ -30,6 +30,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-content-negotiation-jvm", ktorVersion)
     implementation("io.ktor", "ktor-serialization-kotlinx-json-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-netty-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("ch.qos.logback", "logback-classic", logbackVersion)
 
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -49,5 +50,41 @@ tasks.jar {
     }
     configurations["compileClasspath"].forEach { file ->
         from(zipTree(file.absolutePath))
+    }
+}
+
+var env = "production"
+
+tasks.processResources {
+    outputs.upToDateWhen { false }
+    filesMatching("*.conf") {
+        when (env) {
+            "development" -> {
+                expand(
+                    "JELLYFISH_ENV" to "dev",
+                    "JELLYFISH_PORT" to "8080",
+                    "JELLYFISH_MODULE" to "server",
+                    "JELLYFISH_AUTORELOAD" to "true"
+                )
+            }
+            "production" -> {
+                expand(
+                    "JELLYFISH_ENV" to "production",
+                    "JELLYFISH_PORT" to "8080",
+                    "JELLYFISH_MODULE" to "",
+                    "JELLYFISH_AUTORELOAD" to "false"
+                )
+            }
+        }
+    }
+}
+
+val setDev = tasks.register("setDev") {
+    env = "development"
+}
+
+tasks {
+    "run" {
+        dependsOn(setDev)
     }
 }

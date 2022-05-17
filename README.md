@@ -4,7 +4,7 @@ A self-hosted screenshots/files hosting system.
 
 ## 🤔 What is it?
 
-**Jellyfish** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Nuxt.js](https://nuxtjs.org/)**.
+**Jellyfish** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Vue.js](https://vuejs.org/)**.
 It is the next iteration of [Selfish](https://github.com/SlamaFR/Selfish). Like its predecessor, it is highly inspired
 by [XBackBone](https://github.com/SergiX44/XBackBone).
 
@@ -41,13 +41,17 @@ You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and 
 - [Kotlin](https://kotlinlang.org/) : A statically typed, modern, cross-platform, open-source programming language.
 - [Ktor](https://ktor.io/) : Kotlin backend microservices library.
 - [Exposed](https://github.com/JetBrains/Exposed) : Kotlin database ORM library.
-- [Nuxt](https://nuxtjs.org/) : JavaScript frontend framework based on Vue.js.
+- [Vue 3](https://vuejs.org/) : JavaScript frontend framework for making single-page applications.
+- [VueUse](https://vueuse.org/) : A set of useful Vue 3 Composable functions and components.
+- [TailwindCSS](https://tailwindcss.com/) : A utility-first CSS framework for rapidly building custom user interfaces.
+- [Axios](https://axios-http.com) : A Promise based HTTP client for the browser and Node.js.
 
 ### Building
 
-- [Gradle](https://gradle.org/) : Gradle is a build tool for Java and Kotlin.
-- [Docker](https://www.docker.com/) : Docker is a platform for developers to build, ship, and run software.
-- [Docker Compose](https://docs.docker.com/compose/overview/) : Docker Compose is a tool for defining and running multi-container applications.
-- [Node.js](https://nodejs.org/) v16.5.0 : Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+- [Gradle](https://gradle.org/) : A build tool for Java and Kotlin.
+- [Docker](https://www.docker.com/) : A platform for developers to build, ship, and run software.
+- [Docker Compose](https://docs.docker.com/compose/overview/) : A tool for defining and running multi-container applications.
+- [Node.js](https://nodejs.org/) v16.5.0 : A JavaScript runtime built on Chrome's V8 JavaScript engine.
+- [Vite](https://vitejs.dev/) : A JavaScript build tool for modern web development.
 - [Gradle Node plugin](https://github.com/node-gradle/gradle-node-plugin/) : Gradle plugin for Node.js.
     

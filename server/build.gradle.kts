@@ -53,38 +53,9 @@ tasks.jar {
     }
 }
 
-var env = "production"
-
-tasks.processResources {
-    outputs.upToDateWhen { false }
-    filesMatching("*.conf") {
-        when (env) {
-            "development" -> {
-                expand(
-                    "JELLYFISH_ENV" to "dev",
-                    "JELLYFISH_PORT" to "8080",
-                    "JELLYFISH_MODULE" to "server",
-                    "JELLYFISH_AUTORELOAD" to "true"
-                )
-            }
-            "production" -> {
-                expand(
-                    "JELLYFISH_ENV" to "production",
-                    "JELLYFISH_PORT" to "8080",
-                    "JELLYFISH_MODULE" to "",
-                    "JELLYFISH_AUTORELOAD" to "false"
-                )
-            }
-        }
-    }
-}
-
-val setDev = tasks.register("setDev") {
-    env = "development"
-}
-
-tasks {
-    "run" {
-        dependsOn(setDev)
-    }
+tasks.register<JavaExec>("runDev") {
+    group = "application"
+    environment = mapOf("JELLYFISH_ENV" to "dev")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.kamelia.jellyfish.ApplicationKt")
 }

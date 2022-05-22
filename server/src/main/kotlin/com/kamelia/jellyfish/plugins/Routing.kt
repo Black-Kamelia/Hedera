@@ -19,7 +19,7 @@ fun Application.configureRouting() {
 
         when {
             this@configureRouting.isDev -> get("/") {
-                call.respondRedirect("https://localhost:3000")
+                call.respondRedirect("http://localhost:3000")
             }
             this@configureRouting.isProd -> {
                 static("/") {

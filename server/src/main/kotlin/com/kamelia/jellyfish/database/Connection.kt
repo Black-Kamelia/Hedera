@@ -10,10 +10,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object Connection {
 
     fun init() {
-        //Database.connect(hikari())
-        /*transaction {
+        Database.connect(hikari())
+        transaction {
             // TODO create tables
-        }*/
+        }
     }
 
     private fun hikari(): HikariDataSource {

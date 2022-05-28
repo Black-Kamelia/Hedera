@@ -1,38 +1,53 @@
 package com.kamelia.jellyfish.util
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.response.respond
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 
-class QueryResult<E> private constructor(
+class QueryResult<out S, out E> private constructor(
     val status: HttpStatusCode,
-    private val _result: E? = null
+    private val success: ResultData<S>? = null,
+    private val error: ResultData<E>? = null,
 ) {
-    val result: E
-        get() = _result ?: throw NoSuchElementException("QueryResult has no result (status: $status)")
+    init {
+        if (status.isSuccess() && success == null || !status.isSuccess() && error == null) {
+            throw IllegalArgumentException("Either success or error must be set and correspond to the status code")
+        }
+    }
 
-    fun getOrDefault(block: () -> E) = _result ?: block()
-    fun getOrElse(block: () -> Nothing) = _result ?: block()
-
-    suspend fun ifPresentOrElse(block: suspend (E) -> Unit, elseBlock: suspend () -> Unit) {
-        if (_result != null) block(_result) else elseBlock()
+    suspend fun ifSuccessOrElse(onSuccess: suspend (ResultData<out S>) -> Unit, onError: suspend (ResultData<out E>) -> Unit = {}) {
+        if (status.isSuccess()) {
+            onSuccess(success!!)
+        } else {
+            onError(error!!)
+        }
     }
 
     companion object {
-        fun <E> ok(value: E) = QueryResult(HttpStatusCode.OK, value)
-        fun <E> empty() = QueryResult<E>(HttpStatusCode.OK)
-        fun <E> notFound() = QueryResult<E>(HttpStatusCode.NotFound)
-        fun <E> unauthorized() = QueryResult<E>(HttpStatusCode.Unauthorized)
-        // TODO
-        // fun status(status: HttpStatusCode, message: String? = null) = QueryResult(status, message)
-        // fun forbidden(message: String?) = status(HttpStatusCode.Forbidden, message)
+        fun <S> success(status: HttpStatusCode, result: S? = null) = QueryResult<S, Nothing>(status, success = ResultData(result))
+        fun <E> error(status: HttpStatusCode, error: E? = null) = QueryResult<Nothing, E>(status, error = ResultData(error))
+
+        fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
+        fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
+
+        fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
+        fun unauthorized() = error<Nothing>(HttpStatusCode.Unauthorized)
+        fun forbidden(error: String) = error(HttpStatusCode.Forbidden, error)
     }
 }
 
-suspend inline fun ApplicationCall.respond(result: QueryResult<out Any>) {
-    result.ifPresentOrElse({
-        respond(result.status, it)
-    }, {
-        response.status(result.status)
-    })
+data class ResultData<T>(
+    val data: T? = null
+)
+
+suspend inline fun ApplicationCall.respond(queryResult: QueryResult<*, *>) {
+    val res: suspend (ResultData<*>) -> Unit = { result ->
+        response.status(queryResult.status)
+        result.data?.let { respond(it) }
+    }
+    queryResult.ifSuccessOrElse(res, res)
 }

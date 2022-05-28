@@ -2,11 +2,16 @@ package com.kamelia.jellyfish.plugins
 
 import com.kamelia.jellyfish.util.Environment.isDev
 import com.kamelia.jellyfish.util.Environment.isProd
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.http.content.resource
+import io.ktor.server.http.content.resources
+import io.ktor.server.http.content.static
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.response.respondText
-import io.ktor.server.routing.*
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 
 fun Application.configureRouting() {
     routing {

@@ -33,6 +33,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("ch.qos.logback", "logback-classic", logbackVersion)
 
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.6.1")
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)

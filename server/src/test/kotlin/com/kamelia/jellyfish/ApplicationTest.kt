@@ -1,4 +1,4 @@
-package io.slama
+package com.kamelia.jellyfish
 
 import io.ktor.http.*
 import io.ktor.server.testing.*

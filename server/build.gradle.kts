@@ -39,6 +39,7 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.postgresql", "postgresql", "42.3.4")
     implementation("com.zaxxer", "HikariCP", "5.0.1")
+    implementation("at.favre.lib", "bcrypt", "0.9.0")
 
     testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test-junit", kotlinVersion)

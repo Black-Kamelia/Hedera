@@ -34,7 +34,7 @@ You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and 
 
 *Coming soon*
 
-## ⇓ Dependencies
+## 📦 Dependencies
 
 ### Core
 

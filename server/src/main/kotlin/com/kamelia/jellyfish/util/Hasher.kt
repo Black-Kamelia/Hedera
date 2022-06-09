@@ -10,7 +10,7 @@ object Hasher {
     private val hasher = BCrypt.with(version, SecureRandom(), strategy)
     private val verifier = BCrypt.verifyer(version, strategy)
 
-    private const val strength = 6
+    private const val strength = 12
 
     fun hash(password: String, strength: Int = this.strength): String =
         hasher.hashToString(strength, password.toCharArray())

@@ -19,7 +19,10 @@ class QueryResult<out S, out E> private constructor(
         }
     }
 
-    suspend fun ifSuccessOrElse(onSuccess: suspend (ResultData<out S>) -> Unit, onError: suspend (ResultData<out E>) -> Unit = {}) {
+    suspend fun ifSuccessOrElse(
+        onSuccess: suspend (ResultData<out S>) -> Unit,
+        onError: suspend (ResultData<out E>) -> Unit = {}
+    ) {
         if (status.isSuccess()) {
             onSuccess(success!!)
         } else {
@@ -28,8 +31,11 @@ class QueryResult<out S, out E> private constructor(
     }
 
     companion object {
-        fun <S> success(status: HttpStatusCode, result: S? = null) = QueryResult<S, Nothing>(status, success = ResultData(result))
-        fun <E> error(status: HttpStatusCode, error: E? = null) = QueryResult<Nothing, E>(status, error = ResultData(error))
+        fun <S> success(status: HttpStatusCode, result: S? = null) =
+            QueryResult<S, Nothing>(status, success = ResultData(result))
+
+        fun <E> error(status: HttpStatusCode, error: E? = null) =
+            QueryResult<Nothing, E>(status, error = ResultData(error))
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)

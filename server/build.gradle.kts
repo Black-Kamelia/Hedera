@@ -7,6 +7,7 @@ plugins {
     application
     kotlin("jvm")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.21"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "com.kamelia"
@@ -45,13 +46,16 @@ dependencies {
     testImplementation("org.jetbrains.kotlin", "kotlin-test-junit", kotlinVersion)
 }
 
+tasks.shadowJar {
+    archiveBaseName.set("Jellyfish")
+    archiveClassifier.set("")
+    archiveVersion.set(project.version.toString())
+    destinationDirectory.set(file("$rootDir/executables"))
+}
+
 tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
-    }
-    configurations["compileClasspath"].forEach { file ->
-        from(zipTree(file.absolutePath))
     }
 }
 

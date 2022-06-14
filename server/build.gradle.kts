@@ -6,7 +6,8 @@ val logbackVersion: String = project.properties["logback.version"] as String
 plugins {
     application
     kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.21"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "com.kamelia"
@@ -37,7 +38,7 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
-    implementation("org.postgresql", "postgresql", "42.3.4")
+    implementation("org.postgresql", "postgresql", "42.3.6")
     implementation("com.zaxxer", "HikariCP", "5.0.1")
     implementation("at.favre.lib", "bcrypt", "0.9.0")
 
@@ -45,13 +46,16 @@ dependencies {
     testImplementation("org.jetbrains.kotlin", "kotlin-test-junit", kotlinVersion)
 }
 
+tasks.shadowJar {
+    archiveBaseName.set("Jellyfish")
+    archiveClassifier.set("")
+    archiveVersion.set(project.version.toString())
+    destinationDirectory.set(file("$rootDir/executables"))
+}
+
 tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
-    }
-    configurations["compileClasspath"].forEach { file ->
-        from(zipTree(file.absolutePath))
     }
 }
 

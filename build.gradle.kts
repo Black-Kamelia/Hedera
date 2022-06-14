@@ -40,6 +40,7 @@ val bundleClient = tasks.register<Copy>("bundleClient") {
 
 tasks.clean {
     dependsOn(npmClean)
+    delete(file("executables"))
 }
 
 tasks.build {

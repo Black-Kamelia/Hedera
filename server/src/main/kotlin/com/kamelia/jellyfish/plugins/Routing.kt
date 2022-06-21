@@ -1,5 +1,6 @@
 package com.kamelia.jellyfish.plugins
 
+import com.kamelia.jellyfish.rest.user.userRoutes
 import com.kamelia.jellyfish.util.Environment.isDev
 import com.kamelia.jellyfish.util.Environment.isProd
 import io.ktor.server.application.Application
@@ -16,7 +17,7 @@ import io.ktor.server.routing.routing
 fun Application.configureRouting() {
     routing {
         route("/api") {
-            // TODO: Add routes here
+            userRoutes()
             get("hello") {
                 call.respondText("'Hello from Ktor !'")
             }

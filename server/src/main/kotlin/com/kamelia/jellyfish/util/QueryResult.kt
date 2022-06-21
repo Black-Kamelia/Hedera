@@ -4,9 +4,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 
 class QueryResult<out S, out E> private constructor(
     val status: HttpStatusCode,

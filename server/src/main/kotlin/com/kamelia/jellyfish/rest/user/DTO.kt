@@ -14,7 +14,7 @@ data class UserDTO(
     val username: String,
     val email: String,
     val password: String,
-    var role: UserRole = UserRole.REGULAR
+    val role: UserRole = UserRole.REGULAR
 )
 
 /**

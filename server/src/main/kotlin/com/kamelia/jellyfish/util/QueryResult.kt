@@ -5,6 +5,8 @@ import io.ktor.http.isSuccess
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 
+typealias ErrorDTO = String
+
 class QueryResult<out S, out E> private constructor(
     val status: HttpStatusCode,
     private val success: ResultData<S>? = null,
@@ -37,9 +39,9 @@ class QueryResult<out S, out E> private constructor(
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
-        fun badRequest(error: String = "") = error(HttpStatusCode.BadRequest, error)
+        fun badRequest(vararg error: ErrorDTO) = error(HttpStatusCode.BadRequest, error.toList())
         fun unauthorized() = error<Nothing>(HttpStatusCode.Unauthorized)
-        fun forbidden(error: String) = error(HttpStatusCode.Forbidden, error)
+        fun forbidden(vararg error: ErrorDTO) = error(HttpStatusCode.Forbidden, error.toList())
         fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }

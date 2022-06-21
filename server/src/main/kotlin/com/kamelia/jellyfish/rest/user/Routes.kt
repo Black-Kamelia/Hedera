@@ -18,20 +18,6 @@ fun Route.userRoutes() = route("/users") {
     deleteUser()
 }
 
-/*
-get("/api/test") {
-        val user = UserRepository.create(UserDTO(
-            0, "bonsoir", "hi@ergerg.io", "eld", true, true
-        )).result
-
-        call.respond(user)
-    }
-
-    get("/api/all") {
-        call.respond(UserRepository.getAll().result)
-    }
- */
-
 private fun Route.signup() = post {
     val user = call.receive<UserDTO>()
     call.respond(UserService.signup(user))
@@ -47,5 +33,5 @@ private fun Route.deleteUser() = delete("/{uuid}") {
         return@delete
     }
 
-    call.respond(UserService.delete(id))
+    call.respond(UserService.deleteUser(id))
 }

@@ -11,7 +11,8 @@ import org.jetbrains.exposed.sql.exposedLogger
 
 enum class UserRole {
     REGULAR,
-    ADMIN
+    ADMIN,
+    OWNER,
 }
 
 object Users : UUIDTable() {

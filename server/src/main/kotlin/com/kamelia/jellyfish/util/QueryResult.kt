@@ -37,9 +37,10 @@ class QueryResult<out S, out E> private constructor(
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
-        fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
+        fun badRequest(error: String = "") = error(HttpStatusCode.BadRequest, error)
         fun unauthorized() = error<Nothing>(HttpStatusCode.Unauthorized)
         fun forbidden(error: String) = error(HttpStatusCode.Forbidden, error)
+        fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }
 

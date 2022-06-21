@@ -1,10 +1,13 @@
 package com.kamelia.jellyfish.database
 
+import com.kamelia.jellyfish.rest.user.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Connection {
@@ -12,7 +15,7 @@ object Connection {
     fun init() {
         Database.connect(hikari())
         transaction {
-            // TODO create tables
+            if (!Users.exists()) SchemaUtils.create(Users)
         }
     }
 

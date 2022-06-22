@@ -11,28 +11,30 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.dao.toEntity
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 abstract class AuditableUUIDTable(name: String) : UUIDTable(name) {
     val createdAt = timestamp("created_at").clientDefault { Instant.now() }
-    //val createdBy = reference("created_by", Users)
+    open val createdBy: Column<EntityID<UUID>> get() = reference("created_by", Users)
     val updatedAt = timestamp("updated_at").clientDefault { Instant.now() }
-    //val updatedBy = reference("updated_by", Users)
+    open val updatedBy: Column<EntityID<UUID>> get() = reference("updated_by", Users)
 }
 
 abstract class AuditableUUIDEntity(id: EntityID<UUID>, table: AuditableUUIDTable) : UUIDEntity(id) {
-    var createdAt by table.createdAt
-    //var createdBy by User referencedOn table.createdBy
+    @Suppress("unused")
+    var createdAt by table.createdAt // automatically set, never touched
+    var createdBy by User referencedOn table.createdBy
     var updatedAt by table.updatedAt
-    //var updatedBy by User referencedOn table.updatedBy
+    var updatedBy by User referencedOn table.updatedBy
 
     fun onCreate(creator: User) {
-//        createdBy = creator
-//        updatedBy = creator
+        createdBy = creator
+        updatedBy = creator
     }
 
     fun onUpdate(updater: User) {
-        //updatedBy = updater
+        updatedBy = updater
     }
 }
 

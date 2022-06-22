@@ -32,7 +32,8 @@ object UserService {
         }
 
         // TODO: check if email is valid, password valid, role elevation, etc
-        return QueryResult.ok(Users.update(id, dto)?.toDTO() ?: return QueryResult.notFound())
+        val updater: User? = null // get from user from header Authentication
+        return QueryResult.ok(Users.update(id, dto, updater)?.toDTO() ?: return QueryResult.notFound())
     }
 
     suspend fun deleteUser(id: UUID): QueryResult<UserResponseDTO, Nothing> {

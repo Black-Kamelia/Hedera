@@ -7,6 +7,7 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.util.Hasher
 import java.util.UUID
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.exposedLogger
 
 enum class UserRole {
@@ -21,6 +22,9 @@ object Users : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
+
+    override val createdBy: Column<EntityID<UUID>> = reference("created_by", this)
+    override val updatedBy: Column<EntityID<UUID>> = reference("updated_by", this)
 
     suspend fun getAll(): Iterable<User> = Connection.query {
         User.all()
@@ -50,10 +54,6 @@ object Users : AuditableUUIDTable("users") {
         }.also {
             exposedLogger.info("Created user: $it")
         }
-    }
-
-    suspend fun read(id: UUID): User? = Connection.query {
-        User.findById(id)
     }
 
     suspend fun update(id: UUID, user: UserUpdateDTO, updater: User? = null): User? = Connection.query {

@@ -7,8 +7,8 @@ import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
+import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import java.lang.AssertionError
 
@@ -24,11 +24,11 @@ private fun Route.signup() = post {
     call.respond(UserService.signup(user))
 }
 
-private fun Route.updateUser() = put("/{uuid}") {
+private fun Route.updateUser() = patch("/{uuid}") {
     val id = call.parameters["uuid"] ?: throw AssertionError("Ktor is literally dying")
     val update = call.receive<UserUpdateDTO>()
     val uuid = id.toUUIDOrNull()
-        ?: return@put call.respond(QueryResult.badRequest("UUID is not valid"))
+        ?: return@patch call.respond(QueryResult.badRequest("UUID is not valid"))
 
     call.respond(UserService.updateUser(uuid, update))
 }

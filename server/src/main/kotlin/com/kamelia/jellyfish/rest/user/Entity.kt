@@ -23,8 +23,8 @@ object Users : AuditableUUIDTable("users") {
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
 
-    override val createdBy: Column<EntityID<UUID>> = reference("created_by", this)
-    override val updatedBy: Column<EntityID<UUID>> = reference("updated_by", this)
+    override val createdBy = reference("created_by", this)
+    override val updatedBy = reference("updated_by", this).nullable()
 
     suspend fun getAll(): Iterable<User> = Connection.query {
         User.all()

@@ -2,12 +2,11 @@ package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
-import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntityClass
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.util.Hasher
 import java.util.UUID
+import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.exposedLogger
 
 enum class UserRole {
@@ -74,7 +73,7 @@ object Users : AuditableUUIDTable("users") {
 }
 
 class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
-    companion object : AuditableUUIDEntityClass<User>(Users)
+    companion object : UUIDEntityClass<User>(Users)
 
     var username by Users.username
     var email by Users.email

@@ -4,6 +4,16 @@ import com.kamelia.jellyfish.util.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
+fun User.toDTO(): UserResponseDTO {
+    return UserResponseDTO(
+        id.value,
+        username,
+        email,
+        role,
+        enabled
+    )
+}
+
 /**
  * DTO used to transfer user signup details.
  *

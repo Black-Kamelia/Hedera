@@ -1,6 +1,7 @@
 package com.kamelia.jellyfish.rest.core.auditable
 
 import com.kamelia.jellyfish.rest.user.User
+import com.kamelia.jellyfish.rest.user.User.Companion.optionalReferrersOn
 import com.kamelia.jellyfish.rest.user.Users
 import java.time.Instant
 import java.util.UUID
@@ -17,8 +18,8 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 abstract class AuditableUUIDTable(name: String) : UUIDTable(name) {
     val createdAt = timestamp("created_at").clientDefault { Instant.now() }
     open val createdBy: Column<EntityID<UUID>> get() = reference("created_by", Users)
-    val updatedAt = timestamp("updated_at").clientDefault { Instant.now() }
-    open val updatedBy: Column<EntityID<UUID>> get() = reference("updated_by", Users)
+    val updatedAt = timestamp("updated_at").nullable()
+    open val updatedBy: Column<EntityID<UUID>?> get() = reference("updated_by", Users).nullable()
 }
 
 abstract class AuditableUUIDEntity(id: EntityID<UUID>, table: AuditableUUIDTable) : UUIDEntity(id) {
@@ -26,11 +27,10 @@ abstract class AuditableUUIDEntity(id: EntityID<UUID>, table: AuditableUUIDTable
     var createdAt by table.createdAt // automatically set, never touched
     var createdBy by User referencedOn table.createdBy
     var updatedAt by table.updatedAt
-    var updatedBy by User referencedOn table.updatedBy
+    var updatedBy by User optionalReferencedOn table.updatedBy
 
     fun onCreate(creator: User) {
         createdBy = creator
-        updatedBy = creator
     }
 
     fun onUpdate(updater: User) {

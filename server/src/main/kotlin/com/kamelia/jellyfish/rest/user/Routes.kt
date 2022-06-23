@@ -10,12 +10,12 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import java.lang.AssertionError
 
 
 fun Route.userRoutes() = route("/users") {
     signup()
     updateUser()
+    updateUserPassword()
     deleteUser()
 }
 
@@ -25,7 +25,7 @@ private fun Route.signup() = post {
 }
 
 private fun Route.updateUser() = patch("/{uuid}") {
-    val id = call.parameters["uuid"] ?: throw AssertionError("Ktor is literally dying")
+    val id = call.parameters["uuid"]!!
     val update = call.receive<UserUpdateDTO>()
     val uuid = id.toUUIDOrNull()
         ?: return@patch call.respond(QueryResult.badRequest("UUID is not valid"))
@@ -33,8 +33,17 @@ private fun Route.updateUser() = patch("/{uuid}") {
     call.respond(UserService.updateUser(uuid, update))
 }
 
+private fun Route.updateUserPassword() = patch("/{uuid}/password") {
+    val id = call.parameters["uuid"]!!
+    val passwords = call.receive<UserPasswordUpdateDTO>()
+    val uuid = id.toUUIDOrNull()
+        ?: return@patch call.respond(QueryResult.badRequest("UUID is not valid"))
+
+    call.respond(UserService.updateUserPassword(uuid, passwords))
+}
+
 private fun Route.deleteUser() = delete("/{uuid}") {
-    val id = call.parameters["uuid"] ?: throw AssertionError("Ktor is literally dying")
+    val id = call.parameters["uuid"]!!
     val uuid = id.toUUIDOrNull()
         ?: return@delete call.respond(QueryResult.badRequest("UUID is not valid"))
 

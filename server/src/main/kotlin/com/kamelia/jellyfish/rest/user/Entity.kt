@@ -55,13 +55,20 @@ object Users : AuditableUUIDTable("users") {
         }
     }
 
-    suspend fun update(id: UUID, user: UserUpdateDTO, updater: User? = null): User? = Connection.query {
-        User.findById(id)?.apply {
-            user.username?.let { username = it }
-            user.email?.let { email = it }
-            user.role?.let { role = it }
-            user.enabled?.let { enabled = it }
+    suspend fun update(user: User, dto: UserUpdateDTO, updater: User? = null): User = Connection.query {
+        user.apply {
+            dto.username?.let { username = it }
+            dto.email?.let { email = it }
+            dto.role?.let { role = it }
+            dto.enabled?.let { enabled = it }
 
+            onUpdate(updater ?: this)
+        }
+    }
+
+    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User? = null): User = Connection.query {
+        user.apply {
+            password = Hasher.hash(dto.newPassword)
             onUpdate(updater ?: this)
         }
     }

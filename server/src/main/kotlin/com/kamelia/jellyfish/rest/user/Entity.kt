@@ -57,11 +57,10 @@ object Users : AuditableUUIDTable("users") {
 
     suspend fun update(id: UUID, user: UserUpdateDTO, updater: User? = null): User? = Connection.query {
         User.findById(id)?.apply {
-            username = user.username
-            email = user.email
-            password = user.password
-            role = user.role
-            enabled = user.enabled
+            user.username?.let { username = it }
+            user.email?.let { email = it }
+            user.role?.let { role = it }
+            user.enabled?.let { enabled = it }
 
             onUpdate(updater ?: this)
         }

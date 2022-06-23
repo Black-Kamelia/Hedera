@@ -80,14 +80,4 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var password by Users.password
     var role by Users.role
     var enabled by Users.enabled
-
-    fun toDTO(): UserResponseDTO {
-        return UserResponseDTO(
-            id.value,
-            username,
-            email,
-            role,
-            enabled
-        )
-    }
 }

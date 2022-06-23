@@ -34,10 +34,10 @@ data class UserDTO(
  */
 @Serializable
 data class UserUpdateDTO(
-    val username: String?,
-    val email: String?,
-    val role: UserRole?,
-    val enabled: Boolean?
+    val username: String? = null,
+    val email: String? = null,
+    val role: UserRole? = null,
+    val enabled: Boolean? = null
 )
 
 /**

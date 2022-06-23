@@ -41,6 +41,17 @@ data class UserUpdateDTO(
 )
 
 /**
+ * DTO used to change user password.
+ *
+ * **Front -> Back**
+ */
+@Serializable
+data class UserPasswordUpdateDTO(
+    val oldPassword: String,
+    val newPassword: String,
+)
+
+/**
  * DTO used to transfer user details to front.
  *
  * **Back -> Front**

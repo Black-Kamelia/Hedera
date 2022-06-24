@@ -1,23 +1,22 @@
 package com.kamelia.jellyfish.database
 
-import com.kamelia.jellyfish.rest.user.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.CoroutineDispatcher
+import java.sql.Connection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Connection {
 
+    private lateinit var dataSource: HikariDataSource
+    val connection: Connection get() = dataSource.connection
+
     fun init() {
-        Database.connect(hikari())
-        transaction {
-            if (!Users.exists()) SchemaUtils.create(Users)
-        }
+        dataSource = hikari()
+        Database.connect(dataSource)
     }
 
     private fun hikari(): HikariDataSource {

@@ -16,16 +16,14 @@ inline fun <reified T : Any> Route.requestOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
-): Route = apply {
-    method(path) {
-        runCatching {
-            val body = call.receive<T>()
-            block(body)
-        }.getOrElse { e ->
-            advisors.find { it.throwableClass.isInstance(e) }
-                ?.let { it.handle(e, call) }
-                ?: throw e
-        }
+): Route = method(path) {
+    runCatching {
+        val body = call.receive<T>()
+        block(body)
+    }.onFailure { e ->
+        advisors.find { it.throwableClass.isInstance(e) }
+            ?.let { it.handle(e, call) }
+            ?: throw e
     }
 }
 
@@ -34,15 +32,13 @@ inline fun Route.requestOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
-): Route = apply {
-    method(path) {
-        runCatching {
-            block()
-        }.getOrElse { e ->
-            advisors.find { it.throwableClass.isInstance(e) }
-                ?.let { it.handle(e, call) }
-                ?: throw e
-        }
+): Route = method(path) {
+    runCatching {
+        block()
+    }.onFailure { e ->
+        advisors.find { it.throwableClass.isInstance(e) }
+            ?.let { it.handle(e, call) }
+            ?: throw e
     }
 }
 

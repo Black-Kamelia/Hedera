@@ -1,7 +1,7 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.util.ErrorDTO
-import com.kamelia.jellyfish.util.Hasher
+import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.util.QueryResult
 import com.kamelia.jellyfish.util.uuid
 import java.util.*

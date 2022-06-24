@@ -2,6 +2,7 @@ package com.kamelia.jellyfish.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import java.sql.Connection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -9,11 +10,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object Connection {
 
+    private lateinit var dataSource: HikariDataSource
+    val connection: Connection get() = dataSource.connection
+
     fun init() {
-        Database.connect(hikari())
-        transaction {
-            // TODO create tables
-        }
+        dataSource = hikari()
+        Database.connect(dataSource)
     }
 
     private fun hikari(): HikariDataSource {

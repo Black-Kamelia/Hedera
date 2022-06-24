@@ -1,6 +1,10 @@
 val kotlinVersion: String = project.properties["kotlin.version"] as String
 val ktorVersion: String = project.properties["ktor.version"] as String
 val exposedVersion: String = project.properties["exposed.version"] as String
+val postgresqlVersion: String = project.properties["postgresql.version"] as String
+val hikaricpVersion: String = project.properties["hikaricp.version"] as String
+val bcryptVersion: String = project.properties["bcrypt.version"] as String
+val h2Version: String = project.properties["h2.version"] as String
 val logbackVersion: String = project.properties["logback.version"] as String
 
 plugins {
@@ -39,10 +43,11 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
-    implementation("org.postgresql", "postgresql", "42.3.6")
-    implementation("com.zaxxer", "HikariCP", "5.0.1")
-    implementation("at.favre.lib", "bcrypt", "0.9.0")
+    implementation("org.postgresql", "postgresql", postgresqlVersion)
+    implementation("com.zaxxer", "HikariCP", hikaricpVersion)
+    implementation("at.favre.lib", "bcrypt", bcryptVersion)
 
+    testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test-junit", kotlinVersion)
 }

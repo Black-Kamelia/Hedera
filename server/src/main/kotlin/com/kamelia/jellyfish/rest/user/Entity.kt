@@ -1,13 +1,12 @@
 package com.kamelia.jellyfish.rest.user
 
+import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
-import com.kamelia.jellyfish.core.Hasher
-import java.util.UUID
+import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.exposedLogger
 
 enum class UserRole {
     REGULAR,
@@ -50,8 +49,6 @@ object Users : AuditableUUIDTable("users") {
             enabled = false
 
             onCreate(creator ?: this)
-        }.also {
-            exposedLogger.info("Created user: $it")
         }
     }
 

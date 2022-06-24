@@ -1,4 +1,4 @@
-package com.kamelia.jellyfish.util
+package com.kamelia.jellyfish.core
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import at.favre.lib.crypto.bcrypt.LongPasswordStrategies

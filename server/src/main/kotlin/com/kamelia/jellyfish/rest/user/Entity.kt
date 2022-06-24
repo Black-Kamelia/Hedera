@@ -3,7 +3,7 @@ package com.kamelia.jellyfish.rest.user
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
-import com.kamelia.jellyfish.util.Hasher
+import com.kamelia.jellyfish.core.Hasher
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

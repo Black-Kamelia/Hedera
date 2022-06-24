@@ -15,15 +15,14 @@ inline fun <reified T : Any> Route.requestOrCatch(
     method: (String, suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) -> Route,
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ): Route = apply {
     method(path) {
         runCatching {
             val body = call.receive<T>()
             block(body)
         }.getOrElse { e ->
-            advisors
-                .find { it.throwableClass.isInstance(e) }
+            advisors.find { it.throwableClass.isInstance(e) }
                 ?.let { it.handle(e, call) }
                 ?: throw e
         }
@@ -34,14 +33,13 @@ inline fun Route.requestOrCatch(
     method: (String, suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) -> Route,
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ): Route = apply {
     method(path) {
         runCatching {
             block()
         }.getOrElse { e ->
-            advisors
-                .find { it.throwableClass.isInstance(e) }
+            advisors.find { it.throwableClass.isInstance(e) }
                 ?.let { it.handle(e, call) }
                 ?: throw e
         }
@@ -51,7 +49,7 @@ inline fun Route.requestOrCatch(
 inline fun <reified T : Any> Route.getOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> get(spath, pipeline) },
     *advisors,
@@ -62,7 +60,7 @@ inline fun <reified T : Any> Route.getOrCatch(
 inline fun Route.getOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> get(spath, pipeline) },
     *advisors,
@@ -73,7 +71,7 @@ inline fun Route.getOrCatch(
 inline fun <reified T : Any> Route.postOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> post(spath, pipeline) },
     *advisors,
@@ -84,7 +82,7 @@ inline fun <reified T : Any> Route.postOrCatch(
 inline fun Route.postOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> post(spath, pipeline) },
     *advisors,
@@ -95,7 +93,7 @@ inline fun Route.postOrCatch(
 inline fun <reified T : Any> Route.putOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> put(spath, pipeline) },
     *advisors,
@@ -106,7 +104,7 @@ inline fun <reified T : Any> Route.putOrCatch(
 inline fun Route.putOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> put(spath, pipeline) },
     *advisors,
@@ -117,7 +115,7 @@ inline fun Route.putOrCatch(
 inline fun <reified T : Any> Route.deleteOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> delete(spath, pipeline) },
     *advisors,
@@ -128,7 +126,7 @@ inline fun <reified T : Any> Route.deleteOrCatch(
 inline fun Route.deleteOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> delete(spath, pipeline) },
     *advisors,
@@ -139,7 +137,7 @@ inline fun Route.deleteOrCatch(
 inline fun <reified T : Any> Route.patchOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> patch(spath, pipeline) },
     *advisors,
@@ -150,7 +148,7 @@ inline fun <reified T : Any> Route.patchOrCatch(
 inline fun Route.patchOrCatch(
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
     { spath, pipeline -> patch(spath, pipeline) },
     *advisors,

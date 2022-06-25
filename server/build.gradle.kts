@@ -54,7 +54,6 @@ dependencies {
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
     testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test", kotlinVersion)
-    testImplementation("org.jetbrains.kotlin", "kotlin-test-junit", kotlinVersion)
 }
 
 tasks.shadowJar {
@@ -75,4 +74,9 @@ tasks.register<JavaExec>("runDev") {
     environment = mapOf("JELLYFISH_ENV" to "dev")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("com.kamelia.jellyfish.ApplicationKt")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    environment = mapOf("JELLYFISH_ENV" to "dev")
 }

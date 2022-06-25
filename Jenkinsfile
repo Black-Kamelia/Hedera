@@ -10,24 +10,10 @@ pipeline {
                 }
             }
         }
-        stage('Build server') {
+        stage('Build') {
             steps {
                 withGradle {
-                    sh './gradlew assemble --no-daemon'
-                }
-            }
-        }
-        stage('Build client') {
-            steps {
-                withGradle {
-                    sh './gradlew npmClean npmBuild --no-daemon'
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                withGradle {
-                    sh './gradlew test --no-daemon'
+                    sh './gradlew build --no-daemon'
                 }
             }
         }

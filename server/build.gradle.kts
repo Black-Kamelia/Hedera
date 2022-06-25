@@ -75,3 +75,7 @@ tasks.register<JavaExec>("runDev") {
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("com.kamelia.jellyfish.ApplicationKt")
 }
+
+tasks.test {
+    environment = mapOf("JELLYFISH_ENV" to "dev")
+}

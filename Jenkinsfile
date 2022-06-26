@@ -6,14 +6,21 @@ pipeline {
             steps {
                 withGradle {
                     sh 'chmod +x gradlew'
-                    sh './gradlew clean --no-daemon'
+                    sh './gradlew clean'
                 }
             }
         }
         stage('Build') {
             steps {
                 withGradle {
-                    sh './gradlew build --no-daemon'
+                    sh './gradlew build -x test'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                withGradle {
+                    sh './gradlew test'
                 }
             }
         }

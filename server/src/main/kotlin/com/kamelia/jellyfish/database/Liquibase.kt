@@ -12,7 +12,6 @@ fun Application.configureLiquibase() {
     // Establish connection to the database
     val jdbcConnection = JdbcConnection(Connection.connection)
     val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection)
-    println(liquibaseMaster)
     val liquibase = Liquibase(
         liquibaseMaster,
         ClassLoaderResourceAccessor(),

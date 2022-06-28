@@ -1,11 +1,9 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.rest.core.DTO
-import com.kamelia.jellyfish.rest.core.pageable.PageDTO
-import com.kamelia.jellyfish.rest.core.pageable.PageableDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 fun User.toDTO(): UserResponseDTO {
     return UserResponseDTO(
@@ -60,7 +58,6 @@ data class UserPasswordUpdateDTO(
  * **Back -> Front**
  */
 @Serializable
-@PageableDTO
 data class UserResponseDTO(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
@@ -68,4 +65,4 @@ data class UserResponseDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean
-) : DTO, PageDTO<UserResponseDTO>()
+) : DTO

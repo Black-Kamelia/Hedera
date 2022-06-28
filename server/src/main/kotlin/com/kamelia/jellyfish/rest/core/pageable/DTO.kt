@@ -1,13 +1,11 @@
 package com.kamelia.jellyfish.rest.core.pageable
 
 import com.kamelia.jellyfish.rest.core.DTO
+import kotlinx.serialization.Serializable
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class PageableDTO
-
-abstract class PageDTO<T : DTO>(
-    val items: List<T>,
+@Serializable
+data class PageDTO(
+    val items: List<DTO>,
     val page: Long,
     val pageSize: Int,
     val totalPages: Long,

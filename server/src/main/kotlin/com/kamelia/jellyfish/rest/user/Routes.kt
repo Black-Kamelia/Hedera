@@ -8,7 +8,6 @@ import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.respond
 import io.ktor.server.application.call
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 
 

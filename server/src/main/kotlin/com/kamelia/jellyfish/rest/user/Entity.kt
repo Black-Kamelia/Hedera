@@ -7,6 +7,7 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.SizedIterable
 
 enum class UserRole {
     REGULAR,
@@ -24,8 +25,16 @@ object Users : AuditableUUIDTable("users") {
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
 
-    suspend fun getAll(): Iterable<User> = Connection.query {
-        User.all()
+    suspend fun countAll(): Long = Connection.query {
+        User.count()
+    }
+
+    suspend fun getAll(): List<User> = Connection.query {
+        User.all().toList()
+    }
+
+    suspend fun getAll(page: Long, pageSize: Int): List<User> = Connection.query {
+        User.all().limit(pageSize, page * pageSize).toList()
     }
 
     suspend fun findById(uuid: UUID): User? = Connection.query {

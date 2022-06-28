@@ -1,8 +1,9 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.rest.core.DTO
+import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
-import java.util.UUID
+import java.util.*
 import kotlinx.serialization.Serializable
 
 fun User.toDTO(): UserResponseDTO {
@@ -65,4 +66,9 @@ data class UserResponseDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean
+) : DTO
+
+@Serializable
+data class UserPageDTO(
+    val page: PageDTO<UserResponseDTO>
 ) : DTO

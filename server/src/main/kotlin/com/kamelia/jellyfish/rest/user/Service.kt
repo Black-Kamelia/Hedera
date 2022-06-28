@@ -5,7 +5,7 @@ import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.ErrorDTO
 import com.kamelia.jellyfish.util.QueryResult
 import com.kamelia.jellyfish.util.uuid
-import java.util.UUID
+import java.util.*
 import kotlin.math.ceil
 
 object UserService {
@@ -31,16 +31,18 @@ object UserService {
         return QueryResult.ok(user.toDTO())
     }
 
-    suspend fun getUsers(page: Long, pageSize: Int): QueryResult<PageDTO, List<ErrorDTO>> {
+    suspend fun getUsers(page: Long, pageSize: Int): QueryResult<UserPageDTO, List<ErrorDTO>> {
         val users = Users.getAll(page, pageSize)
         val total = Users.countAll()
         return QueryResult.ok(
-            PageDTO(
-                users.map { it.toDTO() },
-                page,
-                pageSize,
-                ceil(total / pageSize.toDouble()).toLong(),
-                total
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toDTO() },
+                    page,
+                    pageSize,
+                    ceil(total / pageSize.toDouble()).toLong(),
+                    total
+                )
             )
         )
     }

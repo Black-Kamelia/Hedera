@@ -4,8 +4,8 @@ import com.kamelia.jellyfish.rest.core.DTO
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PageDTO(
-    val items: List<DTO>,
+class PageDTO<T : DTO>(
+    val items: List<T>,
     val page: Long,
     val pageSize: Int,
     val totalPages: Long,

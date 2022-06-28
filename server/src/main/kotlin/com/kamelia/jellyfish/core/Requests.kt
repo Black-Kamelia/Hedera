@@ -12,7 +12,7 @@ import io.ktor.server.routing.put
 import io.ktor.util.pipeline.PipelineContext
 
 inline fun <reified T : Any> Route.requestOrCatch(
-    method: (String, suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) -> Route,
+    method: Route.(String, suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) -> Route,
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
@@ -28,7 +28,7 @@ inline fun <reified T : Any> Route.requestOrCatch(
 }
 
 inline fun Route.requestOrCatch(
-    method: (String, suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) -> Route,
+    method: Route.(String, suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) -> Route,
     vararg advisors: ExceptionAdvisor<Throwable> = BasicAdvisor,
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
@@ -47,7 +47,7 @@ inline fun <reified T : Any> Route.getOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> get(spath, pipeline) },
+    Route::get,
     *advisors,
     path = path,
     block = block
@@ -58,7 +58,7 @@ inline fun Route.getOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> get(spath, pipeline) },
+    Route::get,
     *advisors,
     path = path,
     block = block
@@ -69,7 +69,7 @@ inline fun <reified T : Any> Route.postOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> post(spath, pipeline) },
+    Route::post,
     *advisors,
     path = path,
     block = block
@@ -80,7 +80,7 @@ inline fun Route.postOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> post(spath, pipeline) },
+    Route::post,
     *advisors,
     path = path,
     block = block
@@ -91,7 +91,7 @@ inline fun <reified T : Any> Route.putOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> put(spath, pipeline) },
+    Route::put,
     *advisors,
     path = path,
     block = block
@@ -102,7 +102,7 @@ inline fun Route.putOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> put(spath, pipeline) },
+    Route::put,
     *advisors,
     path = path,
     block = block
@@ -113,7 +113,7 @@ inline fun <reified T : Any> Route.deleteOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> delete(spath, pipeline) },
+    Route::delete,
     *advisors,
     path = path,
     block = block
@@ -124,7 +124,7 @@ inline fun Route.deleteOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> delete(spath, pipeline) },
+    Route::delete,
     *advisors,
     path = path,
     block = block
@@ -135,7 +135,7 @@ inline fun <reified T : Any> Route.patchOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> patch(spath, pipeline) },
+    Route::patch,
     *advisors,
     path = path,
     block = block
@@ -146,7 +146,7 @@ inline fun Route.patchOrCatch(
     path: String = "",
     crossinline block: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit,
 ) = requestOrCatch(
-    { spath, pipeline -> patch(spath, pipeline) },
+    Route::patch,
     *advisors,
     path = path,
     block = block

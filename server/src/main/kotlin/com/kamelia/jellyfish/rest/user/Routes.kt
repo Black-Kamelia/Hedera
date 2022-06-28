@@ -1,17 +1,21 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.core.deleteOrCatch
+import com.kamelia.jellyfish.core.getOrCatch
 import com.kamelia.jellyfish.core.patchOrCatch
 import com.kamelia.jellyfish.core.postOrCatch
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.respond
 import io.ktor.server.application.call
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 
 
 fun Route.userRoutes() = route("/users") {
     signup()
+    getUserById()
+    getAllUsers()
     updateUser()
     updateUserPassword()
     deleteUser()
@@ -19,6 +23,17 @@ fun Route.userRoutes() = route("/users") {
 
 private fun Route.signup() = postOrCatch<UserDTO> { body ->
     call.respond(UserService.signup(body))
+}
+
+private fun Route.getUserById() = getOrCatch(path = "/{uuid}") {
+    val uuid = call.getUUID()
+    call.respond(UserService.getUserById(uuid))
+}
+
+private fun Route.getAllUsers() = getOrCatch {
+    val page = call.request.queryParameters["page"]?.toLong() ?: 0
+    val pageSize = call.request.queryParameters["pageSize"]?.toInt() ?: 25
+    call.respond(UserService.getUsers(page, pageSize))
 }
 
 private fun Route.updateUser() = patchOrCatch<UserUpdateDTO>(path = "/{uuid}") { body ->

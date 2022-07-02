@@ -8,6 +8,10 @@ val MissingParameterAdvisor = exceptionAdvisor<MissingParameterException> { e, c
     call.respond(QueryResult.badRequest(e.message!!))
 }
 
+val IllegalArgumentAdvisor = exceptionAdvisor<IllegalArgumentException> { e, call ->
+    call.respond(QueryResult.badRequest(e.message!!))
+}
+
 val InvalidUUIDAdvisor = exceptionAdvisor<InvalidUUIDException> { e, call ->
     call.respond(QueryResult.badRequest(e.message!!))
 }
@@ -18,6 +22,7 @@ val SerializationAdvisor = exceptionAdvisor<SerializationException> { e, call ->
 
 val BasicAdvisor = arrayOf(
     MissingParameterAdvisor,
+    IllegalArgumentAdvisor,
     InvalidUUIDAdvisor,
     SerializationAdvisor,
 )

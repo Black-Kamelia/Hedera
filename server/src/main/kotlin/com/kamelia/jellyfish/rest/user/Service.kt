@@ -31,6 +31,20 @@ object UserService {
         return QueryResult.ok(user.toDTO())
     }
 
+    suspend fun getUsers(): QueryResult<PageDTO<UserResponseDTO>, List<ErrorDTO>> {
+        val users = Users.getAll()
+        val total = Users.countAll()
+        return QueryResult.ok(
+            PageDTO(
+                users.map { it.toDTO() },
+                0,
+                -1,
+                1,
+                total
+            )
+        )
+    }
+
     suspend fun getUsers(page: Long, pageSize: Int): QueryResult<UserPageDTO, List<ErrorDTO>> {
         val users = Users.getAll(page, pageSize)
         val total = Users.countAll()

@@ -31,16 +31,18 @@ object UserService {
         return QueryResult.ok(user.toDTO())
     }
 
-    suspend fun getUsers(): QueryResult<PageDTO<UserResponseDTO>, List<ErrorDTO>> {
+    suspend fun getUsers(): QueryResult<UserPageDTO, List<ErrorDTO>> {
         val users = Users.getAll()
         val total = Users.countAll()
         return QueryResult.ok(
-            PageDTO(
-                users.map { it.toDTO() },
-                0,
-                -1,
-                1,
-                total
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toDTO() },
+                    0,
+                    -1,
+                    1,
+                    total
+                )
             )
         )
     }

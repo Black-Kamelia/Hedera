@@ -15,6 +15,7 @@ fun Route.userRoutes() = route("/users") {
     signup()
     getUserById()
     getAllUsers()
+    getPagedUsers()
     updateUser()
     updateUserPassword()
     deleteUser()
@@ -30,8 +31,16 @@ private fun Route.getUserById() = getOrCatch(path = "/{uuid}") {
 }
 
 private fun Route.getAllUsers() = getOrCatch {
-    val page = call.request.queryParameters["page"]?.toLong() ?: 0
-    val pageSize = call.request.queryParameters["pageSize"]?.toInt() ?: 25
+    call.respond(UserService.getUsers())
+}
+
+private fun Route.getPagedUsers() = getOrCatch(path = "/paged") {
+    val page = (call.request.queryParameters["page"] ?: "0").let {
+        it.toLongOrNull() ?: throw IllegalArgumentException("Invalid page number")
+    }
+    val pageSize = (call.request.queryParameters["pageSize"] ?: "25").let {
+        it.toIntOrNull() ?: throw IllegalArgumentException("Invalid page size")
+    }
     call.respond(UserService.getUsers(page, pageSize))
 }
 

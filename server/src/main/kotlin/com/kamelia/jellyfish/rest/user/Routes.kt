@@ -10,6 +10,7 @@ import io.ktor.server.application.call
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 
+const val pathUUID = "/{uuid}"
 
 fun Route.userRoutes() = route("/users") {
     signup()
@@ -25,7 +26,7 @@ private fun Route.signup() = postOrCatch<UserDTO> { body ->
     call.respond(UserService.signup(body))
 }
 
-private fun Route.getUserById() = getOrCatch(path = "/{uuid}") {
+private fun Route.getUserById() = getOrCatch(path = pathUUID) {
     val uuid = call.getUUID()
     call.respond(UserService.getUserById(uuid))
 }
@@ -44,17 +45,17 @@ private fun Route.getPagedUsers() = getOrCatch(path = "/paged") {
     call.respond(UserService.getUsers(page, pageSize))
 }
 
-private fun Route.updateUser() = patchOrCatch<UserUpdateDTO>(path = "/{uuid}") { body ->
+private fun Route.updateUser() = patchOrCatch<UserUpdateDTO>(path = pathUUID) { body ->
     val uuid = call.getUUID()
     call.respond(UserService.updateUser(uuid, body))
 }
 
-private fun Route.updateUserPassword() = patchOrCatch<UserPasswordUpdateDTO>(path = "/{uuid}/password") { body ->
+private fun Route.updateUserPassword() = patchOrCatch<UserPasswordUpdateDTO>(path = "$pathUUID/password") { body ->
     val uuid = call.getUUID()
     call.respond(UserService.updateUserPassword(uuid, body))
 }
 
-private fun Route.deleteUser() = deleteOrCatch(path = "/{uuid}") {
+private fun Route.deleteUser() = deleteOrCatch(path = pathUUID) {
     val uuid = call.getUUID()
     call.respond(UserService.deleteUser(uuid))
 }

@@ -2,23 +2,23 @@ package com.kamelia.jellyfish.core
 
 import com.kamelia.jellyfish.util.QueryResult
 import com.kamelia.jellyfish.util.respond
+import io.ktor.server.application.ApplicationCall
 import kotlinx.serialization.SerializationException
 
-val MissingParameterAdvisor = exceptionAdvisor<MissingParameterException> { e, call ->
+private suspend fun badRequestMessage(e: Throwable, call: ApplicationCall) =
     call.respond(QueryResult.badRequest(e.message!!))
-}
 
-val IllegalArgumentAdvisor = exceptionAdvisor<IllegalArgumentException> { e, call ->
-    call.respond(QueryResult.badRequest(e.message!!))
-}
+val MissingParameterAdvisor =
+    exceptionAdvisor<MissingParameterException>(::badRequestMessage)
 
-val InvalidUUIDAdvisor = exceptionAdvisor<InvalidUUIDException> { e, call ->
-    call.respond(QueryResult.badRequest(e.message!!))
-}
+val IllegalArgumentAdvisor =
+    exceptionAdvisor<IllegalArgumentException>(::badRequestMessage)
 
-val SerializationAdvisor = exceptionAdvisor<SerializationException> { e, call ->
-    call.respond(QueryResult.badRequest(e.message!!))
-}
+val InvalidUUIDAdvisor =
+    exceptionAdvisor<InvalidUUIDException>(::badRequestMessage)
+
+val SerializationAdvisor =
+    exceptionAdvisor<SerializationException>(::badRequestMessage)
 
 val BasicAdvisor = arrayOf(
     MissingParameterAdvisor,

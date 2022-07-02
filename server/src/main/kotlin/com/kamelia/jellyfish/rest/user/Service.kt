@@ -1,10 +1,12 @@
 package com.kamelia.jellyfish.rest.user
 
-import com.kamelia.jellyfish.util.ErrorDTO
 import com.kamelia.jellyfish.core.Hasher
+import com.kamelia.jellyfish.rest.core.pageable.PageDTO
+import com.kamelia.jellyfish.util.ErrorDTO
 import com.kamelia.jellyfish.util.QueryResult
 import com.kamelia.jellyfish.util.uuid
 import java.util.*
+import kotlin.math.ceil
 
 object UserService {
 
@@ -18,7 +20,47 @@ object UserService {
 
         // TODO: check if email is valid, password valid, role elevation, etc
 
-        return QueryResult.ok(Users.create(dto).toDTO())
+        return QueryResult.ok(
+            Users.create(dto)
+                .toDTO()
+        )
+    }
+
+    suspend fun getUserById(id: UUID): QueryResult<UserResponseDTO, List<ErrorDTO>> {
+        val user = Users.findById(id) ?: return QueryResult.notFound()
+        return QueryResult.ok(user.toDTO())
+    }
+
+    suspend fun getUsers(): QueryResult<UserPageDTO, List<ErrorDTO>> {
+        val users = Users.getAll()
+        val total = Users.countAll()
+        return QueryResult.ok(
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toDTO() },
+                    0,
+                    -1,
+                    1,
+                    total
+                )
+            )
+        )
+    }
+
+    suspend fun getUsers(page: Long, pageSize: Int): QueryResult<UserPageDTO, List<ErrorDTO>> {
+        val users = Users.getAll(page, pageSize)
+        val total = Users.countAll()
+        return QueryResult.ok(
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toDTO() },
+                    page,
+                    pageSize,
+                    ceil(total / pageSize.toDouble()).toLong(),
+                    total
+                )
+            )
+        )
     }
 
     suspend fun updateUser(id: UUID, dto: UserUpdateDTO): QueryResult<UserResponseDTO, List<ErrorDTO>> {
@@ -29,7 +71,10 @@ object UserService {
 
         // TODO: check if email is valid, password valid, role elevation, etc
         val updater: User? = null // get from user from header Authentication
-        return QueryResult.ok(Users.update(toEdit, dto, updater).toDTO())
+        return QueryResult.ok(
+            Users.update(toEdit, dto, updater)
+                .toDTO()
+        )
     }
 
     suspend fun updateUserPassword(id: UUID, dto: UserPasswordUpdateDTO): QueryResult<UserResponseDTO, List<ErrorDTO>> {
@@ -41,14 +86,18 @@ object UserService {
 
         // TODO: check if email is valid, password valid, role elevation, etc
         val updater: User? = null // get from user from header Authentication
-        return QueryResult.ok(Users.updatePassword(toEdit, dto, updater).toDTO())
+        return QueryResult.ok(
+            Users.updatePassword(toEdit, dto, updater)
+                .toDTO()
+        )
     }
 
     suspend fun deleteUser(id: UUID): QueryResult<UserResponseDTO, Nothing> {
         // TODO: check if user is admin, etc
-        Users.delete(id)?.let {
-            return QueryResult.ok(it.toDTO())
-        } ?: return QueryResult.notFound()
+        Users.delete(id)
+            ?.let {
+                return QueryResult.ok(it.toDTO())
+            } ?: return QueryResult.notFound()
     }
 }
 
@@ -64,15 +113,15 @@ object UserService {
  */
 private suspend fun checkEmail(email: String?, toEdit: User? = null) =
     if (email != null)
-        Users.findByEmail(email)?.let {
-            if (it.uuid == toEdit?.uuid) {
-                null
-            } else {
-                QueryResult.forbidden("errors.users.email.already_exists")
+        Users.findByEmail(email)
+            ?.let {
+                if (it.uuid == toEdit?.uuid) {
+                    null
+                } else {
+                    QueryResult.forbidden("errors.users.email.already_exists")
+                }
             }
-        }
     else null
-
 
 /**
  * Fetches given username to check if it is already in use.
@@ -86,11 +135,12 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
  */
 private suspend fun checkUsername(username: String?, toEdit: User? = null) =
     if (username != null)
-        Users.findByUsername(username)?.let {
-            if (it.uuid == toEdit?.uuid) {
-                null
-            } else {
-                QueryResult.forbidden("errors.users.username.already_exists")
+        Users.findByUsername(username)
+            ?.let {
+                if (it.uuid == toEdit?.uuid) {
+                    null
+                } else {
+                    QueryResult.forbidden("errors.users.username.already_exists")
+                }
             }
-        }
     else null

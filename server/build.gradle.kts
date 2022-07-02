@@ -1,5 +1,6 @@
 val kotlinVersion: String = project.properties["kotlin.version"] as String
 val ktorVersion: String = project.properties["ktor.version"] as String
+val coroutinesVersion: String = project.properties["coroutines.version"] as String
 val exposedVersion: String = project.properties["exposed.version"] as String
 val postgresqlVersion: String = project.properties["postgresql.version"] as String
 val liquibaseVersion: String = project.properties["liquibase.version"] as String
@@ -24,7 +25,6 @@ application {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
 }
 
 dependencies {
@@ -38,13 +38,13 @@ dependencies {
     implementation("io.ktor", "ktor-server-netty-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
 
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.6.3")
-    implementation("org.jetbrains.kotlin", "kotlin-reflect", kotlinVersion)
-    implementation("io.github.classgraph", "classgraph", "4.8.147")
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
+
+    implementation("io.github.classgraph", "classgraph", "4.8.147")
     implementation("ch.qos.logback", "logback-classic", logbackVersion)
     implementation("org.postgresql", "postgresql", postgresqlVersion)
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)

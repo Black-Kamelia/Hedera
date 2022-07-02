@@ -30,11 +30,11 @@ private fun Route.getUserById() = getOrCatch(path = "/{uuid}") {
     call.respond(UserService.getUserById(uuid))
 }
 
-private fun Route.getAllUsers() = getOrCatch {
+private fun Route.getAllUsers() = getOrCatch(path = "/all") {
     call.respond(UserService.getUsers())
 }
 
-private fun Route.getPagedUsers() = getOrCatch(path = "/paged") {
+private fun Route.getPagedUsers() = getOrCatch {
     val page = (call.request.queryParameters["page"] ?: "0").let {
         it.toLongOrNull() ?: throw IllegalArgumentException("Invalid page number")
     }

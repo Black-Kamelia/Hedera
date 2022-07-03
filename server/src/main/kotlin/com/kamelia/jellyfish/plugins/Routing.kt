@@ -9,7 +9,6 @@ import io.ktor.server.http.content.resource
 import io.ktor.server.http.content.resources
 import io.ktor.server.http.content.static
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
@@ -18,9 +17,6 @@ fun Application.configureRouting() {
     routing {
         route("/api") {
             userRoutes()
-            get("hello") {
-                call.respondText("'Hello from Ktor !'")
-            }
         }
 
         when {

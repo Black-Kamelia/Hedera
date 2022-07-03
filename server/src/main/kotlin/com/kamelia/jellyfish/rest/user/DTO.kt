@@ -3,7 +3,7 @@ package com.kamelia.jellyfish.rest.user
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
-import java.util.*
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 fun User.toDTO(): UserResponseDTO {

@@ -44,7 +44,6 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
-    implementation("io.github.classgraph", "classgraph", "4.8.147")
     implementation("ch.qos.logback", "logback-classic", logbackVersion)
     implementation("org.postgresql", "postgresql", postgresqlVersion)
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)

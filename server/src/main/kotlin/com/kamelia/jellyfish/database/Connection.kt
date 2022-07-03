@@ -3,6 +3,7 @@ package com.kamelia.jellyfish.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -24,8 +25,11 @@ object Connection {
         return HikariDataSource(config)
     }
 
-    suspend fun <T> query(block: () -> T): T {
-        return withContext(Dispatchers.IO) {
+    suspend fun <T> query(
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        block: () -> T
+    ): T {
+        return withContext(dispatcher) {
             transaction {
                 block()
             }

@@ -4,9 +4,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
+
+typealias ErrorDTO = String
 
 class QueryResult<out S, out E> private constructor(
     val status: HttpStatusCode,
@@ -40,9 +39,10 @@ class QueryResult<out S, out E> private constructor(
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
-        fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
+        fun badRequest(vararg error: ErrorDTO) = error(HttpStatusCode.BadRequest, error.toList())
         fun unauthorized() = error<Nothing>(HttpStatusCode.Unauthorized)
-        fun forbidden(error: String) = error(HttpStatusCode.Forbidden, error)
+        fun forbidden(vararg error: ErrorDTO) = error(HttpStatusCode.Forbidden, error.toList())
+        fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }
 

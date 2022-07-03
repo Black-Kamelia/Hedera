@@ -1,5 +1,6 @@
 package com.kamelia.jellyfish.util
 
+import com.kamelia.jellyfish.core.Hasher
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Test

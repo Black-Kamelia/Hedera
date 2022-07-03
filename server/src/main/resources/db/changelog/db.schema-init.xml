@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+    <changeSet author="system" id="init-1.0">
+
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false" />
+            </column>
+            <column name="username" type="VARCHAR(128)">
+                <constraints unique="true" nullable="false" />
+            </column>
+            <column name="password" type="VARCHAR(255)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="role" type="VARCHAR(32)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="enabled" type="BOOLEAN" >
+                <constraints nullable="false" />
+            </column>
+
+            <column name="created_by" type="UUID" >
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP" >
+                <constraints nullable="false" />
+            </column>
+            <column name="updated_by" type="UUID">
+                <constraints nullable="true" />
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_created_by__id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="updated_by"
+                                 constraintName="fk_updated_by__id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+
+    </changeSet>
+</databaseChangeLog>

@@ -24,6 +24,9 @@
             <column name="enabled" type="BOOLEAN" >
                 <constraints nullable="false" />
             </column>
+            <column name="last_invalidation" type="BOOLEAN" >
+                <constraints nullable="true" />
+            </column>
 
             <column name="created_by" type="UUID" >
                 <constraints nullable="false" />

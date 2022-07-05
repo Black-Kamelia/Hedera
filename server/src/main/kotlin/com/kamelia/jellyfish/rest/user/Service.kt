@@ -92,7 +92,10 @@ object UserService {
         )
     }
 
-    suspend fun updateUserPassword(id: UUID, dto: UserPasswordUpdateDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+    suspend fun updateUserPassword(
+        id: UUID,
+        dto: UserPasswordUpdateDTO,
+    ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {

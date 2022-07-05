@@ -7,7 +7,7 @@ import io.ktor.server.plugins.cors.routing.CORS
 
 fun Application.configureCORS() {
     install(CORS) {
-        if (this@configureCORS.isDev) {
+        if (isDev) {
             allowHost("localhost:3000")
         }
     }

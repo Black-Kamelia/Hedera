@@ -40,7 +40,7 @@ class QueryResult<out S, out E> private constructor(
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
         fun badRequest(vararg error: ErrorDTO) = error(HttpStatusCode.BadRequest, error.toList())
-        fun unauthorized() = error<Nothing>(HttpStatusCode.Unauthorized)
+        fun unauthorized(vararg error: ErrorDTO) = error(HttpStatusCode.Unauthorized, error.toList())
         fun forbidden(vararg error: ErrorDTO) = error(HttpStatusCode.Forbidden, error.toList())
         fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }

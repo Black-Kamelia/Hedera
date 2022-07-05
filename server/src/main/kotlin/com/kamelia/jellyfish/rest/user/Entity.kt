@@ -7,6 +7,7 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 enum class UserRole {
     REGULAR,
@@ -20,6 +21,7 @@ object Users : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
+    val lastInvalidation = timestamp("last_invalidation").nullable()
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
@@ -91,4 +93,5 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var password by Users.password
     var role by Users.role
     var enabled by Users.enabled
+    var lastInvalidation by Users.lastInvalidation
 }

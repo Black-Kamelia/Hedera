@@ -7,22 +7,31 @@ import com.kamelia.jellyfish.core.postOrCatch
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.respond
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 
 
 fun Route.userRoutes() = route("/users") {
     signup()
-    getUserById()
-    getAllUsers()
-    getPagedUsers()
-    updateUser()
-    updateUserPassword()
-    deleteUser()
+    login()
+
+    authenticate("auth-jwt") {
+        getUserById()
+        getAllUsers()
+        getPagedUsers()
+        updateUser()
+        updateUserPassword()
+        deleteUser()
+    }
 }
 
 private fun Route.signup() = postOrCatch<UserDTO> { body ->
     call.respond(UserService.signup(body))
+}
+
+private fun Route.login() = postOrCatch<UserLoginDTO> { body ->
+    call.respond(UserService.verify(body.username, body.password))
 }
 
 private fun Route.getUserById() = getOrCatch(path = "/{uuid}") {

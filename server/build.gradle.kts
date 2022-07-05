@@ -72,12 +72,20 @@ tasks.jar {
 
 tasks.register<JavaExec>("runDev") {
     group = "application"
-    environment = mapOf("JELLYFISH_ENV" to "dev")
+    environment = mapOf(
+        "JELLYFISH_ENV" to "dev",
+        "JELLYFISH_JWT_SECRET" to "secret",
+        "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
+    )
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("com.kamelia.jellyfish.ApplicationKt")
 }
 
 tasks.test {
     useJUnitPlatform()
-    environment = mapOf("JELLYFISH_ENV" to "dev")
+    environment = mapOf(
+        "JELLYFISH_ENV" to "dev",
+        "JELLYFISH_JWT_SECRET" to "secret",
+        "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
+    )
 }

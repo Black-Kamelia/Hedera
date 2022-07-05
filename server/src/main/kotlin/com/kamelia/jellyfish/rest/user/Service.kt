@@ -1,16 +1,17 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.core.Hasher
+import com.kamelia.jellyfish.core.TokenPair
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.ErrorDTO
 import com.kamelia.jellyfish.util.QueryResult
 import com.kamelia.jellyfish.util.uuid
-import java.util.*
+import java.util.UUID
 import kotlin.math.ceil
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): QueryResult<UserResponseDTO, List<ErrorDTO>> {
+    suspend fun signup(dto: UserDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         checkEmail(dto.email)?.let { return it }
         checkUsername(dto.username)?.let { return it }
 
@@ -22,13 +23,27 @@ object UserService {
 
         return QueryResult.ok(
             Users.create(dto)
-                .toDTO()
+                .toRepresentationDTO()
         )
     }
 
-    suspend fun getUserById(id: UUID): QueryResult<UserResponseDTO, List<ErrorDTO>> {
+    suspend fun verify(username: String, password: String): QueryResult<TokenPair, List<ErrorDTO>> {
+        val unauthorized = QueryResult.unauthorized("errors.users.verify.unauthorized")
+        val user = Users.findByUsername(username)
+            ?: return unauthorized
+
+        val isCorrect = Hasher.verify(password, user.password).verified
+        if (!isCorrect) {
+            return unauthorized
+        }
+
+        val tokens = TokenPair.from(user)
+        return QueryResult.ok(tokens)
+    }
+
+    suspend fun getUserById(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val user = Users.findById(id) ?: return QueryResult.notFound()
-        return QueryResult.ok(user.toDTO())
+        return QueryResult.ok(user.toRepresentationDTO())
     }
 
     suspend fun getUsers(): QueryResult<UserPageDTO, List<ErrorDTO>> {
@@ -37,7 +52,7 @@ object UserService {
         return QueryResult.ok(
             UserPageDTO(
                 PageDTO(
-                    users.map { it.toDTO() },
+                    users.map { it.toRepresentationDTO() },
                     0,
                     -1,
                     1,
@@ -53,7 +68,7 @@ object UserService {
         return QueryResult.ok(
             UserPageDTO(
                 PageDTO(
-                    users.map { it.toDTO() },
+                    users.map { it.toRepresentationDTO() },
                     page,
                     pageSize,
                     ceil(total / pageSize.toDouble()).toLong(),
@@ -63,7 +78,7 @@ object UserService {
         )
     }
 
-    suspend fun updateUser(id: UUID, dto: UserUpdateDTO): QueryResult<UserResponseDTO, List<ErrorDTO>> {
+    suspend fun updateUser(id: UUID, dto: UserUpdateDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
@@ -73,11 +88,11 @@ object UserService {
         val updater: User? = null // get from user from header Authentication
         return QueryResult.ok(
             Users.update(toEdit, dto, updater)
-                .toDTO()
+                .toRepresentationDTO()
         )
     }
 
-    suspend fun updateUserPassword(id: UUID, dto: UserPasswordUpdateDTO): QueryResult<UserResponseDTO, List<ErrorDTO>> {
+    suspend fun updateUserPassword(id: UUID, dto: UserPasswordUpdateDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
@@ -88,15 +103,15 @@ object UserService {
         val updater: User? = null // get from user from header Authentication
         return QueryResult.ok(
             Users.updatePassword(toEdit, dto, updater)
-                .toDTO()
+                .toRepresentationDTO()
         )
     }
 
-    suspend fun deleteUser(id: UUID): QueryResult<UserResponseDTO, Nothing> {
+    suspend fun deleteUser(id: UUID): QueryResult<UserRepresentationDTO, Nothing> {
         // TODO: check if user is admin, etc
         Users.delete(id)
             ?.let {
-                return QueryResult.ok(it.toDTO())
+                return QueryResult.ok(it.toRepresentationDTO())
             } ?: return QueryResult.notFound()
     }
 }

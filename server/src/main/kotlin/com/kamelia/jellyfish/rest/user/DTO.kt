@@ -29,6 +29,12 @@ data class UserDTO(
     val role: UserRole = UserRole.REGULAR
 ) : DTO
 
+@Serializable
+data class UserLoginDTO(
+    val username: String,
+    val password: String,
+) : DTO
+
 /**
  * DTO used to transfer user update details.
  *
@@ -59,7 +65,7 @@ data class UserPasswordUpdateDTO(
  * **Back -> Front**
  */
 @Serializable
-data class UserResponseDTO(
+data class UserRepresentationDTO(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val username: String,

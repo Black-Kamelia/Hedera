@@ -2,7 +2,7 @@ package com.kamelia.jellyfish.rest
 
 import com.kamelia.jellyfish.rest.user.UserDTO
 import com.kamelia.jellyfish.rest.user.UserPasswordUpdateDTO
-import com.kamelia.jellyfish.rest.user.UserResponseDTO
+import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
 import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.rest.user.UserUpdateDTO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -45,7 +45,7 @@ class UserTest {
         }
         assertEquals(HttpStatusCode.OK, response.status)
 
-        val responseDto = Json.decodeFromString(UserResponseDTO.serializer(), response.bodyAsText())
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         assertEquals(newUserDto.username, responseDto.username)
         assertEquals(newUserDto.email, responseDto.email)
         assertEquals(UserRole.REGULAR, responseDto.role)
@@ -93,7 +93,7 @@ class UserTest {
             )
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(UserResponseDTO.serializer(), response.bodyAsText())
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000001"), responseDto.id)
         assertEquals("newUsername", responseDto.username)
         assertEquals("user1@test.com", responseDto.email)
@@ -113,7 +113,7 @@ class UserTest {
             )
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(UserResponseDTO.serializer(), response.bodyAsText())
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000002"), responseDto.id)
         assertEquals("user2", responseDto.username)
         assertEquals("newEmail@test.com", responseDto.email)

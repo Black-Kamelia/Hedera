@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.util.Environment.secret
+import com.kamelia.jellyfish.util.Environment.secretRefresh
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -27,7 +28,7 @@ class TokenPair(val token: String, val refreshToken: String) {
             val refreshToken = JWT.create()
                 .withSubject(user.username)
                 .withExpiresAt(Date(now + DEFAULT_REFRESH_TOKEN_LIFETIME))
-                .sign(Algorithm.HMAC256(secret))
+                .sign(Algorithm.HMAC256(secretRefresh))
 
             return TokenPair(token, refreshToken)
         }

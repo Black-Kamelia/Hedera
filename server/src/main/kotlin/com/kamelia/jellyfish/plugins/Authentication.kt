@@ -7,26 +7,30 @@ import com.kamelia.jellyfish.util.Environment
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 
 fun Application.configureAuthentication() {
     install(Authentication) {
-        jwt("auth-jwt") {
-            realm = Environment.jwtRealm
+        configureJWT("auth-jwt", Environment.secret)
+        configureJWT("refresh-jwt", Environment.secretRefresh)
+    }
+}
 
-            val jwtVerifier = JWT.require(Algorithm.HMAC256(Environment.secret)).build()
-            verifier(jwtVerifier)
+private fun AuthenticationConfig.configureJWT(name: String, secret: String) = jwt(name) {
+    realm = Environment.jwtRealm
 
-            validate {credential ->
-                val subject = credential.subject ?: return@validate null
-                val user = Users.findByUsername(subject) ?: return@validate null
-                val lastInvalidation = user.lastInvalidation
-                if (lastInvalidation != null && lastInvalidation.isAfter(credential.issuedAt!!.toInstant())) {
-                    return@validate null
-                }
-                JWTPrincipal(credential.payload)
-            }
+    val jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build()
+    verifier(jwtVerifier)
+
+    validate {credential ->
+        val subject = credential.subject ?: return@validate null
+        val user = Users.findByUsername(subject) ?: return@validate null
+        val lastInvalidation = user.lastInvalidation
+        if (lastInvalidation != null && lastInvalidation.isAfter(credential.issuedAt!!.toInstant())) {
+            return@validate null
         }
+        JWTPrincipal(credential.payload)
     }
 }

@@ -6,7 +6,6 @@ import com.kamelia.jellyfish.core.TokenPair
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.ErrorDTO
 import com.kamelia.jellyfish.util.QueryResult
-import java.util.UUID
 
 object AuthService {
 
@@ -24,8 +23,8 @@ object AuthService {
         return QueryResult.ok(tokens)
     }
 
-    suspend fun logoutAll(uuid: UUID): QueryResult<Nothing, List<ErrorDTO>> {
-        val user = Users.findById(uuid)
+    suspend fun logoutAll(username: String): QueryResult<Nothing, List<ErrorDTO>> {
+        val user = Users.findByUsername(username)
             ?: return QueryResult.notFound()
 
         Users.logoutAll(user)

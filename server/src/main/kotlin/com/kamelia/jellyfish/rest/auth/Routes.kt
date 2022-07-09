@@ -2,8 +2,6 @@ package com.kamelia.jellyfish.rest.auth
 
 import com.kamelia.jellyfish.core.patchOrCatch
 import com.kamelia.jellyfish.core.postOrCatch
-import com.kamelia.jellyfish.util.getUUID
-import com.kamelia.jellyfish.util.idRestrict
 import com.kamelia.jellyfish.util.jwt
 import com.kamelia.jellyfish.util.respond
 import io.ktor.server.application.call
@@ -26,10 +24,9 @@ private fun Route.login() = postOrCatch<LoginDTO>(path = "/login") { body ->
     call.respond(AuthService.verify(body.username, body.password))
 }
 
-private fun Route.logoutAll() = postOrCatch(path = "/logout/{uuid}") {
-    val uuid = call.getUUID()
-    idRestrict(uuid)
-    call.respond(AuthService.logoutAll(uuid))
+private fun Route.logoutAll() = postOrCatch(path = "/logout") {
+    val username = jwt.subject
+    call.respond(AuthService.logoutAll(username))
 }
 
 private fun Route.refresh() = patchOrCatch(path = "/login") {

@@ -9,7 +9,7 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-enum class UserRole(private val power: Int) : Comparable<UserRole> {
+enum class UserRole(private val power: Int) {
     REGULAR(1),
     ADMIN(10),
     OWNER(100),
@@ -22,10 +22,10 @@ enum class UserRole(private val power: Int) : Comparable<UserRole> {
     infix fun lt(other: UserRole): Boolean = power < other.power
     infix fun eq(other: UserRole): Boolean = power == other.power
     infix fun ne(other: UserRole): Boolean = power != other.power
-
 }
 
 object Users : AuditableUUIDTable("users") {
+
     val email = varchar("email", 255).uniqueIndex()
     val username = varchar("username", 128).uniqueIndex()
     val password = varchar("password", 255)
@@ -41,11 +41,14 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun getAll(): List<User> = Connection.query {
-        User.all().toList()
+        User.all()
+            .toList()
     }
 
     suspend fun getAll(page: Long, pageSize: Int): List<User> = Connection.query {
-        User.all().limit(pageSize, page * pageSize).toList()
+        User.all()
+            .limit(pageSize, page * pageSize)
+            .toList()
     }
 
     suspend fun findById(uuid: UUID): User? = Connection.query {
@@ -53,11 +56,13 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun findByUsername(username: String): User? = Connection.query {
-        User.find { Users.username eq username }.firstOrNull()
+        User.find { Users.username eq username }
+            .firstOrNull()
     }
 
     suspend fun findByEmail(email: String): User? = Connection.query {
-        User.find { Users.email eq email }.firstOrNull()
+        User.find { Users.email eq email }
+            .firstOrNull()
     }
 
     suspend fun create(user: UserDTO, creator: User? = null): User = Connection.query {
@@ -91,7 +96,8 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun delete(id: UUID): User? = Connection.query {
-        User.findById(id)?.apply { delete() }
+        User.findById(id)
+            ?.apply { delete() }
     }
 }
 

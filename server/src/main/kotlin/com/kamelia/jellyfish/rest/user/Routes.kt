@@ -21,7 +21,6 @@ import java.util.UUID
 
 fun Route.userRoutes() = route("/users") {
     signup()
-    login()
 
     authenticate("auth-jwt") {
         getUserById()
@@ -35,10 +34,6 @@ fun Route.userRoutes() = route("/users") {
 
 private fun Route.signup() = postOrCatch<UserDTO>(path = "/signup") { body ->
     call.respond(UserService.signup(body))
-}
-
-private fun Route.login() = postOrCatch<UserLoginDTO>(path = "/login") { body ->
-    call.respond(UserService.verify(body.username, body.password))
 }
 
 private fun Route.getUserById() = getOrCatch(path = "/{uuid}") {

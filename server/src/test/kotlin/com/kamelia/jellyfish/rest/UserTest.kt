@@ -1,14 +1,13 @@
 package com.kamelia.jellyfish.rest
 
+import com.kamelia.jellyfish.client
 import com.kamelia.jellyfish.core.Hasher
-import com.kamelia.jellyfish.core.TokenPair
+import com.kamelia.jellyfish.login
 import com.kamelia.jellyfish.rest.user.UserDTO
-import com.kamelia.jellyfish.rest.user.UserLoginDTO
 import com.kamelia.jellyfish.rest.user.UserPasswordUpdateDTO
 import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
 import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.rest.user.UserUpdateDTO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import io.ktor.client.request.patch
@@ -18,8 +17,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import java.util.UUID
 import kotlin.test.Test
@@ -29,12 +26,6 @@ import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.TestMethodOrder
-
-fun ApplicationTestBuilder.client() = createClient {
-    install(ContentNegotiation) {
-        json()
-    }
-}
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class UserTest {
@@ -92,40 +83,8 @@ class UserTest {
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
-    private suspend fun ApplicationTestBuilder.login(
-        username: String,
-        password: String,
-    ): Pair<HttpStatusCode, TokenPair?> {
-        val dto = UserLoginDTO(username, password)
-        val response = client().post("/api/users/login") {
-            contentType(ContentType.Application.Json)
-            setBody(dto)
-        }
-        val body = if (response.status == HttpStatusCode.OK) {
-            Json.decodeFromString(TokenPair.serializer(), response.bodyAsText())
-        } else {
-            System.err.println(response.bodyAsText())
-            null
-        }
-        return response.status to body
-    }
-
     @Test
     @Order(4)
-    fun `Logging in with correct credentials`() = testApplication {
-        val (status, _) = login("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
-    }
-
-    @Test
-    @Order(5)
-    fun `Logging in with incorrect credentials`() = testApplication {
-        val (status, _) = login("user1", "wrong")
-        assertEquals(HttpStatusCode.Unauthorized, status)
-    }
-
-    @Test
-    @Order(6)
     fun `Update username`() = testApplication {
         val (status, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -149,7 +108,7 @@ class UserTest {
     }
 
     @Test
-    @Order(7)
+    @Order(5)
     fun `Update email address`() = testApplication {
         val (status, tokens) = login("user2", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -173,7 +132,7 @@ class UserTest {
     }
 
     @Test
-    @Order(8)
+    @Order(6)
     fun `Update password with correct old password`() = testApplication {
         val (status, tokens) = login("newUsername", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -192,7 +151,7 @@ class UserTest {
     }
 
     @Test
-    @Order(9)
+    @Order(7)
     fun `Update password with wrong old password`() = testApplication {
         val (status, tokens) = login("user2", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -211,7 +170,7 @@ class UserTest {
     }
 
     @Test
-    @Order(10)
+    @Order(8)
     fun `Update unknown user`() = testApplication {
         val (status, tokens) = login("admin", "admin")
         assertEquals(HttpStatusCode.OK, status)
@@ -229,7 +188,7 @@ class UserTest {
     }
 
     @Test
-    @Order(11)
+    @Order(9)
     fun `Delete existing user`() = testApplication {
         val (status, tokens) = login("admin", "admin")
         println(Hasher.hash("admin"))
@@ -242,7 +201,7 @@ class UserTest {
     }
 
     @Test
-    @Order(12)
+    @Order(10)
     fun `Delete unknown user`() = testApplication {
         val (status, tokens) = login("admin", "admin")
         assertEquals(HttpStatusCode.OK, status)

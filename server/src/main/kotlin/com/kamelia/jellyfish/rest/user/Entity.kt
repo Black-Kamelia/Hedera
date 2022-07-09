@@ -4,6 +4,7 @@ import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
+import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -98,6 +99,10 @@ object Users : AuditableUUIDTable("users") {
     suspend fun delete(id: UUID): User? = Connection.query {
         User.findById(id)
             ?.apply { delete() }
+    }
+
+    suspend fun logoutAll(user: User) = Connection.query {
+        user.lastInvalidation = Instant.now()
     }
 }
 

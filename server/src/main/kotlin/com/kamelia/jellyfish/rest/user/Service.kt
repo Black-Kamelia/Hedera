@@ -76,7 +76,7 @@ object UserService {
             val user = Users.findById(updaterID)
             if (
                 user == null ||
-                (dto.role != null && dto.role lt user.role && toEdit.role lt user.role)
+                (dto.role != null && (dto.role ge user.role || toEdit.role ge user.role))
             ) {
                 return QueryResult.forbidden("errors.users.role.forbidden")
             } else {

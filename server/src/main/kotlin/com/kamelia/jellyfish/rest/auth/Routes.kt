@@ -12,7 +12,7 @@ import io.ktor.server.routing.route
 fun Route.authRoutes() = route("/auth") {
     login()
 
-    authenticate("auth-jwt") {
+    authenticate("refresh-jwt") {
         refresh()
     }
 }

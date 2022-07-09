@@ -1,7 +1,6 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.core.Hasher
-import com.kamelia.jellyfish.core.TokenPair
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.ErrorDTO
 import com.kamelia.jellyfish.util.QueryResult
@@ -24,20 +23,6 @@ object UserService {
             Users.create(dto)
                 .toRepresentationDTO()
         )
-    }
-
-    suspend fun verify(username: String, password: String): QueryResult<TokenPair, List<ErrorDTO>> {
-        val unauthorized = QueryResult.unauthorized("errors.users.verify.unauthorized")
-        val user = Users.findByUsername(username)
-            ?: return unauthorized
-
-        val isCorrect = Hasher.verify(password, user.password).verified
-        if (!isCorrect) {
-            return unauthorized
-        }
-
-        val tokens = TokenPair.from(user)
-        return QueryResult.ok(tokens)
     }
 
     suspend fun getUserById(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {

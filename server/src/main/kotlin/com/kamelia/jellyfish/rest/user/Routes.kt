@@ -33,11 +33,11 @@ fun Route.userRoutes() = route("/users") {
     }
 }
 
-private fun Route.signup() = postOrCatch<UserDTO> { body ->
+private fun Route.signup() = postOrCatch<UserDTO>(path = "/signup") { body ->
     call.respond(UserService.signup(body))
 }
 
-private fun Route.login() = postOrCatch<UserLoginDTO> { body ->
+private fun Route.login() = postOrCatch<UserLoginDTO>(path = "/login") { body ->
     call.respond(UserService.verify(body.username, body.password))
 }
 

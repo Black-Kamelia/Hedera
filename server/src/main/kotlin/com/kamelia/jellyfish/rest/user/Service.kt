@@ -14,12 +14,11 @@ object UserService {
     suspend fun signup(dto: UserDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         checkEmail(dto.email)?.let { return it }
         checkUsername(dto.username)?.let { return it }
+        checkPassword(dto.password)?.let { return it }
 
         if (dto.role != UserRole.REGULAR) {
             return QueryResult.forbidden("errors.users.role.forbidden")
         }
-
-        // TODO: check if email is valid, password valid, role elevation, etc
 
         return QueryResult.ok(
             Users.create(dto)
@@ -78,14 +77,27 @@ object UserService {
         )
     }
 
-    suspend fun updateUser(id: UUID, dto: UserUpdateDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+    suspend fun updateUser(
+        id: UUID,
+        dto: UserUpdateDTO,
+        updaterID: UUID? = null
+    ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
         checkUsername(dto.username, toEdit)?.let { return it }
 
-        // TODO: check if email is valid, password valid, role elevation, etc
-        val updater: User? = null // get from user from header Authentication
+        val updater: User? = updaterID?.let {
+            val user = Users.findById(updaterID)
+            if (
+                user == null ||
+                (dto.role != null && dto.role lt user.role && toEdit.role lt user.role)
+            ) {
+                return QueryResult.forbidden("errors.users.role.forbidden")
+            } else {
+                user
+            }
+        }
         return QueryResult.ok(
             Users.update(toEdit, dto, updater)
                 .toRepresentationDTO()
@@ -95,32 +107,32 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
+        updaterID: UUID? = null
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+        checkPassword(dto.newPassword)?.let { return it }
+
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
             return QueryResult.forbidden("errors.users.password.wrong")
         }
 
-        // TODO: check if email is valid, password valid, role elevation, etc
-        val updater: User? = null // get from user from header Authentication
+        val updater: User? = updaterID?.let { Users.findById(updaterID) }
         return QueryResult.ok(
             Users.updatePassword(toEdit, dto, updater)
                 .toRepresentationDTO()
         )
     }
 
-    suspend fun deleteUser(id: UUID): QueryResult<UserRepresentationDTO, Nothing> {
-        // TODO: check if user is admin, etc
+    suspend fun deleteUser(id: UUID): QueryResult<UserRepresentationDTO, Nothing> =
         Users.delete(id)
             ?.let {
-                return QueryResult.ok(it.toRepresentationDTO())
-            } ?: return QueryResult.notFound()
-    }
+                QueryResult.ok(it.toRepresentationDTO())
+            } ?: QueryResult.notFound()
 }
 
 /**
- * Fetches given email to check if it is already in use.
+ * Fetches given email to check if it is already in use and is valid.
  * If a user is provided, checks that hypothetical found user is different.
  *
  * @param email Email to lookup
@@ -138,7 +150,9 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                 } else {
                     QueryResult.forbidden("errors.users.email.already_exists")
                 }
-            }
+            } ?: if ("@" !in email) {
+                QueryResult.forbidden("errors.users.email.invalid")
+            } else null
     else null
 
 /**
@@ -162,3 +176,34 @@ private suspend fun checkUsername(username: String?, toEdit: User? = null) =
                 }
             }
     else null
+
+/**
+ * Checks if given password is valid.
+ * The requirements are:
+ * - at least 8 characters long
+ * - at least one digit
+ * - at least one letter
+ * - at least one special character
+ * - at least one uppercase letter
+ * - at least one lowercase letter
+ *
+ * @param password Password to check
+ *
+ * @return Optional [QueryResult] with [ErrorDTO] if error occurred
+ */
+private fun checkPassword(password: String?) =
+    if (password != null) {
+        val errors = mutableListOf<String>()
+        if (password.length < 8) errors += "errors.users.password.too_short"
+        if (password == password.lowercase()) errors += "errors.users.password.no_uppercase"
+        if (password == password.uppercase()) errors += "errors.users.password.no_lowercase"
+        if (password.none(Char::isDigit)) errors += "errors.users.password.no_digit"
+        if (password.none(Char::isLetter)) errors += "errors.users.password.no_letter"
+        if (password.all(Char::isLetterOrDigit)) errors += "errors.users.password.no_special"
+
+        if (errors.isEmpty()) {
+            null
+        } else {
+            QueryResult.forbidden(*errors.toTypedArray())
+        }
+    } else null

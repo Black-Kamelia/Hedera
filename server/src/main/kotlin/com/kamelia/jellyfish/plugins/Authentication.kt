@@ -25,12 +25,9 @@ private fun AuthenticationConfig.configureJWT(name: String, secret: String) = jw
     verifier(jwtVerifier)
 
     validate {credential ->
-        val subject = credential.subject ?: return@validate null
-        val user = Users.findByUsername(subject) ?: return@validate null
+        val user = Users.findByUsername(credential.subject!!)!!
         val lastInvalidation = user.lastInvalidation
-        if (lastInvalidation != null && lastInvalidation.isAfter(credential.issuedAt!!.toInstant())) {
-            return@validate null
-        }
+        check(lastInvalidation == null || lastInvalidation.isBefore(credential.issuedAt!!.toInstant()))
         JWTPrincipal(credential.payload)
     }
 }

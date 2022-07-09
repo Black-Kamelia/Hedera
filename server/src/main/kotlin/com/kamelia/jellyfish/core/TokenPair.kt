@@ -23,11 +23,13 @@ class TokenPair(val token: String, val refreshToken: String) {
                 .withClaim("email", user.email)
                 .withClaim("role", user.role.name)
                 .withExpiresAt(Date(now + DEFAULT_TOKEN_LIFETIME))
+                .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secret))
 
             val refreshToken = JWT.create()
                 .withSubject(user.username)
                 .withExpiresAt(Date(now + DEFAULT_REFRESH_TOKEN_LIFETIME))
+                .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secretRefresh))
 
             return TokenPair(token, refreshToken)

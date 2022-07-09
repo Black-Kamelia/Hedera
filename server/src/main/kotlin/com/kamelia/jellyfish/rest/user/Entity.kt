@@ -9,10 +9,20 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-enum class UserRole {
-    REGULAR,
-    ADMIN,
-    OWNER,
+enum class UserRole(private val power: Int) : Comparable<UserRole> {
+    REGULAR(1),
+    ADMIN(10),
+    OWNER(100),
+
+    ;
+
+    infix fun le(other: UserRole): Boolean = power <= other.power
+    infix fun ge(other: UserRole): Boolean = power >= other.power
+    infix fun gt(other: UserRole): Boolean = power > other.power
+    infix fun lt(other: UserRole): Boolean = power < other.power
+    infix fun eq(other: UserRole): Boolean = power == other.power
+    infix fun ne(other: UserRole): Boolean = power != other.power
+
 }
 
 object Users : AuditableUUIDTable("users") {

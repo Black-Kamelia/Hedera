@@ -36,9 +36,14 @@ val PipelineContext<*, ApplicationCall>.jwt: Payload
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 
-fun PipelineContext<*, ApplicationCall>.ifRegular(block: () -> Unit) {
+inline fun PipelineContext<*, ApplicationCall>.ifRegular(block: () -> Unit) {
     val role = UserRole.valueOf(jwt["role"].asString())
     if (role == UserRole.REGULAR) block()
+}
+
+inline fun PipelineContext<*, ApplicationCall>.ifNotRegular(block: () -> Unit) {
+    val role = UserRole.valueOf(jwt["role"].asString())
+    if (role != UserRole.REGULAR) block()
 }
 
 fun PipelineContext<*, ApplicationCall>.adminRestrict() {

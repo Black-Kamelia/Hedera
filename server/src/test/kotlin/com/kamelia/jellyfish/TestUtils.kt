@@ -24,7 +24,7 @@ suspend fun ApplicationTestBuilder.login(
     password: String,
 ): Pair<HttpStatusCode, TokenPair?> {
     val dto = LoginDTO(username, password)
-    val response = client().post("/api/auth/login") {
+    val response = client().post("/api/login") {
         contentType(ContentType.Application.Json)
         setBody(dto)
     }

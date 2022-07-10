@@ -3,8 +3,16 @@ package com.kamelia.jellyfish.util
 import io.ktor.server.application.Application
 
 object Environment {
-    private val Application.envKind get() = environment.config.propertyOrNull("ktor.environment")?.getString()
-    val Application.liquibaseMaster get() = environment.config.propertyOrNull("liquibase.master")?.getString()
-    val Application.isDev get() = envKind != null && envKind == "dev"
-    val Application.isProd get() = envKind != null && envKind != "dev"
+    lateinit var application: Application
+    private val config get() = application.environment.config
+
+    private val envKind get() = config.propertyOrNull("ktor.environment")?.getString()
+    val isDev get() = envKind != null && envKind == "dev"
+    val isProd get() = envKind != null && envKind != "dev"
+
+    val liquibaseMaster get() = config.propertyOrNull("liquibase.master")?.getString()
+
+    val secret get() = config.property("jwt.secret").getString()
+    val secretRefresh get() = config.property("jwt.secretRefresh").getString()
+    val jwtRealm get() = config.property("jwt.realm").getString()
 }

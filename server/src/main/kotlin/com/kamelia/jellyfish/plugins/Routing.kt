@@ -1,5 +1,6 @@
 package com.kamelia.jellyfish.plugins
 
+import com.kamelia.jellyfish.rest.auth.authRoutes
 import com.kamelia.jellyfish.rest.user.userRoutes
 import com.kamelia.jellyfish.util.Environment.isDev
 import com.kamelia.jellyfish.util.Environment.isProd
@@ -16,14 +17,15 @@ import io.ktor.server.routing.routing
 fun Application.configureRouting() {
     routing {
         route("/api") {
+            authRoutes()
             userRoutes()
         }
 
         when {
-            this@configureRouting.isDev -> get("/") {
+            isDev -> get("/") {
                 call.respondRedirect("http://localhost:3000")
             }
-            this@configureRouting.isProd -> {
+            isProd -> {
                 static("/") {
                     resource("/", "static/index.html")
                     resources("static")

@@ -1,5 +1,6 @@
 package com.kamelia.jellyfish.rest.auth
 
+import com.kamelia.jellyfish.core.deleteOrCatch
 import com.kamelia.jellyfish.core.patchOrCatch
 import com.kamelia.jellyfish.core.postOrCatch
 import com.kamelia.jellyfish.util.jwt
@@ -9,7 +10,7 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 
-fun Route.authRoutes() = route("/auth") {
+fun Route.authRoutes() = route("/login") {
     login()
 
     authenticate("auth-jwt") {
@@ -20,15 +21,15 @@ fun Route.authRoutes() = route("/auth") {
     }
 }
 
-private fun Route.login() = postOrCatch<LoginDTO>(path = "/login") { body ->
+private fun Route.login() = postOrCatch<LoginDTO> { body ->
     call.respond(AuthService.verify(body.username, body.password))
 }
 
-private fun Route.logoutAll() = postOrCatch(path = "/logout") {
+private fun Route.logoutAll() = deleteOrCatch {
     val username = jwt.subject
     call.respond(AuthService.logoutAll(username))
 }
 
-private fun Route.refresh() = patchOrCatch(path = "/login") {
+private fun Route.refresh() = patchOrCatch {
     call.respond(AuthService.refresh(jwt))
 }

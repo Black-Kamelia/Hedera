@@ -106,6 +106,11 @@ object Users : AuditableUUIDTable("users") {
     suspend fun logoutAll(user: User) = Connection.query {
         user.lastInvalidation = Instant.now()
     }
+
+    suspend fun regenerateUploadToken(user: User): User = Connection.query {
+        user.uploadToken = UUID.randomUUID().toString().replace("-", "")
+        user
+    }
 }
 
 class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {

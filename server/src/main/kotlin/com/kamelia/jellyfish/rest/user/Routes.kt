@@ -4,6 +4,7 @@ import com.kamelia.jellyfish.core.deleteOrCatch
 import com.kamelia.jellyfish.core.getOrCatch
 import com.kamelia.jellyfish.core.patchOrCatch
 import com.kamelia.jellyfish.core.postOrCatch
+import com.kamelia.jellyfish.core.putOrCatch
 import com.kamelia.jellyfish.util.adminRestrict
 import com.kamelia.jellyfish.util.get
 import com.kamelia.jellyfish.util.getUUID
@@ -29,6 +30,7 @@ fun Route.userRoutes() = route("/users") {
         updateUser()
         updateUserPassword()
         deleteUser()
+        regenerateUploadToken()
     }
 }
 
@@ -81,4 +83,10 @@ private fun Route.deleteUser() = deleteOrCatch(path = "/{uuid}") {
     val uuid = call.getUUID()
     ifRegular { idRestrict(uuid) }
     call.respond(UserService.deleteUser(uuid))
+}
+
+private fun Route.regenerateUploadToken() = putOrCatch(path = "/uploadToken") {
+    val uuid = UUID.fromString(jwt["id"].asString())
+    idRestrict(uuid)
+    call.respond(UserService.regenerateUploadToken(uuid))
 }

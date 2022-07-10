@@ -114,6 +114,14 @@ object UserService {
             ?.let {
                 QueryResult.ok(it.toRepresentationDTO())
             } ?: QueryResult.notFound()
+
+    suspend fun regenerateUploadToken(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+        val user = Users.findById(id) ?: return QueryResult.notFound()
+        return QueryResult.ok(
+            Users.regenerateUploadToken(user)
+                .toRepresentationDTO()
+        )
+    }
 }
 
 /**

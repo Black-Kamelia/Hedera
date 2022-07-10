@@ -34,7 +34,7 @@ class AuthTest {
     fun `Refreshing token`() = testApplication {
         val (status, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
-        val response = client().patch("/api/auth/login") {
+        val response = client().patch("/api/login") {
             bearerAuth(tokens!!.refreshToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)

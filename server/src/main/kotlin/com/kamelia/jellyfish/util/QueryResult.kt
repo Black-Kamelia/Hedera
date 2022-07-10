@@ -37,6 +37,7 @@ class QueryResult<out S, out E> private constructor(
             QueryResult<Nothing, E>(status, error = ResultData(error))
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
+        fun ok() = success<Nothing>(HttpStatusCode.OK)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
         fun badRequest(vararg error: ErrorDTO) = error(HttpStatusCode.BadRequest, error.toList())

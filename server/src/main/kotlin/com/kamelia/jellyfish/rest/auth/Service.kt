@@ -28,7 +28,7 @@ object AuthService {
             ?: return QueryResult.notFound()
 
         Users.logoutAll(user)
-        return QueryResult.noContent()
+        return QueryResult.ok()
     }
 
     suspend fun refresh(jwt: Payload): QueryResult<TokenPair, List<ErrorDTO>> {

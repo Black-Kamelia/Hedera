@@ -12,7 +12,8 @@ fun User.toRepresentationDTO(): UserRepresentationDTO {
         username,
         email,
         role,
-        enabled
+        enabled,
+        uploadToken,
     )
 }
 
@@ -26,7 +27,7 @@ data class UserDTO(
     val username: String,
     val email: String,
     val password: String,
-    val role: UserRole = UserRole.REGULAR
+    val role: UserRole = UserRole.REGULAR,
 ) : DTO
 
 /**
@@ -39,7 +40,7 @@ data class UserUpdateDTO(
     val username: String? = null,
     val email: String? = null,
     val role: UserRole? = null,
-    val enabled: Boolean? = null
+    val enabled: Boolean? = null,
 ) : DTO
 
 /**
@@ -65,10 +66,11 @@ data class UserRepresentationDTO(
     val username: String,
     val email: String,
     val role: UserRole,
-    val enabled: Boolean
+    val enabled: Boolean,
+    val uploadToken: String,
 ) : DTO
 
 @Serializable
 data class UserPageDTO(
-    val page: PageDTO<UserRepresentationDTO>
+    val page: PageDTO<UserRepresentationDTO>,
 ) : DTO

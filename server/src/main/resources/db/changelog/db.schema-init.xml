@@ -27,6 +27,9 @@
             <column name="last_invalidation" type="TIMESTAMP" >
                 <constraints nullable="true" />
             </column>
+            <column name="upload_token" type="VARCHAR(32)" >
+                <constraints nullable="false" />
+            </column>
 
             <column name="created_by" type="UUID" >
                 <constraints nullable="false" />

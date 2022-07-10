@@ -33,6 +33,7 @@ object Users : AuditableUUIDTable("users") {
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
     val lastInvalidation = timestamp("last_invalidation").nullable()
+    val uploadToken = varchar("upload_token", 32)
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
@@ -73,6 +74,7 @@ object Users : AuditableUUIDTable("users") {
             password = Hasher.hash(user.password)
             role = user.role
             enabled = false
+            uploadToken = UUID.randomUUID().toString().replace("-", "")
 
             onCreate(creator ?: this)
         }
@@ -115,4 +117,5 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var role by Users.role
     var enabled by Users.enabled
     var lastInvalidation by Users.lastInvalidation
+    var uploadToken by Users.uploadToken
 }

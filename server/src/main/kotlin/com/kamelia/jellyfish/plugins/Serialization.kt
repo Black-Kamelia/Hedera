@@ -1,7 +1,7 @@
 package com.kamelia.jellyfish.plugins
 
 import com.kamelia.jellyfish.rest.core.DTO
-import com.kamelia.jellyfish.rest.user.UserResponseDTO
+import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -16,7 +16,7 @@ fun Application.configureSerialization() {
         json(Json {
             serializersModule = SerializersModule {
                 polymorphic(DTO::class) {
-                    subclass(UserResponseDTO::class)
+                    subclass(UserRepresentationDTO::class)
                 }
             }
         })

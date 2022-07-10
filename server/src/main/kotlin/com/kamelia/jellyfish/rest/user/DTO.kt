@@ -6,8 +6,8 @@ import com.kamelia.jellyfish.util.UUIDSerializer
 import java.util.UUID
 import kotlinx.serialization.Serializable
 
-fun User.toDTO(): UserResponseDTO {
-    return UserResponseDTO(
+fun User.toRepresentationDTO(): UserRepresentationDTO {
+    return UserRepresentationDTO(
         id.value,
         username,
         email,
@@ -59,7 +59,7 @@ data class UserPasswordUpdateDTO(
  * **Back -> Front**
  */
 @Serializable
-data class UserResponseDTO(
+data class UserRepresentationDTO(
     @Serializable(UUIDSerializer::class)
     val id: UUID,
     val username: String,
@@ -70,5 +70,5 @@ data class UserResponseDTO(
 
 @Serializable
 data class UserPageDTO(
-    val page: PageDTO<UserResponseDTO>
+    val page: PageDTO<UserRepresentationDTO>
 ) : DTO

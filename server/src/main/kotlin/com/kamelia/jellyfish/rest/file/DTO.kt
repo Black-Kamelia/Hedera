@@ -1,6 +1,6 @@
 @file:UseSerializers(UUIDSerializer::class)
 
-package com.kamelia.jellyfish.rest.upload
+package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
@@ -8,10 +8,11 @@ import com.kamelia.jellyfish.util.UUIDSerializer
 import java.util.UUID
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.jetbrains.exposed.sql.transactions.transaction
 
-fun Upload.toRepresentationDTO(): UploadRepresentationDTO {
-    return UploadRepresentationDTO(
-        id.value,
+fun File.toRepresentationDTO(): FileRepresentationDTO = transaction {
+    FileRepresentationDTO(
+        this@toRepresentationDTO.id.value,
         code,
         name,
         mimeType,
@@ -27,9 +28,9 @@ fun Upload.toRepresentationDTO(): UploadRepresentationDTO {
  * **Front -> Back**
  */
 @Serializable
-data class UploadUpdateDTO(
+data class FileUpdateDTO(
     val name: String? = null,
-    val visibility: UploadVisibility? = null,
+    val visibility: FileVisibility? = null,
 ) : DTO
 
 /**
@@ -38,7 +39,7 @@ data class UploadUpdateDTO(
  * **Back -> Front**
  */
 @Serializable
-data class UploadRepresentationDTO(
+data class FileRepresentationDTO(
     val id: UUID,
     val code: String,
     val name: String,
@@ -50,5 +51,5 @@ data class UploadRepresentationDTO(
 
 @Serializable
 data class UploadPageDTO(
-    val page: PageDTO<UploadRepresentationDTO>,
+    val page: PageDTO<FileRepresentationDTO>,
 ) : DTO

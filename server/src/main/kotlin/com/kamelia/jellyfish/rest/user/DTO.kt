@@ -1,10 +1,12 @@
+@file:UseContextualSerialization(forClasses = [UUID::class])
+
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
-import com.kamelia.jellyfish.util.UUIDSerializer
 import java.util.UUID
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseContextualSerialization
 
 fun User.toRepresentationDTO(): UserRepresentationDTO {
     return UserRepresentationDTO(
@@ -61,7 +63,6 @@ data class UserPasswordUpdateDTO(
  */
 @Serializable
 data class UserRepresentationDTO(
-    @Serializable(UUIDSerializer::class)
     val id: UUID,
     val username: String,
     val email: String,

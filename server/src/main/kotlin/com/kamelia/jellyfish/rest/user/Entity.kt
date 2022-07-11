@@ -67,6 +67,11 @@ object Users : AuditableUUIDTable("users") {
             .firstOrNull()
     }
 
+    suspend fun findByUploadToken(uploadToken: String): User? = Connection.query {
+        User.find { Users.uploadToken eq uploadToken }
+            .firstOrNull()
+    }
+
     suspend fun create(user: UserDTO, creator: User? = null): User = Connection.query {
         User.new {
             username = user.username

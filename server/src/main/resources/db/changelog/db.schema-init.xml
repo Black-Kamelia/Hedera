@@ -47,13 +47,13 @@
 
         <addForeignKeyConstraint baseTableName="users"
                                  baseColumnNames="created_by"
-                                 constraintName="fk_created_by__id"
+                                 constraintName="fk_users__created_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
 
         <addForeignKeyConstraint baseTableName="users"
                                  baseColumnNames="updated_by"
-                                 constraintName="fk_updated_by__id"
+                                 constraintName="fk_users__updated_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
         
@@ -97,19 +97,19 @@
 
         <addForeignKeyConstraint baseTableName="files"
                                  baseColumnNames="owner"
-                                 constraintName="fk_owner__id"
+                                 constraintName="fk_files__owner__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
 
         <addForeignKeyConstraint baseTableName="files"
                                  baseColumnNames="created_by"
-                                 constraintName="fk_created_by__id"
+                                 constraintName="fk_files__created_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
 
         <addForeignKeyConstraint baseTableName="files"
                                  baseColumnNames="updated_by"
-                                 constraintName="fk_updated_by__id"
+                                 constraintName="fk_files__updated_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
 

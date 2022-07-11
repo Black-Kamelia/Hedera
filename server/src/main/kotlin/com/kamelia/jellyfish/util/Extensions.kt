@@ -54,3 +54,8 @@ fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
     val id = jwt["id"].asString()
     if (id != uuid.toString()) throw ExpiredOrInvalidTokenException()
 }
+
+private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+fun String.Companion.random(size: Int) = (1..size)
+    .map { CHARSET.random() }
+    .joinToString("")

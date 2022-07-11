@@ -1,10 +1,12 @@
+@file:UseContextualSerialization(forClasses = [UUID::class])
+
 package com.kamelia.jellyfish.rest.upload
 
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
-import com.kamelia.jellyfish.util.UUIDSerializer
 import java.util.UUID
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseContextualSerialization
 
 fun Upload.toRepresentationDTO(): UploadRepresentationDTO {
     return UploadRepresentationDTO(
@@ -36,14 +38,12 @@ data class UploadUpdateDTO(
  */
 @Serializable
 data class UploadRepresentationDTO(
-    @Serializable(UUIDSerializer::class)
     val id: UUID,
     val code: String,
     val name: String,
     val mimeType: String,
     val size: Long,
     val visibility: String,
-    @Serializable(UUIDSerializer::class)
     val ownerId: UUID,
 ) : DTO
 

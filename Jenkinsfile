@@ -26,7 +26,7 @@ pipeline {
 
             post {
                 success {
-                    junit '**/build/test-results/test/*.xml'
+                    junit checksName: 'Tests', testResults: '**/build/test-results/test/*.xml'
                 }
             }
         }

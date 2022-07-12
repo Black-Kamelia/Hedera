@@ -24,5 +24,7 @@ pipeline {
                 }
             }
         }
+
+        junit '**/build/test-results/test/*.xml'
     }
 }

@@ -22,8 +22,8 @@ pipeline {
                 withGradle {
                     sh './gradlew test'
                 }
+                junit '**/build/test-results/test/*.xml'
             }
-            junit '**/build/test-results/test/*.xml'
         }
     }
 }

@@ -21,7 +21,6 @@ inline fun <reified T : Any> Route.requestOrCatch(
         val body = call.receive<T>()
         block(body)
     }.onFailure { e ->
-        // TODO : throw not always working
         advisors.find { it.throwableClass.isInstance(e) }
             ?.let { it.handle(e, call) }
             ?: throw e
@@ -37,7 +36,6 @@ inline fun Route.requestOrCatch(
     runCatching {
         block()
     }.onFailure { e ->
-        // TODO : throw not always working
         advisors.find { it.throwableClass.isInstance(e) }
             ?.let { it.handle(e, call) }
             ?: throw e

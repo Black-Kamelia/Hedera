@@ -11,7 +11,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 
 enum class FileVisibility {
     PRIVATE,
-    NON_LISTED,
+    UNLISTED,
     PUBLIC,
 }
 
@@ -66,13 +66,17 @@ object Files : AuditableUUIDTable("files") {
         }
     }
 
-    suspend fun update(file: File, dto: FileUpdateDTO): File = Connection.query {
+    suspend fun update(file: File, dto: FileUpdateDTO, updater: User): File = Connection.query {
         file.apply {
             dto.name?.let { name = it }
             dto.visibility?.let { visibility = it }
 
-            onUpdate(owner)
+            onUpdate(updater)
         }
+    }
+
+    suspend fun delete(uuid: UUID): File? = Connection.query {
+        File.findById(uuid)?.apply { delete() }
     }
 }
 

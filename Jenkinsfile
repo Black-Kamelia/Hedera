@@ -22,7 +22,12 @@ pipeline {
                 withGradle {
                     sh './gradlew test'
                 }
-                junit '**/build/test-results/test/*.xml'
+            }
+
+            post {
+                success {
+                    junit '**/build/test-results/test/*.xml'
+                }
             }
         }
     }

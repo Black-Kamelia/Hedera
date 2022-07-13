@@ -55,6 +55,22 @@ fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
     if (id != uuid.toString()) throw ExpiredOrInvalidTokenException()
 }
 
+fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
+    val params = request.queryParameters
+    val page = (params["page"] ?: "0").let {
+        val page = it.toLongOrNull() ?: throw IllegalArgumentException("Invalid page number")
+        if (page < 0) throw IllegalArgumentException("errors.number.negative")
+        page
+    }
+    val pageSize = (params["pageSize"] ?: "25").let {
+        val pageSize = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid page size")
+        if (pageSize < 0) throw IllegalArgumentException("errors.number.negative")
+        pageSize
+    }
+    return page to pageSize
+}
+
+
 private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 fun String.Companion.random(size: Int) = (1..size)
     .map { CHARSET.random() }

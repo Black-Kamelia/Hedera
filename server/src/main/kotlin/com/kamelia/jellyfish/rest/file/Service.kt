@@ -2,6 +2,7 @@ package com.kamelia.jellyfish.rest.file
 
 import java.nio.file.Files as NIOFiles
 import com.kamelia.jellyfish.core.UploadCodeGenerationException
+import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.rest.user.Users
@@ -16,6 +17,7 @@ import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.math.ceil
 
 object FileService {
 
@@ -58,6 +60,20 @@ object FileService {
             }
         }
         throw UploadCodeGenerationException()
+    }
+
+    suspend fun getFiles(user: User, page: Long, pageSize: Int): QueryResult<FilePageDTO, List<ErrorDTO>> {
+        val files = user.getFiles(page, pageSize)
+        val total = user.countFiles()
+        return QueryResult.ok(FilePageDTO(
+            PageDTO(
+                files.map { it.toRepresentationDTO() },
+                page,
+                pageSize,
+                ceil(total / pageSize.toDouble()).toLong(),
+                total
+            )
+        ))
     }
 
     suspend fun updateFile(

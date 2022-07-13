@@ -50,6 +50,6 @@ data class FileRepresentationDTO(
 ) : DTO
 
 @Serializable
-data class UploadPageDTO(
+data class FilePageDTO(
     val page: PageDTO<FileRepresentationDTO>,
 ) : DTO

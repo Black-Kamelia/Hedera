@@ -4,6 +4,8 @@ import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
+import com.kamelia.jellyfish.rest.file.File
+import com.kamelia.jellyfish.rest.file.Files
 import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -43,8 +45,7 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun getAll(): List<User> = Connection.query {
-        User.all()
-            .toList()
+        User.all().toList()
     }
 
     suspend fun getAll(page: Long, pageSize: Int): List<User> = Connection.query {
@@ -128,4 +129,18 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var enabled by Users.enabled
     var lastInvalidation by Users.lastInvalidation
     var uploadToken by Users.uploadToken
+
+    val files by File referrersOn Files.owner
+
+    suspend fun countFiles(): Long = Connection.query {
+        files.count()
+    }
+
+    suspend fun getFiles(): List<File> = Connection.query {
+        files.toList()
+    }
+
+    suspend fun getFiles(page: Long, pageSize: Int): List<File> = Connection.query {
+        files.limit(pageSize, page * pageSize).toList()
+    }
 }

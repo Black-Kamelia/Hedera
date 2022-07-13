@@ -24,6 +24,12 @@ fun String.toUUIDOrNull() = try {
     null
 }
 
+fun String.toUUID(): UUID = try {
+    UUID.fromString(this)
+} catch (e: IllegalArgumentException) {
+    throw InvalidUUIDException()
+}
+
 val UUIDEntity.uuid: UUID
     get() = id.value
 

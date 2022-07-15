@@ -23,6 +23,12 @@ pipeline {
                     sh './gradlew test'
                 }
             }
+
+            post {
+                success {
+                    junit checksName: 'Tests', testResults: '**/build/test-results/test/*.xml'
+                }
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
+import com.kamelia.jellyfish.rest.file.File
+import com.kamelia.jellyfish.rest.file.Files
 import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -33,6 +35,7 @@ object Users : AuditableUUIDTable("users") {
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
     val lastInvalidation = timestamp("last_invalidation").nullable()
+    val uploadToken = varchar("upload_token", 32)
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
@@ -42,8 +45,7 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun getAll(): List<User> = Connection.query {
-        User.all()
-            .toList()
+        User.all().toList()
     }
 
     suspend fun getAll(page: Long, pageSize: Int): List<User> = Connection.query {
@@ -66,6 +68,11 @@ object Users : AuditableUUIDTable("users") {
             .firstOrNull()
     }
 
+    suspend fun findByUploadToken(uploadToken: String): User? = Connection.query {
+        User.find { Users.uploadToken eq uploadToken }
+            .firstOrNull()
+    }
+
     suspend fun create(user: UserDTO, creator: User? = null): User = Connection.query {
         User.new {
             username = user.username
@@ -73,26 +80,27 @@ object Users : AuditableUUIDTable("users") {
             password = Hasher.hash(user.password)
             role = user.role
             enabled = false
+            uploadToken = UUID.randomUUID().toString().replace("-", "")
 
             onCreate(creator ?: this)
         }
     }
 
-    suspend fun update(user: User, dto: UserUpdateDTO, updater: User? = null): User = Connection.query {
+    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = Connection.query {
         user.apply {
             dto.username?.let { username = it }
             dto.email?.let { email = it }
             dto.role?.let { role = it }
             dto.enabled?.let { enabled = it }
 
-            onUpdate(updater ?: this)
+            onUpdate(updater)
         }
     }
 
-    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User? = null): User = Connection.query {
+    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User): User = Connection.query {
         user.apply {
             password = Hasher.hash(dto.newPassword)
-            onUpdate(updater ?: this)
+            onUpdate(updater)
         }
     }
 
@@ -103,6 +111,11 @@ object Users : AuditableUUIDTable("users") {
 
     suspend fun logoutAll(user: User) = Connection.query {
         user.lastInvalidation = Instant.now()
+    }
+
+    suspend fun regenerateUploadToken(user: User): User = Connection.query {
+        user.uploadToken = UUID.randomUUID().toString().replace("-", "")
+        user
     }
 }
 
@@ -115,4 +128,19 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var role by Users.role
     var enabled by Users.enabled
     var lastInvalidation by Users.lastInvalidation
+    var uploadToken by Users.uploadToken
+
+    private val files by File referrersOn Files.owner
+
+    suspend fun countFiles(): Long = Connection.query {
+        files.count()
+    }
+
+    suspend fun getFiles(): List<File> = Connection.query {
+        files.toList()
+    }
+
+    suspend fun getFiles(page: Long, pageSize: Int): List<File> = Connection.query {
+        files.limit(pageSize, page * pageSize).toList()
+    }
 }

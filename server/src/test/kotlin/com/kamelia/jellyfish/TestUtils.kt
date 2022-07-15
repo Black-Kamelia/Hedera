@@ -2,6 +2,9 @@ package com.kamelia.jellyfish
 
 import com.kamelia.jellyfish.core.TokenPair
 import com.kamelia.jellyfish.rest.auth.LoginDTO
+import com.kamelia.jellyfish.rest.core.DTO
+import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
+import com.kamelia.jellyfish.util.UUIDSerializer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -12,10 +15,21 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.ApplicationTestBuilder
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {
-        json()
+        json(Json {
+            serializersModule = SerializersModule {
+                polymorphic(DTO::class) {
+                    subclass(UserRepresentationDTO::class)
+                }
+                contextual(UUIDSerializer)
+            }
+        })
     }
 }
 

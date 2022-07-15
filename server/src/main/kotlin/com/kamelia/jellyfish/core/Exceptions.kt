@@ -1,8 +1,10 @@
 package com.kamelia.jellyfish.core
 
-class InvalidUUIDException : Exception("Query param 'uuid' is malformed")
+class InvalidUUIDException : Exception("errors.uuid.invalid")
 
-class MissingParameterException(name: String) : Exception("Query param '$name' is missing")
+class MissingParameterException(name: String) : Exception("errors.parameters.missing.`$name`")
+
+class MissingHeaderException(header: String) : Exception("errors.headers.missing.`$header`")
 
 class ExpiredOrInvalidTokenException : Exception("errors.tokens.expired_or_invalid")
 

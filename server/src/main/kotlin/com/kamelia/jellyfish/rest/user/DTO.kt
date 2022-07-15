@@ -1,20 +1,23 @@
+@file:UseSerializers(UUIDSerializer::class)
+
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
+import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
-fun User.toRepresentationDTO(): UserRepresentationDTO {
-    return UserRepresentationDTO(
-        id.value,
-        username,
-        email,
-        role,
-        enabled
-    )
-}
+fun User.toRepresentationDTO() = UserRepresentationDTO(
+    uuid,
+    username,
+    email,
+    role,
+    enabled,
+    uploadToken,
+)
 
 /**
  * DTO used to transfer user signup details.
@@ -26,7 +29,7 @@ data class UserDTO(
     val username: String,
     val email: String,
     val password: String,
-    val role: UserRole = UserRole.REGULAR
+    val role: UserRole = UserRole.REGULAR,
 ) : DTO
 
 /**
@@ -39,7 +42,7 @@ data class UserUpdateDTO(
     val username: String? = null,
     val email: String? = null,
     val role: UserRole? = null,
-    val enabled: Boolean? = null
+    val enabled: Boolean? = null,
 ) : DTO
 
 /**
@@ -60,15 +63,15 @@ data class UserPasswordUpdateDTO(
  */
 @Serializable
 data class UserRepresentationDTO(
-    @Serializable(UUIDSerializer::class)
     val id: UUID,
     val username: String,
     val email: String,
     val role: UserRole,
-    val enabled: Boolean
+    val enabled: Boolean,
+    val uploadToken: String,
 ) : DTO
 
 @Serializable
 data class UserPageDTO(
-    val page: PageDTO<UserRepresentationDTO>
+    val page: PageDTO<UserRepresentationDTO>,
 ) : DTO

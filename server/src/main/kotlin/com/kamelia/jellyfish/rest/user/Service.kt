@@ -65,24 +65,21 @@ object UserService {
     suspend fun updateUser(
         id: UUID,
         dto: UserUpdateDTO,
-        updaterID: UUID? = null
+        updaterID: UUID,
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
         checkUsername(dto.username, toEdit)?.let { return it }
 
-        val updater: User? = updaterID?.let {
-            val user = Users.findById(updaterID)
-            if (
-                user == null ||
-                (dto.role != null && (dto.role ge user.role || toEdit.role ge user.role))
-            ) {
-                return QueryResult.forbidden("errors.users.role.forbidden")
-            } else {
-                user
-            }
+        val updater = Users.findById(updaterID)
+        if (
+            updater == null ||
+            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role))
+        ) {
+            return QueryResult.forbidden("errors.users.role.forbidden")
         }
+
         return QueryResult.ok(
             Users.update(toEdit, dto, updater)
                 .toRepresentationDTO()
@@ -92,7 +89,7 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-        updaterID: UUID? = null
+        updaterID: UUID,
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         checkPassword(dto.newPassword)?.let { return it }
 
@@ -102,7 +99,7 @@ object UserService {
             return QueryResult.forbidden("errors.users.password.wrong")
         }
 
-        val updater: User? = updaterID?.let { Users.findById(updaterID) }
+        val updater = Users.findById(updaterID) ?: return QueryResult.forbidden("errors.users.role.forbidden")
         return QueryResult.ok(
             Users.updatePassword(toEdit, dto, updater)
                 .toRepresentationDTO()
@@ -111,9 +108,16 @@ object UserService {
 
     suspend fun deleteUser(id: UUID): QueryResult<UserRepresentationDTO, Nothing> =
         Users.delete(id)
-            ?.let {
-                QueryResult.ok(it.toRepresentationDTO())
-            } ?: QueryResult.notFound()
+            ?.let { QueryResult.ok(it.toRepresentationDTO()) }
+            ?: QueryResult.notFound()
+
+    suspend fun regenerateUploadToken(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+        val user = Users.findById(id) ?: return QueryResult.notFound()
+        return QueryResult.ok(
+            Users.regenerateUploadToken(user)
+                .toRepresentationDTO()
+        )
+    }
 }
 
 /**
@@ -136,8 +140,8 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                     QueryResult.forbidden("errors.users.email.already_exists")
                 }
             } ?: if ("@" !in email) {
-                QueryResult.forbidden("errors.users.email.invalid")
-            } else null
+            QueryResult.forbidden("errors.users.email.invalid")
+        } else null
     else null
 
 /**

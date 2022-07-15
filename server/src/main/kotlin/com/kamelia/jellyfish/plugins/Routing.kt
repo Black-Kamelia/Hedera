@@ -1,6 +1,7 @@
 package com.kamelia.jellyfish.plugins
 
 import com.kamelia.jellyfish.rest.auth.authRoutes
+import com.kamelia.jellyfish.rest.file.filesRoutes
 import com.kamelia.jellyfish.rest.user.userRoutes
 import com.kamelia.jellyfish.util.Environment.isDev
 import com.kamelia.jellyfish.util.Environment.isProd
@@ -19,6 +20,7 @@ fun Application.configureRouting() {
         route("/api") {
             authRoutes()
             userRoutes()
+            filesRoutes()
         }
 
         when {

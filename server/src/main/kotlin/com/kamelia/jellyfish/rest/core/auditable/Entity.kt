@@ -11,13 +11,15 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 abstract class AuditableUUIDTable(name: String) : UUIDTable(name) {
+
     val createdAt = timestamp("created_at").clientDefault { Instant.now() }
-    open val createdBy: Column<EntityID<UUID>> get() = reference("created_by", Users)
+    open val createdBy: Column<EntityID<UUID>> by lazy { reference("created_by", Users) }
     val updatedAt = timestamp("updated_at").nullable()
-    open val updatedBy: Column<EntityID<UUID>?> get() = reference("updated_by", Users).nullable()
+    open val updatedBy: Column<EntityID<UUID>?> by lazy { reference("updated_by", Users).nullable() }
 }
 
 abstract class AuditableUUIDEntity(id: EntityID<UUID>, table: AuditableUUIDTable) : UUIDEntity(id) {
+
     @Suppress("unused") // automatically set, never touched
     var createdAt by table.createdAt
         private set

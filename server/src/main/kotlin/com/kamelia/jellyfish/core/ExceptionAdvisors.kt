@@ -12,6 +12,8 @@ private suspend fun badRequestMessage(e: Throwable, call: ApplicationCall) =
 
 val MissingParameterAdvisor = exceptionAdvisor<MissingParameterException>(::badRequestMessage)
 
+val MissingHeaderAdvisor = exceptionAdvisor<MissingHeaderException>(::badRequestMessage)
+
 val IllegalArgumentAdvisor = exceptionAdvisor<IllegalArgumentException>(::badRequestMessage)
 
 val InvalidUUIDAdvisor = exceptionAdvisor<InvalidUUIDException>(::badRequestMessage)

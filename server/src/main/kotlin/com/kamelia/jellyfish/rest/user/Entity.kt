@@ -86,21 +86,21 @@ object Users : AuditableUUIDTable("users") {
         }
     }
 
-    suspend fun update(user: User, dto: UserUpdateDTO, updater: User? = null): User = Connection.query {
+    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = Connection.query {
         user.apply {
             dto.username?.let { username = it }
             dto.email?.let { email = it }
             dto.role?.let { role = it }
             dto.enabled?.let { enabled = it }
 
-            onUpdate(updater ?: this)
+            onUpdate(updater)
         }
     }
 
-    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User? = null): User = Connection.query {
+    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User): User = Connection.query {
         user.apply {
             password = Hasher.hash(dto.newPassword)
-            onUpdate(updater ?: this)
+            onUpdate(updater)
         }
     }
 
@@ -130,7 +130,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var lastInvalidation by Users.lastInvalidation
     var uploadToken by Users.uploadToken
 
-    val files by File referrersOn Files.owner
+    private val files by File referrersOn Files.owner
 
     suspend fun countFiles(): Long = Connection.query {
         files.count()

@@ -5,9 +5,11 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.Users
+import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.transactions.transaction
 
 enum class FileVisibility {
     PRIVATE,
@@ -89,4 +91,6 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {
     var size by Files.size
     var visibility by Files.visibility
     var owner by User referencedOn Files.owner
+
+    val ownerId get() = transaction { owner.uuid }
 }

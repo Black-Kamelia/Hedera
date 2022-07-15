@@ -5,20 +5,19 @@ package com.kamelia.jellyfish.rest.user
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
+import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
-fun User.toRepresentationDTO(): UserRepresentationDTO {
-    return UserRepresentationDTO(
-        id.value,
-        username,
-        email,
-        role,
-        enabled,
-        uploadToken,
-    )
-}
+fun User.toRepresentationDTO() = UserRepresentationDTO(
+    uuid,
+    username,
+    email,
+    role,
+    enabled,
+    uploadToken,
+)
 
 /**
  * DTO used to transfer user signup details.

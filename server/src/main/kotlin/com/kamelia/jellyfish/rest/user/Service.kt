@@ -65,21 +65,19 @@ object UserService {
     suspend fun updateUser(
         id: UUID,
         dto: UserUpdateDTO,
-        updaterID: UUID
+        updaterID: UUID,
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
         checkUsername(dto.username, toEdit)?.let { return it }
 
-        val user = Users.findById(updaterID)
-        val updater: User = if (
-            user == null ||
-            (dto.role != null && (dto.role ge user.role || toEdit.role ge user.role))
+        val updater = Users.findById(updaterID)
+        if (
+            updater == null ||
+            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role))
         ) {
             return QueryResult.forbidden("errors.users.role.forbidden")
-        } else {
-            user
         }
 
         return QueryResult.ok(
@@ -91,7 +89,7 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-        updaterID: UUID
+        updaterID: UUID,
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         checkPassword(dto.newPassword)?.let { return it }
 
@@ -110,9 +108,8 @@ object UserService {
 
     suspend fun deleteUser(id: UUID): QueryResult<UserRepresentationDTO, Nothing> =
         Users.delete(id)
-            ?.let {
-                QueryResult.ok(it.toRepresentationDTO())
-            } ?: QueryResult.notFound()
+            ?.let { QueryResult.ok(it.toRepresentationDTO()) }
+            ?: QueryResult.notFound()
 
     suspend fun regenerateUploadToken(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val user = Users.findById(id) ?: return QueryResult.notFound()
@@ -143,8 +140,8 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                     QueryResult.forbidden("errors.users.email.already_exists")
                 }
             } ?: if ("@" !in email) {
-                QueryResult.forbidden("errors.users.email.invalid")
-            } else null
+            QueryResult.forbidden("errors.users.email.invalid")
+        } else null
     else null
 
 /**

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "87f18bf4-7f6c-4f8b-bed4-95365316a913",
+		"_postman_id": "59a94b15-79d5-4f8a-8ea8-9fbc980b650f",
 		"name": "Jellyfish",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "15523049"
+		"_exporter_id": "15658578"
 	},
 	"item": [
 		{
@@ -22,6 +22,7 @@
 									"if ( tests[\"200 OK\"] ) {\r",
 									"    var data = pm.response.json();\r",
 									"    pm.globals.set(\"user-id\", data.id);\r",
+									"    pm.globals.set(\"upload-token\", data.uploadToken);\r",
 									"}"
 								],
 								"type": "text/javascript"
@@ -182,6 +183,52 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Regenerate upload token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"200 OK\"] = responseCode.code === 200;",
+									"",
+									"if ( tests[\"200 OK\"] ) {",
+									"    var data = pm.response.json();",
+									"    pm.globals.set(\"upload-token\", data.uploadToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/users/uploadToken",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"uploadToken"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -264,6 +311,22 @@
 				},
 				{
 					"name": "Refresh",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"200 OK\"] = responseCode.code === 200;",
+									"",
+									"if ( tests[\"200 OK\"] ) {",
+									"    var data = pm.response.json();",
+									"    pm.globals.set(\"upload-token\", data.uploadToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -286,6 +349,239 @@
 							"path": [
 								"api",
 								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "Upload a file",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"200 OK\"] = responseCode.code === 200;",
+									"",
+									"if ( tests[\"200 OK\"] ) {",
+									"    var data = pm.response.json();",
+									"    pm.globals.set(\"file-id\", data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/irwin/Desktop/Capture d’écran 2022-06-20 à 21.55.47.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/files/upload",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"files",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload a file from token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"200 OK\"] = responseCode.code === 200;",
+									"",
+									"if ( tests[\"200 OK\"] ) {",
+									"    var data = pm.response.json();",
+									"    pm.globals.set(\"file-id\", data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{upload-token}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Upload-Token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/irwin/Documents/uPic_hosts.json"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/files/upload/token",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"files",
+								"upload",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit file",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"CACA\",\n    \"visibility\": \"PRIVATE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/files/{{file-id}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"files",
+								"{{file-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit file Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"CACA\",\n    \"visibility\": \"PRIVATE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/files",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete file",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/files/{{file-id}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"files",
+								"{{file-id}}"
 							]
 						}
 					},

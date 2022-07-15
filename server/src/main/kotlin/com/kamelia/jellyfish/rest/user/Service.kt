@@ -65,24 +65,23 @@ object UserService {
     suspend fun updateUser(
         id: UUID,
         dto: UserUpdateDTO,
-        updaterID: UUID? = null
+        updaterID: UUID
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         val toEdit = Users.findById(id) ?: return QueryResult.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
         checkUsername(dto.username, toEdit)?.let { return it }
 
-        val updater: User? = updaterID?.let {
-            val user = Users.findById(updaterID)
-            if (
-                user == null ||
-                (dto.role != null && (dto.role ge user.role || toEdit.role ge user.role))
-            ) {
-                return QueryResult.forbidden("errors.users.role.forbidden")
-            } else {
-                user
-            }
+        val user = Users.findById(updaterID)
+        val updater: User = if (
+            user == null ||
+            (dto.role != null && (dto.role ge user.role || toEdit.role ge user.role))
+        ) {
+            return QueryResult.forbidden("errors.users.role.forbidden")
+        } else {
+            user
         }
+
         return QueryResult.ok(
             Users.update(toEdit, dto, updater)
                 .toRepresentationDTO()
@@ -92,7 +91,7 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-        updaterID: UUID? = null
+        updaterID: UUID
     ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
         checkPassword(dto.newPassword)?.let { return it }
 
@@ -102,7 +101,7 @@ object UserService {
             return QueryResult.forbidden("errors.users.password.wrong")
         }
 
-        val updater: User? = updaterID?.let { Users.findById(updaterID) }
+        val updater = Users.findById(updaterID) ?: return QueryResult.forbidden("errors.users.role.forbidden")
         return QueryResult.ok(
             Users.updatePassword(toEdit, dto, updater)
                 .toRepresentationDTO()

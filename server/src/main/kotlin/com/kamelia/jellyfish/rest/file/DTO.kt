@@ -5,22 +5,20 @@ package com.kamelia.jellyfish.rest.file
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
+import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.jetbrains.exposed.sql.transactions.transaction
 
-fun File.toRepresentationDTO(): FileRepresentationDTO = transaction {
-    FileRepresentationDTO(
-        this@toRepresentationDTO.id.value,
-        code,
-        name,
-        mimeType,
-        size,
-        visibility.toString(),
-        owner.id.value
-    )
-}
+fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
+    uuid,
+    code,
+    name,
+    mimeType,
+    size,
+    visibility.toString(),
+    ownerId
+)
 
 /**
  * DTO used to transfer upload update details.

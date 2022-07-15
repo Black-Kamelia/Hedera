@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "59a94b15-79d5-4f8a-8ea8-9fbc980b650f",
+		"_postman_id": "944dff25-c4e4-49c4-9438-7c2b6fec2b9a",
 		"name": "Jellyfish",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "15658578"
+		"_exporter_id": "15523049"
 	},
 	"item": [
 		{
@@ -396,7 +396,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/irwin/Desktop/Capture d’écran 2022-06-20 à 21.55.47.png"
+									"src": []
 								}
 							]
 						},
@@ -457,7 +457,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/irwin/Documents/uPic_hosts.json"
+									"src": []
 								}
 							]
 						},
@@ -517,7 +517,7 @@
 					"response": []
 				},
 				{
-					"name": "Edit file Copy",
+					"name": "Get files",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},

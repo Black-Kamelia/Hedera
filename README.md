@@ -12,7 +12,7 @@ You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and 
 
 👉 YES. Jellyfish will also be shipped in a Docker image.
 
-## ⭐ Features
+## ✨ Features
 
 - **User accounts** — You can create multiple accounts, or let users sign up.
   Each screenshots uploaded is bound to its user account.

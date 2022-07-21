@@ -6,6 +6,7 @@ import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
+import com.kamelia.jellyfish.core.MultipartParseException
 import com.kamelia.jellyfish.rest.user.UserRole
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
@@ -87,8 +88,8 @@ fun ApplicationCall.getHeader(header: String) = request.headers[header] ?: throw
 suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
-) {
-    receiveMultipart().forEachPart { part ->
+) = runCatching { receiveMultipart() }.onSuccess {
+    it.forEachPart { part ->
         when (part) {
             is PartData.FormItem -> {
                 val field = part.name
@@ -102,7 +103,7 @@ suspend fun ApplicationCall.doWithForm(
         }
         part.dispose()
     }
-}
+}.onFailure { throw MultipartParseException() }
 
 private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 fun String.Companion.random(size: Int) = (1..size)

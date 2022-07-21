@@ -14,10 +14,10 @@ import io.ktor.http.content.streamProvider
 import java.net.URLConnection
 import java.nio.file.Path
 import java.util.UUID
+import kotlin.math.ceil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.math.ceil
 
 object FileService {
 
@@ -31,6 +31,8 @@ object FileService {
         val fileName = part.originalFileName!!
         val fileCode = generateUniqueCode()// + "." + Path.of(fileName).extension
         val fileBytes = part.streamProvider().readBytes()
+
+        if (fileName.isBlank()) return QueryResult.badRequest("errors.file.name.empty")
 
         return withContext(Dispatchers.IO) {
             val directory = UPLOAD_PATH.resolve(creator.id.toString())

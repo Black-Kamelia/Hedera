@@ -20,6 +20,8 @@ val InvalidUUIDAdvisor = exceptionAdvisor<InvalidUUIDException>(::badRequestMess
 
 val SerializationAdvisor = exceptionAdvisor<SerializationException>(::badRequestMessage)
 
+val MultipartParseAdvisor = exceptionAdvisor<MultipartParseException>(::badRequestMessage)
+
 val ExpiredOrInvalidTokenAdvisor = exceptionAdvisor<ExpiredOrInvalidTokenException> { e, call ->
     call.respond(QueryResult.unauthorized(e.message!!))
 }
@@ -31,9 +33,11 @@ val GeneralAdvisor = exceptionAdvisor<Exception> { e, call ->
 
 val BasicAdvisor = arrayOf(
     MissingParameterAdvisor,
+    MissingHeaderAdvisor,
     IllegalArgumentAdvisor,
     InvalidUUIDAdvisor,
     SerializationAdvisor,
+    MultipartParseAdvisor,
     ExpiredOrInvalidTokenAdvisor,
     GeneralAdvisor
 )

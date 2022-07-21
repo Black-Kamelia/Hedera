@@ -9,3 +9,5 @@ class MissingHeaderException(header: String) : Exception("errors.headers.missing
 class ExpiredOrInvalidTokenException : Exception("errors.tokens.expired_or_invalid")
 
 class UploadCodeGenerationException : Exception("errors.uploads.code_generation")
+
+class MultipartParseException : Exception("errors.uploads.multipart_parse")

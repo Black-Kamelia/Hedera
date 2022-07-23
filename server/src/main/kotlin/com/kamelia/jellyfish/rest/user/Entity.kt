@@ -4,13 +4,19 @@ import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
+import com.kamelia.jellyfish.rest.core.filtersorter.FilterSorterDefinitionDTO
+import com.kamelia.jellyfish.rest.core.filtersorter.applyFilters
+import com.kamelia.jellyfish.rest.core.filtersorter.filter
 import com.kamelia.jellyfish.rest.file.File
 import com.kamelia.jellyfish.rest.file.Files
+import com.kamelia.jellyfish.util.uuid
 import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.javatime.timestamp
+import org.jetbrains.exposed.sql.selectAll
 
 enum class UserRole(private val power: Int) {
     REGULAR(1),
@@ -140,7 +146,20 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
         files.toList()
     }
 
-    suspend fun getFiles(page: Long, pageSize: Int): List<File> = Connection.query {
-        files.limit(pageSize, page * pageSize).toList()
+    suspend fun getFiles(page: Long, pageSize: Int, definition: FilterSorterDefinitionDTO): Pair<List<File>, Long> = Connection.query {
+        Files.selectAll()
+            .andWhere { Files.owner eq uuid }
+            .applyFilters(definition.filters) {
+                when (it.field) {
+                    Files.name.name -> Files.name.filter(it)
+                    Files.mimeType.name -> Files.mimeType.filter(it)
+                    Files.size.name -> Files.size.filter(it)
+                    Files.visibility.name -> Files.visibility.filter(it)
+                    else -> throw IllegalArgumentException("errors.filter.unknown_field.`${it.field}`")
+                }
+            }.let {
+                val rows = File.wrapRows(it)
+                rows.limit(pageSize, page * pageSize).toList()to rows.count()
+            }
     }
 }

@@ -26,6 +26,8 @@ val ExpiredOrInvalidTokenAdvisor = exceptionAdvisor<ExpiredOrInvalidTokenExcepti
     call.respond(QueryResult.unauthorized(e.message!!))
 }
 
+val IllegalFilterAdvisor = exceptionAdvisor<IllegalFilterException>(::badRequestMessage)
+
 val GeneralAdvisor = exceptionAdvisor<Exception> { e, call ->
     call.respond(QueryResult.error(HttpStatusCode.InternalServerError, listOf("errors.unknown")))
     call.application.log.error("Unexpected error", e)
@@ -39,5 +41,6 @@ val BasicAdvisor = arrayOf(
     SerializationAdvisor,
     MultipartParseAdvisor,
     ExpiredOrInvalidTokenAdvisor,
-    GeneralAdvisor
+    IllegalFilterAdvisor,
+    GeneralAdvisor,
 )

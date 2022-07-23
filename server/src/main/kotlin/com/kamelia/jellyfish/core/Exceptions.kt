@@ -1,5 +1,7 @@
 package com.kamelia.jellyfish.core
 
+import com.kamelia.jellyfish.rest.core.filtersorter.FilterObject
+
 class InvalidUUIDException : Exception("errors.uuid.invalid")
 
 class MissingParameterException(name: String) : Exception("errors.parameters.missing.`$name`")
@@ -11,3 +13,5 @@ class ExpiredOrInvalidTokenException : Exception("errors.tokens.expired_or_inval
 class UploadCodeGenerationException : Exception("errors.uploads.code_generation")
 
 class MultipartParseException : Exception("errors.uploads.multipart_parse")
+
+class IllegalFilterException(filter: FilterObject) : Exception("errors.filters.illegal.`$filter`")

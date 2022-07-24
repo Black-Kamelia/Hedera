@@ -6,6 +6,7 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.core.pageable.applyFilters
+import com.kamelia.jellyfish.rest.core.pageable.applySort
 import com.kamelia.jellyfish.rest.core.pageable.filter
 import com.kamelia.jellyfish.rest.file.File
 import com.kamelia.jellyfish.rest.file.Files
@@ -156,6 +157,14 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
                     Files.size.name -> Files.size.filter(it)
                     Files.visibility.name -> Files.visibility.filter(it)
                     else -> throw IllegalArgumentException("errors.filter.unknown_field.`${it.field}`")
+                }
+            }.applySort(definition.sorter) {
+                when (it) {
+                    Files.name.name -> Files.name
+                    Files.mimeType.name -> Files.mimeType
+                    Files.size.name -> Files.size
+                    Files.visibility.name -> Files.visibility
+                    else -> throw IllegalArgumentException("errors.sort.unknown_field.`${it}`")
                 }
             }.let {
                 val rows = File.wrapRows(it)

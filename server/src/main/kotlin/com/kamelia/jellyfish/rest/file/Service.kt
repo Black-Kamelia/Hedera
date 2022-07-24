@@ -2,7 +2,7 @@ package com.kamelia.jellyfish.rest.file
 
 import java.nio.file.Files as NIOFiles
 import com.kamelia.jellyfish.core.UploadCodeGenerationException
-import com.kamelia.jellyfish.rest.core.filtersorter.FilterSorterDefinitionDTO
+import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.UserRole
@@ -65,7 +65,7 @@ object FileService {
         throw UploadCodeGenerationException()
     }
 
-    suspend fun getFiles(user: User, page: Long, pageSize: Int, definition: FilterSorterDefinitionDTO): QueryResult<FilePageDTO, List<ErrorDTO>> {
+    suspend fun getFiles(user: User, page: Long, pageSize: Int, definition: PageDefinitionDTO): QueryResult<FilePageDTO, List<ErrorDTO>> {
         val (files, total) = user.getFiles(page, pageSize, definition)
         return QueryResult.ok(FilePageDTO(
             PageDTO(

@@ -1,6 +1,6 @@
 package com.kamelia.jellyfish.core
 
-import com.kamelia.jellyfish.rest.core.filtersorter.FilterObject
+import com.kamelia.jellyfish.rest.core.pageable.FilterObject
 
 class InvalidUUIDException : Exception("errors.uuid.invalid")
 

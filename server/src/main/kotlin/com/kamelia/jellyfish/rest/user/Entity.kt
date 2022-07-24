@@ -4,9 +4,9 @@ import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
-import com.kamelia.jellyfish.rest.core.filtersorter.FilterSorterDefinitionDTO
-import com.kamelia.jellyfish.rest.core.filtersorter.applyFilters
-import com.kamelia.jellyfish.rest.core.filtersorter.filter
+import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.jellyfish.rest.core.pageable.applyFilters
+import com.kamelia.jellyfish.rest.core.pageable.filter
 import com.kamelia.jellyfish.rest.file.File
 import com.kamelia.jellyfish.rest.file.Files
 import com.kamelia.jellyfish.util.uuid
@@ -146,7 +146,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
         files.toList()
     }
 
-    suspend fun getFiles(page: Long, pageSize: Int, definition: FilterSorterDefinitionDTO): Pair<List<File>, Long> = Connection.query {
+    suspend fun getFiles(page: Long, pageSize: Int, definition: PageDefinitionDTO): Pair<List<File>, Long> = Connection.query {
         Files.selectAll()
             .andWhere { Files.owner eq uuid }
             .applyFilters(definition.filters) {

@@ -5,7 +5,7 @@ import com.kamelia.jellyfish.core.deleteOrCatch
 import com.kamelia.jellyfish.core.getOrCatch
 import com.kamelia.jellyfish.core.patchOrCatch
 import com.kamelia.jellyfish.core.postOrCatch
-import com.kamelia.jellyfish.rest.core.filtersorter.FilterSorterDefinitionDTO
+import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.adminRestrict
 import com.kamelia.jellyfish.util.doWithForm
@@ -63,7 +63,7 @@ private fun Route.getPagedFiles() = getOrCatch(path = "/{uuid?}") {
     val definition = if (call.request.contentType() == ApplicationJSON) {
         call.receive()
     } else {
-        FilterSorterDefinitionDTO()
+        PageDefinitionDTO()
     }
 
     val (page, pageSize) = call.getPageParameters()

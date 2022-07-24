@@ -1,4 +1,4 @@
-package com.kamelia.jellyfish.rest.core.filtersorter
+package com.kamelia.jellyfish.rest.core.pageable
 
 import com.kamelia.jellyfish.core.IllegalFilterException
 import com.kamelia.jellyfish.rest.file.FileVisibility

@@ -2,6 +2,7 @@ package com.kamelia.jellyfish.rest.core.pageable
 
 import com.kamelia.jellyfish.core.IllegalFilterException
 import com.kamelia.jellyfish.rest.file.FileVisibility
+import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.util.toUUIDOrNull
 import java.util.UUID
 import org.jetbrains.exposed.dao.id.EntityID
@@ -39,6 +40,8 @@ val intFilters = comparableFilters<Int>()
 
 val longFilters = comparableFilters<Long>()
 
+val booleanFilters = comparableFilters<Boolean>()
+
 val uuidFilters = mapOf<String, (Column<EntityID<UUID>>, UUID) -> Op<Boolean>>(
     "eq" to { c, v -> c eq v },
     "ne" to { c, v -> c neq v },
@@ -46,18 +49,34 @@ val uuidFilters = mapOf<String, (Column<EntityID<UUID>>, UUID) -> Op<Boolean>>(
 
 val fileVisibilityFilters = comparableFilters<FileVisibility>()
 
+val userRoleFilters = comparableFilters<UserRole>()
+
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean> = when (T::class) {
     String::class -> stringFilters[filter.operator]?.let { it(this as Column<String>, filter.value) }
-    Int::class -> intFilters[filter.operator]?.let { it(this as Column<Int>, filter.value.toInt()) }
-    Long::class -> longFilters[filter.operator]?.let { it(this as Column<Long>, filter.value.toLong()) }
+    Int::class -> intFilters[filter.operator]?.let {
+        val value = filter.value.toIntOrNull()
+        if (value != null) it(this as Column<Int>, value) else null
+    }
+    Long::class -> longFilters[filter.operator]?.let {
+        val value = filter.value.toLongOrNull()
+        if (value != null) it(this as Column<Long>, value) else null
+    }
+    Boolean::class -> booleanFilters[filter.operator]?.let {
+        val value = filter.value.toBooleanStrictOrNull()
+        if (value != null) it(this as Column<Boolean>, value) else null
+    }
     EntityID::class -> uuidFilters[filter.operator]?.let {
         val value = filter.value.toUUIDOrNull()
         if (value != null) it(this as Column<EntityID<UUID>>, value) else null
     }
     FileVisibility::class -> fileVisibilityFilters[filter.operator]?.let {
-        val value = FileVisibility.valueOf(filter.value)
-        it(this as Column<FileVisibility>, value)
+        val value = FileVisibility.valueOfOrNull(filter.value)
+        if (value != null) it(this as Column<FileVisibility>, value) else null
+    }
+    UserRole::class -> userRoleFilters[filter.operator]?.let {
+        val value = UserRole.valueOfOrNull(filter.value)
+        if (value != null) it(this as Column<UserRole>, value) else null
     }
     else -> null
 } ?: throw IllegalFilterException(filter)

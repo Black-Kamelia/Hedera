@@ -11,13 +11,12 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.util.pipeline.PipelineInterceptor
-import liquibase.pro.packaged.T
 
 
 inline fun <reified T : Any> Route.request(
     method: Route.(String, PipelineInterceptor<Unit, ApplicationCall>) -> Route,
     path: String,
-    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit
+    crossinline block: suspend PipelineContext<Unit, ApplicationCall>.(T) -> Unit,
 ): Route = method(path) {
     val body = call.receive<T>()
     block(body)

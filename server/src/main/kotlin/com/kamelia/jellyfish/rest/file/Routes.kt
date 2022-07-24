@@ -5,9 +5,7 @@ import com.kamelia.jellyfish.core.deleteOrCatch
 import com.kamelia.jellyfish.core.getOrCatch
 import com.kamelia.jellyfish.core.patchOrCatch
 import com.kamelia.jellyfish.core.postOrCatch
-import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.Users
-import com.kamelia.jellyfish.util.ApplicationJSON
 import com.kamelia.jellyfish.util.adminRestrict
 import com.kamelia.jellyfish.util.doWithForm
 import com.kamelia.jellyfish.util.getHeader
@@ -15,13 +13,11 @@ import com.kamelia.jellyfish.util.getPageParameters
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.getUUIDOrNull
 import com.kamelia.jellyfish.util.jwt
+import com.kamelia.jellyfish.util.receivePageDefinition
 import com.kamelia.jellyfish.util.respond
 import com.kamelia.jellyfish.util.uuid
-import io.ktor.http.ContentType
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.request.contentType
-import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 
@@ -59,13 +55,9 @@ private fun Route.getPagedFiles() = getOrCatch(path = "/{uuid?}") {
     val jwtId = jwt.uuid
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-    val definition = if (call.request.contentType() == ApplicationJSON) {
-        call.receive()
-    } else {
-        PageDefinitionDTO()
-    }
-
     val (page, pageSize) = call.getPageParameters()
+    val definition = call.receivePageDefinition()
+
     call.respond(FileService.getFiles(user, page, pageSize, definition))
 }
 

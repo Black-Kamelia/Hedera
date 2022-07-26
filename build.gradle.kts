@@ -13,7 +13,7 @@ repositories {
 }
 
 node {
-    version.set("16.15.0") // lts version
+    version.set("16.16.0") // lts version
     distBaseUrl.set("https://nodejs.org/dist")
     download.set(true)
     nodeProjectDir.set(file("${project.projectDir}/client"))

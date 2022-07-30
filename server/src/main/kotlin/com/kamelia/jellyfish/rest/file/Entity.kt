@@ -37,6 +37,11 @@ object Files : AuditableUUIDTable("files") {
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", Users)
 
+    init {
+        createdBy
+        updatedBy
+    }
+
     suspend fun countAll(): Long = Connection.query {
         File.count()
     }

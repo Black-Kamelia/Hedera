@@ -55,7 +55,7 @@ suspend fun ApplicationTestBuilder.login(
 }
 
 fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(
-    "file",
+    key,
     this::class.java.getResource(path)!!.readBytes(),
     Headers.build {
         append(HttpHeaders.ContentType, type)

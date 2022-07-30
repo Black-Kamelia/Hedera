@@ -4,78 +4,68 @@ import com.kamelia.jellyfish.core.ErrorDTO
 import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.FileUtils
 import com.kamelia.jellyfish.util.uuid
 import io.ktor.http.content.PartData
-import io.ktor.http.content.streamProvider
-import java.net.URLConnection
-import java.nio.file.Path
 import java.util.UUID
 import kotlin.math.ceil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object FileService {
 
-    private val UPLOAD_PATH = Path.of("upload")
-
-    init {
-        NIOFiles.createDirectories(UPLOAD_PATH)
-    }
-
     suspend fun handleFile(part: PartData.FileItem, creator: User): QueryResult<FileRepresentationDTO, List<ErrorDTO>> {
         val fileName = part.originalFileName!!
-        val fileCode = generateUniqueCode()// + "." + Path.of(fileName).extension
-        val fileBytes = part.streamProvider().readBytes()
-
         if (fileName.isBlank()) return QueryResult.badRequest("errors.file.name.empty")
 
-        return withContext(Dispatchers.IO) {
-            val directory = UPLOAD_PATH.resolve(creator.id.toString())
-            NIOFiles.createDirectories(directory)
-            val filePath = directory.resolve(fileCode)
-            NIOFiles.write(filePath, fileBytes)
-            val fileMimeType = URLConnection.guessContentTypeFromName(fileName) ?: "application/octet-stream"
-            val fileSize = NIOFiles.size(filePath)
-
-            QueryResult.ok(
-                Files.create(
-                    code = fileCode,
-                    name = fileName,
-                    mimeType = fileMimeType,
-                    size = fileSize,
-                    creator = creator
-                ).toRepresentationDTO()
-            )
-        }
+        val (code, type, size) = FileUtils.write(creator.uuid, part)
+        return QueryResult.ok(
+            Files.create(
+                code = code,
+                name = fileName,
+                mimeType = type,
+                size = size,
+                creator = creator
+            ).toRepresentationDTO()
+        )
     }
 
-    private suspend fun generateUniqueCode(): String {
-        repeat(10) {
-            val code = String.random(10)
-            if (Files.findByCode(code) == null) {
-                return code
+    suspend fun getFile(
+        code: String,
+        user: User?,
+    ): QueryResult<FileRepresentationDTO, ErrorDTO> = Files
+        .findByCode(code)
+        ?.takeUnless { file ->
+            val isPrivate = file.visibility == FileVisibility.PRIVATE
+            val notHasPermission = user?.let {
+                it.role lt UserRole.ADMIN && file.ownerId != it.uuid
             }
+            isPrivate && (notHasPermission ?: true)
+        }?.let { file ->
+            QueryResult.ok(file.toRepresentationDTO())
         }
-        throw UploadCodeGenerationException()
-    }
+        ?: QueryResult.notFound()
 
-    suspend fun getFiles(user: User, page: Long, pageSize: Int, definition: PageDefinitionDTO): QueryResult<FilePageDTO, List<ErrorDTO>> {
+    suspend fun getFiles(
+        user: User,
+        page: Long,
+        pageSize: Int,
+        definition: PageDefinitionDTO,
+    ): QueryResult<FilePageDTO, List<ErrorDTO>> {
         val (files, total) = user.getFiles(page, pageSize, definition)
-        return QueryResult.ok(FilePageDTO(
-            PageDTO(
-                files.map { it.toRepresentationDTO() },
-                page,
-                pageSize,
-                ceil(total / pageSize.toDouble()).toLong(),
-                total
+        return QueryResult.ok(
+            FilePageDTO(
+                PageDTO(
+                    files.map { it.toRepresentationDTO() },
+                    page,
+                    pageSize,
+                    ceil(total / pageSize.toDouble()).toLong(),
+                    total
+                )
             )
-        ))
+        )
     }
 
     suspend fun updateFile(
@@ -106,6 +96,14 @@ object FileService {
             return QueryResult.forbidden("errors.files.deletion.forbidden")
         }
 
+        FileUtils.delete(file.ownerId, file.code)
         return QueryResult.ok(Files.delete(fileId)?.toRepresentationDTO())
+    }
+
+    suspend fun deleteFileByCodeAsAdmin(code: String): QueryResult<FileRepresentationDTO, List<ErrorDTO>> {
+        val file = Files.findByCode(code) ?: return QueryResult.notFound()
+
+        FileUtils.delete(file.ownerId, file.code)
+        return QueryResult.ok(Files.delete(file.uuid)?.toRepresentationDTO())
     }
 }

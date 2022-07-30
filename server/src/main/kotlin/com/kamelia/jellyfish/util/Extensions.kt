@@ -9,6 +9,8 @@ import com.kamelia.jellyfish.core.MissingParameterException
 import com.kamelia.jellyfish.core.MultipartParseException
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.UserRole
+import io.ktor.http.ContentDisposition
+import io.ktor.http.HttpHeaders
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.server.application.ApplicationCall
@@ -18,9 +20,22 @@ import io.ktor.server.auth.principal
 import io.ktor.server.request.contentType
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.header
+import io.ktor.server.response.respondFile
 import io.ktor.util.pipeline.PipelineContext
+import java.io.File
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntity
+
+suspend fun ApplicationCall.respondFile(file: File, name: String) {
+    response.header(
+        HttpHeaders.ContentDisposition,
+        ContentDisposition.Attachment
+            .withParameter(ContentDisposition.Parameters.FileName, name)
+            .toString()
+    )
+    respondFile(file)
+}
 
 fun ApplicationCall.getParamOrNull(name: String): String? = parameters[name]
 
@@ -51,8 +66,10 @@ suspend fun ApplicationCall.receivePageDefinition(): PageDefinitionDTO = if (req
     PageDefinitionDTO()
 }
 
+fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
+
 val PipelineContext<*, ApplicationCall>.jwt: Payload
-    get() = this.call.principal<JWTPrincipal>()?.payload ?: throw ExpiredOrInvalidTokenException()
+    get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 

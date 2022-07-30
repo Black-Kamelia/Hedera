@@ -4,8 +4,8 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.core.TokenPair
 import com.kamelia.jellyfish.rest.user.Users
-import com.kamelia.jellyfish.util.ErrorDTO
-import com.kamelia.jellyfish.util.QueryResult
+import com.kamelia.jellyfish.core.ErrorDTO
+import com.kamelia.jellyfish.core.QueryResult
 
 object AuthService {
 

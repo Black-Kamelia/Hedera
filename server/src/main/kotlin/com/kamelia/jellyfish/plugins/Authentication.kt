@@ -2,10 +2,10 @@ package com.kamelia.jellyfish.plugins
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.Environment
-import com.kamelia.jellyfish.util.QueryResult
-import com.kamelia.jellyfish.util.respond
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication

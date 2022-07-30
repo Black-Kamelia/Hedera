@@ -1,7 +1,7 @@
 package com.kamelia.jellyfish.rest.auth
 
+import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.util.jwt
-import com.kamelia.jellyfish.util.respond
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route

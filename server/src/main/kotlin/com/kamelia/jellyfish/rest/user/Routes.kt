@@ -7,7 +7,7 @@ import com.kamelia.jellyfish.util.idRestrict
 import com.kamelia.jellyfish.util.ifRegular
 import com.kamelia.jellyfish.util.jwt
 import com.kamelia.jellyfish.util.receivePageDefinition
-import com.kamelia.jellyfish.util.respond
+import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate

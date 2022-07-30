@@ -37,3 +37,4 @@ gradle-app.setting
 .gradletasknamecache
 .DS_Store
 executables/
+upload/

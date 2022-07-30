@@ -1,15 +1,15 @@
 package com.kamelia.jellyfish.rest.file
 
-import java.nio.file.Files as NIOFiles
-import com.kamelia.jellyfish.core.UploadCodeGenerationException
+import com.kamelia.jellyfish.core.ErrorDTO
+import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.rest.user.Users
-import com.kamelia.jellyfish.util.ErrorDTO
-import com.kamelia.jellyfish.util.QueryResult
-import com.kamelia.jellyfish.util.random
+import com.kamelia.jellyfish.util.FileUtils
+import com.kamelia.jellyfish.util.uuid
 import io.ktor.http.content.PartData
 import io.ktor.http.content.streamProvider
 import java.net.URLConnection

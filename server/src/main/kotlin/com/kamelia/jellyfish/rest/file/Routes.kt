@@ -1,6 +1,8 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
+import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.adminRestrict
 import com.kamelia.jellyfish.util.doWithForm
@@ -10,7 +12,7 @@ import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.getUUIDOrNull
 import com.kamelia.jellyfish.util.jwt
 import com.kamelia.jellyfish.util.receivePageDefinition
-import com.kamelia.jellyfish.util.respond
+import com.kamelia.jellyfish.util.respondFile
 import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate

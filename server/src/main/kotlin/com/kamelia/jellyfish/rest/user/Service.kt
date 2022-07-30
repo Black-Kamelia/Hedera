@@ -3,8 +3,8 @@ package com.kamelia.jellyfish.rest.user
 import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.jellyfish.util.ErrorDTO
-import com.kamelia.jellyfish.util.QueryResult
+import com.kamelia.jellyfish.core.ErrorDTO
+import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import kotlin.math.ceil

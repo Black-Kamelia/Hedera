@@ -6,8 +6,8 @@ import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
 import com.kamelia.jellyfish.core.MultipartParseException
-import com.kamelia.jellyfish.util.QueryResult
-import com.kamelia.jellyfish.util.respond
+import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.respond
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall

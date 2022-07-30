@@ -9,12 +9,14 @@ import com.kamelia.jellyfish.rest.core.pageable.applyFilters
 import com.kamelia.jellyfish.rest.core.pageable.applySort
 import com.kamelia.jellyfish.rest.core.pageable.filter
 import com.kamelia.jellyfish.rest.file.File
+import com.kamelia.jellyfish.rest.file.FileVisibility
 import com.kamelia.jellyfish.rest.file.Files
 import com.kamelia.jellyfish.util.uuid
 import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.selectAll
@@ -175,10 +177,16 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
         files.toList()
     }
 
-    suspend fun getFiles(page: Long, pageSize: Int, definition: PageDefinitionDTO): Pair<List<File>, Long> =
+    suspend fun getFiles(
+        page: Long,
+        pageSize: Int,
+        definition: PageDefinitionDTO,
+        asOwner: Boolean
+    ): Pair<List<File>, Long> =
         Connection.query {
             Files.selectAll()
                 .andWhere { Files.owner eq uuid }
+                .apply { if (!asOwner) Files.visibility eq FileVisibility.PUBLIC }
                 .applyFilters(definition.filters) {
                     when (it.field) {
                         Files.name.name -> Files.name.filter(it)

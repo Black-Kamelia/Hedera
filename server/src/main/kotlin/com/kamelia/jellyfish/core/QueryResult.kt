@@ -1,4 +1,4 @@
-package com.kamelia.jellyfish.util
+package com.kamelia.jellyfish.core
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess

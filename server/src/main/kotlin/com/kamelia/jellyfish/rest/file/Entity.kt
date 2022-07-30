@@ -5,6 +5,7 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.Users
+import com.kamelia.jellyfish.util.MimeTypes
 import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -15,6 +16,17 @@ enum class FileVisibility {
     PRIVATE,
     UNLISTED,
     PUBLIC,
+
+    ;
+
+    companion object {
+
+        fun valueOfOrNull(value: String) = try {
+            valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
 }
 
 object Files : AuditableUUIDTable("files") {
@@ -25,6 +37,11 @@ object Files : AuditableUUIDTable("files") {
     val size = long("size")
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", Users)
+
+    init {
+        createdBy
+        updatedBy
+    }
 
     suspend fun countAll(): Long = Connection.query {
         File.count()
@@ -70,7 +87,10 @@ object Files : AuditableUUIDTable("files") {
 
     suspend fun update(file: File, dto: FileUpdateDTO, updater: User): File = Connection.query {
         file.apply {
-            dto.name?.let { name = it }
+            dto.name?.let {
+                name = it
+                mimeType = MimeTypes.typeFromFile(it)
+            }
             dto.visibility?.let { visibility = it }
 
             onUpdate(updater)

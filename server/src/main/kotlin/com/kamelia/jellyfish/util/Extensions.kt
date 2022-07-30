@@ -6,17 +6,37 @@ import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
+import com.kamelia.jellyfish.core.MultipartParseException
+import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.UserRole
+import io.ktor.http.ContentDisposition
+import io.ktor.http.HttpHeaders
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
+import io.ktor.server.request.contentType
+import io.ktor.server.request.receive
 import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.header
+import io.ktor.server.response.respondFile
 import io.ktor.util.pipeline.PipelineContext
+import java.io.File
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntity
+
+suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) {
+    response.header(
+        HttpHeaders.ContentDisposition,
+        ContentDisposition.Attachment
+            .withParameter(ContentDisposition.Parameters.FileName, name)
+            .toString()
+    )
+    response.header("Mime-Type", type)
+    respondFile(file)
+}
 
 fun ApplicationCall.getParamOrNull(name: String): String? = parameters[name]
 
@@ -41,8 +61,16 @@ fun ApplicationCall.getUUIDOrNull(name: String = "uuid"): UUID? = getParamOrNull
 
 fun ApplicationCall.getUUID(name: String = "uuid"): UUID = getUUIDOrNull(name) ?: throw InvalidUUIDException()
 
+suspend fun ApplicationCall.receivePageDefinition(): PageDefinitionDTO = if (request.contentType() == ApplicationJSON) {
+    receive()
+} else {
+    PageDefinitionDTO()
+}
+
+fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
+
 val PipelineContext<*, ApplicationCall>.jwt: Payload
-    get() = this.call.principal<JWTPrincipal>()?.payload ?: throw ExpiredOrInvalidTokenException()
+    get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 
@@ -87,8 +115,8 @@ fun ApplicationCall.getHeader(header: String) = request.headers[header] ?: throw
 suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
-) {
-    receiveMultipart().forEachPart { part ->
+) = runCatching { receiveMultipart() }.onSuccess {
+    it.forEachPart { part ->
         when (part) {
             is PartData.FormItem -> {
                 val field = part.name
@@ -102,7 +130,7 @@ suspend fun ApplicationCall.doWithForm(
         }
         part.dispose()
     }
-}
+}.onFailure { throw MultipartParseException() }
 
 private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 fun String.Companion.random(size: Int) = (1..size)

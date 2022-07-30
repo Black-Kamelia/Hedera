@@ -12,7 +12,7 @@ val logbackVersion: String = project.properties["logback.version"] as String
 plugins {
     application
     kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -34,9 +34,11 @@ dependencies {
     implementation("io.ktor", "ktor-server-sessions-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-host-common-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-content-negotiation-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-status-pages", ktorVersion)
     implementation("io.ktor", "ktor-serialization-kotlinx-json-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-netty-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
+    implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)

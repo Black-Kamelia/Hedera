@@ -113,5 +113,20 @@
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
 
+        <createTable tableName="users_settings">
+            <column name="user_id" type="UUID">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="locale" type="VARCHAR(5)">
+                <constraints nullable="false" />
+            </column>
+            <column name="theme" type="VARCHAR(5)">
+                <constraints nullable="false" />
+            </column>
+            <column name="auto_remove_files" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
     </changeSet>
 </databaseChangeLog>

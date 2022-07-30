@@ -5,6 +5,7 @@ import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.Users
+import com.kamelia.jellyfish.util.MimeTypes
 import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -86,7 +87,10 @@ object Files : AuditableUUIDTable("files") {
 
     suspend fun update(file: File, dto: FileUpdateDTO, updater: User): File = Connection.query {
         file.apply {
-            dto.name?.let { name = it }
+            dto.name?.let {
+                name = it
+                mimeType = MimeTypes.typeFromFile(it)
+            }
             dto.visibility?.let { visibility = it }
 
             onUpdate(updater)

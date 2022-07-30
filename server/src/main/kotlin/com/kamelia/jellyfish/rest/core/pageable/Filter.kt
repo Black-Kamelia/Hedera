@@ -86,7 +86,7 @@ fun Query.applyFilters(filters: FilterDefinitionDTO, mapper: (FilterObject) -> O
         andWhere {
             group.fold(Op.nullOp()) { acc, next ->
                 val op = mapper(next)
-                acc or if (next.type == FilterType.NEG) not(op) else op
+                acc or if (next.type == FilterType.NEGATIVE) not(op) else op
             }
         }
     }

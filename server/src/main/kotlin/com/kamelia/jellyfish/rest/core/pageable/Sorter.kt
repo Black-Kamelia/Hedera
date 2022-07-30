@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.SortOrder
 
 private fun SortDirection.toSortOrder(): SortOrder = when (this) {
     SortDirection.ASC -> SortOrder.ASC
-    SortDirection.DES -> SortOrder.DESC
+    SortDirection.DESC -> SortOrder.DESC
 }
 
 fun Query.applySort(sorters: SorterDefinitionDTO, mapper: (String) -> Column<*>): Query = apply {

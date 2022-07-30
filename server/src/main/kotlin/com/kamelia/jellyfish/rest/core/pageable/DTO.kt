@@ -31,7 +31,7 @@ data class FilterObject(
     val field: String,
     val operator: String,
     val value: String,
-    val type: FilterType = FilterType.POS,
+    val type: FilterType = FilterType.POSITIVE,
 ) : DTO
 
 typealias SorterDefinitionDTO = List<SortObject>
@@ -42,5 +42,5 @@ data class SortObject(
     val direction: SortDirection = SortDirection.ASC,
 ) : DTO
 
-enum class FilterType { POS, NEG }
-enum class SortDirection { ASC, DES }
+enum class FilterType { POSITIVE, NEGATIVE }
+enum class SortDirection { ASC, DESC }

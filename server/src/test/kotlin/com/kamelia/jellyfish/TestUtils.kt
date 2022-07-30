@@ -6,10 +6,13 @@ import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
 import com.kamelia.jellyfish.util.UUIDSerializer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.forms.FormBuilder
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -50,3 +53,12 @@ suspend fun ApplicationTestBuilder.login(
     }
     return response.status to body
 }
+
+fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(
+    "file",
+    this::class.java.getResource(path)!!.readBytes(),
+    Headers.build {
+        append(HttpHeaders.ContentType, type)
+        append(HttpHeaders.ContentDisposition, "filename=\"$name\"")
+    }
+)

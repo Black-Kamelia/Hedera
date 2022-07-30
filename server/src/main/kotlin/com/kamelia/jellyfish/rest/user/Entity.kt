@@ -186,7 +186,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
         Connection.query {
             Files.selectAll()
                 .andWhere { Files.owner eq uuid }
-                .apply { if (!asOwner) Files.visibility eq FileVisibility.PUBLIC }
+                .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }
                 .applyFilters(definition.filters) {
                     when (it.field) {
                         Files.name.name -> Files.name.filter(it)

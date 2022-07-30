@@ -1,5 +1,6 @@
 package com.kamelia.jellyfish.rest.user
 
+import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.util.adminRestrict
 import com.kamelia.jellyfish.util.getPageParameters
 import com.kamelia.jellyfish.util.getUUID
@@ -7,7 +8,6 @@ import com.kamelia.jellyfish.util.idRestrict
 import com.kamelia.jellyfish.util.ifRegular
 import com.kamelia.jellyfish.util.jwt
 import com.kamelia.jellyfish.util.receivePageDefinition
-import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -51,7 +51,7 @@ private fun Route.getAllUsers() = get("/all") {
     call.respond(UserService.getUsers())
 }
 
-private fun Route.getPagedUsers() = get {
+private fun Route.getPagedUsers() = get("/paged") {
     adminRestrict()
     val (page, pageSize) = call.getPageParameters()
     val definition = call.receivePageDefinition()

@@ -5,6 +5,8 @@ import com.kamelia.jellyfish.client
 import com.kamelia.jellyfish.login
 import com.kamelia.jellyfish.rest.core.pageable.FilterObject
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.jellyfish.rest.core.pageable.SortDirection
+import com.kamelia.jellyfish.rest.core.pageable.SortObject
 import com.kamelia.jellyfish.rest.file.FilePageDTO
 import com.kamelia.jellyfish.rest.file.FileRepresentationDTO
 import com.kamelia.jellyfish.rest.file.FileUpdateDTO
@@ -29,6 +31,8 @@ import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 
+private lateinit var code: String
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class FileTest {
 
@@ -47,6 +51,7 @@ class FileTest {
         val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
         assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000001"), responseDto.ownerId)
         assertEquals("text/plain", responseDto.mimeType)
+        code = responseDto.code
     }
 
     @Test
@@ -69,7 +74,7 @@ class FileTest {
         val (status, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
         val client = client()
-        val response = client.get("/api/files") {
+        val response = client.get("/api/files/paged") {
             bearerAuth(tokens!!.token)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -97,24 +102,87 @@ class FileTest {
 
     @Test
     @Order(5)
-    fun `Filter files by name`() = testApplication {
+    fun `Download file`() = testApplication {
         val (status, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
         val client = client()
-        val response = client.get("/api/files") {
+        val response = client.get("/api/files/$code") {
+            bearerAuth(tokens!!.token)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(this::class.java.getResource("/test_files/test.txt")!!.readText(), response.bodyAsText())
+    }
+
+    @Test
+    @Order(6)
+    fun `Filter files by name and sort by size descending`() = testApplication {
+        val (status, tokens) = login("user1", "password")
+        assertEquals(HttpStatusCode.OK, status)
+        val client = client()
+        val response = client.get("/api/files/paged") {
             contentType(ContentType.Application.Json)
-            setBody(PageDefinitionDTO(
-                filters = listOf(listOf(FilterObject(
-                    field = "name",
-                    operator = "like",
-                    value = "%test%"
-                )))
-            ))
+            setBody(
+                PageDefinitionDTO(
+                    filters = listOf(
+                        listOf(
+                            FilterObject(
+                                field = "name",
+                                operator = "like",
+                                value = "%test%"
+                            )
+                        )
+                    ),
+                    sorter = listOf(
+                        SortObject(
+                            field = "size",
+                            direction = SortDirection.DESC
+                        )
+                    )
+                )
+            )
             bearerAuth(tokens!!.token)
         }
         assertEquals(HttpStatusCode.OK, response.status)
         val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
         assertEquals(2, responseDto.page.items.size)
         assertTrue(responseDto.page.items.all { it.name.contains("test") })
+        assertEquals("test.pdf", responseDto.page.items[0].name)
+        assertEquals("test.txt", responseDto.page.items[1].name)
+    }
+
+    @Test
+    @Order(7)
+    fun `Filter files by name and type`() = testApplication {
+        val (status, tokens) = login("user1", "password")
+        assertEquals(HttpStatusCode.OK, status)
+        val client = client()
+        val response = client.get("/api/files/paged") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                PageDefinitionDTO(
+                    filters = listOf(
+                        listOf(
+                            FilterObject(
+                                field = "name",
+                                operator = "like",
+                                value = "%test%"
+                            )
+                        ),
+                        listOf(
+                            FilterObject(
+                                field = "mime_type",
+                                operator = "eq",
+                                value = "application/pdf"
+                            )
+                        )
+                    )
+                )
+            )
+            bearerAuth(tokens!!.token)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
+        assertEquals(1, responseDto.page.items.size)
+        assertTrue(responseDto.page.items.all { it.name == "test.pdf" })
     }
 }

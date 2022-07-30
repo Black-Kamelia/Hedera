@@ -31,6 +31,7 @@
 .application,application/x-ms-application
 .apr,application/vnd.lotus-approach
 .arc,application/x-freearc
+.arw,image/x-sony-arw
 .asc,application/pgp-signature
 .asf,video/x-ms-asf
 .asm,text/x-asm
@@ -124,9 +125,11 @@
 .cpio,application/x-cpio
 .cpp,text/x-c
 .cpt,application/mac-compactpro
+.cr2,image/x-canon-cr2
 .crd,application/x-mscardfile
 .crl,application/pkix-crl
 .crt,application/x-x509-ca-cert
+.crw,image/x-canon-crw
 .cryptonote,application/vnd.rig.cryptonote
 .csh,application/x-csh
 .csml,chemical/x-csml
@@ -168,6 +171,7 @@
 .dmp,application/vnd.tcpdump.pcap
 .dms,application/octet-stream
 .dna,application/vnd.dna
+.dng,image/x-adobe-dng
 .doc,application/msword
 .docm,application/vnd.ms-word.document.macroenabled.12
 .docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document
@@ -208,6 +212,7 @@
 .eot,application/vnd.ms-fontobject
 .eps,application/postscript
 .epub,application/epub+zip
+.erf,image/x-epson-erf
 .es3,application/vnd.eszigno3+xml
 .esa,application/vnd.osgi.subsystem
 .esf,application/vnd.epson.esf
@@ -359,8 +364,10 @@
 .json,application/json
 .jsonml,application/jsonml+json
 .js,text/javascript
+.k25,image/x-kodak-k25
 .kar,audio/midi
 .karbon,application/vnd.kde.karbon
+.kdc,application/x-kodak-kdc
 .kfo,application/vnd.kde.kformula
 .kia,application/vnd.kidspiration
 .kml,application/vnd.google-earth.kml+xml
@@ -477,6 +484,7 @@
 .mqy,application/vnd.mobius.mqy
 .mrc,application/marc
 .mrcx,application/marcxml+xml
+.mrw,image/x-minolta-mrw
 .mscml,application/mediaservercontrol+xml
 .mseed,application/vnd.fdsn.mseed
 .mseq,application/vnd.mseq
@@ -501,6 +509,7 @@
 .nbp,application/vnd.wolfram.player
 .nc,application/x-netcdf
 .ncx,application/x-dtbncx+xml
+.nef,image/x-nikon-nef
 .nfo,text/x-nfo
 .n-gage,application/vnd.nokia.n-gage.symbian.install
 .ngdat,application/vnd.nokia.n-gage.data
@@ -544,6 +553,7 @@
 .opml,text/x-opml
 .oprc,application/vnd.palm
 .opus,audio/ogg
+.orf,image/x-olympus-orf
 .org,application/vnd.lotus-organizer
 .osf,application/vnd.yamaha.openscoreformat
 .osfpvg,application/vnd.yamaha.openscoreformat.osfpvg+xml
@@ -578,6 +588,7 @@
 .pcx,image/x-pcx
 .pdb,application/vnd.palm
 .pdf,application/pdf
+.pef,image/x-pentax-pef
 .pfa,application/x-font-type1
 .pfb,application/x-font-type1
 .pfm,application/x-font-type1
@@ -638,9 +649,11 @@
 .qxl,application/vnd.quark.quarkxpress
 .qxt,application/vnd.quark.quarkxpress
 .ra,audio/x-pn-realaudio
+.raf,image/x-fuji-raf
 .ram,audio/x-pn-realaudio
 .rar,application/x-rar-compressed
 .ras,image/x-cmu-raster
+.raw,image/x-panasonic-raw
 .rcprofile,application/vnd.ipunplugged.rcprofile
 .rdf,application/rdf+xml
 .rdz,application/vnd.data-vision.rdz
@@ -736,7 +749,9 @@
 .spq,application/scvp-vp-request
 .spx,audio/ogg
 .sql,application/x-sql
+.sr2,image/x-sony-sr2
 .src,application/x-wais-source
+.srf,image/x-sony-srf
 .srt,application/x-subrip
 .sru,application/sru+xml
 .srx,application/sparql-results+xml
@@ -919,6 +934,7 @@
 .x3dv,model/x3d+vrml
 .x3dvz,model/x3d+vrml
 .x3dz,model/x3d+xml
+.x3f,image/x-sigma-x3f
 .xaml,application/xaml+xml
 .xap,application/x-silverlight-app
 .xar,application/vnd.xara

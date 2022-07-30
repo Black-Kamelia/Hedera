@@ -41,6 +41,8 @@ val bundleClient = tasks.register<Copy>("bundleClient") {
 tasks.clean {
     dependsOn(npmClean)
     delete(file("executables"))
+    delete(file("upload"))
+    delete(file("server/upload"))
 }
 
 tasks.build {

@@ -39,9 +39,7 @@ object FileService {
         .findByCode(code)
         ?.takeUnless { file ->
             val isPrivate = file.visibility == FileVisibility.PRIVATE
-            val notHasPermission = user?.let {
-                it.role lt UserRole.ADMIN && file.ownerId != it.uuid
-            }
+            val notHasPermission = user?.let { file.ownerId != it.uuid }
             isPrivate && (notHasPermission ?: true)
         }?.let { file ->
             QueryResult.ok(file.toRepresentationDTO())
@@ -53,8 +51,9 @@ object FileService {
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
+        asOwner: Boolean = false,
     ): QueryResult<FilePageDTO, List<ErrorDTO>> {
-        val (files, total) = user.getFiles(page, pageSize, definition)
+        val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
         return QueryResult.ok(
             FilePageDTO(
                 PageDTO(

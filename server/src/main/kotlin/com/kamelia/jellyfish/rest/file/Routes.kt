@@ -87,7 +87,7 @@ private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
     val (page, pageSize) = call.getPageParameters()
     val definition = call.receivePageDefinition()
 
-    call.respond(FileService.getFiles(user, page, pageSize, definition))
+    call.respond(FileService.getFiles(user, page, pageSize, definition, asOwner = uuid == null))
 }
 
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->

@@ -25,7 +25,7 @@ pipeline {
             }
 
             post {
-                success {
+                always {
                     junit checksName: 'Tests', testResults: '**/build/test-results/test/*.xml'
                 }
             }

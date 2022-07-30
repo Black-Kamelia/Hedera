@@ -69,7 +69,7 @@ private fun Route.getFile() = get("/{code}") {
             if (file != null) {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
-                FileService.deleteFileByCodeAsAdmin(code) // remove orphaned file
+                // TODO notify orphaned file
                 call.respond(QueryResult.notFound())
             }
         },

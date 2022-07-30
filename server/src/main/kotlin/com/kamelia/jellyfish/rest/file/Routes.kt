@@ -67,7 +67,7 @@ private fun Route.getFile() = get("/{code}") {
         onSuccess = { (data) ->
             val file = FileUtils.getOrNull(data!!.ownerId, code)
             if (file != null) {
-                call.respondFile(file, data.name)
+                call.respondFile(file, data.name, data.mimeType)
             } else {
                 FileService.deleteFileByCodeAsAdmin(code) // remove orphaned file
                 call.respond(QueryResult.notFound())

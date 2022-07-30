@@ -27,13 +27,14 @@ import java.io.File
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntity
 
-suspend fun ApplicationCall.respondFile(file: File, name: String) {
+suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) {
     response.header(
         HttpHeaders.ContentDisposition,
         ContentDisposition.Attachment
             .withParameter(ContentDisposition.Parameters.FileName, name)
             .toString()
     )
+    response.header("Mime-Type", type)
     respondFile(file)
 }
 

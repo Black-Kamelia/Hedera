@@ -1,4 +1,8 @@
-# Jellyfish
+<p style="text-align: center">
+
+![](Jellyfish.svg)
+
+</p>
 
 A self-hosted screenshots/files hosting system.
 

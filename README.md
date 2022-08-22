@@ -1,7 +1,7 @@
 <p style="text-align: center">
 
-![](Jellyfish_light.svg#gh-light-mode-only)
-![](Jellyfish_dark.svg#gh-dark-mode-only)
+![](img/Jellyfish_light.svg#gh-light-mode-only)
+![](img/Jellyfish_dark.svg#gh-dark-mode-only)
 
 </p>
 

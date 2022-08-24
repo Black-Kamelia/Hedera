@@ -5,7 +5,7 @@
 
 </div>
 
-<p style="text-align: center;">
+<p align="center">
 <i>A self-hosted screenshots/files hosting system.</i>
 </p>
 

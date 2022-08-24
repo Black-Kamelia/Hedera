@@ -1,11 +1,13 @@
-<p style="text-align: center">
+<div style="text-align: center">
 
 ![](img/Jellyfish_light.svg#gh-light-mode-only)
 ![](img/Jellyfish_dark.svg#gh-dark-mode-only)
 
-</p>
+</div>
 
-A self-hosted screenshots/files hosting system.
+<p style="text-align: center;">
+<i>A self-hosted screenshots/files hosting system.</i>
+</p>
 
 ## 🤔 What is it?
 

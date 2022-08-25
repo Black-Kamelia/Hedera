@@ -8,7 +8,7 @@ object MimeTypes {
     fun init() {
         mimeToExt = mutableMapOf()
         extToMime = mutableMapOf()
-        MimeTypes::class.java.getResource("/mime-type-catalog.csv")!!
+        checkNotNull(MimeTypes::class.java.getResource("/mime-type-catalog.csv")) { "mime-type-catalog.csv not found, please contact the developers" }
             .readText()
             .lines()
             .forEach { line ->

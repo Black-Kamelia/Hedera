@@ -17,14 +17,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object FileService {
 
     suspend fun handleFile(part: PartData.FileItem, creator: User): QueryResult<FileRepresentationDTO, List<ErrorDTO>> {
-        val fileName = part.originalFileName!!
-        if (fileName.isBlank()) return QueryResult.badRequest("errors.file.name.empty")
+        val filename = requireNotNull(part.originalFileName) { "errors.file.name.empty" }
+        require(filename.isNotBlank()) { "errors.file.name.empty" }
 
-        val (code, type, size) = FileUtils.write(creator.uuid, part)
+        val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
         return QueryResult.ok(
             Files.create(
                 code = code,
-                name = fileName,
+                name = filename,
                 mimeType = type,
                 size = size,
                 creator = creator

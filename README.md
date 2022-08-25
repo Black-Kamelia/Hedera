@@ -3,7 +3,7 @@
 ![Jellyfish logo](img/Jellyfish_light.svg#gh-light-mode-only)
 ![Jellyfish logo](img/Jellyfish_dark.svg#gh-dark-mode-only)
 
-<h3><i>A self-hosted screenshots/files hosting system.</i></h2>
+<h3><i>A self-hosted screenshots/files hosting system.</i></h3>
 
 </div>
 

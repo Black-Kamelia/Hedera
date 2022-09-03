@@ -13,8 +13,8 @@ class QueryResult<out S, out E> private constructor(
     private val error: ResultData<E>? = null,
 ) {
     init {
-        if (status.isSuccess() && success == null || !status.isSuccess() && error == null) {
-            throw IllegalArgumentException("Either success or error must be set and correspond to the status code")
+        require(!(status.isSuccess() && success == null || !status.isSuccess() && error == null)) {
+            "Either success or error must be set and correspond to the status code"
         }
     }
 
@@ -23,9 +23,11 @@ class QueryResult<out S, out E> private constructor(
         onError: suspend (ResultData<out E>) -> Unit = {}
     ) {
         if (status.isSuccess()) {
-            onSuccess(success!!)
+            checkNotNull(success) { "Success result is null but it should not be possible" }
+            onSuccess(success)
         } else {
-            onError(error!!)
+            checkNotNull(error) { "Error result is null but it should not be possible" }
+            onError(error)
         }
     }
 

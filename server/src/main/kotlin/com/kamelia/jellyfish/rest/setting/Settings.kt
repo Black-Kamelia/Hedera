@@ -6,8 +6,10 @@ enum class Locale {
     fr_FR,
 }
 
-enum class Theme {
-    LIGHT,
-    DARK,
-    SYSTEM,
+@JvmInline
+value class Quota(val value: Long) {
+    companion object {
+        val UNLIMITED = Quota(-2)
+        val DEFAULT = Quota(-1)
+    }
 }

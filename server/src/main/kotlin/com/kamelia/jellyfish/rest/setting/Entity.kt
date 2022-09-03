@@ -15,8 +15,8 @@ object UserSettingsTable : IdTable<UUID>("users_settings") {
     val user get() = id
 
     val locale = enumerationByName<Locale>("locale", 5).clientDefault { Locale.en_US }
-    val theme = enumerationByName<Theme>("theme", 5).clientDefault { Theme.LIGHT }
     val autoRemoveFiles = bool("auto_remove_files").clientDefault { false }
+    val diskQuota = long("disk_quota").clientDefault { Quota.DEFAULT.value }
 
     suspend fun createDefaultSettings(user: User): UserSettings = Connection.query {
         UserSettings.new { this.user = user }
@@ -25,7 +25,6 @@ object UserSettingsTable : IdTable<UUID>("users_settings") {
     suspend fun update(settings: UserSettings, dto: UserSettingsUpdateDTO): UserSettings = Connection.query {
         settings.apply {
             dto.locale?.let { locale = it }
-            dto.theme?.let { theme = it }
             dto.autoRemoveFiles?.let { autoRemoveFiles = it }
         }
     }
@@ -36,6 +35,5 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
 
     var user by User referencedOn UserSettingsTable.id
     var locale by UserSettingsTable.locale
-    var theme by UserSettingsTable.theme
     var autoRemoveFiles by UserSettingsTable.autoRemoveFiles
 }

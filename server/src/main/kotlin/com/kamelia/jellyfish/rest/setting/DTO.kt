@@ -9,7 +9,6 @@ import kotlinx.serialization.UseSerializers
 
 fun UserSettings.toRepresentationDTO() = UserSettingsRepresentationDTO(
     locale,
-    theme,
     autoRemoveFiles,
 )
 
@@ -21,7 +20,6 @@ fun UserSettings.toRepresentationDTO() = UserSettingsRepresentationDTO(
 @Serializable
 data class UserSettingsUpdateDTO(
     val locale: Locale? = null,
-    val theme: Theme? = null,
     val autoRemoveFiles: Boolean? = null,
 ) : DTO
 
@@ -33,6 +31,5 @@ data class UserSettingsUpdateDTO(
 @Serializable
 data class UserSettingsRepresentationDTO(
     val locale: Locale,
-    val theme: Theme,
     val autoRemoveFiles: Boolean,
 ) : DTO

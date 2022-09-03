@@ -65,7 +65,8 @@ private fun Route.getFile() = get("/{code}") {
 
     FileService.getFile(code, user).ifSuccessOrElse(
         onSuccess = { (data) ->
-            val file = FileUtils.getOrNull(data!!.ownerId, code)
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.ownerId, code)
             if (file != null) {
                 call.respondFile(file, data.name, data.mimeType)
             } else {

@@ -43,7 +43,8 @@ object FileUtils {
      */
     suspend fun write(
         owner: UUID,
-        file: PartData.FileItem
+        file: PartData.FileItem,
+        filename: String
     ): Triple<String, String, Long> = withContext(Dispatchers.IO) {
         val fileBytes = file.streamProvider().readBytes()
         val fileCode = generateUniqueCode()
@@ -51,7 +52,7 @@ object FileUtils {
         java.nio.file.Files.createDirectories(directory)
         val filePath = directory.resolve(fileCode)
         java.nio.file.Files.write(filePath, fileBytes)
-        val fileMimeType = MimeTypes.typeFromFile(file.originalFileName!!)
+        val fileMimeType = MimeTypes.typeFromFile(filename)
         val fileSize = java.nio.file.Files.size(filePath)
         Triple(fileCode, fileMimeType, fileSize)
     }

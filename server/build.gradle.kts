@@ -8,6 +8,7 @@ val hikaricpVersion: String = project.properties["hikaricp.version"] as String
 val bcryptVersion: String = project.properties["bcrypt.version"] as String
 val h2Version: String = project.properties["h2.version"] as String
 val logbackVersion: String = project.properties["logback.version"] as String
+val junitVersion: String = project.properties["junit.version"] as String
 
 plugins {
     application
@@ -57,6 +58,7 @@ dependencies {
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
     testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test", kotlinVersion)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion)
 }
 
 tasks.shadowJar {

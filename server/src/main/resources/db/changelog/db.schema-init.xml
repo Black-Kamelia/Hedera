@@ -3,7 +3,13 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
-    <changeSet author="system" id="init-1.0">
+
+    <changeSet author="Black Kamelia" id="init-1.0-users">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
 
         <createTable tableName="users">
             <column name="id" type="UUID">
@@ -56,8 +62,15 @@
                                  constraintName="fk_users__updated_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id" />
-        
-        
+    </changeSet>
+
+    <changeSet author="Black Kamelia" id="init-1.0-files">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="files"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="files">
             <column name="id" type="UUID">
                 <constraints primaryKey="true" />
@@ -114,4 +127,5 @@
                                  referencedColumnNames="id" />
 
     </changeSet>
+
 </databaseChangeLog>

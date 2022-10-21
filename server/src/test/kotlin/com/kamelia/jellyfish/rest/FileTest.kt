@@ -26,7 +26,6 @@ import io.ktor.server.testing.testApplication
 import java.util.UUID
 import java.util.stream.Stream
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Named
 import org.junit.jupiter.api.Order
@@ -67,14 +66,14 @@ class FileTest {
         }
 
         @JvmStatic
-        fun uploadFile(): Stream<Arguments> = Stream.of(
+        fun `Upload file`(): Stream<Arguments> = Stream.of(
             Arguments.of(Named.of("regular user 1", user1), HttpStatusCode.OK),
             Arguments.of(Named.of("regular user 2", user2), HttpStatusCode.OK),
             Arguments.of(Named.of("a guest", guest), HttpStatusCode.Unauthorized),
         )
 
         @JvmStatic
-        fun editFile(): Stream<Arguments> = Stream.of(
+        fun `Edit file`(): Stream<Arguments> = Stream.of(
             Arguments.of(
                 Named.of("the file owner", user1),
                 UUID.fromString("00000000-0000-0000-0002-000000000001"),
@@ -93,7 +92,7 @@ class FileTest {
         )
 
         @JvmStatic
-        fun deleteFile(): Stream<Arguments> = Stream.of(
+        fun `Delete file`(): Stream<Arguments> = Stream.of(
             Arguments.of(
                 Named.of("the file owner", user1),
                 UUID.fromString("00000000-0000-0000-0004-000000000001"),
@@ -112,7 +111,7 @@ class FileTest {
         )
 
         @JvmStatic
-        fun downloadPrivateFile(): Stream<Arguments> = Stream.of(
+        fun `Download private file`(): Stream<Arguments> = Stream.of(
             Arguments.of(
                 Named.of("the file owner", user1),
                 fileCodes[user1.second],
@@ -131,11 +130,10 @@ class FileTest {
         )
     }
 
-    @DisplayName("Uploading a file")
-    @ParameterizedTest(name = "as {0} is {1}")
+    @ParameterizedTest(name = "Uploading a file as {0} is {1}")
     @MethodSource
     @Order(1)
-    fun uploadFile(user: TestUser, statusCode: HttpStatusCode) = testApplication {
+    fun `Upload file`(user: TestUser, statusCode: HttpStatusCode) = testApplication {
         val (tokens, userId) = user
         val client = client()
         val response = client.submitFormWithBinaryData("/api/files/upload", formData {
@@ -154,11 +152,10 @@ class FileTest {
         }
     }
 
-    @DisplayName("Editing a file")
-    @ParameterizedTest(name = "as {0} is {2}")
+    @ParameterizedTest(name = "Editing a file as {0} is {2}")
     @MethodSource
     @Order(2)
-    fun editFile(user: TestUser, fileId: UUID, statusCode: HttpStatusCode) = testApplication {
+    fun `Edit file`(user: TestUser, fileId: UUID, statusCode: HttpStatusCode) = testApplication {
         val (tokens, _) = user
         val client = client()
         val response = client.patch("/api/files/$fileId") {
@@ -191,11 +188,10 @@ class FileTest {
         assertEquals("bar.txt", bar)
     }
 
-    @DisplayName("Deleting a file")
-    @ParameterizedTest(name = "as {0} is {2}")
+    @ParameterizedTest(name = "Deleting a file as {0} is {2}")
     @MethodSource
     @Order(4)
-    fun deleteFile(user: TestUser, fileId: UUID, statusCode: HttpStatusCode) = testApplication {
+    fun `Delete file`(user: TestUser, fileId: UUID, statusCode: HttpStatusCode) = testApplication {
         val (tokens, _) = user
         val client = client()
         val response = client.delete("/api/files/$fileId") {
@@ -206,11 +202,10 @@ class FileTest {
         assertEquals(statusCode, response.status)
     }
 
-    @DisplayName("Downloading a private file")
-    @ParameterizedTest(name = "as {0} is {2}")
+    @ParameterizedTest(name = "Downloading a private file as {0} is {2}")
     @MethodSource
     @Order(5)
-    fun downloadPrivateFile(user: TestUser, fileCode: String, statusCode: HttpStatusCode) = testApplication {
+    fun `Download private file`(user: TestUser, fileCode: String, statusCode: HttpStatusCode) = testApplication {
         val (tokens, _) = user
         val client = client()
         val response = client.get("/api/files/$fileCode") {

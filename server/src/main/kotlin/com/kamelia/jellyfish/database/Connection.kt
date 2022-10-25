@@ -12,11 +12,13 @@ import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionA
 object Connection {
 
     private lateinit var dataSource: HikariDataSource
+    private lateinit var database: Database
+
     val connection: Connection get() = dataSource.connection
 
     fun init() {
         dataSource = hikari()
-        Database.connect(dataSource)
+        database = Database.connect(dataSource)
     }
 
     private fun hikari(): HikariDataSource {
@@ -28,7 +30,7 @@ object Connection {
     suspend fun <T> query(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         block: suspend Transaction.() -> T,
-    ): T = suspendedTransactionAsync(dispatcher) {
+    ): T = suspendedTransactionAsync(dispatcher, database) {
         block()
     }.await()
 }

@@ -24,9 +24,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.UUID
 import java.util.stream.Stream
 import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Named
@@ -46,12 +51,36 @@ typealias TestUser = Pair<TokenPair?, UUID>
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {
 
+    private lateinit var testFolder: File
+
+    @BeforeAll
+    fun initTests() {
+        val testFolderPath = Path.of("_tests")
+        testFolder = if (Files.exists(testFolderPath)) {
+            testFolderPath.toFile()
+        } else {
+            Files.createDirectory(testFolderPath).toFile()
+        }
+
+        val uploadFolder = File(
+            FileTest::class.java.getResource("/upload")?.toURI()
+                ?: throw Exception("Missing resource folder")
+        )
+
+        uploadFolder.copyRecursively(testFolder.resolve("upload"), true)
+    }
+
+    @AfterAll
+    fun cleanUp() {
+        testFolder.deleteRecursively()
+    }
+
     @ParameterizedTest(name = "Uploading file as {0} is {1}")
     @MethodSource
     @Order(1)
     fun uploadFile(
         user: TestUser,
-        statusCode: HttpStatusCode
+        statusCode: HttpStatusCode,
     ) = testApplication {
         val (tokens, userId) = user
         val client = client()
@@ -67,18 +96,17 @@ class FileTest {
             val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
             assertEquals(userId, responseDto.ownerId)
             assertEquals("text/plain", responseDto.mimeType)
-            fileCodes[userId] = responseDto.code
         }
     }
 
     @ParameterizedTest(name = "Downloading {1} file as {0} is {3}")
-    @MethodSource("downloadPrivateFile")
+    @MethodSource("downloadPrivateFile", "downloadUnlistedFile", "downloadPublicFile")
     @Order(2)
     fun downloadFile(
         user: TestUser,
         fileVisibility: String,
         fileCode: String,
-        statusCode: HttpStatusCode
+        statusCode: HttpStatusCode,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
@@ -100,7 +128,7 @@ class FileTest {
         user: TestUser,
         fileVisibility: String,
         fileId: UUID,
-        statusCode: HttpStatusCode
+        statusCode: HttpStatusCode,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
@@ -121,7 +149,7 @@ class FileTest {
         user: TestUser,
         fileVisibility: String,
         fileId: UUID,
-        statusCode: HttpStatusCode
+        statusCode: HttpStatusCode,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
@@ -132,7 +160,6 @@ class FileTest {
         }
         assertEquals(statusCode, response.status)
     }
-
 
     /*
     @Test
@@ -160,7 +187,7 @@ class FileTest {
     @Test
     @Order(5)
     fun filesFiltering1() = testApplication {
-        val ( tokens, _) = user1
+        val (tokens, _) = user1
         val client = client()
         val response = client.get("/api/files/paged") {
             contentType(ContentType.Application.Json)
@@ -199,7 +226,7 @@ class FileTest {
     @Test
     @Order(6)
     fun filesFiltering2() = testApplication {
-        val ( tokens, _) = user1
+        val (tokens, _) = user1
         val client = client()
         val response = client.get("/api/files/paged") {
             contentType(ContentType.Application.Json)
@@ -235,8 +262,6 @@ class FileTest {
     }
 
     companion object {
-
-        private val fileCodes: MutableMap<UUID, String> = mutableMapOf()
 
         private lateinit var superadmin: TestUser
         private lateinit var admin: TestUser
@@ -280,13 +305,13 @@ class FileTest {
                 Named.of("superadmin", superadmin),
                 FileVisibility.PRIVATE.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0001-000000000001"),
-                HttpStatusCode.OK
+                HttpStatusCode.Forbidden
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PRIVATE.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0001-000000000002"),
-                HttpStatusCode.OK
+                HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("file owner", user1),
@@ -314,13 +339,13 @@ class FileTest {
                 Named.of("superadmin", superadmin),
                 FileVisibility.UNLISTED.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0002-000000000001"),
-                HttpStatusCode.OK
+                HttpStatusCode.Forbidden
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.UNLISTED.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0002-000000000002"),
-                HttpStatusCode.OK
+                HttpStatusCode.Forbidden
             ),
             Arguments.of(
                 Named.of("file owner", user1),
@@ -348,13 +373,13 @@ class FileTest {
                 Named.of("superadmin", superadmin),
                 FileVisibility.PUBLIC.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0003-000000000001"),
-                HttpStatusCode.OK
+                HttpStatusCode.Forbidden
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PUBLIC.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0003-000000000002"),
-                HttpStatusCode.OK
+                HttpStatusCode.Forbidden
             ),
             Arguments.of(
                 Named.of("file owner", user1),
@@ -381,32 +406,100 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                fileCodes[user1.second],
-                HttpStatusCode.OK
+                "0002_01_03",
+                HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                fileCodes[user1.second],
-                HttpStatusCode.OK
+                "0002_01_03",
+                HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                fileCodes[user1.second],
+                "0002_01_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                fileCodes[user1.second],
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                fileCodes[user1.second],
+                "0002_01_03",
                 HttpStatusCode.NotFound
+            ),
+        )
+
+        @JvmStatic
+        fun downloadUnlistedFile(): Stream<Arguments> = Stream.of(
+            Arguments.of(
+                Named.of("superadmin", superadmin),
+                FileVisibility.UNLISTED.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("admin", admin),
+                FileVisibility.UNLISTED.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("file owner", user1),
+                FileVisibility.UNLISTED.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("another user", user2),
+                FileVisibility.UNLISTED.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("guest", guest),
+                FileVisibility.UNLISTED.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+        )
+
+        @JvmStatic
+        fun downloadPublicFile(): Stream<Arguments> = Stream.of(
+            Arguments.of(
+                Named.of("superadmin", superadmin),
+                FileVisibility.PUBLIC.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("admin", admin),
+                FileVisibility.PUBLIC.toString().lowercase(),
+                "0002_02_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("file owner", user1),
+                FileVisibility.PUBLIC.toString().lowercase(),
+                "0002_03_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("another user", user2),
+                FileVisibility.PUBLIC.toString().lowercase(),
+                "0002_03_03",
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                Named.of("guest", guest),
+                FileVisibility.PUBLIC.toString().lowercase(),
+                "0002_03_03",
+                HttpStatusCode.OK
             ),
         )
 
@@ -416,13 +509,13 @@ class FileTest {
                 Named.of("superadmin", superadmin),
                 FileVisibility.PRIVATE.toString().lowercase(),
                 UUID.fromString("00000000-0000-0004-0001-000000000001"),
-                HttpStatusCode.NotFound
+                HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PRIVATE.toString().lowercase(),
                 UUID.fromString("00000000-0000-0004-0001-000000000002"),
-                HttpStatusCode.NotFound
+                HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),

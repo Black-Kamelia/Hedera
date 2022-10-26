@@ -33,12 +33,9 @@ import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Named
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -47,7 +44,6 @@ import kotlin.test.assertTrue
 
 typealias TestUser = Pair<TokenPair?, UUID>
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {
 
@@ -77,7 +73,6 @@ class FileTest {
 
     @ParameterizedTest(name = "Uploading file as {0} is {1}")
     @MethodSource
-    @Order(1)
     fun uploadFile(
         user: TestUser,
         statusCode: HttpStatusCode,
@@ -101,7 +96,6 @@ class FileTest {
 
     @ParameterizedTest(name = "Downloading {1} file as {0} is {3}")
     @MethodSource("downloadPrivateFile", "downloadUnlistedFile", "downloadPublicFile")
-    @Order(2)
     fun downloadFile(
         user: TestUser,
         fileVisibility: String,
@@ -123,7 +117,6 @@ class FileTest {
 
     @ParameterizedTest(name = "Editing {1} file as {0} is {3}")
     @MethodSource("editPrivateFile", "editUnlistedFile", "editPublicFile")
-    @Order(3)
     fun editFile(
         user: TestUser,
         fileVisibility: String,
@@ -148,7 +141,6 @@ class FileTest {
 
     @ParameterizedTest(name = "Deleting {1} file as {0} is {3}")
     @MethodSource("deletePrivateFile", "deleteUnlistedFile", "deletePublicFile")
-    @Order(4)
     fun deleteFile(
         user: TestUser,
         fileVisibility: String,
@@ -167,7 +159,6 @@ class FileTest {
 
     @DisplayName("Filtering files by name and sort by size descending")
     @Test
-    @Order(5)
     fun filesFiltering1() = testApplication {
         val (tokens, _) = user1
         val client = client()
@@ -206,7 +197,6 @@ class FileTest {
 
     @DisplayName("Filtering files by name and type")
     @Test
-    @Order(6)
     fun filesFiltering2() = testApplication {
         val (tokens, _) = user1
         val client = client()

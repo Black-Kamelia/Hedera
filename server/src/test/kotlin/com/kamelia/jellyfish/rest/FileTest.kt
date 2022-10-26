@@ -1,8 +1,8 @@
 package com.kamelia.jellyfish.rest
 
+import com.kamelia.jellyfish.TestUser
 import com.kamelia.jellyfish.appendFile
 import com.kamelia.jellyfish.client
-import com.kamelia.jellyfish.core.TokenPair
 import com.kamelia.jellyfish.login
 import com.kamelia.jellyfish.rest.core.pageable.FilterObject
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
@@ -41,8 +41,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
-typealias TestUser = Pair<TokenPair?, UUID>
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {

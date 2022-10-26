@@ -140,6 +140,10 @@ class FileTest {
             }
         }
         assertEquals(statusCode, response.status)
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals("bar.txt", responseDto.name)
+        }
     }
 
     @ParameterizedTest(name = "Deleting {1} file as {0} is {3}")
@@ -160,28 +164,6 @@ class FileTest {
         }
         assertEquals(statusCode, response.status)
     }
-
-    /*
-    @Test
-    @Order(3)
-    fun `Check edited file changed name`() = testApplication {
-        val (status, tokens) = login("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
-        val client = client()
-        val response = client.get("/api/files/paged") {
-            bearerAuth(tokens!!.token)
-        }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
-        val bar = responseDto
-            .page
-            .items
-            .firstOrNull {
-                it.id == UUID.fromString("00000000-0000-0000-0000-000000000001")
-            }?.name
-        assertEquals("bar.txt", bar)
-    }
-    */
 
     @DisplayName("Filtering files by name and sort by size descending")
     @Test
@@ -329,7 +311,7 @@ class FileTest {
                 Named.of("guest", guest),
                 FileVisibility.PRIVATE.toString().lowercase(),
                 UUID.fromString("00000000-0000-0003-0001-000000000005"),
-                HttpStatusCode.NotFound
+                HttpStatusCode.Unauthorized
             ),
         )
 
@@ -533,7 +515,7 @@ class FileTest {
                 Named.of("guest", guest),
                 FileVisibility.PRIVATE.toString().lowercase(),
                 UUID.fromString("00000000-0000-0004-0001-000000000005"),
-                HttpStatusCode.NotFound
+                HttpStatusCode.Unauthorized
             ),
         )
 

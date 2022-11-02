@@ -264,8 +264,7 @@ class FileTest {
         fun uploadFile(): Stream<Arguments> = Stream.of(
             Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.OK),
             Arguments.of(Named.of("admin", admin), HttpStatusCode.OK),
-            Arguments.of(Named.of("regular user 1", user1), HttpStatusCode.OK),
-            Arguments.of(Named.of("regular user 2", user2), HttpStatusCode.OK),
+            Arguments.of(Named.of("regular user", user1), HttpStatusCode.OK),
             Arguments.of(Named.of("guest", guest), HttpStatusCode.Unauthorized),
         )
 

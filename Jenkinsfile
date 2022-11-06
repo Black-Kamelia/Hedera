@@ -27,6 +27,7 @@ pipeline {
             post {
                 always {
                     junit checksName: 'Tests', testResults: '**/build/test-results/test/*.xml'
+                    publishCoverage adapters: [jacocoAdapter('**/build/reports/jacoco/test/*.xml')]
                 }
             }
         }

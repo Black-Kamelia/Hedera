@@ -4,6 +4,7 @@ val coroutinesVersion: String = project.properties["coroutines.version"] as Stri
 val exposedVersion: String = project.properties["exposed.version"] as String
 val postgresqlVersion: String = project.properties["postgresql.version"] as String
 val liquibaseVersion: String = project.properties["liquibase.version"] as String
+val liquibaseLoggingVersion: String = project.properties["liquibase.logging.version"] as String
 val hikaricpVersion: String = project.properties["hikaricp.version"] as String
 val bcryptVersion: String = project.properties["bcrypt.version"] as String
 val h2Version: String = project.properties["h2.version"] as String
@@ -60,6 +61,8 @@ dependencies {
     testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test", kotlinVersion)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion)
+
+    runtimeOnly("com.mattbertolini", "liquibase-slf4j", liquibaseLoggingVersion)
 }
 
 tasks.shadowJar {

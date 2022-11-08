@@ -1,38 +1,31 @@
 package com.kamelia.jellyfish.rest
 
+import com.kamelia.jellyfish.TestUser
 import com.kamelia.jellyfish.client
-import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.login
-import com.kamelia.jellyfish.rest.user.UserDTO
-import com.kamelia.jellyfish.rest.user.UserPasswordUpdateDTO
-import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
-import com.kamelia.jellyfish.rest.user.UserRole
-import com.kamelia.jellyfish.rest.user.UserUpdateDTO
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.delete
-import io.ktor.client.request.patch
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.server.testing.testApplication
-import java.util.UUID
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import com.kamelia.jellyfish.rest.user.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Named
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.*
+import java.util.stream.Stream
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserTest {
 
+    @DisplayName("Signing up")
     @Test
-    @Order(1)
-    fun `Sign up`() = testApplication {
+    fun signUp() = testApplication {
         val newUserDto = UserDTO(
             username = "test",
             password = "Test0@aaa",
@@ -53,9 +46,9 @@ class UserTest {
         client.delete("/api/users/${responseDto.id}")
     }
 
+    @DisplayName("Signing up with already existing email")
     @Test
-    @Order(2)
-    fun `Sign up with existing email`() = testApplication {
+    fun signUpExistingMail() = testApplication {
         val dto = UserDTO(
             username = "test",
             password = "Test0@aaa",
@@ -68,9 +61,9 @@ class UserTest {
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
+    @DisplayName("Signing up with already existing username")
     @Test
-    @Order(3)
-    fun `Sign up with existing username`() = testApplication {
+    fun signUpExistingUsername() = testApplication {
         val dto = UserDTO(
             username = "admin",
             password = "Test0@aaa",
@@ -83,80 +76,158 @@ class UserTest {
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
-    @Test
-    @Order(4)
-    fun `Update username`() = testApplication {
-        val (status, tokens) = login("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
+    @DisplayName("Updating own username")
+    @ParameterizedTest(name = "Updating own username as {0} is {2}")
+    @MethodSource
+    fun updateOwnUsername(
+        user: TestUser,
+        newUsername: String,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
         val client = client()
-        val response = client.patch("/api/users/00000000-0000-0000-0000-000000000001") {
+        val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
-            setBody(
-                UserUpdateDTO(
-                    username = "newUsername"
-                )
-            )
-            bearerAuth(tokens!!.token)
+            setBody(UserUpdateDTO(username = newUsername))
+            tokens?.let {
+                bearerAuth(it.token)
+            }
         }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-        assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000001"), responseDto.id)
-        assertEquals("newUsername", responseDto.username)
-        assertEquals("user1@test.com", responseDto.email)
-        assertEquals(UserRole.REGULAR, responseDto.role)
-        assertTrue { responseDto.enabled }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newUsername, responseDto.username)
+        }
     }
 
-    @Test
-    @Order(5)
-    fun `Update email address`() = testApplication {
-        val (status, tokens) = login("user2", "password")
-        assertEquals(HttpStatusCode.OK, status)
+    @DisplayName("Updating other's username")
+    @ParameterizedTest(name = "Updating other''s username as {0} is {3}")
+    @MethodSource
+    fun updateOtherUsername(
+        user: TestUser,
+        userId: UUID,
+        newUsername: String,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
         val client = client()
-        val response = client.patch("/api/users/00000000-0000-0000-0000-000000000002") {
+        val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
-            setBody(
-                UserUpdateDTO(
-                    email = "newEmail@test.com"
-                )
-            )
-            bearerAuth(tokens!!.token)
+            setBody(UserUpdateDTO(username = newUsername))
+            tokens?.let {
+                bearerAuth(it.token)
+            }
         }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-        assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000002"), responseDto.id)
-        assertEquals("user2", responseDto.username)
-        assertEquals("newEmail@test.com", responseDto.email)
-        assertEquals(UserRole.REGULAR, responseDto.role)
-        assertTrue { responseDto.enabled }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newUsername, responseDto.username)
+        }
     }
 
-    @Test
-    @Order(6)
-    fun `Update password with correct old password`() = testApplication {
-        val (status, tokens) = login("newUsername", "password")
-        assertEquals(HttpStatusCode.OK, status)
+    @DisplayName("Updating own email")
+    @ParameterizedTest(name = "Updating own email as {0} is {2}")
+    @MethodSource
+    fun updateOwnEmail(
+        user: TestUser,
+        newEmail: String,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
         val client = client()
-        val response = client.patch("/api/users/00000000-0000-0000-0000-000000000001/password") {
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(email = newEmail))
+            tokens?.let {
+                bearerAuth(it.token)
+            }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newEmail, responseDto.email)
+        }
+    }
+
+    @DisplayName("Updating other's email")
+    @ParameterizedTest(name = "Updating other''s email as {0} is {3}")
+    @MethodSource
+    fun updateOtherEmail(
+        user: TestUser,
+        userId: UUID,
+        newEmail: String,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(email = newEmail))
+            tokens?.let {
+                bearerAuth(it.token)
+            }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newEmail, responseDto.email)
+        }
+    }
+
+    @DisplayName("Updating own password")
+    @ParameterizedTest(name = "Updating own password as {0} is {1}")
+    @MethodSource
+    fun updateOwnPassword(
+        user: TestUser,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
+        val client = client()
+        val response = client.patch("/api/users/$userId/password") {
             contentType(ContentType.Application.Json)
             setBody(
                 UserPasswordUpdateDTO(
                     "password",
-                    "pwdSecure100$"
+                    "P@ssw0rd"
                 )
             )
-            bearerAuth(tokens!!.token)
+            tokens?.let { bearerAuth(it.token) }
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(expectedStatus, response.status)
     }
 
+    @DisplayName("Updating other's password")
+    @ParameterizedTest(name = "Updating other''s password as {0} is {2}")
+    @MethodSource
+    fun updateOtherPassword(
+        user: TestUser,
+        userId: UUID,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.patch("/api/users/$userId/password") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserPasswordUpdateDTO(
+                    "password",
+                    "p@ssw0rd"
+                )
+            )
+            tokens?.let { bearerAuth(it.token) }
+        }
+        assertEquals(expectedStatus, response.status)
+    }
+
+    // TODO: Roles updating tests
+
+    @DisplayName("Updating password with wrong old password")
     @Test
-    @Order(7)
-    fun `Update password with wrong old password`() = testApplication {
-        val (status, tokens) = login("user2", "password")
+    fun updatePasswordWrong() = testApplication {
+        val (status, tokens) = login("edit_wrong_password", "password")
         assertEquals(HttpStatusCode.OK, status)
         val client = client()
-        val response = client.patch("/api/users/00000000-0000-0000-0000-000000000002/password") {
+        val response = client.patch("/api/users/00000000-0000-0012-0000-000000000001/password") {
             contentType(ContentType.Application.Json)
             setBody(
                 UserPasswordUpdateDTO(
@@ -169,10 +240,10 @@ class UserTest {
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
+    @DisplayName("Updating unknown user")
     @Test
-    @Order(8)
-    fun `Update unknown user`() = testApplication {
-        val (status, tokens) = login("admin", "admin")
+    fun updateUnknownUser() = testApplication {
+        val (status, tokens) = login("admin", "password")
         assertEquals(HttpStatusCode.OK, status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0000-0000-00000000000f") {
@@ -187,28 +258,257 @@ class UserTest {
         assertEquals(HttpStatusCode.NotFound, response.status, response.bodyAsText())
     }
 
-    @Test
-    @Order(9)
-    fun `Delete existing user`() = testApplication {
-        val (status, tokens) = login("admin", "admin")
-        println(Hasher.hash("admin"))
-        assertEquals(HttpStatusCode.OK, status)
+    @DisplayName("Deleting user")
+    @ParameterizedTest(name = "Deleting user as {0} is {2}")
+    @MethodSource
+    fun deleteUser(
+        user: TestUser,
+        userId: UUID,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
         val client = client()
-        val response = client.delete("/api/users/00000000-0000-0000-0000-000000000000") {
-            bearerAuth(tokens!!.token)
+        val response = client.delete("/api/users/$userId") {
+            tokens?.let {
+                bearerAuth(it.token)
+            }
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(expectedStatus, response.status)
     }
 
+    @DisplayName("Deleting unknown user")
     @Test
-    @Order(10)
-    fun `Delete unknown user`() = testApplication {
-        val (status, tokens) = login("admin", "admin")
+    fun deleteUnknownUser() = testApplication {
+        val (status, tokens) = login("admin", "password")
         assertEquals(HttpStatusCode.OK, status)
         val client = client()
         val response = client.delete("/api/users/ffffffff-ffff-ffff-ffff-ffffffffffff") {
             bearerAuth(tokens!!.token)
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    companion object {
+
+        private lateinit var superadmin: TestUser
+        private lateinit var admin: TestUser
+        private lateinit var user: TestUser
+        private val guest: TestUser = Pair(null, UUID(0, 0))
+
+        init {
+            testApplication {
+                superadmin = Pair(
+                    login("owner", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000001")
+                )
+                admin = Pair(
+                    login("admin", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000002")
+                )
+                user = Pair(
+                    login("user1", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000003")
+                )
+            }
+        }
+
+        @JvmStatic
+        fun updateOwnUsername(): Stream<Arguments> {
+            lateinit var superadmin: TestUser
+            lateinit var admin: TestUser
+            lateinit var user: TestUser
+
+            testApplication {
+                superadmin = Pair(
+                    login("owner_edit_username", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0004-0000-000000000001")
+                )
+                admin = Pair(
+                    login("admin_edit_username", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0004-0000-000000000002")
+                )
+                user = Pair(
+                    login("user_edit_username", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0004-0000-000000000003")
+                )
+            }
+
+            return Stream.of(
+                Arguments.of(Named.of("superadmin", superadmin), "newSuperadmin", HttpStatusCode.OK),
+                Arguments.of(Named.of("admin", admin), "newAdmin", HttpStatusCode.OK),
+                Arguments.of(Named.of("regular user", user), "newUser", HttpStatusCode.OK),
+                Arguments.of(Named.of("guest", guest), "newGuest", HttpStatusCode.Unauthorized),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherUsername(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    UUID.fromString("00000000-0000-0005-0000-000000000001"),
+                    "test5-newUsername1",
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    UUID.fromString("00000000-0000-0005-0000-000000000002"),
+                    "test5-newUsername2",
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    UUID.fromString("00000000-0000-0005-0000-000000000003"),
+                    "test5-newUsername3",
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    UUID.fromString("00000000-0000-0005-0000-000000000004"),
+                    "test5-newUsername4",
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOwnEmail(): Stream<Arguments> {
+            lateinit var superadmin: TestUser
+            lateinit var admin: TestUser
+            lateinit var user: TestUser
+
+            testApplication {
+                superadmin = Pair(
+                    login("owner_edit_email", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0006-0000-000000000001")
+                )
+                admin = Pair(
+                    login("admin_edit_email", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0006-0000-000000000002")
+                )
+                user = Pair(
+                    login("user_edit_email", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0006-0000-000000000003")
+                )
+            }
+
+            return Stream.of(
+                Arguments.of(Named.of("superadmin", superadmin), "Superadmin@newEmail.me", HttpStatusCode.OK),
+                Arguments.of(Named.of("admin", admin), "Admin@newEmail.me", HttpStatusCode.OK),
+                Arguments.of(Named.of("regular user", user), "User@newEmail.me", HttpStatusCode.OK),
+                Arguments.of(Named.of("guest", guest), "Guest@newEmail.me", HttpStatusCode.Unauthorized),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherEmail(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    UUID.fromString("00000000-0000-0007-0000-000000000001"),
+                    "newEmail1@test7.com",
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    UUID.fromString("00000000-0000-0007-0000-000000000002"),
+                    "newEmail2@test7.com",
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    UUID.fromString("00000000-0000-0007-0000-000000000003"),
+                    "newEmail3@test7.com",
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    UUID.fromString("00000000-0000-0007-0000-000000000004"),
+                    "newEmail4@test7.com",
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOwnPassword(): Stream<Arguments> {
+            lateinit var superadmin: TestUser
+            lateinit var admin: TestUser
+            lateinit var user: TestUser
+
+            testApplication {
+                superadmin = Pair(
+                    login("owner_edit_password", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0008-0000-000000000001")
+                )
+                admin = Pair(
+                    login("admin_edit_password", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0008-0000-000000000002")
+                )
+                user = Pair(
+                    login("user_edit_password", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0008-0000-000000000003")
+                )
+            }
+
+            return Stream.of(
+                Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.OK),
+                Arguments.of(Named.of("admin", admin), HttpStatusCode.OK),
+                Arguments.of(Named.of("regular user", user), HttpStatusCode.OK),
+                Arguments.of(Named.of("guest", guest), HttpStatusCode.Unauthorized),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherPassword(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    UUID.fromString("00000000-0000-0009-0000-000000000001"),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    UUID.fromString("00000000-0000-0009-0000-000000000002"),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    UUID.fromString("00000000-0000-0009-0000-000000000003"),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    UUID.fromString("00000000-0000-0009-0000-000000000004"),
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun deleteUser(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    "00000000-0000-0014-0000-000000000001",
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    "00000000-0000-0014-0000-000000000002",
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    "00000000-0000-0014-0000-000000000003",
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    "00000000-0000-0014-0000-000000000004",
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
     }
 }

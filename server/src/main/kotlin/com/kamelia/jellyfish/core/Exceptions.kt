@@ -15,3 +15,7 @@ class UploadCodeGenerationException : Exception("errors.uploads.code_generation"
 class MultipartParseException : Exception("errors.uploads.multipart_parse")
 
 class IllegalFilterException(filter: FilterObject) : Exception("errors.filters.illegal.`$filter`")
+
+class IllegalActionException : Exception("errors.actions.illegal")
+
+class InsufficientPermissionsException : Exception("errors.permissions.insufficient")

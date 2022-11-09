@@ -1,7 +1,9 @@
 package com.kamelia.jellyfish.plugins
 
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
+import com.kamelia.jellyfish.core.IllegalActionException
 import com.kamelia.jellyfish.core.IllegalFilterException
+import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
@@ -34,6 +36,9 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
 
     is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
+    is IllegalActionException,
+    is InsufficientPermissionsException -> forbiddenMessage(call, cause)
+
     else -> unhandledError(call, cause)
 }
 
@@ -42,6 +47,9 @@ private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) =
     call.respond(QueryResult.unauthorized(cause.message ?: cause.javaClass.name))
+
+private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) =
+    call.respond(QueryResult.forbidden(cause.message ?: cause.javaClass.name))
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
     call.respond(QueryResult.error(HttpStatusCode.InternalServerError, listOf("errors.unknown")))

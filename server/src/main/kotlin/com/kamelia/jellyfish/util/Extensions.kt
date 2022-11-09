@@ -3,6 +3,8 @@ package com.kamelia.jellyfish.util
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
+import com.kamelia.jellyfish.core.IllegalActionException
+import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
@@ -87,12 +89,12 @@ inline fun PipelineContext<*, ApplicationCall>.ifNotRegular(block: () -> Unit) {
 }
 
 fun PipelineContext<*, ApplicationCall>.adminRestrict() {
-    ifRegular { throw ExpiredOrInvalidTokenException() }
+    ifRegular { throw InsufficientPermissionsException() }
 }
 
 fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
     val id = jwt["id"].asString()
-    if (id != uuid.toString()) throw ExpiredOrInvalidTokenException()
+    if (id != uuid.toString()) throw IllegalActionException()
 }
 
 fun ApplicationCall.getPageParameters(): Pair<Long, Int> {

@@ -6,7 +6,7 @@ import java.security.SecureRandom
 
 object Hasher {
     private val version = BCrypt.Version.VERSION_2B
-    private val strategy = LongPasswordStrategies.truncate(version)
+    private val strategy = LongPasswordStrategies.hashSha512(version)
     private val hasher = BCrypt.with(version, SecureRandom(), strategy)
     private val verifier = BCrypt.verifyer(version, strategy)
 

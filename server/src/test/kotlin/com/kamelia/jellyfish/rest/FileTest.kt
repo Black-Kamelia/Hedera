@@ -12,22 +12,34 @@ import com.kamelia.jellyfish.rest.file.FilePageDTO
 import com.kamelia.jellyfish.rest.file.FileRepresentationDTO
 import com.kamelia.jellyfish.rest.file.FileUpdateDTO
 import com.kamelia.jellyfish.rest.file.FileVisibility
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
-import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.*
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.delete
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.forms.submitFormWithBinaryData
+import io.ktor.client.request.get
+import io.ktor.client.request.patch
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.server.testing.testApplication
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.*
+import java.util.UUID
 import java.util.stream.Stream
-import kotlin.test.assertEquals
+import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Named
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -58,7 +70,7 @@ class FileTest {
     }
 
     @DisplayName("Uploading a file")
-    @ParameterizedTest(name = "Uploading file as {0} is {1}")
+    @ParameterizedTest(name = "Uploading a file as {0} is {1}")
     @MethodSource
     fun uploadFile(
         user: TestUser,

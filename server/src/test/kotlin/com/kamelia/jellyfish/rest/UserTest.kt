@@ -3,11 +3,23 @@ package com.kamelia.jellyfish.rest
 import com.kamelia.jellyfish.TestUser
 import com.kamelia.jellyfish.client
 import com.kamelia.jellyfish.login
-import com.kamelia.jellyfish.rest.user.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
+import com.kamelia.jellyfish.rest.user.UserDTO
+import com.kamelia.jellyfish.rest.user.UserPasswordUpdateDTO
+import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
+import com.kamelia.jellyfish.rest.user.UserRole
+import com.kamelia.jellyfish.rest.user.UserUpdateDTO
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.delete
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.server.testing.testApplication
+import java.util.UUID
+import java.util.stream.Stream
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -17,8 +29,6 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.*
-import java.util.stream.Stream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserTest {
@@ -89,9 +99,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(username = newUsername))
-            tokens?.let {
-                bearerAuth(it.token)
-            }
+            tokens?.let { bearerAuth(it.token) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -114,9 +122,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(username = newUsername))
-            tokens?.let {
-                bearerAuth(it.token)
-            }
+            tokens?.let { bearerAuth(it.token) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -138,9 +144,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(email = newEmail))
-            tokens?.let {
-                bearerAuth(it.token)
-            }
+            tokens?.let { bearerAuth(it.token) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -163,9 +167,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(email = newEmail))
-            tokens?.let {
-                bearerAuth(it.token)
-            }
+            tokens?.let { bearerAuth(it.token) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -219,7 +221,50 @@ class UserTest {
         assertEquals(expectedStatus, response.status)
     }
 
-    // TODO: Roles updating tests
+    @DisplayName("Updating own role")
+    @ParameterizedTest(name = "Updating own role as {0} to {1} is {2}")
+    @MethodSource
+    fun updateOwnRole(
+        user: TestUser,
+        newRole: UserRole,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(role = newRole))
+            tokens?.let { bearerAuth(it.token) }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newRole, responseDto.role)
+        }
+    }
+
+    @DisplayName("Updating other's role")
+    @ParameterizedTest(name = "Updating {1}''s role to {2} as {0} is {3}")
+    @MethodSource
+    fun updateOtherRole(
+        user: TestUser,
+        userId: UUID,
+        newRole: UserRole,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(role = newRole))
+            tokens?.let { bearerAuth(it.token) }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newRole, responseDto.role)
+        }
+    }
 
     @DisplayName("Updating password with wrong old password")
     @Test
@@ -269,9 +314,7 @@ class UserTest {
         val (tokens, _) = user
         val client = client()
         val response = client.delete("/api/users/$userId") {
-            tokens?.let {
-                bearerAuth(it.token)
-            }
+            tokens?.let { bearerAuth(it.token) }
         }
         assertEquals(expectedStatus, response.status)
     }
@@ -480,6 +523,190 @@ class UserTest {
                 Arguments.of(
                     Named.of("guest", guest),
                     UUID.fromString("00000000-0000-0009-0000-000000000004"),
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOwnRole(): Stream<Arguments> {
+            lateinit var superadmin: TestUser
+            lateinit var admin: TestUser
+            lateinit var user: TestUser
+
+            testApplication {
+                superadmin = Pair(
+                    login("owner_edit_role", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-00010-0000-000000000001")
+                )
+                admin = Pair(
+                    login("admin_edit_role", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-00010-0000-000000000002")
+                )
+                user = Pair(
+                    login("user_edit_role", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-00010-0000-000000000003")
+                )
+            }
+
+            return Stream.of(
+                Arguments.of(Named.of("superadmin", superadmin), UserRole.ADMIN, HttpStatusCode.Forbidden),
+                Arguments.of(Named.of("superadmin", superadmin), UserRole.REGULAR, HttpStatusCode.Forbidden),
+                Arguments.of(Named.of("admin", admin), UserRole.OWNER, HttpStatusCode.Forbidden),
+                Arguments.of(Named.of("admin", admin), UserRole.REGULAR, HttpStatusCode.Forbidden),
+                Arguments.of(Named.of("regular user", user), UserRole.ADMIN, HttpStatusCode.Forbidden),
+                Arguments.of(Named.of("regular user", user), UserRole.OWNER, HttpStatusCode.Forbidden),
+                Arguments.of(Named.of("guest", guest), UserRole.REGULAR, HttpStatusCode.Unauthorized),
+                Arguments.of(Named.of("guest", guest), UserRole.ADMIN, HttpStatusCode.Unauthorized),
+                Arguments.of(Named.of("guest", guest), UserRole.OWNER, HttpStatusCode.Unauthorized),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherRole(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0001-000000000001")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0001-000000000002")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0001-000000000003")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0001-000000000004")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0001-000000000005")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("superadmin", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0001-000000000006")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0002-000000000001")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0002-000000000002")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0002-000000000003")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0002-000000000004")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0002-000000000005")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0002-000000000006")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0003-000000000001")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0003-000000000002")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0003-000000000003")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0003-000000000004")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0003-000000000005")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0003-000000000006")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0004-000000000001")),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0004-000000000002")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0004-000000000003")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0004-000000000004")),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000005")),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000006")),
+                    Named.of("admin", UserRole.ADMIN),
                     HttpStatusCode.Unauthorized
                 ),
             )

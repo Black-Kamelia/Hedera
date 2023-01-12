@@ -2,10 +2,16 @@ package com.kamelia.jellyfish.rest
 
 import com.kamelia.jellyfish.client
 import com.kamelia.jellyfish.login
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
-import org.junit.jupiter.api.*
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.patch
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.testApplication
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestMethodOrder
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

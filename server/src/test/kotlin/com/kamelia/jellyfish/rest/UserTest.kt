@@ -537,15 +537,15 @@ class UserTest {
             testApplication {
                 superadmin = Pair(
                     login("owner_edit_role", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("00000000-0000-00010-0000-000000000001")
+                    UUID.fromString("00000000-0000-0010-0000-000000000001")
                 )
                 admin = Pair(
                     login("admin_edit_role", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("00000000-0000-00010-0000-000000000002")
+                    UUID.fromString("00000000-0000-0010-0000-000000000002")
                 )
                 user = Pair(
                     login("user_edit_role", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("00000000-0000-00010-0000-000000000003")
+                    UUID.fromString("00000000-0000-0010-0000-000000000003")
                 )
             }
 

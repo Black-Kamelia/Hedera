@@ -45,9 +45,17 @@ private fun Route.uploadFile() = post("/upload") {
     val uuid = jwt.uuid
     val user = Users.findById(uuid) ?: throw ExpiredOrInvalidTokenException()
 
+    call.getHeader("Content-Type").let { contentType ->
+        if (!contentType.startsWith("multipart/form-data")) {
+            call.respond(QueryResult.badRequest("errors.uploads.content_type"))
+        }
+    }
+
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
-    ))
+    ), onMissing = {
+        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+    })
 }
 
 private fun Route.uploadFileFromToken() = post("/upload/token") {
@@ -55,8 +63,13 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     val user = Users.findByUploadToken(authToken) ?: throw ExpiredOrInvalidTokenException()
 
     call.doWithForm(onFiles = mapOf(
-        "file" to { call.respond(FileService.handleFile(it, user)) }
-    ))
+        "file" to {
+            call.respond(FileService.handleFile(it, user))
+        }
+    ), onMissing = {
+        call.respond(QueryResult.badRequest("Missing file"))
+        return@doWithForm
+    })
 }
 
 private fun Route.getFile() = get("/{code}") {

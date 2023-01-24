@@ -15,6 +15,7 @@ import com.kamelia.jellyfish.rest.file.FileVisibility
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
@@ -29,6 +30,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.UUID
 import java.util.stream.Stream
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -40,6 +42,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import kotlin.test.assertContains
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -91,6 +94,53 @@ class FileTest {
             assertEquals(userId, responseDto.ownerId)
             assertEquals("text/plain", responseDto.mimeType)
         }
+    }
+
+    @DisplayName("Uploading a file with incorrect content type")
+    @Test
+    fun uploadFileWithIncorrectContentType() = testApplication {
+        val (_, tokens) = login("user1", "password")
+        val client = client()
+        val response = client.submitForm("/api/files/upload") {
+            tokens?.let {
+                bearerAuth(it.token)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+        val errors = Json.decodeFromString<List<String>>(response.bodyAsText())
+        assertContains(errors, "errors.uploads.content_type")
+    }
+
+    @DisplayName("Uploading a file with no file")
+    @Test
+    fun uploadFileWithNoFile() = testApplication {
+        val (_, tokens) = login("user1", "password")
+        val client = client()
+        val response = client.submitFormWithBinaryData("/api/files/upload", formData {}) {
+            tokens?.let {
+                bearerAuth(it.token)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+        val errors = Json.decodeFromString<List<String>>(response.bodyAsText())
+        assertContains(errors, "errors.uploads.missing_file")
+    }
+
+    @DisplayName("Uploading a file with an empty name")
+    @Test
+    fun uploadFileWithEmptyName() = testApplication {
+        val (_, tokens) = login("user1", "password")
+        val client = client()
+        val response = client.submitFormWithBinaryData("/api/files/upload", formData {
+            appendFile("/test_files/test.txt", "", "text/plain")
+        }) {
+            tokens?.let {
+                bearerAuth(it.token)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+        val errors = Json.decodeFromString<List<String>>(response.bodyAsText())
+        assertContains(errors, "errors.file.name.empty")
     }
 
     @DisplayName("Downloading a file")

@@ -117,20 +117,30 @@ fun ApplicationCall.getHeader(header: String) = request.headers[header] ?: throw
 suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
+    onMissing: suspend (field: String) -> Unit = {},
 ) = runCatching { receiveMultipart() }.onSuccess {
+    val visitedFormItem = mutableSetOf<String>()
+    val visitedFileItem = mutableSetOf<String>()
     it.forEachPart { part ->
+        val field = part.name!!
         when (part) {
             is PartData.FormItem -> {
-                val field = part.name
-                if (field in onFields) onFields[field]?.invoke(part)
+                visitedFormItem.add(field)
+                onFields[field]?.invoke(part)
             }
             is PartData.FileItem -> {
-                val field = part.name
-                if (field in onFiles) onFiles[field]?.invoke(part)
+                visitedFileItem.add(field)
+                onFiles[field]?.invoke(part)
             }
             else -> {}
         }
         part.dispose()
+    }
+    (onFields.keys).forEach { field ->
+        if (field !in visitedFormItem) onMissing(field)
+    }
+    (onFiles.keys).forEach { field ->
+        if (field !in visitedFileItem) onMissing(field)
     }
 }.onFailure { throw MultipartParseException() }
 

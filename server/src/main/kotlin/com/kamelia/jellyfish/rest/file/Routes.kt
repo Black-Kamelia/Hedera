@@ -67,8 +67,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
             call.respond(FileService.handleFile(it, user))
         }
     ), onMissing = {
-        call.respond(QueryResult.badRequest("Missing file"))
-        return@doWithForm
+        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
     })
 }
 

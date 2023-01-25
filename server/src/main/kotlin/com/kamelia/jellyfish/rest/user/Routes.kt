@@ -16,7 +16,6 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
 
@@ -83,7 +82,7 @@ private fun Route.deleteUser() = delete("/{uuid}") {
     call.respond(UserService.deleteUser(uuid))
 }
 
-private fun Route.regenerateUploadToken() = put("/uploadToken") {
+private fun Route.regenerateUploadToken() = post("/uploadToken") {
     val uuid = jwt.uuid
     idRestrict(uuid)
 

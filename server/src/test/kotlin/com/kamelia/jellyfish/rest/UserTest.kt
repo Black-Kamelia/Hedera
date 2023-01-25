@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import kotlin.test.assertNotEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserTest {
@@ -71,6 +72,21 @@ class UserTest {
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
 
+    @DisplayName("Signing up with invalid email")
+    @Test
+    fun signUpInvalidMail() = testApplication {
+        val dto = UserDTO(
+            username = "test",
+            password = "Test0@aaa",
+            email = "myemail"
+        )
+        val response = client().post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+    }
+
     @DisplayName("Signing up with already existing username")
     @Test
     fun signUpExistingUsername() = testApplication {
@@ -78,6 +94,22 @@ class UserTest {
             username = "admin",
             password = "Test0@aaa",
             email = "test@test.com"
+        )
+        val response = client().post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+    }
+
+    @DisplayName("Signing up with invalid role")
+    @Test
+    fun signUpInvalidRole() = testApplication {
+        val dto = UserDTO(
+            username = "test",
+            password = "Test0@aaa",
+            email = "test@test.com",
+            role = UserRole.ADMIN
         )
         val response = client().post("/api/users/signup") {
             contentType(ContentType.Application.Json)
@@ -174,6 +206,19 @@ class UserTest {
             val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
             assertEquals(newEmail, responseDto.email)
         }
+    }
+
+    @DisplayName("Updating email with invalid email")
+    @Test
+    fun updateEmailInvalid() = testApplication {
+        val tokens = login("edit_email_invalid", "password").second ?: throw Exception("Login failed")
+        val client = client()
+        val response = client.patch("/api/users/00000000-0000-0007-0001-000000000001") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(email = "newEmail"))
+            bearerAuth(tokens.token)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
     }
 
     @DisplayName("Updating own password")
@@ -347,6 +392,23 @@ class UserTest {
             bearerAuth(tokens!!.token)
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Regenerating token gives a new token")
+    @Test
+    fun regenerateToken() = testApplication {
+        val tokens = login("regenerate_token", "password").second ?: throw Exception("Login failed")
+        val client = client()
+        val response = client.post("/api/users/uploadToken") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(email = "newEmail"))
+            bearerAuth(tokens.token)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        assertNotEquals("0123456789abdcef0123456789abdcef", responseDto.uploadToken)
     }
 
     companion object {

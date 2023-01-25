@@ -457,7 +457,7 @@ class UserTest {
             }
 
             return Stream.of(
-                Arguments.of(Named.of("superadmin", superadmin), "newSuperadmin", HttpStatusCode.OK),
+                Arguments.of(Named.of("owner", superadmin), "newSuperadmin", HttpStatusCode.OK),
                 Arguments.of(Named.of("admin", admin), "newAdmin", HttpStatusCode.OK),
                 Arguments.of(Named.of("regular user", user), "newUser", HttpStatusCode.OK),
                 Arguments.of(Named.of("guest", guest), "newGuest", HttpStatusCode.Unauthorized),
@@ -468,7 +468,7 @@ class UserTest {
         fun updateOtherUsername(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     UUID.fromString("00000000-0000-0005-0000-000000000001"),
                     "test5-newUsername1",
                     HttpStatusCode.OK
@@ -516,7 +516,7 @@ class UserTest {
             }
 
             return Stream.of(
-                Arguments.of(Named.of("superadmin", superadmin), "Superadmin@newEmail.me", HttpStatusCode.OK),
+                Arguments.of(Named.of("owner", superadmin), "Superadmin@newEmail.me", HttpStatusCode.OK),
                 Arguments.of(Named.of("admin", admin), "Admin@newEmail.me", HttpStatusCode.OK),
                 Arguments.of(Named.of("regular user", user), "User@newEmail.me", HttpStatusCode.OK),
                 Arguments.of(Named.of("guest", guest), "Guest@newEmail.me", HttpStatusCode.Unauthorized),
@@ -527,7 +527,7 @@ class UserTest {
         fun updateOtherEmail(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     UUID.fromString("00000000-0000-0007-0000-000000000001"),
                     "newEmail1@test7.com",
                     HttpStatusCode.OK
@@ -575,7 +575,7 @@ class UserTest {
             }
 
             return Stream.of(
-                Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.OK),
+                Arguments.of(Named.of("owner", superadmin), HttpStatusCode.OK),
                 Arguments.of(Named.of("admin", admin), HttpStatusCode.OK),
                 Arguments.of(Named.of("regular user", user), HttpStatusCode.OK),
                 Arguments.of(Named.of("guest", guest), HttpStatusCode.Unauthorized),
@@ -586,7 +586,7 @@ class UserTest {
         fun updateOtherPassword(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     UUID.fromString("00000000-0000-0009-0000-000000000001"),
                     HttpStatusCode.Forbidden
                 ),
@@ -630,15 +630,51 @@ class UserTest {
             }
 
             return Stream.of(
-                Arguments.of(Named.of("superadmin", superadmin), UserRole.ADMIN, HttpStatusCode.Forbidden),
-                Arguments.of(Named.of("superadmin", superadmin), UserRole.REGULAR, HttpStatusCode.Forbidden),
-                Arguments.of(Named.of("admin", admin), UserRole.OWNER, HttpStatusCode.Forbidden),
-                Arguments.of(Named.of("admin", admin), UserRole.REGULAR, HttpStatusCode.Forbidden),
-                Arguments.of(Named.of("regular user", user), UserRole.ADMIN, HttpStatusCode.Forbidden),
-                Arguments.of(Named.of("regular user", user), UserRole.OWNER, HttpStatusCode.Forbidden),
-                Arguments.of(Named.of("guest", guest), UserRole.REGULAR, HttpStatusCode.Unauthorized),
-                Arguments.of(Named.of("guest", guest), UserRole.ADMIN, HttpStatusCode.Unauthorized),
-                Arguments.of(Named.of("guest", guest), UserRole.OWNER, HttpStatusCode.Unauthorized),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UserRole.REGULAR),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UserRole.OWNER),
+                    HttpStatusCode.Unauthorized
+                ),
             )
         }
 
@@ -646,37 +682,37 @@ class UserTest {
         fun updateOtherRole(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     Named.of("owner", UUID.fromString("00000000-0000-0011-0001-000000000001")),
                     Named.of("admin", UserRole.ADMIN),
                     HttpStatusCode.Forbidden
                 ),
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     Named.of("owner", UUID.fromString("00000000-0000-0011-0001-000000000002")),
                     Named.of("regular", UserRole.REGULAR),
                     HttpStatusCode.Forbidden
                 ),
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     Named.of("admin", UUID.fromString("00000000-0000-0011-0001-000000000003")),
                     Named.of("owner", UserRole.OWNER),
                     HttpStatusCode.Forbidden
                 ),
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     Named.of("admin", UUID.fromString("00000000-0000-0011-0001-000000000004")),
                     Named.of("regular", UserRole.REGULAR),
                     HttpStatusCode.OK
                 ),
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     Named.of("regular", UUID.fromString("00000000-0000-0011-0001-000000000005")),
                     Named.of("owner", UserRole.OWNER),
                     HttpStatusCode.Forbidden
                 ),
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     Named.of("regular", UUID.fromString("00000000-0000-0011-0001-000000000006")),
                     Named.of("admin", UserRole.ADMIN),
                     HttpStatusCode.OK
@@ -796,7 +832,7 @@ class UserTest {
         fun deleteUser(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
-                    Named.of("superadmin", superadmin),
+                    Named.of("owner", superadmin),
                     "00000000-0000-0014-0000-000000000001",
                     HttpStatusCode.OK
                 ),

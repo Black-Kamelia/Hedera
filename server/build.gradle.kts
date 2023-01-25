@@ -13,7 +13,7 @@ val junitVersion: String = project.properties["junit.version"] as String
 
 plugins {
     application
-    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+    jacoco
     kotlin("jvm")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
@@ -98,15 +98,14 @@ tasks {
             "JELLYFISH_JWT_SECRET" to "secret",
             "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
         )
-        finalizedBy(koverVerify)
+        finalizedBy(jacocoTestReport)
     }
 
-    koverVerify {
-        finalizedBy(koverXmlReport)
-    }
-
-    koverXmlReport {
-        finalizedBy(koverHtmlReport)
-
+    jacocoTestReport {
+        reports {
+            xml.required.set(true)
+            csv.required.set(false)
+            html.required.set(true)
+        }
     }
 }

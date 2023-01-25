@@ -63,9 +63,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     val user = Users.findByUploadToken(authToken) ?: throw ExpiredOrInvalidTokenException()
 
     call.doWithForm(onFiles = mapOf(
-        "file" to {
-            call.respond(FileService.handleFile(it, user))
-        }
+        "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
         call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
     })

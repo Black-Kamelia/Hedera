@@ -1,6 +1,7 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
+import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
@@ -47,7 +48,7 @@ private fun Route.uploadFile() = post("/upload") {
 
     call.getHeader("Content-Type").let { contentType ->
         if (!contentType.startsWith("multipart/form-data")) {
-            call.respond(QueryResult.badRequest("errors.uploads.content_type"))
+            throw MissingHeaderException("content-type")
         }
     }
 

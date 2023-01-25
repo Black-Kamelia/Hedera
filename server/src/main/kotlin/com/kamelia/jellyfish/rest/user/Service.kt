@@ -140,7 +140,7 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                     QueryResult.forbidden("errors.users.email.already_exists")
                 }
             } ?: if ("@" !in email) {
-            QueryResult.forbidden("errors.users.email.invalid")
+            QueryResult.badRequest("errors.users.email.invalid")
         } else null
     else null
 

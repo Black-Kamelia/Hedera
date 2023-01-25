@@ -1,6 +1,8 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ErrorDTO
+import com.kamelia.jellyfish.core.IllegalActionException
+import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
@@ -78,7 +80,7 @@ object FileService {
             if (file.visibility == FileVisibility.PRIVATE && user.role ne UserRole.OWNER) {
                 return QueryResult.notFound()
             }
-            return QueryResult.forbidden()
+            throw IllegalActionException()
         }
 
         return QueryResult.ok(Files.update(file, dto, user).toRepresentationDTO())
@@ -95,7 +97,7 @@ object FileService {
             if (file.visibility == FileVisibility.PRIVATE) {
                 return QueryResult.notFound()
             }
-            return QueryResult.forbidden()
+            throw InsufficientPermissionsException()
         }
 
         FileUtils.delete(file.ownerId, file.code)

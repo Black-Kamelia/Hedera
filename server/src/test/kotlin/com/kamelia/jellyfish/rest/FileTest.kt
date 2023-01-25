@@ -18,6 +18,7 @@ import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -87,6 +88,28 @@ class FileTest {
             tokens?.let {
                 bearerAuth(it.token)
             }
+        }
+        assertEquals(statusCode, response.status)
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(userId, responseDto.ownerId)
+            assertEquals("text/plain", responseDto.mimeType)
+        }
+    }
+
+    @DisplayName("Uploading a file with token")
+    @ParameterizedTest(name = "Uploading a file with token as {1} is {2}")
+    @MethodSource
+    fun uploadFileToken(
+        token: String,
+        userId: UUID,
+        statusCode: HttpStatusCode,
+    ) = testApplication {
+        val client = client()
+        val response = client.submitFormWithBinaryData("/api/files/upload/token", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            header("Upload-Token", token)
         }
         assertEquals(statusCode, response.status)
         if (response.status == HttpStatusCode.OK) {
@@ -320,6 +343,30 @@ class FileTest {
             Arguments.of(Named.of("admin", admin), HttpStatusCode.OK),
             Arguments.of(Named.of("regular user", user1), HttpStatusCode.OK),
             Arguments.of(Named.of("guest", guest), HttpStatusCode.Unauthorized),
+        )
+
+        @JvmStatic
+        fun uploadFileToken(): Stream<Arguments> = Stream.of(
+            Arguments.of(
+                "0f2577e20ca8466b89724d2cfb56e2db",
+                Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                "a9b42b75a4774e41b6391e7724c05f77",
+                Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                "8da63c40d5534a50b69e44f4b6789712",
+                Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
+                HttpStatusCode.OK
+            ),
+            Arguments.of(
+                "00000000000000000000000000000000",
+                Named.of("guest", UUID.fromString("00000000-0000-0000-0000-000000000000")),
+                HttpStatusCode.Unauthorized
+            ),
         )
 
         @JvmStatic

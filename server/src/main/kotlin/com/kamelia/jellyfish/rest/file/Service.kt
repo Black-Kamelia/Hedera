@@ -1,6 +1,8 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ErrorDTO
+import com.kamelia.jellyfish.core.IllegalActionException
+import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
@@ -12,7 +14,6 @@ import com.kamelia.jellyfish.util.uuid
 import io.ktor.http.content.PartData
 import java.util.UUID
 import kotlin.math.ceil
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object FileService {
 
@@ -75,9 +76,11 @@ object FileService {
         val user = Users.findById(userId) ?: return QueryResult.unauthorized()
         val file = Files.findById(fileId) ?: return QueryResult.notFound()
 
-        val owner = transaction { file.owner }
-        if (user.role eq UserRole.REGULAR && owner.id != user.id) {
-            return QueryResult.forbidden("errors.files.edition.forbidden")
+        if (file.ownerId != user.uuid) {
+            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
+                throw IllegalActionException()
+            }
+            return QueryResult.notFound()
         }
 
         return QueryResult.ok(Files.update(file, dto, user).toRepresentationDTO())
@@ -90,19 +93,23 @@ object FileService {
         val user = Users.findById(userId) ?: return QueryResult.unauthorized()
         val file = Files.findById(fileId) ?: return QueryResult.notFound()
 
-        val owner = transaction { file.owner }
-        if (user.role eq UserRole.REGULAR && owner.id != user.id) {
-            return QueryResult.forbidden("errors.files.deletion.forbidden")
+        if (file.ownerId != user.uuid && user.role eq UserRole.REGULAR) {
+            if (file.visibility != FileVisibility.PRIVATE) {
+                throw InsufficientPermissionsException()
+            }
+            return QueryResult.notFound()
         }
 
         FileUtils.delete(file.ownerId, file.code)
         return QueryResult.ok(Files.delete(fileId)?.toRepresentationDTO())
     }
 
+    /*
     suspend fun deleteFileByCodeAsAdmin(code: String): QueryResult<FileRepresentationDTO, List<ErrorDTO>> {
         val file = Files.findByCode(code) ?: return QueryResult.notFound()
 
         FileUtils.delete(file.ownerId, file.code)
         return QueryResult.ok(Files.delete(file.uuid)?.toRepresentationDTO())
     }
+     */
 }

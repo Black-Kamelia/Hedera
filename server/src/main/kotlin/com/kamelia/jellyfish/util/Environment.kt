@@ -13,6 +13,8 @@ object Environment {
 
     val liquibaseMaster get() = config.propertyOrNull("liquibase.master")?.getString()
 
+    val uploadFolder get() = config.propertyOrNull("jellyfish.uploadFolder")?.getString() ?: "uploads"
+
     val secret get() = config.property("jwt.secret").getString()
     val secretRefresh get() = config.property("jwt.secretRefresh").getString()
     val jwtRealm get() = config.property("jwt.realm").getString()

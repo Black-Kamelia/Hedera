@@ -3,6 +3,8 @@ package com.kamelia.jellyfish.util
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
+import com.kamelia.jellyfish.core.IllegalActionException
+import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
@@ -11,6 +13,7 @@ import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.UserRole
 import io.ktor.http.ContentDisposition
 import io.ktor.http.HttpHeaders
+import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.server.application.ApplicationCall
@@ -87,12 +90,12 @@ inline fun PipelineContext<*, ApplicationCall>.ifNotRegular(block: () -> Unit) {
 }
 
 fun PipelineContext<*, ApplicationCall>.adminRestrict() {
-    ifRegular { throw ExpiredOrInvalidTokenException() }
+    ifRegular { throw InsufficientPermissionsException() }
 }
 
 fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
     val id = jwt["id"].asString()
-    if (id != uuid.toString()) throw ExpiredOrInvalidTokenException()
+    if (id != uuid.toString()) throw IllegalActionException()
 }
 
 fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
@@ -115,22 +118,41 @@ fun ApplicationCall.getHeader(header: String) = request.headers[header] ?: throw
 suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
-) = runCatching { receiveMultipart() }.onSuccess {
-    it.forEachPart { part ->
-        when (part) {
-            is PartData.FormItem -> {
-                val field = part.name
-                if (field in onFields) onFields[field]?.invoke(part)
-            }
-            is PartData.FileItem -> {
-                val field = part.name
-                if (field in onFiles) onFiles[field]?.invoke(part)
-            }
-            else -> {}
+    onMissing: suspend (field: String) -> Unit = {},
+): Result<MultiPartData> {
+    getHeader("Content-Type").let { contentType ->
+        if (!contentType.startsWith("multipart/form-data")) {
+            throw MissingHeaderException("content-type")
         }
-        part.dispose()
     }
-}.onFailure { throw MultipartParseException() }
+    return runCatching {
+        receiveMultipart()
+    }.onSuccess {
+        val visitedFormItem = mutableSetOf<String>()
+        val visitedFileItem = mutableSetOf<String>()
+        it.forEachPart { part ->
+            val field = part.name!!
+            when (part) {
+                is PartData.FormItem -> {
+                    visitedFormItem.add(field)
+                    onFields[field]?.invoke(part)
+                }
+                is PartData.FileItem -> {
+                    visitedFileItem.add(field)
+                    onFiles[field]?.invoke(part)
+                }
+                else -> {}
+            }
+            part.dispose()
+        }
+        onFields.keys.forEach { field ->
+            if (field !in visitedFormItem) onMissing(field)
+        }
+        onFiles.keys.forEach { field ->
+            if (field !in visitedFileItem) onMissing(field)
+        }
+    }.onFailure { throw MultipartParseException() }
+}
 
 private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 fun String.Companion.random(size: Int) = (1..size)

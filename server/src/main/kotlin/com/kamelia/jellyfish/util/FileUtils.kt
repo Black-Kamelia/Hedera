@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 object FileUtils {
 
-    private val UPLOAD_PATH = Path.of("upload")
+    private val UPLOAD_PATH = Path.of(Environment.uploadFolder)
 
     init {
         java.nio.file.Files.createDirectories(UPLOAD_PATH)

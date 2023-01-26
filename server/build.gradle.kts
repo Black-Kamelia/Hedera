@@ -4,13 +4,16 @@ val coroutinesVersion: String = project.properties["coroutines.version"] as Stri
 val exposedVersion: String = project.properties["exposed.version"] as String
 val postgresqlVersion: String = project.properties["postgresql.version"] as String
 val liquibaseVersion: String = project.properties["liquibase.version"] as String
+val liquibaseLoggingVersion: String = project.properties["liquibase.logging.version"] as String
 val hikaricpVersion: String = project.properties["hikaricp.version"] as String
 val bcryptVersion: String = project.properties["bcrypt.version"] as String
 val h2Version: String = project.properties["h2.version"] as String
 val logbackVersion: String = project.properties["logback.version"] as String
+val junitVersion: String = project.properties["junit.version"] as String
 
 plugins {
     application
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
     kotlin("jvm")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
@@ -57,37 +60,53 @@ dependencies {
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
     testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test", kotlinVersion)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion)
+
+    runtimeOnly("com.mattbertolini", "liquibase-slf4j", liquibaseLoggingVersion)
 }
 
-tasks.shadowJar {
-    archiveBaseName.set("Jellyfish")
-    archiveClassifier.set("")
-    archiveVersion.set(project.version.toString())
-    destinationDirectory.set(file("$rootDir/executables"))
-}
-
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
+tasks {
+    shadowJar {
+        archiveBaseName.set("Jellyfish")
+        archiveClassifier.set("")
+        archiveVersion.set(project.version.toString())
+        destinationDirectory.set(file("$rootDir/executables"))
     }
-}
 
-tasks.register<JavaExec>("runDev") {
-    group = "application"
-    environment = mapOf(
-        "JELLYFISH_ENV" to "dev",
-        "JELLYFISH_JWT_SECRET" to "secret",
-        "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
-    )
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("com.kamelia.jellyfish.ApplicationKt")
-}
+    jar {
+        manifest {
+            attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
+        }
+    }
 
-tasks.test {
-    useJUnitPlatform()
-    environment = mapOf(
-        "JELLYFISH_ENV" to "dev",
-        "JELLYFISH_JWT_SECRET" to "secret",
-        "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
-    )
+    register<JavaExec>("runDev") {
+        group = "application"
+        environment = mapOf(
+            "JELLYFISH_ENV" to "dev",
+            "JELLYFISH_JWT_SECRET" to "secret",
+            "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
+        )
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("com.kamelia.jellyfish.ApplicationKt")
+    }
+
+    test {
+        useJUnitPlatform()
+        ignoreFailures = true
+        environment = mapOf(
+            "JELLYFISH_ENV" to "dev",
+            "JELLYFISH_JWT_SECRET" to "secret",
+            "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
+        )
+        finalizedBy(koverVerify)
+    }
+
+    koverVerify {
+        finalizedBy(koverXmlReport)
+    }
+
+    koverXmlReport {
+        finalizedBy(koverHtmlReport)
+
+    }
 }

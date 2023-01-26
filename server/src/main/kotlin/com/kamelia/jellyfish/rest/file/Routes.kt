@@ -47,7 +47,9 @@ private fun Route.uploadFile() = post("/upload") {
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
-    ))
+    ), onMissing = {
+        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+    })
 }
 
 private fun Route.uploadFileFromToken() = post("/upload/token") {
@@ -56,7 +58,9 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
-    ))
+    ), onMissing = {
+        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+    })
 }
 
 private fun Route.getFile() = get("/{code}") {

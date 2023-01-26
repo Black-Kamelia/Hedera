@@ -77,10 +77,10 @@ object FileService {
         val file = Files.findById(fileId) ?: return QueryResult.notFound()
 
         if (file.ownerId != user.uuid) {
-            if (file.visibility == FileVisibility.PRIVATE && user.role ne UserRole.OWNER) {
-                return QueryResult.notFound()
+            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
+                throw IllegalActionException()
             }
-            throw IllegalActionException()
+            return QueryResult.notFound()
         }
 
         return QueryResult.ok(Files.update(file, dto, user).toRepresentationDTO())
@@ -94,10 +94,10 @@ object FileService {
         val file = Files.findById(fileId) ?: return QueryResult.notFound()
 
         if (file.ownerId != user.uuid && user.role eq UserRole.REGULAR) {
-            if (file.visibility == FileVisibility.PRIVATE) {
-                return QueryResult.notFound()
+            if (file.visibility != FileVisibility.PRIVATE) {
+                throw InsufficientPermissionsException()
             }
-            throw InsufficientPermissionsException()
+            return QueryResult.notFound()
         }
 
         FileUtils.delete(file.ownerId, file.code)

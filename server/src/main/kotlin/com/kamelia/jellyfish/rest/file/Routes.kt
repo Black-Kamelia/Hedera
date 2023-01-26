@@ -1,7 +1,6 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
-import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
@@ -45,12 +44,6 @@ fun Route.filesRoutes() = route("/files") {
 private fun Route.uploadFile() = post("/upload") {
     val uuid = jwt.uuid
     val user = Users.findById(uuid) ?: throw ExpiredOrInvalidTokenException()
-
-    call.getHeader("Content-Type").let { contentType ->
-        if (!contentType.startsWith("multipart/form-data")) {
-            throw MissingHeaderException("content-type")
-        }
-    }
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }

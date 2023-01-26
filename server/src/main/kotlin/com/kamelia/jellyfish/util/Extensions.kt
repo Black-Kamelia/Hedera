@@ -118,7 +118,14 @@ suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
     onMissing: suspend (field: String) -> Unit = {},
-) = runCatching { receiveMultipart() }.onSuccess {
+) = runCatching {
+    getHeader("Content-Type").let { contentType ->
+        if (!contentType.startsWith("multipart/form-data")) {
+            throw MissingHeaderException("content-type")
+        }
+    }
+    receiveMultipart()
+}.onSuccess {
     val visitedFormItem = mutableSetOf<String>()
     val visitedFileItem = mutableSetOf<String>()
     it.forEachPart { part ->
@@ -136,10 +143,10 @@ suspend fun ApplicationCall.doWithForm(
         }
         part.dispose()
     }
-    (onFields.keys).forEach { field ->
+    onFields.keys.forEach { field ->
         if (field !in visitedFormItem) onMissing(field)
     }
-    (onFiles.keys).forEach { field ->
+    onFiles.keys.forEach { field ->
         if (field !in visitedFileItem) onMissing(field)
     }
 }.onFailure { throw MultipartParseException() }

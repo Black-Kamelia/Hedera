@@ -13,6 +13,7 @@ import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.UserRole
 import io.ktor.http.ContentDisposition
 import io.ktor.http.HttpHeaders
+import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.server.application.ApplicationCall
@@ -118,13 +119,13 @@ suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
     onMissing: suspend (field: String) -> Unit = {},
-) {
+): Result<MultiPartData> {
     getHeader("Content-Type").let { contentType ->
         if (!contentType.startsWith("multipart/form-data")) {
             throw MissingHeaderException("content-type")
         }
     }
-    runCatching {
+    return runCatching {
         receiveMultipart()
     }.onSuccess {
         val visitedFormItem = mutableSetOf<String>()

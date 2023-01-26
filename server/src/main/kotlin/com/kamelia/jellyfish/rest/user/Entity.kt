@@ -1,6 +1,7 @@
 package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.core.Hasher
+import com.kamelia.jellyfish.core.UnknownFilterFieldException
 import com.kamelia.jellyfish.database.Connection
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
@@ -12,12 +13,10 @@ import com.kamelia.jellyfish.rest.file.File
 import com.kamelia.jellyfish.rest.file.FileVisibility
 import com.kamelia.jellyfish.rest.file.Files
 import com.kamelia.jellyfish.util.uuid
-import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.selectAll
 
 enum class UserRole(private val power: Int) {
@@ -51,7 +50,6 @@ object Users : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
-    val lastInvalidation = timestamp("last_invalidation").nullable()
     val uploadToken = varchar("upload_token", 32).uniqueIndex()
 
     override val createdBy = reference("created_by", this)
@@ -74,7 +72,7 @@ object Users : AuditableUUIDTable("users") {
                         email.name -> email.filter(it)
                         role.name -> role.filter(it)
                         enabled.name -> enabled.filter(it)
-                        else -> throw IllegalArgumentException("errors.filter.unknown_field.`${it.field}`")
+                        else -> throw UnknownFilterFieldException(it.field)
                     }
                 }.applySort(definition.sorter) {
                     when (it) {
@@ -82,7 +80,7 @@ object Users : AuditableUUIDTable("users") {
                         email.name -> email
                         role.name -> role
                         enabled.name -> enabled
-                        else -> throw IllegalArgumentException("errors.sort.unknown_field.`${it}`")
+                        else -> throw UnknownFilterFieldException(it)
                     }
                 }.let {
                     val rows = User.wrapRows(it)
@@ -145,10 +143,6 @@ object Users : AuditableUUIDTable("users") {
             ?.apply { delete() }
     }
 
-    suspend fun logoutAll(user: User) = Connection.query {
-        user.lastInvalidation = Instant.now()
-    }
-
     suspend fun regenerateUploadToken(user: User): User = Connection.query {
         user.uploadToken = UUID.randomUUID().toString().replace("-", "")
         user
@@ -163,7 +157,6 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var password by Users.password
     var role by Users.role
     var enabled by Users.enabled
-    var lastInvalidation by Users.lastInvalidation
     var uploadToken by Users.uploadToken
 
     private val files by File referrersOn Files.owner

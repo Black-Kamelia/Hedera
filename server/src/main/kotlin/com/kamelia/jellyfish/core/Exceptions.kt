@@ -16,6 +16,8 @@ class MultipartParseException : Exception("errors.uploads.multipart_parse")
 
 class IllegalFilterException(filter: FilterObject) : Exception("errors.filters.illegal.`$filter`")
 
+class UnknownFilterFieldException(field: String) : Exception("errors.filters.unknown_field.`$field`")
+
 class IllegalActionException : Exception("errors.actions.illegal")
 
 class InsufficientPermissionsException : Exception("errors.permissions.insufficient")

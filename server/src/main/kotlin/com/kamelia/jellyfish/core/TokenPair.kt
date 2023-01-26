@@ -6,6 +6,7 @@ import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.util.Environment.secret
 import com.kamelia.jellyfish.util.Environment.secretRefresh
 import java.util.Date
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,10 +19,7 @@ class TokenPair(val token: String, val refreshToken: String) {
             val now = System.currentTimeMillis()
             val token = JWT.create()
                 .withSubject(user.username)
-                .withClaim("id", user.id.value.toString())
-                .withClaim("username", user.username)
-                .withClaim("email", user.email)
-                .withClaim("role", user.role.name)
+                .withClaim("id", UUID.randomUUID().toString())
                 .withExpiresAt(Date(now + DEFAULT_TOKEN_LIFETIME))
                 .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secret))

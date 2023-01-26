@@ -6,16 +6,16 @@ import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.FileUtils
 import com.kamelia.jellyfish.util.adminRestrict
+import com.kamelia.jellyfish.util.authenticatedUser
 import com.kamelia.jellyfish.util.doWithForm
 import com.kamelia.jellyfish.util.getHeader
 import com.kamelia.jellyfish.util.getPageParameters
 import com.kamelia.jellyfish.util.getParam
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.getUUIDOrNull
-import com.kamelia.jellyfish.util.jwt
-import com.kamelia.jellyfish.util.jwtOrNull
 import com.kamelia.jellyfish.util.receivePageDefinition
 import com.kamelia.jellyfish.util.respondFile
+import com.kamelia.jellyfish.util.userOrNull
 import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -42,7 +42,7 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 private fun Route.uploadFile() = post("/upload") {
-    val uuid = jwt.uuid
+    val uuid = authenticatedUser.uuid
     val user = Users.findById(uuid) ?: throw ExpiredOrInvalidTokenException()
 
     call.doWithForm(onFiles = mapOf(
@@ -64,7 +64,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
 }
 
 private fun Route.getFile() = get("/{code}") {
-    val user = jwtOrNull()?.uuid?.let { Users.findById(it) }
+    val user = userOrNull()?.user?.let { Users.findById(it.uuid) }
     val code = call.getParam("code")
 
     FileService.getFile(code, user).ifSuccessOrElse(
@@ -86,7 +86,7 @@ private fun Route.getFile() = get("/{code}") {
 
 private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
     val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = jwt.uuid
+    val jwtId = authenticatedUser.uuid
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
     val (page, pageSize) = call.getPageParameters()
@@ -97,14 +97,14 @@ private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
 
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = jwt.uuid
+    val userId = authenticatedUser.uuid
 
     call.respond(FileService.updateFile(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {
     val fileId = call.getUUID("uuid")
-    val userId = jwt.uuid
+    val userId = authenticatedUser.uuid
 
     call.respond(FileService.deleteFile(fileId, userId))
 }

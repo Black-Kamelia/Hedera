@@ -2,11 +2,11 @@ package com.kamelia.jellyfish.rest.user
 
 import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.util.adminRestrict
+import com.kamelia.jellyfish.util.authenticatedUser
 import com.kamelia.jellyfish.util.getPageParameters
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.idRestrict
 import com.kamelia.jellyfish.util.ifRegular
-import com.kamelia.jellyfish.util.jwt
 import com.kamelia.jellyfish.util.receivePageDefinition
 import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
@@ -63,7 +63,7 @@ private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
     ifRegular {
         idRestrict(uuid)
     }
-    val updaterID = jwt.uuid
+    val updaterID = authenticatedUser.uuid
 
     call.respond(UserService.updateUser(uuid, body, updaterID))
 }
@@ -83,7 +83,7 @@ private fun Route.deleteUser() = delete("/{uuid}") {
 }
 
 private fun Route.regenerateUploadToken() = post("/uploadToken") {
-    val uuid = jwt.uuid
+    val uuid = authenticatedUser.uuid
     idRestrict(uuid)
 
     call.respond(UserService.regenerateUploadToken(uuid))

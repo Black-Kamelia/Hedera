@@ -1,7 +1,9 @@
 package com.kamelia.jellyfish.rest.auth
 
 import com.kamelia.jellyfish.core.respond
+import com.kamelia.jellyfish.util.authenticatedUser
 import com.kamelia.jellyfish.util.jwt
+import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
@@ -22,12 +24,11 @@ fun Route.authRoutes() = route("/login") {
 }
 
 private fun Route.login() = post<LoginDTO> { body ->
-    call.respond(AuthService.verify(body.username, body.password))
+    call.respond(AuthService.login(body.username, body.password))
 }
 
 private fun Route.logoutAll() = delete {
-    val username = jwt.subject
-    call.respond(AuthService.logoutAll(username))
+    call.respond(AuthService.logoutAll(authenticatedUser.uuid))
 }
 
 private fun Route.refresh() = patch {

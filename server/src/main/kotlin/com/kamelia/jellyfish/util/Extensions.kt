@@ -118,38 +118,40 @@ suspend fun ApplicationCall.doWithForm(
     onFields: Map<String, suspend (PartData.FormItem) -> Unit> = mapOf(),
     onFiles: Map<String, suspend (PartData.FileItem) -> Unit> = mapOf(),
     onMissing: suspend (field: String) -> Unit = {},
-) = runCatching {
+) {
     getHeader("Content-Type").let { contentType ->
         if (!contentType.startsWith("multipart/form-data")) {
             throw MissingHeaderException("content-type")
         }
     }
-    receiveMultipart()
-}.onSuccess {
-    val visitedFormItem = mutableSetOf<String>()
-    val visitedFileItem = mutableSetOf<String>()
-    it.forEachPart { part ->
-        val field = part.name!!
-        when (part) {
-            is PartData.FormItem -> {
-                visitedFormItem.add(field)
-                onFields[field]?.invoke(part)
+    runCatching {
+        receiveMultipart()
+    }.onSuccess {
+        val visitedFormItem = mutableSetOf<String>()
+        val visitedFileItem = mutableSetOf<String>()
+        it.forEachPart { part ->
+            val field = part.name!!
+            when (part) {
+                is PartData.FormItem -> {
+                    visitedFormItem.add(field)
+                    onFields[field]?.invoke(part)
+                }
+                is PartData.FileItem -> {
+                    visitedFileItem.add(field)
+                    onFiles[field]?.invoke(part)
+                }
+                else -> {}
             }
-            is PartData.FileItem -> {
-                visitedFileItem.add(field)
-                onFiles[field]?.invoke(part)
-            }
-            else -> {}
+            part.dispose()
         }
-        part.dispose()
-    }
-    onFields.keys.forEach { field ->
-        if (field !in visitedFormItem) onMissing(field)
-    }
-    onFiles.keys.forEach { field ->
-        if (field !in visitedFileItem) onMissing(field)
-    }
-}.onFailure { throw MultipartParseException() }
+        onFields.keys.forEach { field ->
+            if (field !in visitedFormItem) onMissing(field)
+        }
+        onFiles.keys.forEach { field ->
+            if (field !in visitedFileItem) onMissing(field)
+        }
+    }.onFailure { throw MultipartParseException() }
+}
 
 private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 fun String.Companion.random(size: Int) = (1..size)

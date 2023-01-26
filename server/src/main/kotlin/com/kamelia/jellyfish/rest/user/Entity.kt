@@ -16,7 +16,6 @@ import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.selectAll
@@ -53,7 +52,7 @@ object Users : AuditableUUIDTable("users") {
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
     val lastInvalidation = timestamp("last_invalidation").nullable()
-    val uploadToken = varchar("upload_token", 32)
+    val uploadToken = varchar("upload_token", 32).uniqueIndex()
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()

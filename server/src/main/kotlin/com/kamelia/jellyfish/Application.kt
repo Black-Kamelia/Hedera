@@ -25,10 +25,10 @@ fun Application.module() {
     Connection.init()
     MimeTypes.init()
     configureLiquibase()
+    configureAuthentication()
     configureRouting()
     configureSerialization()
     configureCORS()
-    configureAuthentication()
     configureExceptionAdvisors()
     install(AutoHeadResponse)
 }

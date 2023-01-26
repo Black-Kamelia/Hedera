@@ -1,10 +1,12 @@
 package com.kamelia.jellyfish.rest.user
 
+import com.kamelia.jellyfish.core.ErrorDTO
 import com.kamelia.jellyfish.core.Hasher
+import com.kamelia.jellyfish.core.IllegalActionException
+import com.kamelia.jellyfish.core.InsufficientPermissionsException
+import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.jellyfish.core.ErrorDTO
-import com.kamelia.jellyfish.core.QueryResult
 import com.kamelia.jellyfish.util.uuid
 import java.util.UUID
 import kotlin.math.ceil
@@ -17,7 +19,7 @@ object UserService {
         checkPassword(dto.password)?.let { return it }
 
         if (dto.role != UserRole.REGULAR) {
-            return QueryResult.forbidden("errors.users.role.forbidden")
+            throw IllegalActionException()
         }
 
         return QueryResult.ok(
@@ -77,7 +79,7 @@ object UserService {
             updater == null ||
             (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role))
         ) {
-            return QueryResult.forbidden("errors.users.role.forbidden")
+            throw InsufficientPermissionsException()
         }
 
         return QueryResult.ok(
@@ -140,7 +142,7 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                     QueryResult.forbidden("errors.users.email.already_exists")
                 }
             } ?: if ("@" !in email) {
-            QueryResult.forbidden("errors.users.email.invalid")
+            QueryResult.badRequest("errors.users.email.invalid")
         } else null
     else null
 

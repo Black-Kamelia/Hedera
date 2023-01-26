@@ -1,7 +1,7 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
-import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.Response
 import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.FileUtils
@@ -48,7 +48,7 @@ private fun Route.uploadFile() = post("/upload") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+        call.respond(Response.badRequest("errors.uploads.missing_file"))
     })
 }
 
@@ -59,7 +59,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+        call.respond(Response.badRequest("errors.uploads.missing_file"))
     })
 }
 
@@ -75,11 +75,11 @@ private fun Route.getFile() = get("/{code}") {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
                 // TODO notify orphaned file
-                call.respond(QueryResult.notFound())
+                call.respond(Response.notFound())
             }
         },
         onError = {
-            call.respond(QueryResult.notFound())
+            call.respond(Response.notFound())
         },
     )
 }

@@ -47,10 +47,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
 private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
     call.respond(Response.badRequest(cause.message ?: cause.javaClass.name))
 
-private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) {
-    cause.printStackTrace()
+private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) =
     call.respond(Response.unauthorized(cause.message ?: cause.javaClass.name))
-}
 
 private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) =
     call.respond(Response.forbidden(cause.message ?: cause.javaClass.name))

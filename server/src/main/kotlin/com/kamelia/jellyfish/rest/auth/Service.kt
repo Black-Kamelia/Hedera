@@ -34,12 +34,13 @@ object AuthService {
 
 object SessionManager {
 
+    private val lock = Any()
     private val sessions = mutableMapOf<String, User>()
     private val refreshToAccess = mutableMapOf<String, String>()
 
     private fun generateTokens(user: User): TokenPair {
         val tokens = TokenPair.from(user)
-        synchronized(sessions) {
+        synchronized(lock) {
             sessions[tokens.token] = user
             refreshToAccess[tokens.refreshToken] = tokens.token
         }
@@ -60,8 +61,10 @@ object SessionManager {
 
     suspend fun refresh(jwt: Payload): Response<TokenPair, List<ErrorDTO>> {
         val user = Users.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
-        refreshToAccess[jwt.id]?.let { sessions.remove(it) }
-        return Response.ok(generateTokens(user))
+        synchronized(sessions) {
+            refreshToAccess[jwt.id]?.let { sessions.remove(it) }
+            return Response.ok(generateTokens(user))
+        }
     }
 
     fun verify(token: String): User? = synchronized(sessions) {

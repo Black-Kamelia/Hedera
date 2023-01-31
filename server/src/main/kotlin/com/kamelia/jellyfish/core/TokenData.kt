@@ -24,7 +24,7 @@ class TokenData(
             val accessTokenExpiration = now + Environment.expirationAccess
             val accessToken = JWT.create()
                 .withSubject(user.username)
-                .withClaim("id", UUID.randomUUID().toString())
+                .withClaim("tokenId", UUID.randomUUID().toString())
                 .withExpiresAt(Date(accessTokenExpiration))
                 .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secretAccess))
@@ -32,6 +32,7 @@ class TokenData(
             val refreshTokenExpiration = now + Environment.expirationRefresh
             val refreshToken = JWT.create()
                 .withSubject(user.username)
+                .withClaim("tokenId", UUID.randomUUID().toString())
                 .withExpiresAt(Date(refreshTokenExpiration))
                 .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secretRefresh))

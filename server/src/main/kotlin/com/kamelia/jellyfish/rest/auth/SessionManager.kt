@@ -41,8 +41,6 @@ object SessionManager {
                     loggedUsers.entries.removeIf {
                         !sessions.values.any { session -> session.user.uuid == it.key }
                     }
-                    println(sessions)
-                    println(loggedUsers)
                 }
             }
         }
@@ -66,10 +64,11 @@ object SessionManager {
     }
 
     suspend fun login(username: String, password: String): Response<TokenData, List<ErrorDTO>> {
-        val user = Users.findByUsername(username) ?: throw ExpiredOrInvalidTokenException()
+        val unauthorized = Response.unauthorized("errors.auth.verify.unauthorized")
+        val user = Users.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
-            throw ExpiredOrInvalidTokenException()
+            return unauthorized
         }
 
         return Response.ok(generateTokens(user))

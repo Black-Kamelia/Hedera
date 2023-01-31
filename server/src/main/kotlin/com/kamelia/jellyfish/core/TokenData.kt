@@ -3,6 +3,7 @@ package com.kamelia.jellyfish.core
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.kamelia.jellyfish.rest.user.User
+import com.kamelia.jellyfish.util.Environment
 import com.kamelia.jellyfish.util.Environment.secretAccess
 import com.kamelia.jellyfish.util.Environment.secretRefresh
 import java.util.Date
@@ -17,29 +18,29 @@ class TokenData(
     // val refreshTokenExpiration: Long,
 ) {
     companion object {
-        private const val DEFAULT_TOKEN_LIFETIME = 60L * 60L * 1000L // 1 hour
-        private const val DEFAULT_REFRESH_TOKEN_LIFETIME = 60L * 60L * 24L * 30L * 1000L // 30 days
-
         fun from(user: User): TokenData {
             val now = System.currentTimeMillis()
+
+            val accessTokenExpiration = now + Environment.expirationAccess
             val accessToken = JWT.create()
                 .withSubject(user.username)
                 .withClaim("id", UUID.randomUUID().toString())
-                .withExpiresAt(Date(now + DEFAULT_TOKEN_LIFETIME))
+                .withExpiresAt(Date(accessTokenExpiration))
                 .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secretAccess))
 
+            val refreshTokenExpiration = now + Environment.expirationRefresh
             val refreshToken = JWT.create()
                 .withSubject(user.username)
-                .withExpiresAt(Date(now + DEFAULT_REFRESH_TOKEN_LIFETIME))
+                .withExpiresAt(Date(refreshTokenExpiration))
                 .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secretRefresh))
 
             return TokenData(
                 accessToken,
-                now + DEFAULT_TOKEN_LIFETIME,
+                accessTokenExpiration,
                 refreshToken,
-                // now + DEFAULT_REFRESH_TOKEN_LIFETIME,
+                // refreshTokenExpiration,
             )
         }
     }

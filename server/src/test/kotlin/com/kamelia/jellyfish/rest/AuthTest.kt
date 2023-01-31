@@ -1,48 +1,282 @@
 package com.kamelia.jellyfish.rest
 
 import com.kamelia.jellyfish.client
+import com.kamelia.jellyfish.core.TokenData
 import com.kamelia.jellyfish.login
+import com.kamelia.jellyfish.loginBlocking
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
 import io.ktor.client.request.patch
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.testApplication
+import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestMethodOrder
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class AuthTest {
 
-    @DisplayName("Logging in with correct credentials")
+    @DisplayName("Logging in with incorrect username")
     @Test
-    @Order(1)
-    fun loggingIn() = testApplication {
-        val (status, _) = login("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
-    }
-
-    @DisplayName("Logging in with incorrect credentials")
-    @Test
-    @Order(2)
-    fun loggingInIncorrect() = testApplication {
-        val (status, _) = login("user1", "wrong")
+    fun loggingInIncorrectUsername() = testApplication {
+        val (status, _) = login("wrongUser", "password")
         assertEquals(HttpStatusCode.Unauthorized, status)
     }
 
-    @DisplayName("Refreshing token")
+    @DisplayName("Logging in with incorrect password")
     @Test
-    @Order(3)
-    fun refreshToken() = testApplication {
+    fun loggingInIncorrectPassword() = testApplication {
+        val (status, _) = login("user1", "wrongPassword")
+        assertEquals(HttpStatusCode.Unauthorized, status)
+    }
+
+    @DisplayName("Performing protected request with valid access token")
+    @Test
+    fun useValidAccessToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
         val (status, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
+
+        val response = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens!!.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @DisplayName("Performing protected request with expired access token")
+    @Test
+    fun useExpiredAccessToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        assertEquals(HttpStatusCode.OK, status)
+
+        delay(2000L)
+
+        val response = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens!!.accessToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @DisplayName("Refreshing session within expiration time")
+    @Test
+    fun refreshSessionWithinTime() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        assertEquals(HttpStatusCode.OK, status)
+
+        delay(500L)
+
         val response = client().patch("/api/login") {
             bearerAuth(tokens!!.refreshToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
     }
+
+    @DisplayName("Refreshing session after expiration time")
+    @Test
+    fun refreshSessionAfterTime() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        assertEquals(HttpStatusCode.OK, status)
+
+        delay(3000L)
+
+        val response = client().patch("/api/login") {
+            bearerAuth(tokens!!.refreshToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    @DisplayName("Refreshing session gives different tokens")
+    @Test
+    fun refreshSessionGivesDifferentToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        check(tokens != null) { "Tokens should not be null" }
+        assertEquals(HttpStatusCode.OK, status)
+
+        val response = client().patch("/api/login") {
+            bearerAuth(tokens.refreshToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+        val newTokens = Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
+
+        assertNotEquals(tokens.accessToken, newTokens.accessToken)
+        assertNotEquals(tokens.refreshToken, newTokens.refreshToken)
+    }
+
+    @DisplayName("Refreshing session gives working new tokens")
+    @Test
+    fun refreshSessionGivesWorkingTokens() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        check(tokens != null) { "Tokens should not be null" }
+        assertEquals(HttpStatusCode.OK, status)
+
+        val response = client().patch("/api/login") {
+            bearerAuth(tokens.refreshToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val testResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, testResponse.status)
+    }
+
+    @DisplayName("Logging out invalidates access token")
+    @Test
+    fun logOutInvalidateAccessToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        check(tokens != null) { "Tokens should not be null" }
+        assertEquals(HttpStatusCode.OK, status)
+
+        val preLogoutResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, preLogoutResponse.status)
+
+        val response = client().delete("/api/login") {
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val postLogoutResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, postLogoutResponse.status)
+    }
+
+    @DisplayName("Logging out invalidates refresh token")
+    @Test
+    fun logOutInvalidateRefreshToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = loginBlocking("user1", "password")
+        check(tokens != null) { "Tokens should not be null" }
+        assertEquals(HttpStatusCode.OK, status)
+
+        val response = client().delete("/api/login") {
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val refreshResponse = client().patch("/api/login") {
+            bearerAuth(tokens.refreshToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, refreshResponse.status)
+    }
+
+    @DisplayName("Logging out all invalidates every access token")
+    @Test
+    fun logOutAllInvalidatesEveryAccessToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (_, tokens1) = loginBlocking("user1", "password")
+        check(tokens1 != null) { "Tokens should not be null" }
+        val (_, tokens2) = loginBlocking("user1", "password")
+        check(tokens2 != null) { "Tokens should not be null" }
+
+        val response = client().delete("/api/login/all") {
+            bearerAuth(tokens1.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val response1 = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens1.accessToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response1.status)
+
+        val response2 = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(tokens2.accessToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response2.status)
+    }
+
+    @DisplayName("Logging out all invalidates every refresh token")
+    @Test
+    fun logOutAllInvalidatesEveryRefreshToken() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (_, tokens1) = loginBlocking("user1", "password")
+        check(tokens1 != null) { "Tokens should not be null" }
+        val (_, tokens2) = loginBlocking("user1", "password")
+        check(tokens2 != null) { "Tokens should not be null" }
+
+        val response = client().delete("/api/login/all") {
+            bearerAuth(tokens1.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val response1 = client().patch("/api/login") {
+            bearerAuth(tokens1.refreshToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response1.status)
+
+        val response2 = client().patch("/api/login") {
+            bearerAuth(tokens2.refreshToken)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response2.status)
+    }
+
+    //@DisplayName("Session updates accordingly to user")
+    //@Test
+    //fun sessionUpdatesAccordinglyToUser() = testApplication {
+    //    environment {
+    //        config = ApplicationConfig("application-auth-test.conf")
+    //    }
+    //
+    //    val (status, tokens) = login("auth_update_user", "password")
+    //    assertEquals(HttpStatusCode.OK, status)
+    //
+    //    val response = client().patch("/api/users/${userId}") {
+    //        contentType(ContentType.Application.Json)
+    //        setBody(UserUpdateDTO(username = "newUsername"))
+    //        tokens?.let { bearerAuth(it.accessToken) }
+    //    }
+    //
+    //    val response = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+    //        bearerAuth(tokens!!.accessToken)
+    //    }
+    //    assertEquals(HttpStatusCode.OK, response.status)
+    //}
 }

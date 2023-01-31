@@ -18,6 +18,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.ApplicationTestBuilder
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -47,6 +48,26 @@ suspend fun ApplicationTestBuilder.login(
     val response = client().post("/api/login") {
         contentType(ContentType.Application.Json)
         setBody(dto)
+    }
+    val body = if (response.status == HttpStatusCode.OK) {
+        Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
+    } else {
+        System.err.println(response.bodyAsText())
+        null
+    }
+    return response.status to body
+}
+
+suspend fun ApplicationTestBuilder.loginBlocking(
+    username: String,
+    password: String,
+): Pair<HttpStatusCode, TokenData?> {
+    val dto = LoginDTO(username, password)
+    val response = runBlocking {
+         client().post("/api/login") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }
     }
     val body = if (response.status == HttpStatusCode.OK) {
         Json.decodeFromString(TokenData.serializer(), response.bodyAsText())

@@ -3,6 +3,7 @@ package com.kamelia.jellyfish.rest.user
 import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.core.UnknownFilterFieldException
 import com.kamelia.jellyfish.database.Connection
+import com.kamelia.jellyfish.rest.auth.SessionManager
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.jellyfish.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
@@ -127,6 +128,7 @@ object Users : AuditableUUIDTable("users") {
             dto.role?.let { role = it }
             dto.enabled?.let { enabled = it }
 
+            SessionManager.updateSession(uuid, this)
             onUpdate(updater)
         }
     }

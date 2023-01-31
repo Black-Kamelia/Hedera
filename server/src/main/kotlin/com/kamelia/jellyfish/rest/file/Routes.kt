@@ -40,8 +40,8 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 private fun Route.uploadFile() = post("/upload") {
-    val uuid = authenticatedUser.uuid
-    val user = Users.findById(uuid) ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
@@ -62,7 +62,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
 }
 
 private fun Route.getFile() = get("/{code}") {
-    val user = authenticatedUser.let { Users.findById(it.uuid) }
+    val user = authenticatedUser?.let { Users.findById(it.uuid) }
     val code = call.getParam("code")
 
     FileService.getFile(code, user).ifSuccessOrElse(
@@ -84,7 +84,7 @@ private fun Route.getFile() = get("/{code}") {
 
 private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
     val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = authenticatedUser.uuid
+    val jwtId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
     val (page, pageSize) = call.getPageParameters()
@@ -95,14 +95,14 @@ private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
 
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser.uuid
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(FileService.updateFile(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser.uuid
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(FileService.deleteFile(fileId, userId))
 }

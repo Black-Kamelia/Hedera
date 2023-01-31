@@ -15,7 +15,7 @@ class TokenData(
     val accessToken: String,
     val accessTokenExpiration: Long,
     val refreshToken: String,
-    // val refreshTokenExpiration: Long,
+    val refreshTokenExpiration: Long,
 ) {
     companion object {
         fun from(user: User): TokenData {
@@ -41,7 +41,7 @@ class TokenData(
                 accessToken,
                 accessTokenExpiration,
                 refreshToken,
-                // refreshTokenExpiration,
+                refreshTokenExpiration,
             )
         }
     }

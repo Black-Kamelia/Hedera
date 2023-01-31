@@ -7,6 +7,7 @@ import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
+import com.kamelia.jellyfish.core.MissingTokenException
 import com.kamelia.jellyfish.core.MultipartParseException
 import com.kamelia.jellyfish.core.Response
 import com.kamelia.jellyfish.core.UnknownFilterFieldException
@@ -36,6 +37,7 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
     is IllegalFilterException,
     is UnknownFilterFieldException -> badRequestMessage(call, cause)
 
+    is MissingTokenException,
     is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
     is IllegalActionException,

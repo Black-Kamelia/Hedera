@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
 import com.kamelia.jellyfish.rest.auth.SessionManager
+import com.kamelia.jellyfish.rest.auth.UserState
 import com.kamelia.jellyfish.util.Environment
 import com.kamelia.jellyfish.util.getHeader
 import io.ktor.server.application.Application
@@ -22,9 +23,11 @@ fun Application.configureAuthentication() {
             val token = call.getHeader("Authorization").replace("Bearer ", "")
             val user = SessionManager.verify(token)
             requireNotNull(user)
-            user
+            UserPrincipal(user, token)
         }
-        configureJWT("refresh-jwt", Environment.secretRefresh) { _, cred ->
+        configureJWT("refresh-jwt", Environment.secretRefresh) { call, cred ->
+            val token = call.getHeader("Authorization").replace("Bearer ", "")
+            SessionManager.verifyRefresh(token)
             JWTPrincipal(cred.payload)
         }
     }
@@ -50,3 +53,5 @@ private fun AuthenticationConfig.configureJWT(
 
     challenge { _, _ -> throw ExpiredOrInvalidTokenException() }
 }
+
+data class UserPrincipal(val state: UserState, val accessToken: String) : Principal

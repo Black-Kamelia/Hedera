@@ -9,6 +9,7 @@ import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
 import com.kamelia.jellyfish.core.MultipartParseException
+import com.kamelia.jellyfish.plugins.UserPrincipal
 import com.kamelia.jellyfish.rest.auth.UserState
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.rest.user.UserRole
@@ -73,24 +74,27 @@ suspend fun ApplicationCall.receivePageDefinition(): PageDefinitionDTO = if (req
 
 fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
 
-fun PipelineContext<*, ApplicationCall>.userOrNull(): UserState? = this.call.principal()
+fun PipelineContext<*, ApplicationCall>.userOrNull(): UserPrincipal? = this.call.principal()
 
 val PipelineContext<*, ApplicationCall>.jwt: Payload
     get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
-val PipelineContext<*, ApplicationCall>.authenticatedUser: UserState
-    get() = userOrNull() ?: throw ExpiredOrInvalidTokenException()
+val PipelineContext<*, ApplicationCall>.authenticatedUser: UserState?
+    get() = userOrNull()?.state
+
+val PipelineContext<*, ApplicationCall>.accessToken: String?
+    get() = userOrNull()?.accessToken
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 
 val Payload.uuid get() = this["id"].asString().toUUID()
 
 inline fun PipelineContext<*, ApplicationCall>.ifRegular(block: () -> Unit) {
-    if (authenticatedUser.role == UserRole.REGULAR) block()
+    if (authenticatedUser?.role == UserRole.REGULAR) block()
 }
 
 inline fun PipelineContext<*, ApplicationCall>.ifNotRegular(block: () -> Unit) {
-    if (authenticatedUser.role != UserRole.REGULAR) block()
+    if (authenticatedUser?.role != UserRole.REGULAR) block()
 }
 
 fun PipelineContext<*, ApplicationCall>.adminRestrict() {
@@ -98,7 +102,7 @@ fun PipelineContext<*, ApplicationCall>.adminRestrict() {
 }
 
 fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
-    if (authenticatedUser.uuid != uuid) throw IllegalActionException()
+    if (authenticatedUser?.uuid != uuid) throw IllegalActionException()
 }
 
 fun ApplicationCall.getPageParameters(): Pair<Long, Int> {

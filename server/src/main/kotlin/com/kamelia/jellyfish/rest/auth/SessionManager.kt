@@ -24,6 +24,7 @@ object SessionManager {
     private val lock = Any()
 
     private val sessions = mutableMapOf<String, Session>()
+    private val refreshTokens = mutableMapOf<String, TokenData>()
     private val loggedUsers = mutableMapOf<UUID, UserState>()
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -34,13 +35,15 @@ object SessionManager {
         pruneJob = coroutineScope.launch {
             while (isActive) {
                 delay(5.seconds)
+                val now = System.currentTimeMillis()
                 synchronized(lock) {
                     sessions.entries.removeIf {
-                        it.value.tokenData.accessTokenExpiration < System.currentTimeMillis()
+                        it.value.tokenData.accessTokenExpiration < now
                     }
                     loggedUsers.entries.removeIf {
                         !sessions.values.any { session -> session.user.uuid == it.key }
                     }
+                    refreshTokens.entries.removeIf { it.value.refreshTokenExpiration < now }
                 }
             }
         }
@@ -60,7 +63,18 @@ object SessionManager {
         val session = Session(userState, tokenData)
 
         sessions[tokenData.accessToken] = session
+        refreshTokens[tokenData.refreshToken] = tokenData
         return tokenData
+    }
+
+    fun updateSession(userId: UUID, user: User): Unit = synchronized(lock) {
+        loggedUsers.computeIfPresent(userId) { _, userState ->
+            userState.copy(
+                username = user.username,
+                email = user.email,
+                role = user.role,
+            )
+        }
     }
 
     suspend fun login(username: String, password: String): Response<TokenData, List<ErrorDTO>> {
@@ -83,12 +97,24 @@ object SessionManager {
         return sessions[token]?.user
     }
 
+    fun verifyRefresh(token: String): Unit = synchronized(lock) {
+        refreshTokens[token] ?: throw ExpiredOrInvalidTokenException()
+    }
+
     fun logout(token: String): Unit = synchronized(lock) {
-        sessions.remove(token) ?: throw ExpiredOrInvalidTokenException()
+        val session = sessions.remove(token) ?: throw ExpiredOrInvalidTokenException()
+        refreshTokens.remove(session.tokenData.refreshToken)
     }
 
     fun logoutAll(user: User): Unit = synchronized(lock) {
-        sessions.entries.removeIf { it.value.user.uuid == user.id.value }
+        sessions.entries.filter {
+            it.value.user.uuid == user.id.value
+        }.forEach {
+            refreshTokens.entries.removeIf { refreshEntry ->
+                refreshEntry.value.accessToken == it.key
+            }
+            sessions.remove(it.key)
+        }
         loggedUsers.remove(user.id.value)
     }
 }
@@ -98,7 +124,16 @@ data class UserState(
     val username: String,
     val email: String,
     val role: UserRole,
-) : Principal
+) : Principal {
+
+    fun new(
+        uuid: UUID = this.uuid,
+        username: String = this.username,
+        email: String = this.email,
+        role: UserRole = this.role,
+    ) = UserState(uuid, username, email, role)
+
+}
 
 data class Session(
     val user: UserState,

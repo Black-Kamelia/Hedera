@@ -7,6 +7,7 @@ import com.kamelia.jellyfish.plugins.configureCORS
 import com.kamelia.jellyfish.plugins.configureExceptionAdvisors
 import com.kamelia.jellyfish.plugins.configureRouting
 import com.kamelia.jellyfish.plugins.configureSerialization
+import com.kamelia.jellyfish.rest.auth.SessionManager
 import com.kamelia.jellyfish.util.Environment
 import com.kamelia.jellyfish.util.Environment.isDev
 import com.kamelia.jellyfish.util.MimeTypes
@@ -31,4 +32,6 @@ fun Application.module() {
     configureCORS()
     configureExceptionAdvisors()
     install(AutoHeadResponse)
+
+    SessionManager.startPruning()
 }

@@ -131,7 +131,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(username = newUsername))
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -154,7 +154,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(username = newUsername))
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -176,7 +176,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(email = newEmail))
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -199,7 +199,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(email = newEmail))
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -216,7 +216,7 @@ class UserTest {
         val response = client.patch("/api/users/00000000-0000-0007-0001-000000000001") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(email = "newEmail"))
-            bearerAuth(tokens.token)
+            bearerAuth(tokens.accessToken)
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
     }
@@ -238,7 +238,7 @@ class UserTest {
                     "P@ssw0rd"
                 )
             )
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status)
     }
@@ -256,7 +256,7 @@ class UserTest {
                     "P@ssw0rd"
                 )
             )
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
@@ -279,7 +279,7 @@ class UserTest {
                     "p@ssw0rd"
                 )
             )
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status)
     }
@@ -297,7 +297,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(role = newRole))
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -320,7 +320,7 @@ class UserTest {
         val response = client.patch("/api/users/${userId}") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(role = newRole))
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
@@ -343,7 +343,7 @@ class UserTest {
                     "newPassword"
                 )
             )
-            bearerAuth(tokens!!.token)
+            bearerAuth(tokens!!.accessToken)
         }
         assertEquals(HttpStatusCode.Forbidden, response.status)
     }
@@ -361,7 +361,7 @@ class UserTest {
                     email = "newEmail@test.com"
                 )
             )
-            bearerAuth(tokens!!.token)
+            bearerAuth(tokens!!.accessToken)
         }
         assertEquals(HttpStatusCode.NotFound, response.status, response.bodyAsText())
     }
@@ -377,7 +377,7 @@ class UserTest {
         val (tokens, _) = user
         val client = client()
         val response = client.delete("/api/users/$userId") {
-            tokens?.let { bearerAuth(it.token) }
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status)
     }
@@ -389,7 +389,7 @@ class UserTest {
         assertEquals(HttpStatusCode.OK, status)
         val client = client()
         val response = client.delete("/api/users/ffffffff-ffff-ffff-ffff-ffffffffffff") {
-            bearerAuth(tokens!!.token)
+            bearerAuth(tokens!!.accessToken)
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
@@ -402,7 +402,7 @@ class UserTest {
         val response = client.post("/api/users/uploadToken") {
             contentType(ContentType.Application.Json)
             setBody(UserUpdateDTO(email = "newEmail"))
-            bearerAuth(tokens.token)
+            bearerAuth(tokens.accessToken)
         }
 
         assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())

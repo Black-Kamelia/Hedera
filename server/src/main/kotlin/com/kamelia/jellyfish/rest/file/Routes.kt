@@ -15,8 +15,6 @@ import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.getUUIDOrNull
 import com.kamelia.jellyfish.util.receivePageDefinition
 import com.kamelia.jellyfish.util.respondFile
-import com.kamelia.jellyfish.util.userOrNull
-import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
@@ -64,7 +62,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
 }
 
 private fun Route.getFile() = get("/{code}") {
-    val user = userOrNull()?.user?.let { Users.findById(it.uuid) }
+    val user = authenticatedUser.let { Users.findById(it.uuid) }
     val code = call.getParam("code")
 
     FileService.getFile(code, user).ifSuccessOrElse(

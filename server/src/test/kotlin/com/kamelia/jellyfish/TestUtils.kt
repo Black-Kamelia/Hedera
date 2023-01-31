@@ -1,6 +1,6 @@
 package com.kamelia.jellyfish
 
-import com.kamelia.jellyfish.core.TokenPair
+import com.kamelia.jellyfish.core.TokenData
 import com.kamelia.jellyfish.rest.auth.LoginDTO
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
@@ -24,7 +24,7 @@ import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-typealias TestUser = Pair<TokenPair?, UUID>
+typealias TestUser = Pair<TokenData?, UUID>
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {
@@ -42,14 +42,14 @@ fun ApplicationTestBuilder.client() = createClient {
 suspend fun ApplicationTestBuilder.login(
     username: String,
     password: String,
-): Pair<HttpStatusCode, TokenPair?> {
+): Pair<HttpStatusCode, TokenData?> {
     val dto = LoginDTO(username, password)
     val response = client().post("/api/login") {
         contentType(ContentType.Application.Json)
         setBody(dto)
     }
     val body = if (response.status == HttpStatusCode.OK) {
-        Json.decodeFromString(TokenPair.serializer(), response.bodyAsText())
+        Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
     } else {
         System.err.println(response.bodyAsText())
         null

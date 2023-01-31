@@ -43,26 +43,26 @@ object Files : AuditableUUIDTable("files") {
         updatedBy
     }
 
-    suspend fun countAll(): Long = Connection.query {
+    suspend fun countAll(): Long = Connection.transaction {
         File.count()
     }
 
-    suspend fun getAll(): List<File> = Connection.query {
+    suspend fun getAll(): List<File> = Connection.transaction {
         File.all()
             .toList()
     }
 
-    suspend fun getAll(page: Long, pageSize: Int): List<File> = Connection.query {
+    suspend fun getAll(page: Long, pageSize: Int): List<File> = Connection.transaction {
         File.all()
             .limit(pageSize, page * pageSize)
             .toList()
     }
 
-    suspend fun findById(uuid: UUID): File? = Connection.query {
+    suspend fun findById(uuid: UUID): File? = Connection.transaction {
         File.findById(uuid)
     }
 
-    suspend fun findByCode(code: String): File? = Connection.query {
+    suspend fun findByCode(code: String): File? = Connection.transaction {
         File.find { Files.code eq code }.firstOrNull()
     }
 
@@ -72,7 +72,7 @@ object Files : AuditableUUIDTable("files") {
         mimeType: String,
         size: Long,
         creator: User,
-    ): File = Connection.query {
+    ): File = Connection.transaction {
         File.new {
             this.code = code
             this.name = name
@@ -85,7 +85,7 @@ object Files : AuditableUUIDTable("files") {
         }
     }
 
-    suspend fun update(file: File, dto: FileUpdateDTO, updater: User): File = Connection.query {
+    suspend fun update(file: File, dto: FileUpdateDTO, updater: User): File = Connection.transaction {
         file.apply {
             dto.name?.let {
                 name = it
@@ -97,7 +97,7 @@ object Files : AuditableUUIDTable("files") {
         }
     }
 
-    suspend fun delete(uuid: UUID): File? = Connection.query {
+    suspend fun delete(uuid: UUID): File? = Connection.transaction {
         File.findById(uuid)?.apply { delete() }
     }
 }

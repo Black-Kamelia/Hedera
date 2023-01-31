@@ -9,9 +9,8 @@ import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
 import com.kamelia.jellyfish.core.MultipartParseException
-import com.kamelia.jellyfish.plugins.UserPrincipal
+import com.kamelia.jellyfish.rest.auth.UserState
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.jellyfish.rest.user.User
 import com.kamelia.jellyfish.rest.user.UserRole
 import io.ktor.http.ContentDisposition
 import io.ktor.http.HttpHeaders
@@ -74,16 +73,13 @@ suspend fun ApplicationCall.receivePageDefinition(): PageDefinitionDTO = if (req
 
 fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
 
-fun PipelineContext<*, ApplicationCall>.userOrNull(): UserPrincipal? = this.call.principal()
+fun PipelineContext<*, ApplicationCall>.userOrNull(): UserState? = this.call.principal()
 
 val PipelineContext<*, ApplicationCall>.jwt: Payload
     get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
-val PipelineContext<*, ApplicationCall>.authenticatedUser: User
-    get() = userOrNull()?.user ?: throw ExpiredOrInvalidTokenException()
-
-val PipelineContext<*, ApplicationCall>.accessToken: String
-    get() = userOrNull()?.token ?: throw ExpiredOrInvalidTokenException()
+val PipelineContext<*, ApplicationCall>.authenticatedUser: UserState
+    get() = userOrNull() ?: throw ExpiredOrInvalidTokenException()
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 

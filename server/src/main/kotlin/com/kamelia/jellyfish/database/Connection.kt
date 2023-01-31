@@ -27,7 +27,7 @@ object Connection {
         return HikariDataSource(config)
     }
 
-    suspend fun <T> query(
+    suspend fun <T> transaction(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         block: suspend Transaction.() -> T,
     ): T = suspendedTransactionAsync(dispatcher, database) {

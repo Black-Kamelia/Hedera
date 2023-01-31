@@ -55,16 +55,16 @@ object Users : AuditableUUIDTable("users") {
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
 
-    suspend fun countAll(): Long = Connection.query {
+    suspend fun countAll(): Long = Connection.transaction {
         User.count()
     }
 
-    suspend fun getAll(): List<User> = Connection.query {
+    suspend fun getAll(): List<User> = Connection.transaction {
         User.all().toList()
     }
 
     suspend fun getAll(page: Long, pageSize: Int, definition: PageDefinitionDTO): Pair<List<User>, Long> =
-        Connection.query {
+        Connection.transaction {
             Users.selectAll()
                 .applyFilters(definition.filters) {
                     when (it.field) {
@@ -88,26 +88,26 @@ object Users : AuditableUUIDTable("users") {
                 }
         }
 
-    suspend fun findById(uuid: UUID): User? = Connection.query {
+    suspend fun findById(uuid: UUID): User? = Connection.transaction {
         User.findById(uuid)
     }
 
-    suspend fun findByUsername(username: String): User? = Connection.query {
+    suspend fun findByUsername(username: String): User? = Connection.transaction {
         User.find { Users.username eq username }
             .firstOrNull()
     }
 
-    suspend fun findByEmail(email: String): User? = Connection.query {
+    suspend fun findByEmail(email: String): User? = Connection.transaction {
         User.find { Users.email eq email }
             .firstOrNull()
     }
 
-    suspend fun findByUploadToken(uploadToken: String): User? = Connection.query {
+    suspend fun findByUploadToken(uploadToken: String): User? = Connection.transaction {
         User.find { Users.uploadToken eq uploadToken }
             .firstOrNull()
     }
 
-    suspend fun create(user: UserDTO, creator: User? = null): User = Connection.query {
+    suspend fun create(user: UserDTO, creator: User? = null): User = Connection.transaction {
         User.new {
             username = user.username
             email = user.email
@@ -120,7 +120,7 @@ object Users : AuditableUUIDTable("users") {
         }
     }
 
-    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = Connection.query {
+    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = Connection.transaction {
         user.apply {
             dto.username?.let { username = it }
             dto.email?.let { email = it }
@@ -131,19 +131,19 @@ object Users : AuditableUUIDTable("users") {
         }
     }
 
-    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User): User = Connection.query {
+    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User): User = Connection.transaction {
         user.apply {
             password = Hasher.hash(dto.newPassword)
             onUpdate(updater)
         }
     }
 
-    suspend fun delete(id: UUID): User? = Connection.query {
+    suspend fun delete(id: UUID): User? = Connection.transaction {
         User.findById(id)
             ?.apply { delete() }
     }
 
-    suspend fun regenerateUploadToken(user: User): User = Connection.query {
+    suspend fun regenerateUploadToken(user: User): User = Connection.transaction {
         user.uploadToken = UUID.randomUUID().toString().replace("-", "")
         user
     }
@@ -161,11 +161,11 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
 
     private val files by File referrersOn Files.owner
 
-    suspend fun countFiles(): Long = Connection.query {
+    suspend fun countFiles(): Long = Connection.transaction {
         files.count()
     }
 
-    suspend fun getFiles(): List<File> = Connection.query {
+    suspend fun getFiles(): List<File> = Connection.transaction {
         files.toList()
     }
 
@@ -175,7 +175,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
         definition: PageDefinitionDTO,
         asOwner: Boolean
     ): Pair<List<File>, Long> =
-        Connection.query {
+        Connection.transaction {
             Files.selectAll()
                 .andWhere { Files.owner eq uuid }
                 .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }

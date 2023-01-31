@@ -15,7 +15,7 @@ object Environment {
 
     val uploadFolder get() = config.propertyOrNull("jellyfish.uploadFolder")?.getString() ?: "uploads"
 
-    val secret get() = config.property("jwt.secret").getString()
+    val secretAccess get() = config.property("jwt.secretAccess").getString()
     val secretRefresh get() = config.property("jwt.secretRefresh").getString()
     val jwtRealm get() = config.property("jwt.realm").getString()
 }

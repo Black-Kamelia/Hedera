@@ -6,17 +6,17 @@ ktor:
 
   application:
     modules:
-      - com.kamelia.jellyfish.ApplicationKt.module
+      - com.kamelia.hedera.ApplicationKt.module
 
 liquibase:
   master: "classpath:db/db.changelog-test.xml"
 
-jellyfish:
+hedera:
   uploadFolder: ./_tests/upload
 
   jwt:
-    secretAccess: $JELLYFISH_JWT_SECRET
+    secretAccess: $HEDERA_JWT_SECRET
     expirationAccess: 3600000 # Default 1 hour
-    secretRefresh: $JELLYFISH_JWT_SECRET_REFRESH
+    secretRefresh: $HEDERA_JWT_SECRET_REFRESH
     expirationRefresh: 2592000000 # Default 30 days
-    realm: jellyfish login-locked
+    realm: hedera login-locked

@@ -23,7 +23,7 @@ group = "com.kamelia"
 version = project.properties["project.version"] as String
 
 application {
-    mainClass.set("com.kamelia.jellyfish.ApplicationKt")
+    mainClass.set("com.kamelia.hedera.ApplicationKt")
 }
 
 repositories {
@@ -68,7 +68,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveBaseName.set("Jellyfish")
+        archiveBaseName.set("Hedera")
         archiveClassifier.set("")
         archiveVersion.set(project.version.toString())
         destinationDirectory.set(file("$rootDir/executables"))
@@ -76,28 +76,28 @@ tasks {
 
     jar {
         manifest {
-            attributes["Main-Class"] = "com.kamelia.jellyfish.ApplicationKt"
+            attributes["Main-Class"] = "com.kamelia.hedera.ApplicationKt"
         }
     }
 
     register<JavaExec>("runDev") {
         group = "application"
         environment = mapOf(
-            "JELLYFISH_ENV" to "dev",
-            "JELLYFISH_JWT_SECRET" to "secret",
-            "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_ENV" to "dev",
+            "HEDERA_JWT_SECRET" to "secret",
+            "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
         )
         classpath = sourceSets["main"].runtimeClasspath
-        mainClass.set("com.kamelia.jellyfish.ApplicationKt")
+        mainClass.set("com.kamelia.hedera.ApplicationKt")
     }
 
     test {
         useJUnitPlatform()
         ignoreFailures = true
         environment = mapOf(
-            "JELLYFISH_ENV" to "dev",
-            "JELLYFISH_JWT_SECRET" to "secret",
-            "JELLYFISH_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_ENV" to "dev",
+            "HEDERA_JWT_SECRET" to "secret",
+            "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
         )
         finalizedBy(koverVerify)
     }

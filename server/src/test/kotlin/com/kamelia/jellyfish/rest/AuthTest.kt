@@ -11,6 +11,7 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
@@ -176,7 +177,7 @@ class AuthTest {
         }
         assertEquals(HttpStatusCode.OK, preLogoutResponse.status)
 
-        val response = client().delete("/api/login") {
+        val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -198,7 +199,7 @@ class AuthTest {
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, status)
 
-        val response = client().delete("/api/login") {
+        val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -221,7 +222,7 @@ class AuthTest {
         val (_, tokens2) = loginBlocking("user1", "password")
         check(tokens2 != null) { "Tokens should not be null" }
 
-        val response = client().delete("/api/login/all") {
+        val response = client().post("/api/logout/all") {
             bearerAuth(tokens1.accessToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -249,7 +250,7 @@ class AuthTest {
         val (_, tokens2) = loginBlocking("user1", "password")
         check(tokens2 != null) { "Tokens should not be null" }
 
-        val response = client().delete("/api/login/all") {
+        val response = client().post("/api/logout/all") {
             bearerAuth(tokens1.accessToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)

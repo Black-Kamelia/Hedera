@@ -1,41 +1,30 @@
 package com.kamelia.jellyfish.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.jellyfish.core.Hasher
-import com.kamelia.jellyfish.core.TokenPair
-import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.core.ErrorDTO
-import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.Response
+import com.kamelia.jellyfish.core.TokenData
+import com.kamelia.jellyfish.rest.user.Users
+import java.util.UUID
 
 object AuthService {
 
-    suspend fun verify(username: String, password: String): QueryResult<TokenPair, List<ErrorDTO>> {
-        val unauthorized = QueryResult.unauthorized("errors.auth.verify.unauthorized")
-        val user = Users.findByUsername(username)
-            ?: return unauthorized
-
-        val isCorrect = Hasher.verify(password, user.password).verified
-        if (!isCorrect) {
-            return unauthorized
-        }
-
-        val tokens = TokenPair.from(user)
-        return QueryResult.ok(tokens)
+    suspend fun login(username: String, password: String): Response<TokenData, List<ErrorDTO>> {
+        return SessionManager.login(username, password)
     }
 
-    suspend fun logoutAll(username: String): QueryResult<Nothing, List<ErrorDTO>> {
-        val user = Users.findByUsername(username)
-            ?: return QueryResult.notFound()
-
-        Users.logoutAll(user)
-        return QueryResult.ok()
+    suspend fun refresh(jwt: Payload): Response<TokenData, List<ErrorDTO>> {
+        return SessionManager.refresh(jwt)
     }
 
-    suspend fun refresh(jwt: Payload): QueryResult<TokenPair, List<ErrorDTO>> {
-        val user = Users.findByUsername(jwt.subject)
-            ?: return QueryResult.unauthorized("errors.auth.refresh.unauthorized")
+    fun logout(token: String): Response<Boolean, List<ErrorDTO>> {
+        SessionManager.logout(token)
+        return Response.ok()
+    }
 
-        val tokens = TokenPair.from(user)
-        return QueryResult.ok(tokens)
+    suspend fun logoutAll(userId: UUID): Response<Nothing, List<ErrorDTO>> {
+        val user = Users.findById(userId) ?: return Response.notFound()
+        SessionManager.logoutAll(user)
+        return Response.ok()
     }
 }

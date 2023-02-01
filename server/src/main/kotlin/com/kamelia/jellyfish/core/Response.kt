@@ -7,7 +7,7 @@ import io.ktor.server.response.respond
 
 typealias ErrorDTO = String
 
-class QueryResult<out S, out E> private constructor(
+class Response<out S, out E> private constructor(
     val status: HttpStatusCode,
     private val success: ResultData<S>? = null,
     private val error: ResultData<E>? = null,
@@ -33,10 +33,10 @@ class QueryResult<out S, out E> private constructor(
 
     companion object {
         fun <S> success(status: HttpStatusCode, result: S? = null) =
-            QueryResult<S, Nothing>(status, success = ResultData(result))
+            Response<S, Nothing>(status, success = ResultData(result))
 
         fun <E> error(status: HttpStatusCode, error: E? = null) =
-            QueryResult<Nothing, E>(status, error = ResultData(error))
+            Response<Nothing, E>(status, error = ResultData(error))
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun ok() = success<Nothing>(HttpStatusCode.OK)
@@ -53,10 +53,10 @@ data class ResultData<T>(
     val data: T? = null
 )
 
-suspend inline fun ApplicationCall.respond(queryResult: QueryResult<*, *>) {
+suspend inline fun ApplicationCall.respond(response: Response<*, *>) {
     val res: suspend (ResultData<*>) -> Unit = { result ->
-        response.status(queryResult.status)
+        this.response.status(response.status)
         result.data?.let { respond(it) }
     }
-    queryResult.ifSuccessOrElse(res, res)
+    response.ifSuccessOrElse(res, res)
 }

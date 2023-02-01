@@ -1,14 +1,14 @@
 package com.kamelia.jellyfish.rest.user
 
+import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
 import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.util.adminRestrict
+import com.kamelia.jellyfish.util.authenticatedUser
 import com.kamelia.jellyfish.util.getPageParameters
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.idRestrict
 import com.kamelia.jellyfish.util.ifRegular
-import com.kamelia.jellyfish.util.jwt
 import com.kamelia.jellyfish.util.receivePageDefinition
-import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
@@ -63,7 +63,7 @@ private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
     ifRegular {
         idRestrict(uuid)
     }
-    val updaterID = jwt.uuid
+    val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(UserService.updateUser(uuid, body, updaterID))
 }
@@ -83,8 +83,8 @@ private fun Route.deleteUser() = delete("/{uuid}") {
 }
 
 private fun Route.regenerateUploadToken() = post("/uploadToken") {
-    val uuid = jwt.uuid
-    idRestrict(uuid)
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    idRestrict(userId)
 
-    call.respond(UserService.regenerateUploadToken(uuid))
+    call.respond(UserService.regenerateUploadToken(userId))
 }

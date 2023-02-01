@@ -4,7 +4,7 @@ import com.kamelia.jellyfish.core.ErrorDTO
 import com.kamelia.jellyfish.core.Hasher
 import com.kamelia.jellyfish.core.IllegalActionException
 import com.kamelia.jellyfish.core.InsufficientPermissionsException
-import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.Response
 import com.kamelia.jellyfish.rest.core.pageable.PageDTO
 import com.kamelia.jellyfish.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.jellyfish.util.uuid
@@ -13,7 +13,7 @@ import kotlin.math.ceil
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, List<ErrorDTO>> {
         checkEmail(dto.email)?.let { return it }
         checkUsername(dto.username)?.let { return it }
         checkPassword(dto.password)?.let { return it }
@@ -22,21 +22,21 @@ object UserService {
             throw IllegalActionException()
         }
 
-        return QueryResult.ok(
+        return Response.ok(
             Users.create(dto)
                 .toRepresentationDTO()
         )
     }
 
-    suspend fun getUserById(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
-        val user = Users.findById(id) ?: return QueryResult.notFound()
-        return QueryResult.ok(user.toRepresentationDTO())
+    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, List<ErrorDTO>> {
+        val user = Users.findById(id) ?: return Response.notFound()
+        return Response.ok(user.toRepresentationDTO())
     }
 
-    suspend fun getUsers(): QueryResult<UserPageDTO, List<ErrorDTO>> {
+    suspend fun getUsers(): Response<UserPageDTO, List<ErrorDTO>> {
         val users = Users.getAll()
         val total = Users.countAll()
-        return QueryResult.ok(
+        return Response.ok(
             UserPageDTO(
                 PageDTO(
                     users.map { it.toRepresentationDTO() },
@@ -49,9 +49,9 @@ object UserService {
         )
     }
 
-    suspend fun getUsers(page: Long, pageSize: Int, definition: PageDefinitionDTO): QueryResult<UserPageDTO, List<ErrorDTO>> {
+    suspend fun getUsers(page: Long, pageSize: Int, definition: PageDefinitionDTO): Response<UserPageDTO, List<ErrorDTO>> {
         val (users, total) = Users.getAll(page, pageSize, definition)
-        return QueryResult.ok(
+        return Response.ok(
             UserPageDTO(
                 PageDTO(
                     users.map { it.toRepresentationDTO() },
@@ -68,8 +68,8 @@ object UserService {
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
-        val toEdit = Users.findById(id) ?: return QueryResult.notFound()
+    ): Response<UserRepresentationDTO, List<ErrorDTO>> {
+        val toEdit = Users.findById(id) ?: return Response.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
         checkUsername(dto.username, toEdit)?.let { return it }
@@ -82,7 +82,7 @@ object UserService {
             throw InsufficientPermissionsException()
         }
 
-        return QueryResult.ok(
+        return Response.ok(
             Users.update(toEdit, dto, updater)
                 .toRepresentationDTO()
         )
@@ -92,30 +92,30 @@ object UserService {
         id: UUID,
         dto: UserPasswordUpdateDTO,
         updaterID: UUID,
-    ): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
+    ): Response<UserRepresentationDTO, List<ErrorDTO>> {
         checkPassword(dto.newPassword)?.let { return it }
 
-        val toEdit = Users.findById(id) ?: return QueryResult.notFound()
+        val toEdit = Users.findById(id) ?: return Response.notFound()
 
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-            return QueryResult.forbidden("errors.users.password.wrong")
+            return Response.forbidden("errors.users.password.wrong")
         }
 
-        val updater = Users.findById(updaterID) ?: return QueryResult.forbidden("errors.users.role.forbidden")
-        return QueryResult.ok(
+        val updater = Users.findById(updaterID) ?: return Response.forbidden("errors.users.role.forbidden")
+        return Response.ok(
             Users.updatePassword(toEdit, dto, updater)
                 .toRepresentationDTO()
         )
     }
 
-    suspend fun deleteUser(id: UUID): QueryResult<UserRepresentationDTO, Nothing> =
+    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, Nothing> =
         Users.delete(id)
-            ?.let { QueryResult.ok(it.toRepresentationDTO()) }
-            ?: QueryResult.notFound()
+            ?.let { Response.ok(it.toRepresentationDTO()) }
+            ?: Response.notFound()
 
-    suspend fun regenerateUploadToken(id: UUID): QueryResult<UserRepresentationDTO, List<ErrorDTO>> {
-        val user = Users.findById(id) ?: return QueryResult.notFound()
-        return QueryResult.ok(
+    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, List<ErrorDTO>> {
+        val user = Users.findById(id) ?: return Response.notFound()
+        return Response.ok(
             Users.regenerateUploadToken(user)
                 .toRepresentationDTO()
         )
@@ -130,7 +130,7 @@ object UserService {
  * @param toEdit Optional user to check against.
  * This parameter should represent the user that is currently logged in.
  *
- * @return Optional [QueryResult] with [ErrorDTO] if error occurred
+ * @return Optional [Response] with [ErrorDTO] if error occurred
  */
 private suspend fun checkEmail(email: String?, toEdit: User? = null) =
     if (email != null)
@@ -139,10 +139,10 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                 if (it.uuid == toEdit?.uuid) {
                     null
                 } else {
-                    QueryResult.forbidden("errors.users.email.already_exists")
+                    Response.forbidden("errors.users.email.already_exists")
                 }
             } ?: if ("@" !in email) {
-            QueryResult.badRequest("errors.users.email.invalid")
+            Response.badRequest("errors.users.email.invalid")
         } else null
     else null
 
@@ -154,7 +154,7 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
  * @param toEdit Optional user to check against.
  * This parameter should represent the user that is currently logged in.
  *
- * @return Optional [QueryResult] with [ErrorDTO] if error occurred
+ * @return Optional [Response] with [ErrorDTO] if error occurred
  */
 private suspend fun checkUsername(username: String?, toEdit: User? = null) =
     if (username != null)
@@ -163,7 +163,7 @@ private suspend fun checkUsername(username: String?, toEdit: User? = null) =
                 if (it.uuid == toEdit?.uuid) {
                     null
                 } else {
-                    QueryResult.forbidden("errors.users.username.already_exists")
+                    Response.forbidden("errors.users.username.already_exists")
                 }
             }
     else null
@@ -180,7 +180,7 @@ private suspend fun checkUsername(username: String?, toEdit: User? = null) =
  *
  * @param password Password to check
  *
- * @return Optional [QueryResult] with [ErrorDTO] if error occurred
+ * @return Optional [Response] with [ErrorDTO] if error occurred
  */
 private fun checkPassword(password: String?) =
     if (password != null) {
@@ -195,6 +195,6 @@ private fun checkPassword(password: String?) =
         if (errors.isEmpty()) {
             null
         } else {
-            QueryResult.forbidden(*errors.toTypedArray())
+            Response.forbidden(*errors.toTypedArray())
         }
     } else null

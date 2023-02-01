@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@antfu/eslint-config': ^0.35.1
+  '@pinia/nuxt': ^0.4.6
   '@vue-macros/nuxt': ^1.0.2
   '@vue-macros/volar': ^0.8.0
   '@vueuse/core': ^9.12.0
@@ -9,12 +10,14 @@ specifiers:
   eslint: ^8.33.0
   nuxi: ^3.1.1
   nuxt: ^3.1.1
+  pinia: ^2.0.30
   taze: ^0.8.5
   typescript: ^4.9.5
   vue: ^3.2.45
 
 devDependencies:
   '@antfu/eslint-config': 0.35.1_4vsywjlpuriuw3tl5oq6zy5a64
+  '@pinia/nuxt': 0.4.6_2hxmazfbcwwtly5fgw7ckvmlau
   '@vue-macros/nuxt': 1.0.2_4oohor4omryzsb7zyn36wxft3i
   '@vue-macros/volar': 0.8.0_vue@3.2.45
   '@vueuse/core': 9.12.0_vue@3.2.45
@@ -22,6 +25,7 @@ devDependencies:
   eslint: 8.33.0
   nuxi: 3.1.1
   nuxt: 3.1.1_4vsywjlpuriuw3tl5oq6zy5a64
+  pinia: 2.0.30_2hxmazfbcwwtly5fgw7ckvmlau
   taze: 0.8.5
   typescript: 4.9.5
   vue: 3.2.45
@@ -1280,6 +1284,19 @@ packages:
       - vls
       - vti
       - vue-tsc
+    dev: true
+
+  /@pinia/nuxt/0.4.6_2hxmazfbcwwtly5fgw7ckvmlau:
+    resolution: {integrity: sha512-HjrYEfLdFpmsjhicPJgL36jVhzHWukIQPFFHGTSF84Cplu+f2nY2XHKqe9ToHzE9rLee2RjLOwAzOnXa/I/u6A==}
+    dependencies:
+      '@nuxt/kit': 3.1.1
+      pinia: 2.0.30_2hxmazfbcwwtly5fgw7ckvmlau
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - rollup
+      - supports-color
+      - typescript
+      - vue
     dev: true
 
   /@rollup/plugin-alias/4.0.3_rollup@3.12.1:
@@ -5897,6 +5914,24 @@ packages:
   /pify/2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /pinia/2.0.30_2hxmazfbcwwtly5fgw7ckvmlau:
+    resolution: {integrity: sha512-q6DUmxWwe/mQgg+55QQjykpKC+aGeGdaJV3niminl19V08dE+LRTvSEuqi6/NLSGCKHI49KGL6tMNEOssFiMyA==}
+    peerDependencies:
+      '@vue/composition-api': ^1.4.0
+      typescript: '>=4.4.4'
+      vue: ^2.6.14 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      '@vue/devtools-api': 6.5.0
+      typescript: 4.9.5
+      vue: 3.2.45
+      vue-demi: 0.13.11_vue@3.2.45
     dev: true
 
   /pkg-types/1.0.1:

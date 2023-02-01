@@ -68,12 +68,10 @@ object SessionManager {
     }
 
     fun updateSession(userId: UUID, user: User): Unit = synchronized(lock) {
-        loggedUsers.computeIfPresent(userId) { _, userState ->
-            userState.copy(
-                username = user.username,
-                email = user.email,
-                role = user.role,
-            )
+        loggedUsers[userId]?.apply {
+            username = user.username
+            email = user.email
+            role = user.role
         }
     }
 
@@ -120,10 +118,10 @@ object SessionManager {
 }
 
 data class UserState(
-    val uuid: UUID,
-    val username: String,
-    val email: String,
-    val role: UserRole,
+    var uuid: UUID,
+    var username: String,
+    var email: String,
+    var role: UserRole,
 ) : Principal {
 
     fun new(

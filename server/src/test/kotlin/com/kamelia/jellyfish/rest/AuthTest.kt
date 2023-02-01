@@ -4,12 +4,18 @@ import com.kamelia.jellyfish.client
 import com.kamelia.jellyfish.core.TokenData
 import com.kamelia.jellyfish.login
 import com.kamelia.jellyfish.loginBlocking
+import com.kamelia.jellyfish.rest.auth.SessionManager
+import com.kamelia.jellyfish.rest.user.UserRole
+import com.kamelia.jellyfish.rest.user.UserUpdateDTO
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.delay
@@ -21,6 +27,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestMethodOrder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.fail
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -258,25 +265,84 @@ class AuthTest {
         assertEquals(HttpStatusCode.Unauthorized, response2.status)
     }
 
-    //@DisplayName("Session updates accordingly to user")
-    //@Test
-    //fun sessionUpdatesAccordinglyToUser() = testApplication {
-    //    environment {
-    //        config = ApplicationConfig("application-auth-test.conf")
-    //    }
-    //
-    //    val (status, tokens) = login("auth_update_user", "password")
-    //    assertEquals(HttpStatusCode.OK, status)
-    //
-    //    val response = client().patch("/api/users/${userId}") {
-    //        contentType(ContentType.Application.Json)
-    //        setBody(UserUpdateDTO(username = "newUsername"))
-    //        tokens?.let { bearerAuth(it.accessToken) }
-    //    }
-    //
-    //    val response = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
-    //        bearerAuth(tokens!!.accessToken)
-    //    }
-    //    assertEquals(HttpStatusCode.OK, response.status)
-    //}
+    @DisplayName("Session updates accordingly to user")
+    @Test
+    fun sessionUpdatesAccordinglyToUser() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (status, tokens) = login("auth_update_user", "password")
+        assertEquals(HttpStatusCode.OK, status)
+
+        val response = client().patch("/api/users/00000000-0001-0001-0000-000000000001") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(username = "newUsername"))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val userState = SessionManager.verify(tokens!!.accessToken) ?: fail("User state should not be null")
+        assertEquals("newUsername", userState.username)
+    }
+
+    @DisplayName("Session updates role when promoting user")
+    @Test
+    fun sessionUpdatesRoleAtPromotion() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (ownerStatus, ownerTokens) = login("test-auth-2-owner", "password")
+        assertEquals(HttpStatusCode.OK, ownerStatus)
+        val (userStatus, userTokens) = login("test-auth-2-user", "password")
+        assertEquals(HttpStatusCode.OK, userStatus)
+
+        val response1 = client().get("/api/users/00000000-0000-0000-0000-000000000001") {
+            userTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response1.status)
+
+        val response2 = client().patch("/api/users/00000000-0001-0002-0000-000000000002") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(role = UserRole.ADMIN))
+            ownerTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response2.status)
+
+        val response3 = client().get("/api/users/00000000-0000-0000-0000-000000000001") {
+            userTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response3.status)
+    }
+
+    @DisplayName("Session updates role when demoting user")
+    @Test
+    fun sessionUpdatesRoleAtDemotion() = testApplication {
+        environment {
+            config = ApplicationConfig("application-auth-test.conf")
+        }
+
+        val (ownerStatus, ownerTokens) = login("test-auth-3-owner", "password")
+        assertEquals(HttpStatusCode.OK, ownerStatus)
+        val (adminStatus, adminTokens) = login("test-auth-3-admin", "password")
+        assertEquals(HttpStatusCode.OK, adminStatus)
+
+        val response1 = client().get("/api/users/00000000-0000-0000-0000-000000000001") {
+            adminTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response1.status)
+
+        val response2 = client().patch("/api/users/00000000-0001-0003-0000-000000000002") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(role = UserRole.REGULAR))
+            ownerTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response2.status)
+
+        val response3 = client().get("/api/users/00000000-0000-0000-0000-000000000001") {
+            adminTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response3.status)
+    }
 }

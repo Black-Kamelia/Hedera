@@ -42,6 +42,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-netty-jvm", ktorVersion)
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
+    implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)

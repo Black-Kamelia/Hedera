@@ -7,6 +7,7 @@ import com.kamelia.jellyfish.plugins.configureCORS
 import com.kamelia.jellyfish.plugins.configureExceptionAdvisors
 import com.kamelia.jellyfish.plugins.configureRouting
 import com.kamelia.jellyfish.plugins.configureSerialization
+import com.kamelia.jellyfish.rest.auth.SessionManager
 import com.kamelia.jellyfish.util.Environment
 import com.kamelia.jellyfish.util.Environment.isDev
 import com.kamelia.jellyfish.util.MimeTypes
@@ -18,7 +19,7 @@ import io.ktor.server.plugins.autohead.AutoHeadResponse
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
-@Suppress("unused") // Referenced in application.conf
+@Suppress("unused") // Referenced in application.yaml
 fun Application.module() {
     Environment.application = this
     if (isDev) log.info("Running in development mode")
@@ -31,4 +32,6 @@ fun Application.module() {
     configureCORS()
     configureExceptionAdvisors()
     install(AutoHeadResponse)
+
+    SessionManager.startPruning()
 }

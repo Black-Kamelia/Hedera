@@ -86,7 +86,7 @@ class FileTest {
             appendFile("/test_files/test.txt", "test.txt", "text/plain")
         }) {
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(statusCode, response.status)
@@ -126,7 +126,7 @@ class FileTest {
         val client = client()
         val response = client.submitForm("/api/files/upload") {
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
@@ -141,7 +141,7 @@ class FileTest {
         val client = client()
         val response = client.submitFormWithBinaryData("/api/files/upload", formData {}) {
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
@@ -158,7 +158,7 @@ class FileTest {
             appendFile("/test_files/test.txt", "", "text/plain")
         }) {
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
@@ -179,7 +179,7 @@ class FileTest {
         val client = client()
         val response = client.get("/api/files/$fileCode") {
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(statusCode, response.status)
@@ -203,7 +203,7 @@ class FileTest {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(statusCode, response.status)
@@ -226,7 +226,7 @@ class FileTest {
         val client = client()
         val response = client.delete("/api/files/$fileId") {
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(statusCode, response.status)
@@ -259,7 +259,7 @@ class FileTest {
                 )
             )
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -298,7 +298,7 @@ class FileTest {
                 )
             )
             tokens?.let {
-                bearerAuth(it.token)
+                bearerAuth(it.accessToken)
             }
         }
         assertEquals(HttpStatusCode.OK, response.status)

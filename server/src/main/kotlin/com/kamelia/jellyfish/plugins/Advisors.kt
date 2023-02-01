@@ -7,8 +7,10 @@ import com.kamelia.jellyfish.core.InsufficientPermissionsException
 import com.kamelia.jellyfish.core.InvalidUUIDException
 import com.kamelia.jellyfish.core.MissingHeaderException
 import com.kamelia.jellyfish.core.MissingParameterException
+import com.kamelia.jellyfish.core.MissingTokenException
 import com.kamelia.jellyfish.core.MultipartParseException
-import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.Response
+import com.kamelia.jellyfish.core.UnknownFilterFieldException
 import com.kamelia.jellyfish.core.respond
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -32,8 +34,10 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
     is IllegalArgumentException,
     is InvalidUUIDException,
     is MultipartParseException,
-    is IllegalFilterException -> badRequestMessage(call, cause)
+    is IllegalFilterException,
+    is UnknownFilterFieldException -> badRequestMessage(call, cause)
 
+    is MissingTokenException,
     is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
     is IllegalActionException,
@@ -43,15 +47,15 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
 }
 
 private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
-    call.respond(QueryResult.badRequest(cause.message ?: cause.javaClass.name))
+    call.respond(Response.badRequest(cause.message ?: cause.javaClass.name))
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) =
-    call.respond(QueryResult.unauthorized(cause.message ?: cause.javaClass.name))
+    call.respond(Response.unauthorized(cause.message ?: cause.javaClass.name))
 
 private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) =
-    call.respond(QueryResult.forbidden(cause.message ?: cause.javaClass.name))
+    call.respond(Response.forbidden(cause.message ?: cause.javaClass.name))
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respond(QueryResult.error(HttpStatusCode.InternalServerError, listOf("errors.unknown")))
+    call.respond(Response.error(HttpStatusCode.InternalServerError, listOf("errors.unknown")))
     call.application.log.error("Unexpected error", cause)
 }

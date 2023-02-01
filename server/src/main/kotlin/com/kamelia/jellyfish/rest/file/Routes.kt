@@ -1,22 +1,20 @@
 package com.kamelia.jellyfish.rest.file
 
 import com.kamelia.jellyfish.core.ExpiredOrInvalidTokenException
-import com.kamelia.jellyfish.core.QueryResult
+import com.kamelia.jellyfish.core.Response
 import com.kamelia.jellyfish.core.respond
 import com.kamelia.jellyfish.rest.user.Users
 import com.kamelia.jellyfish.util.FileUtils
 import com.kamelia.jellyfish.util.adminRestrict
+import com.kamelia.jellyfish.util.authenticatedUser
 import com.kamelia.jellyfish.util.doWithForm
 import com.kamelia.jellyfish.util.getHeader
 import com.kamelia.jellyfish.util.getPageParameters
 import com.kamelia.jellyfish.util.getParam
 import com.kamelia.jellyfish.util.getUUID
 import com.kamelia.jellyfish.util.getUUIDOrNull
-import com.kamelia.jellyfish.util.jwt
-import com.kamelia.jellyfish.util.jwtOrNull
 import com.kamelia.jellyfish.util.receivePageDefinition
 import com.kamelia.jellyfish.util.respondFile
-import com.kamelia.jellyfish.util.uuid
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
@@ -42,13 +40,13 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 private fun Route.uploadFile() = post("/upload") {
-    val uuid = jwt.uuid
-    val user = Users.findById(uuid) ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+        call.respond(Response.badRequest("errors.uploads.missing_file"))
     })
 }
 
@@ -59,12 +57,12 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respond(QueryResult.badRequest("errors.uploads.missing_file"))
+        call.respond(Response.badRequest("errors.uploads.missing_file"))
     })
 }
 
 private fun Route.getFile() = get("/{code}") {
-    val user = jwtOrNull()?.uuid?.let { Users.findById(it) }
+    val user = authenticatedUser?.let { Users.findById(it.uuid) }
     val code = call.getParam("code")
 
     FileService.getFile(code, user).ifSuccessOrElse(
@@ -75,18 +73,18 @@ private fun Route.getFile() = get("/{code}") {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
                 // TODO notify orphaned file
-                call.respond(QueryResult.notFound())
+                call.respond(Response.notFound())
             }
         },
         onError = {
-            call.respond(QueryResult.notFound())
+            call.respond(Response.notFound())
         },
     )
 }
 
 private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
     val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = jwt.uuid
+    val jwtId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
     val (page, pageSize) = call.getPageParameters()
@@ -97,14 +95,14 @@ private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
 
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = jwt.uuid
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(FileService.updateFile(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {
     val fileId = call.getUUID("uuid")
-    val userId = jwt.uuid
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(FileService.deleteFile(fileId, userId))
 }

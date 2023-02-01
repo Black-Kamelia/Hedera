@@ -1,6 +1,6 @@
 package com.kamelia.jellyfish
 
-import com.kamelia.jellyfish.core.TokenPair
+import com.kamelia.jellyfish.core.TokenData
 import com.kamelia.jellyfish.rest.auth.LoginDTO
 import com.kamelia.jellyfish.rest.core.DTO
 import com.kamelia.jellyfish.rest.user.UserRepresentationDTO
@@ -16,15 +16,19 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.ApplicationTestBuilder
+import io.ktor.server.testing.testApplication
+import io.ktor.util.KtorDsl
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-typealias TestUser = Pair<TokenPair?, UUID>
+typealias TestUser = Pair<TokenData?, UUID>
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {
@@ -42,14 +46,34 @@ fun ApplicationTestBuilder.client() = createClient {
 suspend fun ApplicationTestBuilder.login(
     username: String,
     password: String,
-): Pair<HttpStatusCode, TokenPair?> {
+): Pair<HttpStatusCode, TokenData?> {
     val dto = LoginDTO(username, password)
     val response = client().post("/api/login") {
         contentType(ContentType.Application.Json)
         setBody(dto)
     }
     val body = if (response.status == HttpStatusCode.OK) {
-        Json.decodeFromString(TokenPair.serializer(), response.bodyAsText())
+        Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
+    } else {
+        System.err.println(response.bodyAsText())
+        null
+    }
+    return response.status to body
+}
+
+suspend fun ApplicationTestBuilder.loginBlocking(
+    username: String,
+    password: String,
+): Pair<HttpStatusCode, TokenData?> {
+    val dto = LoginDTO(username, password)
+    val response = runBlocking {
+         client().post("/api/login") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }
+    }
+    val body = if (response.status == HttpStatusCode.OK) {
+        Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
     } else {
         System.err.println(response.bodyAsText())
         null
@@ -65,3 +89,13 @@ fun FormBuilder.appendFile(path: String, name: String, type: String, key: String
         append(HttpHeaders.ContentDisposition, "filename=\"$name\"")
     }
 )
+
+@KtorDsl
+fun authTestApplication(
+    block: suspend ApplicationTestBuilder.() -> Unit
+) = testApplication {
+    environment {
+        config = ApplicationConfig("application-auth-test.yaml")
+    }
+    block()
+}

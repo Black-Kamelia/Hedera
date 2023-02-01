@@ -1,22 +1,22 @@
 ktor:
-  environment: "$JELLYFISH_ENV:prod"
+  environment: "$HEDERA_ENV:prod"
 
   deployment:
     port: 8080
 
   application:
     modules:
-      - com.kamelia.jellyfish.ApplicationKt.module
+      - com.kamelia.hedera.ApplicationKt.module
 
 liquibase:
   master: "classpath:db/db.changelog-test.xml"
 
-jellyfish:
-  uploadFolder: "$JELLYFISH_UPLOAD_FOLDER:uploads"
+hedera:
+  uploadFolder: "$HEDERA_UPLOAD_FOLDER:uploads"
 
   jwt:
-    secretAccess: $JELLYFISH_JWT_SECRET
-    expirationAccess: "$JELLYFISH_JWT_EXPIRATION:3600000" # Default 1 hour
-    secretRefresh: $JELLYFISH_JWT_SECRET_REFRESH
-    expirationRefresh: "$JELLYFISH_JWT_EXPIRATION_REFRESH:2592000000" # Default 30 days
-    realm: jellyfish login-locked
+    secretAccess: $HEDERA_JWT_SECRET
+    expirationAccess: "$HEDERA_JWT_EXPIRATION:3600000" # Default 1 hour
+    secretRefresh: $HEDERA_JWT_SECRET_REFRESH
+    expirationRefresh: "$HEDERA_JWT_EXPIRATION_REFRESH:2592000000" # Default 30 days
+    realm: hedera login-locked

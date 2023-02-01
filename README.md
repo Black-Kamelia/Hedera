@@ -1,7 +1,7 @@
 <div align="center">
 
-![Jellyfish logo](img/Jellyfish_light.svg#gh-light-mode-only)
-![Jellyfish logo](img/Jellyfish_dark.svg#gh-dark-mode-only)
+![Hedera logo](img/Hedera_light.svg#gh-light-mode-only)
+![Hedera logo](img/Hedera_dark.svg#gh-dark-mode-only)
 
 <h3><i>A self-hosted screenshots/files hosting system.</i></h3>
 
@@ -9,13 +9,13 @@
 
 ## 🤔 What is it?
 
-**Jellyfish** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Vue.js](https://vuejs.org/)**.
+**Hedera** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Vue.js](https://vuejs.org/)**.
 It is the next iteration of [Selfish](https://github.com/SlamaFR/Selfish). Like its predecessor, it is highly inspired
 by [XBackBone](https://github.com/SergiX44/XBackBone).
 
-You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and host them on your Jellyfish server.
+You can see Hedera like a self-hosted Imgur. You simply take screenshots and host them on your Hedera server.
 
-👉 YES. Jellyfish will also be shipped in a Docker image.
+👉 YES. Hedera will also be shipped in a Docker image.
 
 ## ✨ Features
 
@@ -25,7 +25,7 @@ You can see Jellyfish like a self-hosted Imgur. You simply take screenshots and 
   You can choose to set a custom quota for each user, or allow unlimited storage.
 - **Auto-deletion** — Imagine being unable to upload a fantastic screenshot because you're about to exceed your quota? No problem, auto-deletion will delete the oldest files to free some space.
 - **[ShareX](https://getsharex.com/) integration** — ShareX is an awesome open-source software to take screenshots or record your screen.
-  You can download a [custom uploader](https://getsharex.com/docs/custom-uploader) file on your profile page to allow ShareX to upload your screenshots directly to your Jellyfish account.
+  You can download a [custom uploader](https://getsharex.com/docs/custom-uploader) file on your profile page to allow ShareX to upload your screenshots directly to your Hedera account.
 
 ## 🛠 Installation
 

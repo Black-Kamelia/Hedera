@@ -14,7 +14,7 @@ import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
-fun Route.authRoutes() = route("/login") {
+fun Route.authRoutes() = route("/") {
     login()
 
     authenticate("auth-jwt") {
@@ -26,20 +26,20 @@ fun Route.authRoutes() = route("/login") {
     }
 }
 
-private fun Route.login() = post<LoginDTO> { body ->
+private fun Route.login() = post<LoginDTO>("/login") { body ->
     call.respond(AuthService.login(body.username, body.password))
 }
 
-private fun Route.logoutAll() = delete("/all") {
+private fun Route.logoutAll() = post("/logout/all") {
     val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
     call.respond(AuthService.logoutAll(userId))
 }
 
-private fun Route.logout() = delete {
+private fun Route.logout() = post("/logout") {
     val token = accessToken ?: throw MissingTokenException()
     call.respond(AuthService.logout(token))
 }
 
-private fun Route.refresh() = patch {
+private fun Route.refresh() = patch("/login") {
     call.respond(AuthService.refresh(jwt))
 }

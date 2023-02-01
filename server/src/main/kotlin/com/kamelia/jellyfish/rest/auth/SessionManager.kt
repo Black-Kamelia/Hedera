@@ -17,9 +17,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 object SessionManager {
+
+    private val PURGE_INTERVAL = 5.minutes
 
     private val lock = Any()
 
@@ -27,14 +30,13 @@ object SessionManager {
     private val refreshTokens = mutableMapOf<String, TokenData>()
     private val loggedUsers = mutableMapOf<UUID, UserState>()
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
-
     private var pruneJob: Job? = null
 
     fun startPruning() = synchronized(coroutineScope) {
         if (pruneJob != null) return
         pruneJob = coroutineScope.launch {
             while (isActive) {
-                delay(5.seconds)
+                delay(PURGE_INTERVAL)
                 val now = System.currentTimeMillis()
                 synchronized(lock) {
                     sessions.entries.removeIf {
@@ -122,16 +124,7 @@ data class UserState(
     var username: String,
     var email: String,
     var role: UserRole,
-) : Principal {
-
-    fun new(
-        uuid: UUID = this.uuid,
-        username: String = this.username,
-        email: String = this.email,
-        role: UserRole = this.role,
-    ) = UserState(uuid, username, email, role)
-
-}
+) : Principal
 
 data class Session(
     val user: UserState,

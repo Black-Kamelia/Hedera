@@ -1,0 +1,22 @@
+ktor:
+  environment: dev
+
+  deployment:
+    port: 8080
+
+  application:
+    modules:
+      - com.kamelia.jellyfish.ApplicationKt.module
+
+liquibase:
+  master: "classpath:db/db.changelog-test.xml"
+
+jellyfish:
+  uploadFolder: ./_tests/upload
+
+  jwt:
+    secretAccess: $JELLYFISH_JWT_SECRET
+    expirationAccess: 1000
+    secretRefresh: $JELLYFISH_JWT_SECRET_REFRESH
+    expirationRefresh: 2000
+    realm: jellyfish login-locked

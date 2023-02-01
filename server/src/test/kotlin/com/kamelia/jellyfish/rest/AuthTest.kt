@@ -1,5 +1,6 @@
 package com.kamelia.jellyfish.rest
 
+import com.kamelia.jellyfish.authTestApplication
 import com.kamelia.jellyfish.client
 import com.kamelia.jellyfish.core.TokenData
 import com.kamelia.jellyfish.login
@@ -8,7 +9,6 @@ import com.kamelia.jellyfish.rest.auth.SessionManager
 import com.kamelia.jellyfish.rest.user.UserRole
 import com.kamelia.jellyfish.rest.user.UserUpdateDTO
 import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
@@ -17,7 +17,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
@@ -50,10 +49,7 @@ class AuthTest {
 
     @DisplayName("Performing protected request with valid access token")
     @Test
-    fun useValidAccessToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun useValidAccessToken() = authTestApplication {
 
         val (status, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -66,10 +62,7 @@ class AuthTest {
 
     @DisplayName("Performing protected request with expired access token")
     @Test
-    fun useExpiredAccessToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun useExpiredAccessToken() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -84,10 +77,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session within expiration time")
     @Test
-    fun refreshSessionWithinTime() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun refreshSessionWithinTime() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -102,10 +92,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session after expiration time")
     @Test
-    fun refreshSessionAfterTime() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun refreshSessionAfterTime() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -120,10 +107,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session gives different tokens")
     @Test
-    fun refreshSessionGivesDifferentToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun refreshSessionGivesDifferentToken() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
@@ -141,10 +125,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session gives working new tokens")
     @Test
-    fun refreshSessionGivesWorkingTokens() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun refreshSessionGivesWorkingTokens() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
@@ -163,10 +144,7 @@ class AuthTest {
 
     @DisplayName("Logging out invalidates access token")
     @Test
-    fun logOutInvalidateAccessToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun logOutInvalidateAccessToken() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
@@ -190,10 +168,7 @@ class AuthTest {
 
     @DisplayName("Logging out invalidates refresh token")
     @Test
-    fun logOutInvalidateRefreshToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun logOutInvalidateRefreshToken() = authTestApplication {
 
         val (status, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
@@ -212,10 +187,7 @@ class AuthTest {
 
     @DisplayName("Logging out all invalidates every access token")
     @Test
-    fun logOutAllInvalidatesEveryAccessToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun logOutAllInvalidatesEveryAccessToken() = authTestApplication {
 
         val (_, tokens1) = loginBlocking("user1", "password")
         check(tokens1 != null) { "Tokens should not be null" }
@@ -240,10 +212,7 @@ class AuthTest {
 
     @DisplayName("Logging out all invalidates every refresh token")
     @Test
-    fun logOutAllInvalidatesEveryRefreshToken() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun logOutAllInvalidatesEveryRefreshToken() = authTestApplication {
 
         val (_, tokens1) = loginBlocking("user1", "password")
         check(tokens1 != null) { "Tokens should not be null" }
@@ -268,10 +237,7 @@ class AuthTest {
 
     @DisplayName("Session updates accordingly to user")
     @Test
-    fun sessionUpdatesAccordinglyToUser() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun sessionUpdatesAccordinglyToUser() = authTestApplication {
 
         val (status, tokens) = login("auth_update_user", "password")
         assertEquals(HttpStatusCode.OK, status)
@@ -289,10 +255,7 @@ class AuthTest {
 
     @DisplayName("Session updates role when promoting user")
     @Test
-    fun sessionUpdatesRoleAtPromotion() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun sessionUpdatesRoleAtPromotion() = authTestApplication {
 
         val (ownerStatus, ownerTokens) = login("test-auth-2-owner", "password")
         assertEquals(HttpStatusCode.OK, ownerStatus)
@@ -319,10 +282,7 @@ class AuthTest {
 
     @DisplayName("Session updates role when demoting user")
     @Test
-    fun sessionUpdatesRoleAtDemotion() = testApplication {
-        environment {
-            config = ApplicationConfig("application-auth-test.conf")
-        }
+    fun sessionUpdatesRoleAtDemotion() = authTestApplication {
 
         val (ownerStatus, ownerTokens) = login("test-auth-3-owner", "password")
         assertEquals(HttpStatusCode.OK, ownerStatus)

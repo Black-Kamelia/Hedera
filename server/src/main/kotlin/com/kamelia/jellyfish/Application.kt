@@ -19,7 +19,7 @@ import io.ktor.server.plugins.autohead.AutoHeadResponse
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
-@Suppress("unused") // Referenced in application.conf
+@Suppress("unused") // Referenced in application.yaml
 fun Application.module() {
     Environment.application = this
     if (isDev) log.info("Running in development mode")

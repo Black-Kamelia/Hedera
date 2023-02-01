@@ -1,2 +1,2 @@
-rootProject.name = "Jellyfish"
+rootProject.name = "Hedera"
 include("server", "client")

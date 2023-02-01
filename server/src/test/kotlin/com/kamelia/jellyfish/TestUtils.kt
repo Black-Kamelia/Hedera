@@ -16,7 +16,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.ApplicationTestBuilder
+import io.ktor.server.testing.testApplication
+import io.ktor.util.KtorDsl
 import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -86,3 +89,13 @@ fun FormBuilder.appendFile(path: String, name: String, type: String, key: String
         append(HttpHeaders.ContentDisposition, "filename=\"$name\"")
     }
 )
+
+@KtorDsl
+fun authTestApplication(
+    block: suspend ApplicationTestBuilder.() -> Unit
+) = testApplication {
+    environment {
+        config = ApplicationConfig("application-auth-test.yaml")
+    }
+    block()
+}

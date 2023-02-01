@@ -13,6 +13,15 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
+    [
+      '@pinia/nuxt',
+      {
+        autoImports: [
+          'defineStore',
+          ['defineStore', 'definePiniaStore'],
+        ],
+      },
+    ],
   ],
   macros: {
     exportProps: true,

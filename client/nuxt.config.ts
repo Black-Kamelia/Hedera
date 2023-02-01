@@ -7,4 +7,14 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
+  experimental: {
+    reactivityTransform: true,
+  },
+  modules: [
+    '@vueuse/nuxt',
+    '@vue-macros/nuxt',
+  ],
+  macros: {
+    exportProps: true,
+  },
 })

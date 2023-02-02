@@ -23,6 +23,8 @@ node {
 val pnpmClean = tasks.register<Delete>("pnpmClean") {
     delete(file("${project.projectDir}/client/node_modules"))
     delete(file("${project.projectDir}/client/.output"))
+    delete(file("${project.projectDir}/client/.nuxt"))
+    delete(file("${project.projectDir}/client/dist"))
     delete(file("${project.projectDir}/server/src/main/resources/static"))
 }
 
@@ -40,9 +42,9 @@ val bundleClient = tasks.register<Copy>("bundleClient") {
 
 tasks.clean {
     dependsOn(pnpmClean)
-    delete(file("executables"))
-    delete(file("upload"))
-    delete(file("server/upload"))
+    delete(file("${project.projectDir}/executables"))
+    delete(file("${project.projectDir}/upload"))
+    delete(file("${project.projectDir}/server/upload"))
 }
 
 tasks.build {

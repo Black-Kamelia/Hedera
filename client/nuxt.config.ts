@@ -16,6 +16,7 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
+    '@unocss/nuxt',
     [
       '@pinia/nuxt',
       {
@@ -27,6 +28,7 @@ export default defineNuxtConfig({
       },
     ],
   ],
+  css: ['@unocss/reset/antfu.css'],
   macros: {
     exportProps: true,
   },

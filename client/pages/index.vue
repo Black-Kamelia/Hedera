@@ -18,7 +18,7 @@ const dark = $isDark
       </button>
     </div>
     <p class="absolute top-10 left-10 text-8 font-text">
-      {{ dark ? 'Dark' : 'Light' }}
+      {{ dark ? $t('theme.dark') : $t('theme.light') }}
     </p>
 
     <h1 font="display bold" text="30 hover:violet-700" transition>

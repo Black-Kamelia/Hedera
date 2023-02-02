@@ -29,7 +29,7 @@ val pnpmClean = tasks.register<Delete>("pnpmClean") {
 }
 
 val pnpmBuild = tasks.register<PnpmTask>("pnpmBuild") {
-    dependsOn(tasks.npmInstall)
+    dependsOn(tasks.pnpmInstall)
     pnpmCommand.set(listOf("generate"))
     ignoreExitValue.set(false)
 }

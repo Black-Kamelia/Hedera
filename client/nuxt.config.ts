@@ -1,7 +1,7 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'url'
-import { transformShortVmodel } from '@vue-macros/short-vmodel'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
+import { transformShortVmodel } from '@vue-macros/short-vmodel'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -12,9 +12,7 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
-  experimental: {
-    reactivityTransform: true,
-  },
+  experimental: { reactivityTransform: true },
   vue: {
     compilerOptions: {
       nodeTransforms: [transformShortVmodel({ prefix: '::' })],
@@ -27,28 +25,22 @@ export default defineNuxtConfig({
       }),
     ],
   },
-  imports: {
-    dirs: ['stores'],
-  },
+  css: ['@unocss/reset/antfu.css'],
+  imports: { dirs: ['stores'] },
   modules: [
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/critters',
     '@nuxt/image-edge',
-    [
-      '@pinia/nuxt',
-      {
-        autoImports: [
-          'defineStore',
-          ['defineStore', 'definePiniaStore'],
-          'storeToRefs',
-        ],
-      },
-    ],
+    '@pinia/nuxt',
   ],
-  css: ['@unocss/reset/antfu.css'],
-  macros: {
-    exportProps: true,
+  macros: { exportProps: true },
+  pinia: {
+    autoImports: [
+      'defineStore',
+      ['defineStore', 'definePiniaStore'],
+      'storeToRefs',
+    ],
   },
 })

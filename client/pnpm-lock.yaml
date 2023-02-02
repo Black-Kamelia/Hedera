@@ -9,6 +9,7 @@ specifiers:
   '@unocss/nuxt': ^0.49.2
   '@unocss/reset': ^0.49.2
   '@vue-macros/nuxt': ^1.0.2
+  '@vue-macros/short-vmodel': ^1.1.0
   '@vue-macros/volar': ^0.8.0
   '@vueuse/core': ^9.12.0
   '@vueuse/nuxt': ^9.12.0
@@ -27,6 +28,7 @@ devDependencies:
   '@unocss/nuxt': 0.49.2_vite@4.0.4+webpack@5.75.0
   '@unocss/reset': 0.49.2
   '@vue-macros/nuxt': 1.0.2_fl3adtfns5774rpacxlpzuqdjy
+  '@vue-macros/short-vmodel': 1.1.0_vue@3.2.45
   '@vue-macros/volar': 0.8.0_vue@3.2.45
   '@vueuse/core': 9.12.0_vue@3.2.45
   '@vueuse/nuxt': 9.12.0_nuxt@3.1.1+vue@3.2.45

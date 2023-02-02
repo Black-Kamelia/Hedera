@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     '@vue-macros/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/critters',
+    '@nuxt/image-edge',
     [
       '@pinia/nuxt',
       {

@@ -11,7 +11,10 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.35.1",
+    "@iconify-json/tabler": "^1.1.57",
     "@pinia/nuxt": "^0.4.6",
+    "@unocss/nuxt": "^0.49.2",
+    "@unocss/reset": "^0.49.2",
     "@vue-macros/nuxt": "^1.0.2",
     "@vue-macros/volar": "^0.8.0",
     "@vueuse/core": "^9.12.0",
@@ -20,8 +23,6 @@
     "nuxi": "^3.1.1",
     "nuxt": "^3.1.1",
     "pinia": "^2.0.30",
-    "taze": "^0.8.5",
-    "typescript": "^4.9.5",
-    "vue": "^3.2.45"
+    "taze": "^0.8.5"
   }
 }

@@ -1,11 +1,12 @@
 <script lang="ts" setup>
+const { locale } = useI18n()
 const dark = $isDark
 </script>
 
 <template>
   <div center h-screen>
     <div class="absolute top-10 right-10 flex flex-row gap-2">
-      <select class="px-2 py-1 rounded-lg" ::="$i18n.locale">
+      <select v-model="locale" class="px-2 py-1 rounded-lg">
         <option value="en">
           en
         </option>

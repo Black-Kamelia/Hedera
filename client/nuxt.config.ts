@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       VueI18nVitePlugin({
-        include: [resolve(dirname(fileURLToPath(import.meta.url)), 'locales/**')],
+        include: [resolve(dirname(fileURLToPath(import.meta.url)), './locales/*.yml')],
       }),
     ],
   },

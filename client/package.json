@@ -12,6 +12,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.35.1",
     "@iconify-json/tabler": "^1.1.57",
+    "@nuxt/image-edge": "1.0.0-27919678.2f5b64b",
     "@nuxtjs/critters": "^0.4.0",
     "@pinia/nuxt": "^0.4.6",
     "@unocss/nuxt": "^0.49.2",

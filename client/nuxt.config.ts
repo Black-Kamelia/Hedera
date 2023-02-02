@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
     '@unocss/nuxt',
+    '@nuxtjs/critters',
     [
       '@pinia/nuxt',
       {

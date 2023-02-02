@@ -1,42 +1,42 @@
-# Nuxt 3 Minimal Starter
-
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Hedera client
 
 ## Setup
 
-Make sure to install the dependencies:
+Prefer VSCode to work on this project.
+
+When opening VSCode, you will be prompted to install recommended extensions. Do so and reload.
+
+On your first reload, you will be prompted to disabled some extensions (such as built-in TypeScript language features). Do so and reload.
+
+Install `pnpm` globally if it is not already installed:
 
 ```bash
-# yarn
-yarn install
-
-# npm
-npm install
-
-# pnpm
-pnpm install
+npm install -g pnpm
 ```
 
-## Development Server
-
-Start the development server on http://localhost:3000
+Install dependencies:
 
 ```bash
-npm run dev
+pnpm i
 ```
 
-## Production
-
-Build the application for production:
+## Running in development mode
 
 ```bash
-npm run build
+pnpm dev
 ```
 
-Locally preview production build:
+## Building for production
 
 ```bash
-npm run preview
+pnpm generate
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+The static output will be generated in the `.output/public/` directory.
+
+## Other scripts
+
+```bash
+pnpm nuxi add <template> <name> # Add a new page, component, store, composable, etc.
+pnpm taze # Update dependencies /!\ Do that only in a clean and specific branch /!\
+```

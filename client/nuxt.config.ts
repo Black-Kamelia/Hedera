@@ -1,3 +1,5 @@
+import { transformShortVmodel } from '@vue-macros/short-vmodel'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
@@ -9,6 +11,11 @@ export default defineNuxtConfig({
   ssr: false,
   experimental: {
     reactivityTransform: true,
+  },
+  vue: {
+    compilerOptions: {
+      nodeTransforms: [transformShortVmodel({ prefix: '::' })],
+    },
   },
   imports: {
     dirs: ['stores'],

@@ -5,6 +5,7 @@ import { transformShortVmodel } from '@vue-macros/short-vmodel'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  // general
   app: {
     head: {
       title: 'Hedera',
@@ -13,6 +14,19 @@ export default defineNuxtConfig({
   },
   ssr: false,
   experimental: { reactivityTransform: true },
+  css: ['@unocss/reset/antfu.css'],
+  imports: { dirs: ['stores'] },
+
+  // plugins
+  modules: [
+    '@vueuse/nuxt',
+    '@vue-macros/nuxt',
+    '@unocss/nuxt',
+    '@nuxtjs/critters',
+    '@nuxt/image-edge',
+    '@pinia/nuxt',
+    '@nuxtjs/color-mode',
+  ],
   vue: {
     compilerOptions: {
       nodeTransforms: [transformShortVmodel({ prefix: '::' })],
@@ -25,16 +39,8 @@ export default defineNuxtConfig({
       }),
     ],
   },
-  css: ['@unocss/reset/antfu.css'],
-  imports: { dirs: ['stores'] },
-  modules: [
-    '@vueuse/nuxt',
-    '@vue-macros/nuxt',
-    '@unocss/nuxt',
-    '@nuxtjs/critters',
-    '@nuxt/image-edge',
-    '@pinia/nuxt',
-  ],
+
+  // plugin configs
   macros: { exportProps: true },
   pinia: {
     autoImports: [
@@ -42,5 +48,12 @@ export default defineNuxtConfig({
       ['defineStore', 'definePiniaStore'],
       'storeToRefs',
     ],
+  },
+  colorMode: {
+    preference: 'system',
+    fallback: 'light',
+    classPrefix: '',
+    classSuffix: '',
+    storageKey: 'color-scheme',
   },
 })

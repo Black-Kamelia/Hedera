@@ -13,7 +13,8 @@ export default defineConfig({
   shortcuts: [
     ['btn', 'px-4 py-1 rounded inline-block bg-violet-700 text-white cursor-pointer hover:bg-violet-800 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
     ['icon-btn', 'inline-block cursor-pointer select-none opacity-75 transition duration-200 ease-in-out hover:opacity-100 hover:text-violet-600'],
-    ['center', 'flex items-center justify-center'],
+    ['flex-center', 'flex items-center justify-center'],
+    ['grid-center', 'grid place-items-center'],
   ],
   presets: [
     presetUno(),

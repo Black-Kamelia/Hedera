@@ -9,7 +9,7 @@ ktor:
       - com.kamelia.hedera.ApplicationKt.module
 
 liquibase:
-  master: "classpath:db/db.changelog-test.xml"
+  master: "classpath:db/db.changelog-master.xml"
 
 hedera:
   uploadFolder: "$HEDERA_UPLOAD_FOLDER:uploads"

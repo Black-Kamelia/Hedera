@@ -16,6 +16,12 @@ export default defineNuxtConfig({
   experimental: { reactivityTransform: true },
   css: ['@unocss/reset/antfu.css'],
   imports: { dirs: ['stores'] },
+  components: {
+    dirs: [
+      '~/components',
+      '~/components/ui',
+    ],
+  },
 
   // plugins
   modules: [

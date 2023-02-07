@@ -24,10 +24,12 @@
     "@vue-macros/volar": "^0.8.0",
     "@vueuse/core": "^9.12.0",
     "@vueuse/nuxt": "^9.12.0",
+    "class-variance-authority": "^0.4.0",
     "eslint": "^8.33.0",
     "nuxi": "^3.1.1",
     "nuxt": "^3.1.1",
     "pinia": "^2.0.30",
+    "sass": "^1.58.0",
     "taze": "^0.8.5",
     "vue-i18n": "^9.2.2"
   }

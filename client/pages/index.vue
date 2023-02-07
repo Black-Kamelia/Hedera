@@ -21,9 +21,8 @@ const { locale } = useI18n()
     <p class="absolute top-10 left-10 text-8 font-text">
       {{ $colorMode.value === 'dark' ? $t('theme.dark') : $t('theme.light') }}
     </p>
-
-    <h1 font="display bold" text="30 hover:violet-500 dark:hover:emerald-500" transition>
-      {{ $t('main.title') }}
-    </h1>
+    <n-button>
+      Commencer
+    </n-button>
   </div>
 </template>

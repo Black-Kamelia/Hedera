@@ -21,9 +21,9 @@ const props = withDefaults(defineProps<HButtonProps>(), {
   rightIcon: undefined,
 })
 
-defineEmits<{
-  (e: 'click', me: MouseEvent): void
-}>()
+const emit = defineEmits<SE<{
+  click(e: MouseEvent): void
+}>>()
 
 const useStyle = cva(['font-600', 'active:scale-97.5', 'transition-100'], {
   variants: {
@@ -68,7 +68,7 @@ const styles = useStyle({
 </script>
 
 <template>
-  <button :class="styles" @click="$emit('click')">
+  <button :class="styles" @click="emit('click', $event)">
     <div class="display-flex flex-row items-center">
       <span v-if="leftIcon !== undefined" :class="leftIcon" class="me-2" />
       <span><slot /></span>

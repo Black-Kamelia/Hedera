@@ -1,9 +1,5 @@
 <script lang="ts" setup>
 const { toggle } = useDark()
-
-function test() {
-  // alert('coucou')
-}
 </script>
 
 <template>

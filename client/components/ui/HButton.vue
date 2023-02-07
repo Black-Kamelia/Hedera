@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cva } from 'class-variance-authority'
 
-interface HButtonProps {
+export interface HButtonProps {
   type?: 'primary' | 'secondary'
   variant?: 'solid' | 'flat' | 'text' | 'link'
   color?: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'light' | 'dark'
@@ -49,7 +49,7 @@ const useStyle = cva(['font-600', 'active:scale-97.5', 'transition-100'], {
   },
   compoundVariants: [
     {
-      type: 'secondary',
+      type: 'primary',
       color: 'dark',
       class: 'bg-neutral-800 text-white hover:bg-neutral-900',
     },

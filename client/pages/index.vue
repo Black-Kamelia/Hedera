@@ -21,8 +21,8 @@ const { locale } = useI18n()
     <p class="absolute top-10 left-10 text-8 font-text">
       {{ $colorMode.value === 'dark' ? $t('theme.dark') : $t('theme.light') }}
     </p>
-    <n-button>
-      Commencer
-    </n-button>
+    <router-link to="/start">
+      {{ $t('global.start') }}
+    </router-link>
   </div>
 </template>

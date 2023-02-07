@@ -1,3 +1,5 @@
+global:
+  start: Start
 main:
   title: Welcome to Hedera
 theme:

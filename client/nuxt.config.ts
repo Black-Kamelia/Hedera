@@ -14,7 +14,15 @@ export default defineNuxtConfig({
   },
   ssr: false,
   experimental: { reactivityTransform: true },
-  css: ['@unocss/reset/antfu.css'],
+  css: [
+    '@unocss/reset/antfu.css',
+    'primevue/resources/themes/lara-light-blue/theme.css',
+    'primevue/resources/primevue.css',
+    'primeicons/primeicons.css',
+  ],
+  build: {
+    transpile: ['primevue'],
+  },
   imports: { dirs: ['stores'] },
   components: [{ path: '~/components', pathPrefix: false }],
 

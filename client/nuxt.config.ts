@@ -20,6 +20,10 @@ export default defineNuxtConfig({
     'primevue/resources/primevue.css',
     'primeicons/primeicons.css',
   ],
+  sourcemap: {
+    server: true,
+    client: false,
+  },
   build: {
     transpile: ['primevue'],
   },

@@ -18,14 +18,10 @@ export default defineNuxtConfig({
     '@unocss/reset/antfu.css',
     'primevue/resources/themes/lara-light-blue/theme.css',
     'primevue/resources/primevue.css',
-    'primeicons/primeicons.css',
   ],
   sourcemap: {
     server: true,
     client: false,
-  },
-  build: {
-    transpile: ['primevue'],
   },
   imports: { dirs: ['stores'] },
   components: [{ path: '~/components', pathPrefix: false }],
@@ -39,6 +35,7 @@ export default defineNuxtConfig({
     '@nuxt/image-edge',
     '@pinia/nuxt',
     '@nuxtjs/color-mode',
+    '@notkamui/nuxt-primevue',
   ],
   vue: {
     compilerOptions: {

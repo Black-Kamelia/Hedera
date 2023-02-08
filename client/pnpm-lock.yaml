@@ -20,6 +20,8 @@ specifiers:
   nuxi: ^3.1.1
   nuxt: ^3.1.1
   pinia: ^2.0.30
+  primeicons: ^6.0.1
+  primevue: ^3.23.0
   sass: ^1.58.0
   taze: ^0.8.5
   vue-i18n: ^9.2.2
@@ -44,6 +46,8 @@ devDependencies:
   nuxi: 3.1.1
   nuxt: 3.1.1_j37ie4foxrdtxbqs4ccmcom6zi
   pinia: 2.0.30_2hxmazfbcwwtly5fgw7ckvmlau
+  primeicons: 6.0.1
+  primevue: 3.23.0_5f3kdig7wnjzidee4jtphf73cq
   sass: 1.58.0
   taze: 0.8.5
   vue-i18n: 9.2.2_vue@3.2.45
@@ -7191,6 +7195,20 @@ packages:
   /pretty-bytes/6.0.0:
     resolution: {integrity: sha512-6UqkYefdogmzqAZWzJ7laYeJnaXDy2/J+ZqiiMtS7t7OfpXWTlaeGMwX8U6EFvPV/YWWEKRkS8hKS4k60WHTOg==}
     engines: {node: ^14.13.1 || >=16.0.0}
+    dev: true
+
+  /primeicons/6.0.1:
+    resolution: {integrity: sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==}
+    dev: true
+
+  /primevue/3.23.0_5f3kdig7wnjzidee4jtphf73cq:
+    resolution: {integrity: sha512-WyJwvVRJbuCPAId3qDwQVPXgOli4gc9yxdZZyY/3Ml0/asHHH3LR7+MMvjIHXg/AN+XX5SBVPPJkObxP8cJuaw==}
+    peerDependencies:
+      primeicons: ^5.0.0 || ^6.0.0
+      vue: ^3.0.0
+    dependencies:
+      primeicons: 6.0.1
+      vue: 3.2.45
     dev: true
 
   /proc-log/2.0.1:

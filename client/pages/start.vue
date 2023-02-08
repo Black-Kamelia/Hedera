@@ -77,6 +77,9 @@ const { toggle } = useDark()
         Télécharger la configuration ShareX
       </h-button>
     </div>
+    <div class="flex flex-row mt-6">
+      <p-button label="Button" icon="i-tabler-check stroke-1" icon-pos="left" />
+    </div>
   </div>
 </template>
 

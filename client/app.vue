@@ -1,8 +1,14 @@
 <template>
   <div font="text">
+    <NuxtLoadingIndicator />
     <NuxtLayout>
-      <NuxtLoadingIndicator />
       <NuxtPage />
     </NuxtLayout>
   </div>
 </template>
+
+<style>
+.p-component {
+  font-family: "Red Hat Text", sans-serif;
+}
+</style>

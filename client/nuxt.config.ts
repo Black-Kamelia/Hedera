@@ -66,4 +66,7 @@ export default defineNuxtConfig({
     classSuffix: '',
     storageKey: 'color-scheme',
   },
+  primevue: {
+    ripple: true,
+  },
 })

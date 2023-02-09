@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.35.1",
+    "@formkit/nuxt": "1.0.0-beta.15",
     "@iconify-json/tabler": "^1.1.57",
     "@intlify/unplugin-vue-i18n": "^0.8.1",
     "@notkamui/nuxt-primevue": "^0.1.0",

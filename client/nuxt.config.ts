@@ -36,6 +36,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/color-mode',
     '@notkamui/nuxt-primevue',
+    '@formkit/nuxt',
   ],
   vue: {
     compilerOptions: {

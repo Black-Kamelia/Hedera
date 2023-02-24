@@ -13,7 +13,6 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
-  experimental: { reactivityTransform: true },
   css: [
     '@unocss/reset/antfu.css',
     'primevue/resources/themes/lara-light-blue/theme.css',
@@ -52,7 +51,10 @@ export default defineNuxtConfig({
   },
 
   // plugin configs
-  macros: { exportProps: true },
+  macros: {
+    exportProps: true,
+    reactivityTransform: true,
+  },
   pinia: {
     autoImports: [
       'defineStore',

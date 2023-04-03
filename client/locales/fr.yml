@@ -5,3 +5,19 @@ main:
 theme:
   dark: Sombre
   light: Clair
+
+
+pages:
+  login:
+    tab_title: Connexion • Hedera
+    title: Se connecter
+    form:
+      fields:
+        username: Nom d'utilisateur
+        password: Mot de passe
+        remember_me: Se souvenir de moi
+      errors:
+        missing_username: Le nom d'utilisateur est requis
+        missing_password: Le mot de passe est requis
+      submit: Connexion
+    forgot_password: Mot de passe oublié ?

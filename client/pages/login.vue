@@ -1,41 +1,72 @@
 <script setup lang="ts">
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
+import { useAxios } from '@vueuse/integrations/useAxios'
+
+const { t } = useI18n()
+
 definePageMeta({
   layout: 'centercard',
 })
-
 useHead({
-  title: 'Sign in • Hedera',
+  title: t('pages.login.tab_title'),
+})
+
+const schema = yup.object({
+  username: yup.string().required(t('pages.login.form.errors.missing_username')),
+  password: yup.string().required(t('pages.login.form.errors.missing_password')),
+})
+const { handleSubmit, errors } = useForm({
+  validationSchema: schema,
+})
+
+const { execute } = useAxios('/api/login', { method: 'POST' })
+const onSubmit = handleSubmit((values) => {
+  execute({ data: values })
 })
 </script>
 
 <template>
   <div class="text-center mb-5">
-    <h1 class="font-extrabold text-4xl mb-3">
-      Sign in
+    <h1 class="font-extrabold text-4xl mb-1">
+      Hedera
     </h1>
+    <h2 class="font-extrabold text-2xl mb-3">
+      {{ t('pages.login.title') }}
+    </h2>
   </div>
 
-  <div>
-    <label for="email1" class="block font-900 font-medium mb-2">Email</label>
-    <span class="p-input-icon-left mb-3">
-      <i class="i-tabler-mail" />
-      <PInputText id="email1" type="text" placeholder="john.doe@example.fr" class="w-full" />
-    </span>
-
-    <label for="password1" class="block font-900 font-medium mb-2">Password</label>
-    <span class="p-input-icon-left mb-3">
-      <i class="i-tabler-lock" />
-      <PInputText id="password1" type="password" placeholder="••••••••••••••••" class="w-full" />
-    </span>
-
-    <div class="flex flex-row items-center justify-between mb-6 w-100%">
-      <div v-tooltip.bottom="{ value: 'Coming soon', class: 'p-0' }" class="flex flex-row items-center">
-        <PCheckbox id="rememberme1" :binary="true" disabled class="mr-2" />
-        <label for="rememberme1" class="text-gray">Remember me</label>
-      </div>
-      <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Forgot password?</a>
+  <form @submit="onSubmit">
+    <label for="email1" class="block font-900 font-medium mb-2">{{ t('pages.login.form.fields.username') }}</label>
+    <div class="mb-3">
+      <span class="p-input-icon-left">
+        <i class="i-tabler-user" />
+        <TextInput name="username" type="text" placeholder="john.doe" class="w-full" />
+      </span>
+      <small v-if="errors.username" id="text-error" class="p-error mt-1">{{ errors.username }}</small>
     </div>
 
-    <PButton label="Sign In" class="w-full" />
-  </div>
+    <label for="password1" class="block font-900 font-medium mb-2">{{ t('pages.login.form.fields.password') }}</label>
+    <div class="mb-3">
+      <span class="p-input-icon-left">
+        <i class="i-tabler-lock" />
+        <TextInput name="password" type="password" placeholder="••••••••••••••••" class="w-full" />
+      </span>
+      <small v-if="errors.password" id="text-error" class="p-error mt-1">{{ errors.password }}</small>
+    </div>
+
+    <div class="flex flex-row items-center justify-between mb-6 w-100%">
+      <div />
+      <!--
+      <div v-tooltip.bottom="{ value: 'Coming soon', class: 'p-0' }" class="flex flex-row items-center">
+        <Checkbox name="rememberMe" :disabled="true" :label="t('pages.login.form.fields.remember_me')" />
+      </div>
+      -->
+      <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+        {{ t('pages.login.forgot_password') }}
+      </a>
+    </div>
+
+    <PButton :label="t('pages.login.form.submit')" class="w-full" type="submit" />
+  </form>
 </template>

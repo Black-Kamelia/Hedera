@@ -5,3 +5,19 @@ main:
 theme:
   dark: Dark
   light: Light
+
+
+pages:
+  login:
+    tab_title: Logging in • Hedera
+    title: Log in
+    form:
+      fields:
+        username: Username
+        password: Password
+        remember_me: Remember me
+      errors:
+        missing_username: Username is required
+        missing_password: Password is required
+      submit: Submit
+    forgot_password: Forgot password?

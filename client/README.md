@@ -17,8 +17,10 @@ npm install -g pnpm
 Install dependencies:
 
 ```bash
-pnpm i
+pnpm il
 ```
+
+> Note that we don't use `install` or `i`, because it will update the lockfile and we don't want that. Instead, we use `il` which is an alias for `install --frozen-lockfile`. (mnemonic: ***I***nstall from ***L***ockfile)
 
 ## Running in development mode
 

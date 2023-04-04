@@ -41,7 +41,7 @@ const onSubmit = handleSubmit((values) => {
     <div class="mb-3">
       <span class="p-input-icon-left">
         <i class="i-tabler-user" />
-        <TextInput name="username" type="text" placeholder="john.doe" class="w-full" />
+        <InputText name="username" type="text" placeholder="john.doe" class="w-full" />
       </span>
       <small v-if="errors.username" id="text-error" class="p-error mt-1">{{ errors.username }}</small>
     </div>
@@ -50,7 +50,7 @@ const onSubmit = handleSubmit((values) => {
     <div class="mb-3">
       <span class="p-input-icon-left">
         <i class="i-tabler-lock" />
-        <TextInput name="password" type="password" placeholder="••••••••••••••••" class="w-full" />
+        <InputText name="password" type="password" placeholder="••••••••••••••••" class="w-full" />
       </span>
       <small v-if="errors.password" id="text-error" class="p-error mt-1">{{ errors.password }}</small>
     </div>

@@ -1,14 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { useField } from 'vee-validate'
-import CheckboxProps from 'primevue/checkbox'
+import _CheckboxProps from 'primevue/checkbox'
 
-const props = defineProps({
-  ...CheckboxProps,
-  label: {
-    type: String,
-    required: true,
-  },
-})
+interface CheckboxProps extends _CheckboxProps {
+  name: string
+  label: string
+}
+
+const props = defineProps<CheckboxProps>()
 
 const { value } = useField(props.name)
 </script>

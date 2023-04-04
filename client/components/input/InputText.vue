@@ -1,10 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { useField } from 'vee-validate'
-import InputTextProps from 'primevue/inputtext'
+import _InputTextProps from 'primevue/inputtext'
 
-const props = defineProps({
-  ...InputTextProps,
-})
+interface InputTextProps extends _InputTextProps {
+  name: string
+}
+
+const props = defineProps<InputTextProps>()
 
 const { errorMessage, value } = useField(props.name)
 </script>

@@ -5,6 +5,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "il": "pnpm install --frozen-lockfile",
     "postinstall": "nuxt prepare",
     "nuxi": "nuxi",
     "taze": "taze major -I"

@@ -2,6 +2,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { transformShortVmodel } from '@vue-macros/short-vmodel'
+import runtimeConfig from './env.config'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -17,17 +18,9 @@ export default defineNuxtConfig({
     '@unocss/reset/antfu.css',
     'primevue/resources/primevue.css',
   ],
-  sourcemap: {
-    server: true,
-    client: false,
-  },
   imports: { dirs: ['stores'] },
   components: [{ path: '~/components', pathPrefix: false }],
-  runtimeConfig: {
-    public: {
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/',
-    },
-  },
+  runtimeConfig,
 
   // plugins
   modules: [

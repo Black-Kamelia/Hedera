@@ -1,5 +1,5 @@
 import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { transformShortVmodel } from '@vue-macros/short-vmodel'
 
@@ -23,6 +23,11 @@ export default defineNuxtConfig({
   },
   imports: { dirs: ['stores'] },
   components: [{ path: '~/components', pathPrefix: false }],
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/',
+    },
+  },
 
   // plugins
   modules: [

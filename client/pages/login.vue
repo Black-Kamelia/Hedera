@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
-import { useAxios } from '@vueuse/integrations/useAxios'
 
 const { t } = useI18n()
 
@@ -20,7 +19,7 @@ const { handleSubmit, errors } = useForm({
   validationSchema: schema,
 })
 
-const { execute } = useAxios('/api/login', { method: 'POST' })
+const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
 const onSubmit = handleSubmit((values) => {
   execute({ data: values })
 })

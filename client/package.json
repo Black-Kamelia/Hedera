@@ -8,7 +8,8 @@
     "il": "pnpm install --frozen-lockfile",
     "postinstall": "nuxt prepare",
     "nuxi": "nuxi",
-    "taze": "taze major -I"
+    "taze": "taze major -I",
+    "lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ."
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.38.4",

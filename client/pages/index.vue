@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import InputOTP from '~/components/input/InputOTP.vue'
+
 const { toggle } = useDark()
 const { locale } = useI18n()
 </script>
@@ -24,5 +26,6 @@ const { locale } = useI18n()
     <router-link to="/start">
       {{ $t('global.start') }}
     </router-link>
+    <InputOTP />
   </div>
 </template>

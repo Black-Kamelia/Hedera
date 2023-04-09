@@ -3,6 +3,8 @@ import InputOTP from '~/components/input/InputOTP.vue'
 
 const { toggle } = useDark()
 const { locale } = useI18n()
+
+const digits = ref<Nullable<number>[]>([null, null, null, null, null, null])
 </script>
 
 <template>
@@ -23,9 +25,13 @@ const { locale } = useI18n()
     <p class="absolute top-10 left-10 text-8 font-text">
       {{ $colorMode.value === 'dark' ? $t('theme.dark') : $t('theme.light') }}
     </p>
+
     <router-link to="/start">
       {{ $t('global.start') }}
     </router-link>
-    <InputOTP />
+    <InputOTP v-model="digits" />
+    <div class="flex flex-row">
+      <span v-for="(digit, index) in digits" :key="index">{{ digit ?? 'X' }}</span>
+    </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
-import _CheckboxProps from 'primevue/checkbox'
+import type _CheckboxProps from 'primevue/checkbox'
 
 interface CheckboxProps extends _CheckboxProps {
   name: string
@@ -9,7 +9,7 @@ interface CheckboxProps extends _CheckboxProps {
 
 const props = defineProps<CheckboxProps>()
 
-const { value } = useField(props.name)
+const { value } = useField<boolean>(props.name)
 </script>
 
 <template>
@@ -18,7 +18,3 @@ const { value } = useField(props.name)
     <label :for="props.name" class="text-gray">{{ props.label }}</label>
   </div>
 </template>
-
-<style scoped>
-
-</style>

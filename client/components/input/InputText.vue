@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
 import type _InputTextProps from 'primevue/inputtext'
-import type { Nullable } from 'primevue/ts-helpers'
+import PInputText from 'primevue/inputtext'
 
 interface InputTextProps extends _InputTextProps {
   name: string
@@ -10,8 +10,13 @@ interface InputTextProps extends _InputTextProps {
 const props = defineProps<InputTextProps>()
 
 const { errorMessage, value } = useField<Nullable<string>>(props.name)
+
+const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
+defineExpose({
+  $el: computed(() => el.value?.$el),
+})
 </script>
 
 <template>
-  <PInputText v-bind="$attrs" v-model="value" :class="{ 'p-invalid': errorMessage }" />
+  <PInputText v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" />
 </template>

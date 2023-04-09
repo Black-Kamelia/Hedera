@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
+import { useStorage } from '@vueuse/core'
 import * as yup from 'yup'
 
 const { t } = useI18n()
@@ -20,8 +21,9 @@ const { handleSubmit, errors } = useForm({
 })
 
 const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
-const onSubmit = handleSubmit((values) => {
-  execute({ data: values })
+const onSubmit = handleSubmit(async (values) => {
+  const result = await execute({ data: values })
+  useStorage('session', result.data.value)
 })
 </script>
 

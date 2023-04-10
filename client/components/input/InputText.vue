@@ -7,9 +7,9 @@ export interface InputTextProps extends _InputTextProps {
   name: string
 }
 
-const props = defineProps<InputTextProps>()
+const { name } = definePropsRefs<InputTextProps>()
 
-const { errorMessage, value } = useField<Nullable<string>>(props.name)
+const { errorMessage, value } = useField<Nullable<string>>(name)
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
 defineExpose({

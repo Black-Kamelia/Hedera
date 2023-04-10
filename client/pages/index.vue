@@ -32,7 +32,7 @@ function onCompleted(digits: Nullable<number>[]) {
     <router-link to="/start">
       {{ $t('global.start') }}
     </router-link>
-    <InputOTP v-model="digits" @completed="onCompleted" />
+    <InputOTP ::="digits" @completed="onCompleted" />
     <div class="flex flex-row">
       <span v-for="(digit, index) in digits" :key="index">{{ digit ?? 'X' }}</span>
     </div>

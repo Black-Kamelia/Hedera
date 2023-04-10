@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: Nullable<number>[]
+  disabled: boolean
 }>()
 
 const emit = defineEmits<{
@@ -13,24 +14,67 @@ onMounted(() => {
   otpInputRefs.value[0].$el?.focus()
 })
 
-function onKeyDown(event: KeyboardEvent, index: number) {
-  const key = event.key
+function onPaste(e: ClipboardEvent, index: number) {
+  e.preventDefault()
+  const clipboardData = e.clipboardData
+  const pastedText = clipboardData?.getData('text')
 
-  if (key === 'Backspace' && index > 0) {
-    emit('update:modelValue', [...props.modelValue.slice(0, index - 1), null, ...props.modelValue.slice(index)])
+  if (pastedText === undefined)
+    return
+
+  if (!pastedText.match(/^\d{6}$/))
+    return
+
+  const digits = pastedText.split('').map(digit => parseInt(digit))
+
+  emit('update:modelValue', digits)
+  otpInputRefs.value[index].$el?.blur()
+}
+
+function onInput(e: InputEvent, index: number) {
+  const el = e.target as HTMLInputElement
+  const value = el.value[0]
+
+  if (isNaN(parseInt(value)))
+    return
+
+  // if the input is empty then go to the previous input and clear it
+  if (value.length === 0) {
+    emit('update:modelValue', [...props.modelValue.slice(0, index), null, ...props.modelValue.slice(index + 1)])
     otpInputRefs.value[index - 1].$el?.focus()
     return
   }
 
-  if (key < '0' || key > '9')
-    return
-
-  emit('update:modelValue', [...props.modelValue.slice(0, index), parseInt(key), ...props.modelValue.slice(index + 1)])
-
+  // if the input is not empty then go to the next input
+  emit('update:modelValue', [...props.modelValue.slice(0, index), parseInt(value), ...props.modelValue.slice(index + 1)])
   if (index < 5)
     otpInputRefs.value[index + 1].$el?.focus()
   else
-    otpInputRefs.value[0].$el?.focus()
+    otpInputRefs.value[index].$el?.blur()
+}
+
+function onKeyDown(event: KeyboardEvent, index: number) {
+  const key = event.key
+
+  // if pressing backspace AND the input is empty then go to the previous input and clear it
+  // otherwise clear the current input
+  if (key === 'Backspace') {
+    event.preventDefault()
+    if (props.modelValue[index] === null && index > 0) {
+      emit('update:modelValue', [...props.modelValue.slice(0, index - 1), null, ...props.modelValue.slice(index)])
+      otpInputRefs.value[index - 1].$el?.focus()
+    }
+    else {
+      event.preventDefault()
+      emit('update:modelValue', [...props.modelValue.slice(0, index), null, ...props.modelValue.slice(index + 1)])
+    }
+  }
+
+  // Navigate between inputs using arrow keys
+  if (key === 'ArrowLeft' && index > 0)
+    otpInputRefs.value[index - 1].$el?.focus()
+  if (key === 'ArrowRight' && index < 5)
+    otpInputRefs.value[index + 1].$el?.focus()
 }
 
 const el = ref<Nullable<CompElement>>()
@@ -47,9 +91,12 @@ defineExpose({
         ref="otpInputRefs"
         :value="props.modelValue[n - 1]"
         :name="`otp-${n - 1}`"
+        :disabled="props.disabled"
         class="p-inputtext-lg w-12 text-center"
         maxlength="1"
+        @input="onInput($event, n - 1)"
         @keydown="onKeyDown($event, n - 1)"
+        @paste="onPaste($event, n - 1)"
       />
     </div>
   </div>

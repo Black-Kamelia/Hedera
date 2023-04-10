@@ -19,10 +19,18 @@ onMounted(() => {
   otpInputRefs.value[0].$el?.focus()
 })
 
+// Add small delay to allow extensions such as KeePassXC to fill the inputs
+watchDebounced(
+  modelValue,
+  (digits) => {
+    if (digits.every(digit => digit !== null))
+      emit('completed', digits)
+  },
+  { debounce: 5, maxWait: 5 },
+)
+
 function doUpdate(digits: Nullable<number>[]) {
   modelValue.value = digits
-  if (digits.every(digit => digit !== null))
-    emit('completed', digits)
 }
 
 function onInput(e: Event, index: number) {

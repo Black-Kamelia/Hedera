@@ -44,28 +44,6 @@ function onPaste(e: ClipboardEvent, index: number) {
   otpInputRefs.value[index].$el?.blur()
 }
 
-function onInput(e: Event, index: number) {
-  const el = e.target as HTMLInputElement
-  const value = el.value[0]
-
-  if (isNaN(parseInt(value)))
-    return
-
-  // if the input is empty then go to the previous input and clear it
-  if (value.length === 0) {
-    doUpdate(replacedAt(modelValue.value, index, null))
-    otpInputRefs.value[index - 1].$el?.focus()
-    return
-  }
-
-  // if the input is not empty then go to the next input
-  doUpdate(replacedAt(modelValue.value, index, parseInt(value)))
-  if (index < 5)
-    otpInputRefs.value[index + 1].$el?.focus()
-  else
-    otpInputRefs.value[index].$el?.blur()
-}
-
 function onKeyDown(event: KeyboardEvent, index: number) {
   const key = event.key
 
@@ -81,6 +59,16 @@ function onKeyDown(event: KeyboardEvent, index: number) {
       event.preventDefault()
       doUpdate(replacedAt(modelValue.value, index, null))
     }
+  }
+
+  // set the current input to the key pressed if it's a number and go to the next input
+  if (key >= '0' && key <= '9') {
+    event.preventDefault()
+    doUpdate(replacedAt(modelValue.value, index, parseInt(key)))
+    if (index < 5)
+      otpInputRefs.value[index + 1].$el?.focus()
+    else
+      otpInputRefs.value[index].$el?.blur()
   }
 
   // Navigate between inputs using arrow keys
@@ -106,8 +94,6 @@ defineExpose({
         :name="`otp-${n - 1}`"
         :disabled="disabled"
         class="p-inputtext-lg w-12 text-center"
-        maxlength="1"
-        @input="onInput($event, n - 1)"
         @keydown="onKeyDown($event, n - 1)"
         @paste="onPaste($event, n - 1)"
       />

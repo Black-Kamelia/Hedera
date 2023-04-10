@@ -25,8 +25,9 @@ function doUpdate(digits: Nullable<number>[]) {
     emit('completed', digits)
 }
 
-function onInput(e: InputEvent, index: number) {
-  const value = parseInt(e.target.value)
+function onInput(e: Event, index: number) {
+  const el = e.target as HTMLInputElement
+  const value = parseInt(el.value)
 
   if (isNaN(value)) {
     e.preventDefault()

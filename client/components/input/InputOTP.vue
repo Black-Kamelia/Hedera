@@ -8,9 +8,7 @@ export interface InputOTPEmits {
 }
 
 const emit = defineEmits<InputOTPEmits>()
-
 const { disabled = false } = definePropsRefs<InputOTPProps>()
-
 const { modelValue } = defineModels<{
   modelValue: Nullable<number>[]
 }>()
@@ -25,6 +23,17 @@ function doUpdate(digits: Nullable<number>[]) {
   modelValue.value = digits
   if (digits.every(digit => digit !== null))
     emit('completed', digits)
+}
+
+function onInput(e: InputEvent, index: number) {
+  const value = parseInt(e.target.value)
+
+  if (isNaN(value)) {
+    e.preventDefault()
+    return
+  }
+
+  doUpdate(replacedAt(modelValue.value, index, value))
 }
 
 function onPaste(e: ClipboardEvent, index: number) {
@@ -82,6 +91,10 @@ const el = ref<Nullable<CompElement>>()
 defineExpose({
   $el: computed(() => el.value?.$el),
 })
+
+/*
+
+ */
 </script>
 
 <template>
@@ -94,9 +107,27 @@ defineExpose({
         :name="`otp-${n - 1}`"
         :disabled="disabled"
         class="p-inputtext-lg w-12 text-center"
+        maxlength="1"
+        pattern="[0-9]?"
         @keydown="onKeyDown($event, n - 1)"
         @paste="onPaste($event, n - 1)"
+        @input="onInput($event, n - 1)"
+        @keypress.stop.prevent
       />
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>

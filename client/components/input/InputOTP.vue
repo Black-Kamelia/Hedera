@@ -15,8 +15,6 @@ onMounted(() => {
 
 function onKeyDown(event: KeyboardEvent, index: number) {
   const key = event.key
-  if (key !== 'Tab' && key !== 'ArrowLeft' && key !== 'ArrowRight')
-    event.preventDefault()
 
   if (key === 'Backspace' && index > 0) {
     emit('update:modelValue', [...props.modelValue.slice(0, index - 1), null, ...props.modelValue.slice(index)])

@@ -3,7 +3,7 @@ import { useField } from 'vee-validate'
 import type _CheckboxProps from 'primevue/checkbox'
 import PCheckbox from 'primevue/checkbox'
 
-interface CheckboxProps extends _CheckboxProps {
+export interface CheckboxProps extends _CheckboxProps {
   name: string
   label: string
 }

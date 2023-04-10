@@ -3,7 +3,7 @@ import { useField } from 'vee-validate'
 import type _InputTextProps from 'primevue/inputtext'
 import PInputText from 'primevue/inputtext'
 
-interface InputTextProps extends _InputTextProps {
+export interface InputTextProps extends _InputTextProps {
   name: string
 }
 

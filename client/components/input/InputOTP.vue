@@ -1,18 +1,31 @@
 <script setup lang="ts">
-const props = defineProps<{
+export interface InputOTPProps {
   modelValue: Nullable<number>[]
-  disabled: boolean
-}>()
+  disabled?: boolean
+}
 
-const emit = defineEmits<{
+export interface InputOTPEmits {
   (event: 'update:modelValue', digits: Nullable<number>[]): void
-}>()
+  (event: 'completed', digits: Nullable<number>[]): void
+}
+
+const props = withDefaults(defineProps<InputOTPProps>(), {
+  disabled: false,
+})
+
+const emit = defineEmits<InputOTPEmits>()
 
 const otpInputRefs = ref<CompElement[]>([])
 
 onMounted(() => {
   otpInputRefs.value[0].$el?.focus()
 })
+
+function doEmit(digits: Nullable<number>[]) {
+  emit('update:modelValue', digits)
+  if (digits.every(digit => digit !== null))
+    emit('completed', digits)
+}
 
 function onPaste(e: ClipboardEvent, index: number) {
   e.preventDefault()
@@ -27,11 +40,11 @@ function onPaste(e: ClipboardEvent, index: number) {
 
   const digits = pastedText.split('').map(digit => parseInt(digit))
 
-  emit('update:modelValue', digits)
+  doEmit(digits)
   otpInputRefs.value[index].$el?.blur()
 }
 
-function onInput(e: InputEvent, index: number) {
+function onInput(e: Event, index: number) {
   const el = e.target as HTMLInputElement
   const value = el.value[0]
 
@@ -40,13 +53,13 @@ function onInput(e: InputEvent, index: number) {
 
   // if the input is empty then go to the previous input and clear it
   if (value.length === 0) {
-    emit('update:modelValue', [...props.modelValue.slice(0, index), null, ...props.modelValue.slice(index + 1)])
+    doEmit(replaceAt(props.modelValue, index, null))
     otpInputRefs.value[index - 1].$el?.focus()
     return
   }
 
   // if the input is not empty then go to the next input
-  emit('update:modelValue', [...props.modelValue.slice(0, index), parseInt(value), ...props.modelValue.slice(index + 1)])
+  doEmit(replaceAt(props.modelValue, index, parseInt(value)))
   if (index < 5)
     otpInputRefs.value[index + 1].$el?.focus()
   else
@@ -61,12 +74,12 @@ function onKeyDown(event: KeyboardEvent, index: number) {
   if (key === 'Backspace') {
     event.preventDefault()
     if (props.modelValue[index] === null && index > 0) {
-      emit('update:modelValue', [...props.modelValue.slice(0, index - 1), null, ...props.modelValue.slice(index)])
+      doEmit(replaceAt(props.modelValue, index - 1, null))
       otpInputRefs.value[index - 1].$el?.focus()
     }
     else {
       event.preventDefault()
-      emit('update:modelValue', [...props.modelValue.slice(0, index), null, ...props.modelValue.slice(index + 1)])
+      doEmit(replaceAt(props.modelValue, index, null))
     }
   }
 

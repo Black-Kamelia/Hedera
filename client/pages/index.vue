@@ -5,6 +5,9 @@ const { toggle } = useDark()
 const { locale } = useI18n()
 
 const digits = ref<Nullable<number>[]>([null, null, null, null, null, null])
+function onCompleted(digits: Nullable<number>[]) {
+  console.log(digits) // eslint-disable-line no-console
+}
 </script>
 
 <template>
@@ -29,7 +32,7 @@ const digits = ref<Nullable<number>[]>([null, null, null, null, null, null])
     <router-link to="/start">
       {{ $t('global.start') }}
     </router-link>
-    <InputOTP v-model="digits" />
+    <InputOTP v-model="digits" @completed="onCompleted" />
     <div class="flex flex-row">
       <span v-for="(digit, index) in digits" :key="index">{{ digit ?? 'X' }}</span>
     </div>

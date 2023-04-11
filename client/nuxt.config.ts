@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   },
   ssr: false,
   css: [
-    '@unocss/reset/antfu.css',
+    '@unocss/reset/tailwind.css',
     'primevue/resources/primevue.css',
   ],
   imports: { dirs: ['stores'] },

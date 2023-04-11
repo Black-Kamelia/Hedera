@@ -25,6 +25,9 @@ devDependencies:
   '@nuxtjs/critters':
     specifier: ^0.4.0
     version: 0.4.0
+  '@pinia-plugin-persistedstate/nuxt':
+    specifier: ^1.1.1
+    version: 1.1.1(@pinia/nuxt@0.4.8)(pinia@2.0.34)
   '@pinia/nuxt':
     specifier: ^0.4.8
     version: 0.4.8(typescript@4.9.5)(vue@3.2.47)
@@ -48,7 +51,7 @@ devDependencies:
     version: 9.13.0(vue@3.2.47)
   '@vueuse/integrations':
     specifier: ^9.13.0
-    version: 9.13.0(async-validator@4.2.5)(axios@1.3.5)(change-case@4.1.2)(vue@3.2.47)
+    version: 9.13.0(async-validator@4.2.5)(axios@1.3.5)(change-case@4.1.2)(universal-cookie@4.0.4)(vue@3.2.47)
   '@vueuse/nuxt':
     specifier: ^9.13.0
     version: 9.13.0(nuxt@3.3.3)(vue@3.2.47)
@@ -85,6 +88,9 @@ devDependencies:
   taze:
     specifier: ^0.9.1
     version: 0.9.1
+  universal-cookie:
+    specifier: ^4.0.4
+    version: 4.0.4
   vee-validate:
     specifier: ^4.8.4
     version: 4.8.4(vue@3.2.47)
@@ -1647,6 +1653,21 @@ packages:
       - supports-color
     dev: true
 
+  /@pinia-plugin-persistedstate/nuxt@1.1.1(@pinia/nuxt@0.4.8)(pinia@2.0.34):
+    resolution: {integrity: sha512-b6ZNP3Re8COmfZEpj4KQmbp2TuDKrLggDFLZa8FiJF68xE/oCsPXIuXUvAt8E4ht/5sq4Z/grlA+iGXaI2aeKQ==}
+    peerDependencies:
+      '@pinia/nuxt': ^0.4.4
+    dependencies:
+      '@nuxt/kit': 3.3.3
+      '@pinia/nuxt': 0.4.8(typescript@4.9.5)(vue@3.2.47)
+      defu: 6.1.2
+      pinia-plugin-persistedstate: 3.1.0(pinia@2.0.34)
+    transitivePeerDependencies:
+      - pinia
+      - rollup
+      - supports-color
+    dev: true
+
   /@pinia/nuxt@0.4.8(typescript@4.9.5)(vue@3.2.47):
     resolution: {integrity: sha512-E0HKmW+6Ec5HYzomZl86xil2rGPRAqKG1d+slVVLBHC7PFZOM0VIw/1XFO9hwo+EiCuDEXZDReZwTqO7KQsMgQ==}
     dependencies:
@@ -1813,6 +1834,10 @@ packages:
   /@trysound/sax@0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
+    dev: true
+
+  /@types/cookie@0.3.3:
+    resolution: {integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==}
     dev: true
 
   /@types/eslint-scope@3.7.4:
@@ -2796,7 +2821,7 @@ packages:
       - vue
     dev: true
 
-  /@vueuse/integrations@9.13.0(async-validator@4.2.5)(axios@1.3.5)(change-case@4.1.2)(vue@3.2.47):
+  /@vueuse/integrations@9.13.0(async-validator@4.2.5)(axios@1.3.5)(change-case@4.1.2)(universal-cookie@4.0.4)(vue@3.2.47):
     resolution: {integrity: sha512-I1kX/tsfcvWWLZD7HZaP0LsSfchK13YxReLfharXhk72SFXp87doLbRaTfIF5w8m/gr/vPtcNyQPAXW7Ubpuww==}
     peerDependencies:
       async-validator: '*'
@@ -2839,6 +2864,7 @@ packages:
       async-validator: 4.2.5
       axios: 1.3.5
       change-case: 4.1.2
+      universal-cookie: 4.0.4
       vue-demi: 0.13.11(vue@3.2.47)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -3771,6 +3797,11 @@ packages:
 
   /cookie-es@0.5.0:
     resolution: {integrity: sha512-RyZrFi6PNpBFbIaQjXDlFIhFVqV42QeKSZX1yQIl6ihImq6vcHNGMtqQ/QzY3RMPuYSkvsRwtnt5M9NeYxKt0g==}
+    dev: true
+
+  /cookie@0.4.2:
+    resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
+    engines: {node: '>= 0.6'}
     dev: true
 
   /core-util-is@1.0.3:
@@ -7258,6 +7289,14 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /pinia-plugin-persistedstate@3.1.0(pinia@2.0.34):
+    resolution: {integrity: sha512-8UN+vYMEPBdgNLwceY08mi5olI0wkYaEb8b6hD6xW7SnBRuPydWHlEhZvUWgNb/ibuf4PvufpvtS+dmhYjJQOw==}
+    peerDependencies:
+      pinia: ^2.0.0
+    dependencies:
+      pinia: 2.0.34(typescript@4.9.5)(vue@3.2.47)
+    dev: true
+
   /pinia@2.0.34(typescript@4.9.5)(vue@3.2.47):
     resolution: {integrity: sha512-cgOoGUiyqX0SSgX8XelK9+Ri4XA2/YyNtgjogwfzIx1g7iZTaZPxm7/bZYMCLU2qHRiHhxG7SuQO0eBacFNc2Q==}
     peerDependencies:
@@ -8845,6 +8884,13 @@ packages:
     resolution: {integrity: sha512-3faScn5I+hy9VleOq/qNbAd6pAx7iH5jYBMS9I1HgQVijz/4mv5Bvw5iw1sC/90CODiKo81G/ps8AJrISn687g==}
     dependencies:
       '@types/unist': 2.0.6
+    dev: true
+
+  /universal-cookie@4.0.4:
+    resolution: {integrity: sha512-lbRVHoOMtItjWbM7TwDLdl8wug7izB0tq3/YVKhT/ahB4VDvWMyvnADfnJI8y6fSvsjh51Ix7lTGC6Tn4rMPhw==}
+    dependencies:
+      '@types/cookie': 0.3.3
+      cookie: 0.4.2
     dev: true
 
   /universalify@2.0.0:

@@ -30,6 +30,7 @@ export default defineNuxtConfig({
     '@nuxtjs/critters',
     '@nuxt/image-edge',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/color-mode',
     '@notkamui/nuxt-primevue',
     '@formkit/nuxt',

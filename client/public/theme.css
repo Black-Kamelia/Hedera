@@ -1,4 +1,4 @@
-// reset
+/* Reset */
 html {
   scrollbar-gutter: stable;
 }
@@ -16,10 +16,10 @@ div {
   flex-direction: column;
 }
 
-// primevue additions
+/* primevue additions */
 .p-input-icon-left > i,
 .p-input-icon-right > i {
-  margin-top: -12px;
+  margin-top: -12px!important;
 }
 
 .p-input-icon-left > .p-inputtext {

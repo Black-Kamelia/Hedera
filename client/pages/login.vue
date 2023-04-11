@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import { useStorage } from '@vueuse/core'
-import * as yup from 'yup'
+import { object, string } from 'yup'
+import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
 
@@ -12,18 +12,30 @@ useHead({
   title: t('pages.login.tab_title'),
 })
 
-const schema = yup.object({
-  username: yup.string().required(t('pages.login.form.errors.missing_username')),
-  password: yup.string().required(t('pages.login.form.errors.missing_password')),
+const schema = object({
+  username: string().required(t('pages.login.form.errors.missing_username')),
+  password: string().required(t('pages.login.form.errors.missing_password')),
 })
 const { handleSubmit, errors } = useForm({
   validationSchema: schema,
 })
 
+const { tokens, setTokens } = useAuth()
+onMounted(() => {
+  if (tokens)
+    navigateTo('/')
+})
+
 const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
 const onSubmit = handleSubmit(async (values) => {
-  const result = await execute({ data: values })
-  useStorage('session', result.data.value)
+  const { data, error } = await execute({ data: values })
+  if (!error.value) {
+    setTokens(data.value)
+    navigateTo('/')
+  }
+  else {
+    console.error('Login failed')
+  }
 })
 </script>
 
@@ -42,7 +54,7 @@ const onSubmit = handleSubmit(async (values) => {
     <div class="mb-3">
       <span class="p-input-icon-left">
         <i class="i-tabler-user" />
-        <InputText name="username" type="text" placeholder="john.doe" class="w-full" />
+        <InputText name="username" type="text" :placeholder="getRandomDeveloperName()" class="w-full" />
       </span>
       <small v-if="errors.username" id="text-error" class="p-error mt-1">{{ errors.username }}</small>
     </div>

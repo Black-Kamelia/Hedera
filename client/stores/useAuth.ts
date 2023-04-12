@@ -10,7 +10,7 @@ export interface Tokens {
   refreshToken: string
 }
 
-export const useAuth = defineStore('auth', () => {
+export const useAuth = s(defineStore('auth', () => {
   // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
 
@@ -26,4 +26,4 @@ export const useAuth = defineStore('auth', () => {
   persist: {
     storage: persistedState.localStorage,
   },
-})
+}))

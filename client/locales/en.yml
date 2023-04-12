@@ -1,5 +1,23 @@
+global:
+  login: Login
+  logout: Logout
+  start: Start
 main:
   title: Welcome to Hedera
+pages:
+  login:
+    forgot_password: Forgot password?
+    form:
+      errors:
+        missing_password: Password is required
+        missing_username: Username is required
+      fields:
+        password: Password
+        remember_me: Remember me
+        username: Username
+      submit: Submit
+    tab_title: Logging in • Hedera
+    title: Log in
 theme:
   dark: Dark
   light: Light

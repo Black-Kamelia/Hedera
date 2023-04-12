@@ -1,11 +1,26 @@
 <script lang="ts" setup>
+import InputOTP from '~/components/input/InputOTP.vue'
+
 const { toggle } = useDark()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
+
+const { logout } = useAuth()
+
+const digits = ref(createEmptyOTP())
+function onCompleted(digits: Nullable<number>[]) {
+  console.log(digits) // eslint-disable-line no-console
+}
 </script>
 
 <template>
   <div flex-center h-screen>
     <div class="absolute top-10 right-10 flex flex-row gap-2">
+      <PButton @click="logout()">
+        <p>{{ t('global.logout') }}</p>
+      </PButton>
+      <PButton @click="navigateTo('/login')">
+        <p>{{ t('global.login') }}</p>
+      </PButton>
       <select v-model="locale" class="px-2 py-1 rounded-lg">
         <option value="en">
           en
@@ -19,10 +34,12 @@ const { locale } = useI18n()
       </button>
     </div>
     <p class="absolute top-10 left-10 text-8 font-text">
-      {{ $colorMode.value === 'dark' ? $t('theme.dark') : $t('theme.light') }}
+      {{ $colorMode.value === 'dark' ? t('theme.dark') : t('theme.light') }}
     </p>
-    <router-link to="/start">
-      {{ $t('global.start') }}
-    </router-link>
+
+    <InputOTP v-model="digits" @completed="onCompleted" />
+    <div class="flex flex-row">
+      <span v-for="(digit, index) in digits" :key="index">{{ digit ?? 'X' }}</span>
+    </div>
   </div>
 </template>

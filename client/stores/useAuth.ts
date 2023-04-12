@@ -10,8 +10,14 @@ export interface Tokens {
   refreshToken: string
 }
 
-export const useAuth = s(defineStore('auth', () => {
-  const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
+export interface AuthReturn {
+  tokens: Ref<Nullable<Tokens>>
+  login: (values: Record<string, any>) => Promise<void>
+  logout: () => Promise<void>
+}
+
+export const useAuth = s<AuthReturn>(defineStore('auth', () => {
+  const { execute } = useAPI('/login', { method: 'POST' })
 
   // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)

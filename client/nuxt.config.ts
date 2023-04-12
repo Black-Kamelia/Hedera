@@ -3,6 +3,9 @@ import { fileURLToPath } from 'node:url'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { transformShortVmodel } from '@vue-macros/short-vmodel'
 import runtimeConfig from './env.config'
+import devRuntimeConfig from './env.dev.config'
+
+const isDev = process.env.NODE_ENV === 'development'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -20,7 +23,7 @@ export default defineNuxtConfig({
   ],
   imports: { dirs: ['stores'] },
   components: [{ path: '~/components', pathPrefix: false }],
-  runtimeConfig,
+  runtimeConfig: isDev ? devRuntimeConfig : runtimeConfig,
 
   // plugins
   modules: [

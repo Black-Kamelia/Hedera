@@ -13,8 +13,8 @@ export function createOTPFromString(str: string): OTP {
   return createOTPFromArray(str.split('').map(c => parseInt(c)))
 }
 
-export function createEmptyOTP(): Ref<OTP> {
-  return ref(createOTPFromArray(Array(OTP_LENGTH).fill(null)))
+export function createEmptyOTP(): OTP {
+  return createOTPFromArray(Array(OTP_LENGTH).fill(null))
 }
 
 /**

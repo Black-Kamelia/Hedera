@@ -4,9 +4,9 @@ import InputOTP from '~/components/input/InputOTP.vue'
 const { toggle } = useDark()
 const { locale, t } = useI18n()
 
-const [, { logout }] = useAuth()
+const { logout } = useAuth()
 
-const digits = createEmptyOTP()
+const digits = ref(createEmptyOTP())
 function onCompleted(digits: Nullable<number>[]) {
   console.log(digits) // eslint-disable-line no-console
 }

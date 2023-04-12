@@ -24,6 +24,7 @@ export default defineNuxtConfig({
 
   // plugins
   modules: [
+    '@nuxt/devtools',
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
     '@unocss/nuxt',
@@ -35,6 +36,10 @@ export default defineNuxtConfig({
     '@notkamui/nuxt-primevue',
     '@formkit/nuxt',
   ],
+  devtools: {
+    enabled: true,
+    vscode: {},
+  },
   vue: {
     compilerOptions: {
       nodeTransforms: [transformShortVmodel({ prefix: '::' })],

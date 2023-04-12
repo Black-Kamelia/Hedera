@@ -22,8 +22,8 @@ const { handleSubmit, errors } = useForm({
 
 const [{ tokens }, { login }] = useAuth()
 onMounted(() => {
-  if (tokens)
-    navigateTo('/')
+  if (tokens.value)
+    navigateTo('/', { replace: true })
 })
 
 const onSubmit = handleSubmit(login)

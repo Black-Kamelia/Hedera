@@ -6,7 +6,7 @@ const { locale, t } = useI18n()
 
 const [, { logout }] = useAuth()
 
-const digits = ref<Nullable<number>[]>([null, null, null, null, null, null])
+const digits = createOTPArray()
 function onCompleted(digits: Nullable<number>[]) {
   console.log(digits) // eslint-disable-line no-console
 }
@@ -37,9 +37,6 @@ function onCompleted(digits: Nullable<number>[]) {
       {{ $colorMode.value === 'dark' ? t('theme.dark') : t('theme.light') }}
     </p>
 
-    <router-link to="/start">
-      {{ t('global.start') }}
-    </router-link>
     <InputOTP v-model="digits" @completed="onCompleted" />
     <div class="flex flex-row">
       <span v-for="(digit, index) in digits" :key="index">{{ digit ?? 'X' }}</span>

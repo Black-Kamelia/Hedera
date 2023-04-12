@@ -4,13 +4,13 @@ export interface InputOTPProps {
 }
 
 export interface InputOTPEmits {
-  (event: 'completed', digits: Nullable<number>[]): void
+  (event: 'completed', digits: OTP): void
 }
 
 const emit = defineEmits<InputOTPEmits>()
 const { disabled = false } = definePropsRefs<InputOTPProps>()
 const { modelValue } = defineModels<{
-  modelValue: Nullable<number>[]
+  modelValue: OTP
 }>()
 
 const otpInputRefs = ref<CompElement[]>([])
@@ -29,7 +29,7 @@ watchDebounced(
   { debounce: 5, maxWait: 5 },
 )
 
-function doUpdate(digits: Nullable<number>[]) {
+function doUpdate(digits: OTP) {
   modelValue.value = digits
 }
 
@@ -42,7 +42,7 @@ function onInput(e: Event, index: number) {
     return
   }
 
-  doUpdate(replacedAt(modelValue.value, index, value))
+  doUpdate(replacedAt(modelValue.value, index, value) as OTP)
 }
 
 function onPaste(e: ClipboardEvent, index: number) {
@@ -53,10 +53,10 @@ function onPaste(e: ClipboardEvent, index: number) {
   if (pastedText === undefined)
     return
 
-  if (!pastedText.match(/^\d{6}$/))
+  if (!pastedText.match(OTP_REGEX))
     return
 
-  const digits = pastedText.split('').map(digit => parseInt(digit))
+  const digits = pastedText.split('').map(digit => parseInt(digit)) as OTP
 
   doUpdate(digits)
   otpInputRefs.value[index].$el?.blur()
@@ -70,20 +70,20 @@ function onKeyDown(event: KeyboardEvent, index: number) {
   if (key === 'Backspace') {
     event.preventDefault()
     if (modelValue.value[index] === null && index > 0) {
-      doUpdate(replacedAt(modelValue.value, index - 1, null))
+      doUpdate(replacedAt(modelValue.value, index - 1, null) as OTP)
       otpInputRefs.value[index - 1].$el?.focus()
     }
     else {
       event.preventDefault()
-      doUpdate(replacedAt(modelValue.value, index, null))
+      doUpdate(replacedAt(modelValue.value, index, null) as OTP)
     }
   }
 
   // set the current input to the key pressed if it's a number and go to the next input
   if (key >= '0' && key <= '9') {
     event.preventDefault()
-    doUpdate(replacedAt(modelValue.value, index, parseInt(key)))
-    if (index < 5)
+    doUpdate(replacedAt(modelValue.value, index, parseInt(key)) as OTP)
+    if (index < OTP_LENGTH - 1)
       otpInputRefs.value[index + 1].$el?.focus()
     else
       otpInputRefs.value[index].$el?.blur()
@@ -92,7 +92,7 @@ function onKeyDown(event: KeyboardEvent, index: number) {
   // Navigate between inputs using arrow keys
   if (key === 'ArrowLeft' && index > 0)
     otpInputRefs.value[index - 1].$el?.focus()
-  if (key === 'ArrowRight' && index < 5)
+  if (key === 'ArrowRight' && index < OTP_LENGTH - 1)
     otpInputRefs.value[index + 1].$el?.focus()
 }
 
@@ -105,7 +105,7 @@ defineExpose({
 <template>
   <div v-focus-trap class="flex items-center flex-row gap-5">
     <InputText
-      v-for="n in 6" :key="n - 1"
+      v-for="n in OTP_LENGTH" :key="n - 1"
       ref="otpInputRefs"
       :value="modelValue[n - 1]"
       :name="`otp-${n - 1}`"

@@ -42,7 +42,7 @@ function onInput(e: Event, index: number) {
     return
   }
 
-  doUpdate(replacedAt(modelValue.value, index, value) as OTP)
+  doUpdate(OTPWith(modelValue.value, index, value))
 }
 
 function onPaste(e: ClipboardEvent, index: number) {
@@ -56,9 +56,7 @@ function onPaste(e: ClipboardEvent, index: number) {
   if (!pastedText.match(OTP_REGEX))
     return
 
-  const digits = pastedText.split('').map(digit => parseInt(digit)) as OTP
-
-  doUpdate(digits)
+  doUpdate(createOTPFromString(pastedText))
   otpInputRefs.value[index].$el?.blur()
 }
 
@@ -70,19 +68,19 @@ function onKeyDown(event: KeyboardEvent, index: number) {
   if (key === 'Backspace') {
     event.preventDefault()
     if (modelValue.value[index] === null && index > 0) {
-      doUpdate(replacedAt(modelValue.value, index - 1, null) as OTP)
+      doUpdate(OTPWith(modelValue.value, index - 1, null))
       otpInputRefs.value[index - 1].$el?.focus()
     }
     else {
       event.preventDefault()
-      doUpdate(replacedAt(modelValue.value, index, null) as OTP)
+      doUpdate(OTPWith(modelValue.value, index, null))
     }
   }
 
   // set the current input to the key pressed if it's a number and go to the next input
   if (key >= '0' && key <= '9') {
     event.preventDefault()
-    doUpdate(replacedAt(modelValue.value, index, parseInt(key)) as OTP)
+    doUpdate(OTPWith(modelValue.value, index, parseInt(key)))
     if (index < OTP_LENGTH - 1)
       otpInputRefs.value[index + 1].$el?.focus()
     else

@@ -6,7 +6,7 @@ const { locale, t } = useI18n()
 
 const [, { logout }] = useAuth()
 
-const digits = createOTPArray()
+const digits = createEmptyOTP()
 function onCompleted(digits: Nullable<number>[]) {
   console.log(digits) // eslint-disable-line no-console
 }

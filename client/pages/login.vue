@@ -20,23 +20,13 @@ const { handleSubmit, errors } = useForm({
   validationSchema: schema,
 })
 
-const [{ tokens }, { setTokens }] = useAuth()
+const [{ tokens }, { login }] = useAuth()
 onMounted(() => {
   if (tokens)
     navigateTo('/')
 })
 
-const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
-const onSubmit = handleSubmit(async (values) => {
-  const { data, error } = await execute({ data: values })
-  if (!error.value) {
-    setTokens(data.value)
-    navigateTo('/')
-  }
-  else {
-    console.error('Login failed')
-  }
-})
+const onSubmit = handleSubmit(login)
 </script>
 
 <template>

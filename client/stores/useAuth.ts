@@ -17,20 +17,19 @@ export interface AuthReturn {
 }
 
 export const useAuth = s<AuthReturn>(defineStore('auth', () => {
-  const { execute } = useAPI('/login', { method: 'POST' })
+  const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
 
   // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
 
   async function login(values: Record<string, any>) {
     const { data, error } = await execute({ data: values })
-    if (!error.value) {
-      tokens.value = data.value
-      navigateTo('/')
-    }
-    else {
-      console.error('Login failed')
-    }
+
+    if (error.value)
+      throw error.value
+
+    tokens.value = data.value
+    navigateTo('/')
   }
 
   async function logout() {
@@ -40,7 +39,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
   }
 
   return {
-    tokens: readonly(tokens),
+    tokens,
 
     login,
     logout,

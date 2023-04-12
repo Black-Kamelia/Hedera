@@ -11,17 +11,34 @@ export interface Tokens {
 }
 
 export const useAuth = s(defineStore('auth', () => {
+  const { execute } = useAPI('/login', { method: 'POST' }, { immediate: false })
+
   // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
 
-  // function setUser(newUser: User) {
-  //  user.value = newUser
-  // }
-  function setTokens(newTokens: Nullable<Tokens>) {
-    tokens.value = newTokens
+  async function login(values: Record<string, any>) {
+    const { data, error } = await execute({ data: values })
+    if (!error.value) {
+      tokens.value = data.value
+      navigateTo('/')
+    }
+    else {
+      console.error('Login failed')
+    }
   }
 
-  return { tokens, setTokens }
+  async function logout() {
+    // TODO actual logout
+    tokens.value = null
+    navigateTo('/login')
+  }
+
+  return {
+    tokens: readonly(tokens),
+
+    login,
+    logout,
+  }
 }, {
   persist: {
     storage: persistedState.localStorage,

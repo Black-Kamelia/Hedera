@@ -1,14 +1,19 @@
 package com.kamelia.hedera.plugins
 
 import com.kamelia.hedera.util.Environment.isDev
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.cors.routing.*
 
 fun Application.configureCORS() {
     install(CORS) {
         if (isDev) {
-            allowHost("localhost:3000")
+            allowMethod(HttpMethod.Options)
+            allowMethod(HttpMethod.Post)
+            allowMethod(HttpMethod.Get)
+            allowHeader(HttpHeaders.AccessControlAllowOrigin)
+            allowHeader(HttpHeaders.ContentType)
+            anyHost()
         }
     }
 }

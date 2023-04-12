@@ -1,0 +1,31 @@
+/* Reset */
+html {
+  scrollbar-gutter: stable;
+}
+.dark {
+  color-scheme: dark;
+}
+.dark ::-moz-selection  {
+  background: #444;
+}
+.dark ::selection {
+  background: #444;
+}
+div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* primevue additions */
+.p-input-icon-left > i,
+.p-input-icon-right > i {
+  margin-top: -12px!important;
+}
+
+.p-input-icon-left > .p-inputtext {
+    padding-left: calc(1.25rem + 24px);
+}
+
+.p-input-icon-right > .p-inputtext {
+    padding-right: calc(1.25rem + 24px);
+}

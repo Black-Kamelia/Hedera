@@ -1,5 +1,23 @@
+global:
+  login: Connexion
+  logout: Se déconnecter
+  start: Commencer
 main:
   title: Bienvenue sur Hedera
+pages:
+  login:
+    forgot_password: Mot de passe oublié ?
+    form:
+      errors:
+        missing_password: Le mot de passe est requis
+        missing_username: Le nom d'utilisateur est requis
+      fields:
+        password: Mot de passe
+        remember_me: Se souvenir de moi
+        username: Nom d'utilisateur
+      submit: Connexion
+    tab_title: Connexion • Hedera
+    title: Se connecter
 theme:
   dark: Sombre
   light: Clair

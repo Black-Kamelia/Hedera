@@ -1,7 +1,11 @@
+<script setup lang="ts">
+useTheme()
+</script>
+
 <template>
-  <div font="text">
+  <div font="text" class="p-input-filled">
+    <NuxtLoadingIndicator />
     <NuxtLayout>
-      <NuxtLoadingIndicator />
       <NuxtPage />
     </NuxtLayout>
   </div>

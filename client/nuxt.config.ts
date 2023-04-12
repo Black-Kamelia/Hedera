@@ -1,7 +1,11 @@
 import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { transformShortVmodel } from '@vue-macros/short-vmodel'
+import runtimeConfig from './env.config'
+import devRuntimeConfig from './env.dev.config'
+
+const isDev = process.env.NODE_ENV === 'development'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -13,20 +17,32 @@ export default defineNuxtConfig({
     },
   },
   ssr: false,
-  experimental: { reactivityTransform: true },
-  css: ['@unocss/reset/antfu.css'],
+  css: [
+    '@unocss/reset/tailwind.css',
+    'primevue/resources/primevue.css',
+  ],
   imports: { dirs: ['stores'] },
+  components: [{ path: '~/components', pathPrefix: false }],
+  runtimeConfig: isDev ? devRuntimeConfig : runtimeConfig,
 
   // plugins
   modules: [
+    '@nuxt/devtools',
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/critters',
     '@nuxt/image-edge',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/color-mode',
+    '@notkamui/nuxt-primevue',
+    '@formkit/nuxt',
   ],
+  devtools: {
+    enabled: true,
+    vscode: {},
+  },
   vue: {
     compilerOptions: {
       nodeTransforms: [transformShortVmodel({ prefix: '::' })],
@@ -41,7 +57,10 @@ export default defineNuxtConfig({
   },
 
   // plugin configs
-  macros: { exportProps: true },
+  macros: {
+    exportProps: true,
+    reactivityTransform: true,
+  },
   pinia: {
     autoImports: [
       'defineStore',
@@ -55,5 +74,8 @@ export default defineNuxtConfig({
     classPrefix: '',
     classSuffix: '',
     storageKey: 'color-scheme',
+  },
+  primevue: {
+    ripple: true,
   },
 })

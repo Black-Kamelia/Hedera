@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
+import { useToast } from 'primevue/usetoast'
 import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
@@ -26,7 +27,19 @@ onMounted(() => {
     navigateTo('/', { replace: true })
 })
 
-const onSubmit = handleSubmit(login)
+const toast = useToast()
+const onSubmit = handleSubmit((values) => {
+  login(values).catch((err) => {
+    if (err.response?.status === 401) {
+      toast.add({
+        severity: 'error',
+        summary: 'Connexion refusée',
+        detail: 'Votre nom d\'utilisateur ou votre mot de passe est incorrect.',
+        life: 50000,
+      })
+    }
+  })
+})
 </script>
 
 <template>
@@ -42,7 +55,7 @@ const onSubmit = handleSubmit(login)
   <form @submit="onSubmit">
     <label for="email1" class="block font-900 font-medium mb-2">{{ t('pages.login.form.fields.username') }}</label>
     <div class="mb-3">
-      <span class="p-input-icon-left">
+      <span class="p-input-icon-left w-full">
         <i class="i-tabler-user" />
         <InputText name="username" type="text" :placeholder="getRandomDeveloperName()" class="w-full" />
       </span>
@@ -51,7 +64,7 @@ const onSubmit = handleSubmit(login)
 
     <label for="password1" class="block font-900 font-medium mb-2">{{ t('pages.login.form.fields.password') }}</label>
     <div class="mb-3">
-      <span class="p-input-icon-left">
+      <span class="p-input-icon-left w-full">
         <i class="i-tabler-lock" />
         <InputText name="password" type="password" placeholder="••••••••••••••••" class="w-full" />
       </span>

@@ -20,7 +20,7 @@ const { handleSubmit, errors } = useForm({
   validationSchema: schema,
 })
 
-const { tokens, setTokens } = useAuth()
+const [{ tokens }, { setTokens }] = useAuth()
 onMounted(() => {
   if (tokens)
     navigateTo('/')

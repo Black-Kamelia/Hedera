@@ -16,8 +16,25 @@ pages:
         remember_me: Se souvenir de moi
         username: Nom d'utilisateur
       submit: Connexion
+    errors:
+      invalid_credentials: Nom d'utilisateur ou mot de passe incorrect.
     tab_title: Connexion • Hedera
     title: Se connecter
+
+  resetPassword:
+    form:
+      errors:
+        missing_email: L'adresse e-mail est requise
+      fields:
+        email: Adresse e-mail
+      submit: Envoyer le lien de réinitialisation
+    errors:
+      unknown_email: Aucun compte n'est associé à cette adresse e-mail.
+    messages:
+      link_sent: Un lien de réinitialisation a été envoyé.
+    tab_title: Réinitialiser le mot de passe • Hedera
+    title: Réinitialiser le mot de passe
+
 theme:
   dark: Sombre
   light: Clair

@@ -6,12 +6,9 @@ import com.kamelia.hedera.core.respond
 import com.kamelia.hedera.util.accessToken
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.jwt
-import io.ktor.server.application.call
-import io.ktor.server.auth.authenticate
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.patch
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.routing.*
 
 fun Route.authRoutes() = route("/") {
     login()
@@ -39,6 +36,6 @@ private fun Route.logout() = post("/logout") {
     call.respond(AuthService.logout(token))
 }
 
-private fun Route.refresh() = patch("/login") {
+private fun Route.refresh() = post("/refresh") {
     call.respond(AuthService.refresh(jwt))
 }

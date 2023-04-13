@@ -21,7 +21,13 @@ export default defineNuxtConfig({
     '@unocss/reset/tailwind.css',
     'primevue/resources/primevue.css',
   ],
-  imports: { dirs: ['stores'] },
+  imports: { // add folders here to auto-import them in your application
+    dirs: [
+      'stores/**',
+      'composables/**',
+      'utils/**',
+    ],
+  },
   components: [{ path: '~/components', pathPrefix: false }],
   runtimeConfig: isDev ? devRuntimeConfig : runtimeConfig,
 

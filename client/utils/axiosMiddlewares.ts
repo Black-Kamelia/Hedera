@@ -1,5 +1,5 @@
 export interface AxiosMiddleware {
-  route: string | RegExp
+  route: string | RegExp | ((url: string) => boolean)
 }
 
 export interface AxiosRequestMiddleware<D> extends AxiosMiddleware {
@@ -14,7 +14,7 @@ export interface AxiosResponseMiddleware<T, D> extends AxiosMiddleware {
   options?: AxiosInterceptorOptions
 }
 
-interface AxiosMiddlewares {
+export interface AxiosMiddlewares {
   requestMiddlewares: AxiosRequestMiddleware<any>[]
   responseMiddlewares: AxiosResponseMiddleware<any, any>[]
 }

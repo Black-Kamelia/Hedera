@@ -25,10 +25,15 @@ html {
   border-width: 0!important;
 }
 
-.p-toast .p-toast-message {
+.p-toast .p-toast-message,
+.p-message {
   border: 0 none!important;
 }
 
 .p-toast-message-icon {
   height: 1em!important;
+}
+
+input:focus::placeholder {
+  color: transparent;
 }

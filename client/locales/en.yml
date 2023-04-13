@@ -16,6 +16,8 @@ pages:
         remember_me: Remember me
         username: Username
       submit: Submit
+    errors:
+      invalid_credentials: Username or password is incorrect.
     tab_title: Logging in • Hedera
     title: Log in
 theme:

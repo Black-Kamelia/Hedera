@@ -1,3 +1,5 @@
+import type { AxiosInterceptorOptions, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+
 export interface AxiosMiddleware {
   route: string | RegExp | ((url: string) => boolean)
 }

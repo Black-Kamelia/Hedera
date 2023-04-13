@@ -77,5 +77,6 @@ export default defineNuxtConfig({
   },
   primevue: {
     ripple: true,
+    inputStyle: 'filled',
   },
 })

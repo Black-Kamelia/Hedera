@@ -11,10 +11,6 @@ html {
 .dark ::selection {
   background: #444;
 }
-div {
-  display: flex;
-  flex-direction: column;
-}
 
 /* primevue additions */
 body {

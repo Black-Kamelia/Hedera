@@ -4,6 +4,15 @@ global:
   start: Commencer
 main:
   title: Bienvenue sur Hedera
+
+sidebar:
+  files: Fichiers
+  upload: Mettre en ligne
+  config: Configuration
+  docs: Documentation
+  dark_mode: Mode sombre
+  light_mode: Mode clair
+
 pages:
   login:
     forgot_password: Mot de passe oublié ?

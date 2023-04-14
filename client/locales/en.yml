@@ -4,6 +4,15 @@ global:
   start: Start
 main:
   title: Welcome to Hedera
+
+sidebar:
+  files: Files
+  upload: Upload
+  config: Configuration
+  docs: Documentation
+  dark_mode: Dark mode
+  light_mode: Light mode
+
 pages:
   login:
     forgot_password: Forgot password?

@@ -19,8 +19,11 @@ export interface AuthReturn {
 }
 
 export const useAuth = s<AuthReturn>(defineStore('auth', () => {
+  const toast = useToast()
+
   const { execute: executeLogin } = useAPI('/login', { method: 'POST' })
   const { execute: executeRefresh } = useAPI('/refresh', { method: 'POST' })
+  const { execute: executeLogout } = useAPI('/logout', { method: 'POST' })
 
   // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
@@ -31,10 +34,19 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
     const { data, error } = await executeLogin({ data: values })
     if (!error.value) {
       tokens.value = data.value
+      toast.add({
+        severity: 'success',
+        summary: 'Login',
+        detail: 'Login successful',
+      })
       navigateTo('/')
     }
     else {
-      console.error('Login failed')
+      toast.add({
+        severity: 'error',
+        summary: 'Login',
+        detail: 'Login failed',
+      })
     }
   }
 
@@ -43,13 +55,21 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
     if (!error.value)
       tokens.value = data.value
     else
-      throw new Error('Session expired, please login again')
+      throw new Error('Refresh failed') // Session expired
   }
 
   async function logout() {
-    // TODO actual logout
+    const { error } = await executeLogout()
+    if (error.value)
+      return
+
     tokens.value = null
     navigateTo('/login')
+    toast.add({
+      severity: 'success',
+      summary: 'Logout',
+      detail: 'Logout successful',
+    })
   }
 
   return {

@@ -16,7 +16,7 @@ const activeRoute = computed(() => {
 </script>
 
 <template>
-  <PButton rounded class="flex flex-row gap-4 items-start" :class="{ active: activeRoute }">
+  <PButton rounded class="flex flex-row gap-4 items-start" :class="{ active: activeRoute, open: props.open }">
     <div class="flex">
       <i :class="props.icon" />
     </div>

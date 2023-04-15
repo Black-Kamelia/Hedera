@@ -19,26 +19,39 @@ const isSidebarHovered = useElementHover(sidebarRef)
 function toggleSidebar() {
   open.value = !open.value
 }
+
+const op = ref()
+function toggleOp(event) {
+  op.value.toggle(event)
+}
+
+const { logout } = useAuth()
+
+function doLogout() {
+  logout()
+  navigateTo('/login')
+}
 </script>
 
 <template>
   <div class="flex flex-row" h-screen>
     <aside ref="sidebarRef" class="sidebar flex flex-col p-0" :class="{ expanded: open }">
       <div class="header flex flex-row items-center">
-        <div>
-          <PButton rounded @click="toggleSidebar()">
-            <Transition mode="out-in" name="fade">
-              <i v-if="isSidebarHovered" class="i-tabler-menu-2" />
-              <i v-else class="i-tabler-leaf" />
-            </Transition>
-          </PButton>
-        </div>
         <div class="flex-grow overflow-hidden">
           <Transition>
-            <h1 v-show="open" class="text-3xl ml-3">
+            <h1 v-show="open" class="text-4xl ml-3">
               Hedera
             </h1>
           </Transition>
+        </div>
+        <div>
+          <PButton rounded @click="toggleSidebar()">
+            <Transition mode="out-in" name="fade">
+              <i v-if="isSidebarHovered && !open" class="i-tabler-menu-2" />
+              <i v-else-if="open" class="i-tabler-indent-decrease" />
+              <i v-else class="i-tabler-leaf" />
+            </Transition>
+          </PButton>
         </div>
       </div>
       <div class="items flex flex-col justify-between" style="flex-grow: 1;">
@@ -58,7 +71,7 @@ function toggleSidebar() {
         </div>
         <div class="flex flex-col-reverse p-4">
           <div class="flex top-sep pt-4">
-            <PButton rounded class="flex-grow flex flex-row gap-4 items-start">
+            <PButton rounded class="flex-grow flex flex-row gap-4 items-start" :class="{ open }">
               <div class="flex">
                 <i class="i-tabler-user-circle" />
               </div>
@@ -85,8 +98,11 @@ function toggleSidebar() {
           <i class="i-tabler-search" />
           <PInputText class="search p-inputtext-lg w-full" placeholder="Recherche..." />
         </span>
-        <div>
-          <PButton icon="i-tabler-bell" text rounded />
+        <div class="flex flex-row gap-4">
+          <div class="card flex justify-content-center">
+            <PButton icon="i-tabler-bell" text rounded />
+          </div>
+          <PButton icon="i-tabler-logout" text rounded @click="doLogout()" />
         </div>
       </div>
       <div class="p-5">
@@ -113,8 +129,9 @@ function toggleSidebar() {
 
 .sidebar {
   width: 5em;
+  min-width: 5em;
   height: 100%;
-  transition: width 0.3s ease;
+  transition: min-width 0.3s ease, width 0.3s ease;
   overflow: hidden;
   background-color: var(--primary-color);
   color: var(--primary-color-text);
@@ -122,6 +139,7 @@ function toggleSidebar() {
 
 .sidebar.expanded {
   width: 19em;
+  min-width: 19em;
 }
 
 .sidebar > .header {
@@ -130,27 +148,32 @@ function toggleSidebar() {
   background-color: var(--primary-600);
 }
 
-.sidebar > .header .p-button,
-.sidebar > .footer .p-button {
+.sidebar > .header .p-button {
   background-color: var(--primary-600);
 }
 
-.sidebar > .header .p-button:hover,
-.sidebar > .footer .p-button:hover {
+.sidebar > .header .p-button:hover {
   background-color: var(--primary-500);
+}
+.sidebar > .header .p-button:active {
+  background-color: var(--primary-700);
+}
+
+.sidebar .p-button {
+  padding: .75rem;
+  transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, padding 0.3s ease;
 }
 
 .sidebar .p-button,
 .sidebar .p-button:active,
 .sidebar .p-button:hover {
-  padding: .75rem;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
-.p-button .p-button-icon-left {
-  margin-right: 1rem !important;
+.sidebar .p-button.open {
+  padding: .75rem 1.25rem;
 }
 
 .sidebar > .items .p-button:hover {

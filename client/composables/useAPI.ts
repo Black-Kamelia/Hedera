@@ -7,5 +7,6 @@ export default function useAPI<T = any, R = AxiosResponse<T>, D = any>(
   config?: RawAxiosRequestConfig<D>,
   options?: UseAxiosOptions<T>,
 ): StrictUseAxiosReturn<T, R, D> & PromiseLike<StrictUseAxiosReturn<T, R, D>> {
-  return useAxios(url, config ?? {}, axiosInstance, options ?? {})
+  const axiosInstance = useAxiosInstance()
+  return useAxios(url, config ?? {}, axiosInstance.value, options ?? {})
 }

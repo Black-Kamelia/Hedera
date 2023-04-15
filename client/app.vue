@@ -4,6 +4,7 @@ useTheme()
 
 <template>
   <div font="text" class="p-input-filled">
+    <PToast />
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />

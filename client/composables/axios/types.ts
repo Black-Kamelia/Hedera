@@ -2,6 +2,7 @@ import type { AxiosError, AxiosInterceptorManager, AxiosInterceptorOptions, Axio
 
 export interface AxiosMiddleware<V> {
   route?: string | RegExp | ((url: string) => boolean) | null
+  negateRoute?: boolean
   onFulfilled?: ((value: V) => V | Promise<V>) | null
   onRejected?: ((error: AxiosError) => any) | null
   options?: AxiosInterceptorOptions
@@ -40,13 +41,15 @@ export function createInterceptorFactory<V, T extends AxiosMiddleware<V>>(
   return function (middleware: T) {
     axiosInterceptorManager.use(
       (input) => {
-        if (checkRoute(routeMapper(input), middleware.route))
+        const shouldNegate = middleware.negateRoute ?? false
+        if (checkRoute(routeMapper(input), middleware.route) !== shouldNegate)
           middleware.onFulfilled?.(input)
 
         return input
       },
       (error: AxiosError) => {
-        if (checkRoute(errorRouteMapper(error), middleware.route))
+        const shouldNegate = middleware.negateRoute ?? false
+        if (checkRoute(errorRouteMapper(error), middleware.route) !== shouldNegate)
           middleware.onRejected?.(error)
 
         return Promise.reject(error)

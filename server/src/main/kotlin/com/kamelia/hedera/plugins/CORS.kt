@@ -10,7 +10,9 @@ fun Application.configureCORS() {
         if (isDev) {
             HttpMethod.DefaultMethods.forEach(::allowMethod)
             allowHeader(HttpHeaders.AccessControlAllowOrigin)
+            exposeHeader(HttpHeaders.AccessControlAllowOrigin)
             allowHeader(HttpHeaders.ContentType)
+            allowHeader(HttpHeaders.Authorization)
             anyHost()
         }
     }

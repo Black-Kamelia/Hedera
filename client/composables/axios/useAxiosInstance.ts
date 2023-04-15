@@ -1,28 +1,29 @@
-import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 
-const axiosInstance = ref<AxiosInstance | null>(null)
 export function useAxiosInstance() {
   const appConfig = useRuntimeConfig()
   const axiosMiddlewares = useAxiosMiddlewares()
 
-  if (!axiosInstance.value) {
-    axiosInstance.value = axios.create({
+  const axiosInstance = computed(() => {
+    const it = axios.create({
       baseURL: appConfig.public.apiBaseUrl,
     })
 
-    axiosMiddlewares.requestMiddlewares.forEach(createInterceptorFactory(
-      axiosInstance.value.interceptors.request,
+    axiosMiddlewares.value.requestMiddlewares.forEach(createInterceptorFactory(
+      it.interceptors.request,
       (config: InternalAxiosRequestConfig<any>) => config.url ?? '',
-      () => '', // Well, as of now, errors on request interceptor can never happen, so this is ignorable
+      (error: AxiosError) => error.config?.url ?? '',
     ))
 
-    axiosMiddlewares.responseMiddlewares.forEach(createInterceptorFactory(
-      axiosInstance.value.interceptors.response,
+    axiosMiddlewares.value.responseMiddlewares.forEach(createInterceptorFactory(
+      it.interceptors.response,
       (response: AxiosResponse<any, any>) => response.config.url ?? '',
       (error: AxiosError) => error.response?.config.url ?? '',
     ))
-  }
 
-  return axiosInstance as Ref<AxiosInstance>
+    return it
+  })
+
+  return axiosInstance
 }

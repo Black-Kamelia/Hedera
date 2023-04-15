@@ -1,17 +1,30 @@
 import type { AxiosMiddlewares } from './types'
+import type { Tokens } from '~/stores/useAuth'
 
-export function useAxiosMiddlewares(): AxiosMiddlewares {
-  const toast = useToast()
-  const { isAuthed, tokens, refresh } = useAuth()
+function getTokensFromLocalStorage(): Tokens | null {
+  const auth = localStorage.getItem('auth')
+  if (!auth)
+    return null
 
-  return {
+  const parsed = JSON.parse(auth)
+  if (!parsed.tokens || !parsed.tokens.accessToken || !parsed.tokens.refreshToken)
+    return null
+
+  return parsed.tokens
+}
+
+export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
+  return computed(() => ({
     requestMiddlewares: [
       {
         route: '/refresh',
         negateRoute: true,
         onFulfilled: (config) => {
-          if (isAuthed.value)
-            config.headers.Authorization = `Bearer ${tokens.value!.accessToken}`
+          const tokens = getTokensFromLocalStorage()
+          if (tokens) {
+            config.headers.Authorization = `Bearer ${tokens.accessToken}`
+            config.headers['Access-Control-Allow-Origin'] = '*'
+          }
 
           return config
         },
@@ -19,8 +32,11 @@ export function useAxiosMiddlewares(): AxiosMiddlewares {
       {
         route: '/refresh',
         onFulfilled: (config) => {
-          if (isAuthed.value)
-            config.headers.Authorization = `Bearer ${tokens.value!.refreshToken}`
+          const tokens = getTokensFromLocalStorage()
+          if (tokens) {
+            config.headers.Authorization = `Bearer ${tokens.refreshToken}`
+            config.headers['Access-Control-Allow-Origin'] = '*'
+          }
 
           return config
         },
@@ -28,21 +44,24 @@ export function useAxiosMiddlewares(): AxiosMiddlewares {
     ],
     responseMiddlewares: [
       {
-        route: '/refresh',
+        route: /^\/(refresh|login|users\/signup|upload\/token)/,
         negateRoute: true,
         onRejected: (error) => {
           if (error.response?.status === 401) {
+            const { refresh } = useAuth()
             refresh()
               .then(() => {
                 const axiosInstance = useAxiosInstance()
                 return axiosInstance.value.request(error.config!)
               })
-              .catch((error) => {
-                toast.add({
+              .catch(() => {
+                useToast().add({
                   severity: 'error',
                   summary: 'Session',
-                  detail: error.message,
+                  detail: 'Session expired, please login again',
+                  life: 5000,
                 })
+                navigateTo('/login')
               })
             return null
           }
@@ -51,5 +70,5 @@ export function useAxiosMiddlewares(): AxiosMiddlewares {
         },
       },
     ],
-  }
+  }))
 }

@@ -46,6 +46,8 @@ export function createInterceptorFactory<V, T extends AxiosMiddleware<V>>(
         return input
       },
       (error) => {
+        console.log('error', error)
+
         if (passes)
           middleware.onRejected?.(error)
 

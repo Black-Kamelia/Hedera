@@ -3,6 +3,8 @@ package com.kamelia.hedera.rest.auth
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.plugins.AuthJwt
+import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.util.accessToken
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.jwt
@@ -13,11 +15,11 @@ import io.ktor.server.routing.*
 fun Route.authRoutes() = route("/") {
     login()
 
-    authenticate("auth-jwt") {
+    authenticate(AuthJwt) {
         logoutAll()
         logout()
     }
-    authenticate("refresh-jwt") {
+    authenticate(RefreshJwt) {
         refresh()
     }
 }

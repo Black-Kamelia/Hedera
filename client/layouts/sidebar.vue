@@ -93,12 +93,16 @@ function doLogout() {
       </div>
     </aside>
     <div class="flex-grow flex flex-col">
-      <div class="toolbar flex items-center p-5 h-20 w-full" style="background-color: var(--surface-overlay);">
+      <div class="toolbar flex items-center gap-4 p-5 h-20 w-full" style="background-color: var(--surface-overlay);">
         <span class="flex-grow p-input-icon-left">
           <i class="i-tabler-search" />
           <PInputText class="search p-inputtext-lg w-full" placeholder="Recherche..." />
         </span>
-        <div class="flex flex-row gap-4">
+        <div class="flex flex-col gap-1.5 sep">
+          <PProgressBar style="height: .5em;" value="50" :show-value="false" />
+          <span class="text-xs">2.50 Gio / 5.00 Gio</span>
+        </div>
+        <div class="flex flex-row gap-2">
           <div class="card flex justify-content-center">
             <PButton icon="i-tabler-bell" text rounded />
           </div>
@@ -125,6 +129,13 @@ function doLogout() {
 
 .toolbar {
   border-bottom: 1px solid var(--surface-border);
+}
+
+.sep {
+  border-left: 1px solid var(--surface-border);
+  padding-left: 1.5rem;
+  border-right: 1px solid var(--surface-border);
+  padding-right: 1.5rem;
 }
 
 .sidebar {

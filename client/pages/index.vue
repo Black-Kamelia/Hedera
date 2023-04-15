@@ -6,12 +6,8 @@ const { locale, t } = useI18n()
 
 const { logout } = useAuth()
 
-const { data, error, isFinished, execute } = useAPI('/users/signup')
-
-watch(isFinished, () => {
-  console.log(data.value) // eslint-disable-line no-console
-  console.log(error.value) // eslint-disable-line no-console
-})
+const { execute } = useAPI('/users/signup')
+execute()
 
 const digits = ref(createEmptyOTP())
 function onCompleted(digits: Nullable<number>[]) {

@@ -1,9 +1,9 @@
-import type { AxiosInterceptorManager, AxiosInterceptorOptions, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosError, AxiosInterceptorManager, AxiosInterceptorOptions, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 
 export interface AxiosMiddleware<V> {
-  route: string | RegExp | ((url: string) => boolean)
+  route?: string | RegExp | ((url: string) => boolean) | null
   onFulfilled?: ((value: V) => V | Promise<V>) | null
-  onRejected?: ((error: any) => any) | null
+  onRejected?: ((error: AxiosError) => any) | null
   options?: AxiosInterceptorOptions
 }
 
@@ -16,7 +16,10 @@ export interface AxiosMiddlewares {
   responseMiddlewares: AxiosResponseMiddleware<any, any>[]
 }
 
-function checkRoute(route: string | RegExp | ((url: string) => boolean), url: string): boolean {
+function checkRoute(url: string, route?: string | RegExp | ((url: string) => boolean) | null): boolean {
+  if (!route)
+    return true
+
   if (typeof route === 'string')
     return route === url
 
@@ -31,24 +34,19 @@ function checkRoute(route: string | RegExp | ((url: string) => boolean), url: st
 
 export function createInterceptorFactory<V, T extends AxiosMiddleware<V>>(
   axiosInterceptorManager: AxiosInterceptorManager<V>,
-  routerMapper: (input: V) => string,
+  routeMapper: (input: V) => string,
+  errorRouteMapper: (error: AxiosError) => string,
 ): (middleware: T) => void {
   return function (middleware: T) {
-    let passes = false
-
     axiosInterceptorManager.use(
       (input) => {
-        if (checkRoute(middleware.route, routerMapper(input))) {
-          passes = true
+        if (checkRoute(routeMapper(input), middleware.route))
           middleware.onFulfilled?.(input)
-        }
 
         return input
       },
-      (error) => {
-        console.log('error', error)
-
-        if (passes)
+      (error: AxiosError) => {
+        if (checkRoute(errorRouteMapper(error), middleware.route))
           middleware.onRejected?.(error)
 
         return Promise.reject(error)

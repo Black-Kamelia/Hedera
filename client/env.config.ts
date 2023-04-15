@@ -1,5 +1,5 @@
 export default {
   public: {
-    apiBaseUrl: '/',
+    apiBaseUrl: '/api',
   },
 }

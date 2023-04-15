@@ -2,8 +2,8 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { transformShortVmodel } from '@vue-macros/short-vmodel'
-import runtimeConfig from './env.config'
-import devRuntimeConfig from './env.dev.config'
+import runtimeConfig from './env.config.json'
+import devRuntimeConfig from './env.dev.config.json'
 
 const isDev = process.env.NODE_ENV === 'development'
 

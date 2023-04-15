@@ -48,29 +48,27 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
       {
         route: /^\/(refresh|login|users\/signup|upload\/token)/,
         negateRoute: true,
-        onRejected: (error) => {
+        onRejected: async (error) => {
           if (error.response?.status === 401) {
             const { refresh } = useAuth()
-            return refresh()
-              .then((refreshed) => {
-                if (refreshed) {
-                  const axiosInstance = useAxiosInstance()
-                  error.config!.headers.Authorization = `Bearer ${getTokensFromLocalStorage()?.accessToken}`
-                  return axiosInstance.value(error.config!)
-                }
-                else {
-                  // toast.add({
-                  //   severity: 'error',
-                  //   summary: 'Session',
-                  //   detail: 'Session expired, please login again',
-                  //   life: 5000,
-                  // })
-                  navigateTo('/login')
-                }
-              })
+            const refreshed = await refresh()
+            if (refreshed) {
+              const axiosInstance = useAxiosInstance()
+              error.config!.headers.Authorization = `Bearer ${getTokensFromLocalStorage()?.accessToken}`
+              return axiosInstance.value(error.config!)
+            }
+            else {
+              // toast.add({
+              //   severity: 'error',
+              //   summary: 'Session',
+              //   detail: 'Session expired, please login again',
+              //   life: 5000,
+              // })
+              navigateTo('/login')
+              return Promise.reject(error)
+            }
           }
-
-          return Promise.reject(error)
+          return Promise.resolve()
         },
       },
     ],

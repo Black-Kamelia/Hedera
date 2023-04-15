@@ -1,7 +1,9 @@
 import type { AxiosError, AxiosInterceptorManager, AxiosInterceptorOptions, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 
+export type AxiosRoute = string | string[] | RegExp | ((url: string) => boolean) | null
+
 export interface AxiosMiddleware<V> {
-  route?: string | RegExp | ((url: string) => boolean) | null
+  route?: AxiosRoute
   negateRoute?: boolean
   onFulfilled?: ((value: V) => V | Promise<V>) | null
   onRejected?: ((error: AxiosError) => any) | null
@@ -17,12 +19,15 @@ export interface AxiosMiddlewares {
   responseMiddlewares: AxiosResponseMiddleware<any, any>[]
 }
 
-function checkRoute(url: string, route?: string | RegExp | ((url: string) => boolean) | null): boolean {
+function checkRoute(url: string, route?: AxiosRoute): boolean {
   if (!route)
     return true
 
   if (typeof route === 'string')
     return route === url
+
+  if (Array.isArray(route))
+    return route.includes(url)
 
   if (route instanceof RegExp)
     return route.test(url)

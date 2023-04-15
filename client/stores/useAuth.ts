@@ -14,7 +14,7 @@ export interface AuthReturn {
   tokens: Ref<Nullable<Tokens>>
   isAuthed: ComputedRef<boolean>
   login: (values: Record<string, any>) => Promise<void>
-  refresh: () => Promise<void>
+  refresh: () => Promise<boolean>
   logout: () => Promise<void>
 }
 
@@ -38,6 +38,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
         severity: 'success',
         summary: 'Login',
         detail: 'Login successful',
+        life: 5000,
       })
       navigateTo('/')
     }
@@ -46,16 +47,21 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
         severity: 'error',
         summary: 'Login',
         detail: 'Login failed',
+        life: 5000,
       })
     }
   }
 
-  async function refresh() {
+  async function refresh(): Promise<boolean> {
     const { data, error } = await executeRefresh()
-    if (!error.value)
+    if (!error.value) {
       tokens.value = data.value
-    else
-      throw new Error('Refresh failed') // Session expired
+      return true
+    }
+    else {
+      tokens.value = null
+      return false
+    }
   }
 
   async function logout() {
@@ -69,6 +75,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
       severity: 'success',
       summary: 'Logout',
       detail: 'Logout successful',
+      life: 5000,
     })
   }
 

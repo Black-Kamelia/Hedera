@@ -14,6 +14,8 @@ function getTokensFromLocalStorage(): Tokens | null {
 }
 
 export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
+  // const toast = useToast()
+
   return computed(() => ({
     requestMiddlewares: [
       {
@@ -49,21 +51,23 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
         onRejected: (error) => {
           if (error.response?.status === 401) {
             const { refresh } = useAuth()
-            refresh()
-              .then(() => {
-                const axiosInstance = useAxiosInstance()
-                return axiosInstance.value.request(error.config!)
+            return refresh()
+              .then((refreshed) => {
+                if (refreshed) {
+                  const axiosInstance = useAxiosInstance()
+                  error.config!.headers.Authorization = `Bearer ${getTokensFromLocalStorage()?.accessToken}`
+                  return axiosInstance.value(error.config!)
+                }
+                else {
+                  // toast.add({
+                  //   severity: 'error',
+                  //   summary: 'Session',
+                  //   detail: 'Session expired, please login again',
+                  //   life: 5000,
+                  // })
+                  navigateTo('/login')
+                }
               })
-              .catch(() => {
-                useToast().add({
-                  severity: 'error',
-                  summary: 'Session',
-                  detail: 'Session expired, please login again',
-                  life: 5000,
-                })
-                navigateTo('/login')
-              })
-            return null
           }
 
           return Promise.reject(error)

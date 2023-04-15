@@ -1,8 +1,6 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.*
@@ -32,7 +30,7 @@ private fun Route.uploadFile() = post("/upload") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respond(Response.badRequest("errors.uploads.missing_file"))
+        call.respondNoSuccess(Response.badRequest("errors.uploads.missing_file"))
     })
 }
 
@@ -43,7 +41,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respond(Response.badRequest("errors.uploads.missing_file"))
+        call.respondNoSuccess(Response.badRequest("errors.uploads.missing_file"))
     })
 }
 
@@ -59,11 +57,11 @@ private fun Route.getFile() = get("/{code}") {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
                 // TODO notify orphaned file
-                call.respond(Response.notFound())
+                call.respondNothing(Response.notFound())
             }
         },
         onError = {
-            call.respond(Response.notFound())
+            call.respondNothing(Response.notFound())
         },
     )
 }

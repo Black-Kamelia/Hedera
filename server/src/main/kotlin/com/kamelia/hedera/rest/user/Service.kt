@@ -1,14 +1,10 @@
 package com.kamelia.hedera.rest.user
 
-import com.kamelia.hedera.core.ErrorDTO
-import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.IllegalActionException
-import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.uuid
-import java.util.UUID
+import java.util.*
 import kotlin.math.ceil
 
 object UserService {
@@ -108,7 +104,7 @@ object UserService {
         )
     }
 
-    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, Nothing> =
+    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, List<ErrorDTO>> =
         Users.delete(id)
             ?.let { Response.ok(it.toRepresentationDTO()) }
             ?: Response.notFound()

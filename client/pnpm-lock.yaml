@@ -14,8 +14,8 @@ devDependencies:
     specifier: ^0.10.0
     version: 0.10.0(vue-i18n@9.2.2)
   '@notkamui/nuxt-primevue':
-    specifier: ^0.3.1
-    version: 0.3.1(primeicons@6.0.1)(vue@3.2.47)
+    specifier: ^0.3.2
+    version: 0.3.2(primeicons@6.0.1)(vue@3.2.47)
   '@nuxt/devtools':
     specifier: ^0.4.0
     version: 0.4.0(nuxt@3.3.3)(vite@4.2.1)(vue@3.2.47)
@@ -1342,8 +1342,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@notkamui/nuxt-primevue@0.3.1(primeicons@6.0.1)(vue@3.2.47):
-    resolution: {integrity: sha512-/7ny7r6fM+d0F/Yp030V3zI8TnW9PhwJproPZc7J0ke1ByrBK/pSyonPF2T4YnYGM0nOpYqvCWEwH/n6TxZdug==}
+  /@notkamui/nuxt-primevue@0.3.2(primeicons@6.0.1)(vue@3.2.47):
+    resolution: {integrity: sha512-hXK9MuiYXhv40w3ZPtR50RcvvVTZmpuQlQni9mcx5XLVpPaaNXd+8rhm+1LmHhWKBJSMnqbwT0VuQEhVA8eOaA==}
     dependencies:
       '@nuxt/kit': 3.3.3
       primevue: 3.26.1(primeicons@6.0.1)(vue@3.2.47)

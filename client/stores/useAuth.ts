@@ -10,7 +10,7 @@ export interface Tokens {
   refreshToken: string
 }
 
-export interface AuthReturn {
+export interface UseAuthComposer {
   tokens: Ref<Nullable<Tokens>>
   isAuthenticated: ComputedRef<boolean>
   setTokens: (newTokens: Nullable<Tokens>) => void
@@ -18,7 +18,7 @@ export interface AuthReturn {
   logout: () => Promise<void>
 }
 
-export const useAuth = s<AuthReturn>(defineStore('auth', (): AuthReturn => {
+export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthComposer => {
   const toast = useToast()
 
   const { execute: executeLogin } = useAPI('/login', { method: 'POST' }, { immediate: false })

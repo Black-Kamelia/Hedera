@@ -3,15 +3,17 @@ import type { AxiosMiddlewares } from './types'
 export const skipRefreshRoutes = ['/refresh', '/login', '/users/signup', '/upload/token']
 
 export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
+  const refreshTokenExpiredEvent = useEventBus(RefreshTokenExpiredEvent)
+
   return computed(() => ({
     requestMiddlewares: [
       {
         route: skipRefreshRoutes,
         negateRoute: true,
         onFulfilled: (config) => {
-          const tokens = getTokensFromLocalStorage()
-          if (tokens) {
-            config.headers.Authorization = `Bearer ${tokens.accessToken}`
+          const { tokens } = useAuth()
+          if (tokens.value) {
+            config.headers.Authorization = `Bearer ${tokens.value.accessToken}`
             config.headers['Access-Control-Allow-Origin'] = '*'
           }
 
@@ -21,9 +23,9 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
       {
         route: '/refresh',
         onFulfilled: (config) => {
-          const tokens = getTokensFromLocalStorage()
-          if (tokens) {
-            config.headers.Authorization = `Bearer ${tokens.refreshToken}`
+          const { tokens } = useAuth()
+          if (tokens.value) {
+            config.headers.Authorization = `Bearer ${tokens.value.refreshToken}`
             config.headers['Access-Control-Allow-Origin'] = '*'
           }
 
@@ -32,6 +34,19 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
       },
     ],
     responseMiddlewares: [
+      {
+        route: '/refresh',
+        onRejected: (error) => {
+          if (error.response?.status !== 401)
+            return Promise.reject(error)
+
+          const { setTokens } = useAuth()
+          setTokens(null)
+          refreshTokenExpiredEvent.emit({ error })
+
+          return Promise.resolve()
+        },
+      },
     ],
   }))
 }

@@ -3,7 +3,7 @@ import type { AxiosMiddlewares } from './types'
 export const skipRefreshRoutes = ['/refresh', '/login', '/users/signup', '/upload/token']
 
 export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
-  const toast = useToast()
+  const refreshTokenExpiredEvent = useEventBus(RefreshTokenExpiredEvent)
 
   return computed(() => ({
     requestMiddlewares: [
@@ -42,14 +42,7 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
 
           const { setTokens } = useAuth()
           setTokens(null)
-          toast.add({
-            severity: 'error',
-            summary: 'Session',
-            detail: 'Session expired, please login again',
-            life: 3000,
-            closable: true,
-          })
-          navigateTo('/login')
+          refreshTokenExpiredEvent.emit({ error })
 
           return Promise.resolve()
         },

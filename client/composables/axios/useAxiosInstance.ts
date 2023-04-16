@@ -5,6 +5,11 @@ import type { Tokens } from '~/stores/useAuth'
 
 function tryRefreshFactory(axios: AxiosInstance) {
   return async function useTryRefresh(failedRequest: AxiosError) {
+    const accessTokenExpiredEvent = useEventBus(AccessTokenExpiredEvent)
+    const tokensRefreshedEvent = useEventBus(TokensRefreshedEvent)
+
+    accessTokenExpiredEvent.emit({ error: failedRequest })
+
     if (skipRefreshRoutes.includes(failedRequest.response?.config.url ?? ''))
       return Promise.reject(failedRequest)
 
@@ -14,6 +19,7 @@ function tryRefreshFactory(axios: AxiosInstance) {
     const tokens = tokenRefreshResponse.data as Tokens
     failedRequest.response!.config.headers.Authorization = `Bearer ${tokens?.accessToken}`
     setTokens(tokens)
+    tokensRefreshedEvent.emit({ tokens })
     return await Promise.resolve()
   }
 }

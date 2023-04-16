@@ -8,23 +8,13 @@ import com.kamelia.hedera.loginBlocking
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.UserUpdateDTO
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.get
-import io.ktor.client.request.patch
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.server.testing.testApplication
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.testing.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.fail
@@ -84,7 +74,7 @@ class AuthTest {
 
         delay(500L)
 
-        val response = client().patch("/api/login") {
+        val response = client().post("/api/refresh") {
             bearerAuth(tokens!!.refreshToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -99,7 +89,7 @@ class AuthTest {
 
         delay(3000L)
 
-        val response = client().patch("/api/login") {
+        val response = client().post("/api/refresh") {
             bearerAuth(tokens!!.refreshToken)
         }
         assertEquals(HttpStatusCode.Unauthorized, response.status)
@@ -113,7 +103,7 @@ class AuthTest {
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, status)
 
-        val response = client().patch("/api/login") {
+        val response = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -131,7 +121,7 @@ class AuthTest {
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, status)
 
-        val response = client().patch("/api/login") {
+        val response = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -179,7 +169,7 @@ class AuthTest {
         }
         assertEquals(HttpStatusCode.OK, response.status)
 
-        val refreshResponse = client().patch("/api/login") {
+        val refreshResponse = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
         }
         assertEquals(HttpStatusCode.Unauthorized, refreshResponse.status)
@@ -224,12 +214,12 @@ class AuthTest {
         }
         assertEquals(HttpStatusCode.OK, response.status)
 
-        val response1 = client().patch("/api/login") {
+        val response1 = client().post("/api/refresh") {
             bearerAuth(tokens1.refreshToken)
         }
         assertEquals(HttpStatusCode.Unauthorized, response1.status)
 
-        val response2 = client().patch("/api/login") {
+        val response2 = client().post("/api/refresh") {
             bearerAuth(tokens2.refreshToken)
         }
         assertEquals(HttpStatusCode.Unauthorized, response2.status)

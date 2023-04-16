@@ -1,9 +1,22 @@
+app_name: Hedera
+
 global:
   login: Login
   logout: Logout
   start: Start
 main:
   title: Welcome to Hedera
+
+sizeUnits:
+  0: bytes
+  10: KiB
+  20: MiB
+  30: GiB
+  40: TiB
+  50: PiB
+  60: EiB
+  70: ZiB
+  80: YiB
 
 sidebar:
   files: Files

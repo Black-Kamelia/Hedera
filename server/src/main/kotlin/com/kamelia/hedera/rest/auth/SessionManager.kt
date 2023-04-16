@@ -1,22 +1,13 @@
 package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.ErrorDTO
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.TokenData
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.Users
-import io.ktor.server.auth.Principal
-import java.util.UUID
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import io.ktor.server.auth.*
+import kotlinx.coroutines.*
+import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
 object SessionManager {
@@ -76,8 +67,8 @@ object SessionManager {
         }
     }
 
-    suspend fun login(username: String, password: String): Response<TokenData, List<ErrorDTO>> {
-        val unauthorized = Response.unauthorized("errors.auth.verify.unauthorized")
+    suspend fun login(username: String, password: String): Response<TokenData, ErrorDTO> {
+        val unauthorized = Response.unauthorized("errors.auth.invalid_credentials")
         val user = Users.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
@@ -87,7 +78,7 @@ object SessionManager {
         return Response.ok(generateTokens(user))
     }
 
-    suspend fun refresh(jwt: Payload): Response<TokenData, List<ErrorDTO>> {
+    suspend fun refresh(jwt: Payload): Response<TokenData, ErrorDTO> {
         val user = Users.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
         return Response.ok(generateTokens(user))
     }

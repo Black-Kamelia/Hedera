@@ -3,8 +3,18 @@ package com.kamelia.hedera.core
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
+import kotlinx.serialization.Serializable
 
-typealias ErrorDTO = String
+@Serializable
+data class ErrorDTO(
+    val key: String,
+    val template: Map<String, String>? = null,
+) {
+    companion object {
+        fun of(key: String, template: Map<String, String>? = null) = ErrorDTO(key, template)
+        fun of(key: String, vararg template: Pair<String, String>) = ErrorDTO(key, mapOf(*template))
+    }
+}
 
 class Response<out S, out E> private constructor(
     val status: HttpStatusCode,
@@ -41,9 +51,12 @@ class Response<out S, out E> private constructor(
         fun ok() = success<Nothing>(HttpStatusCode.OK)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
-        fun badRequest(vararg error: ErrorDTO) = error(HttpStatusCode.BadRequest, error.toList())
-        fun unauthorized(vararg error: ErrorDTO) = error(HttpStatusCode.Unauthorized, error.toList())
-        fun forbidden(vararg error: ErrorDTO) = error(HttpStatusCode.Forbidden, error.toList())
+        fun badRequest(error: ErrorDTO) = error(HttpStatusCode.BadRequest, error)
+        fun badRequest(error: String) = badRequest(ErrorDTO.of(error))
+        fun unauthorized(error: ErrorDTO) = error(HttpStatusCode.Unauthorized, error)
+        fun unauthorized(error: String) = unauthorized(ErrorDTO.of(error))
+        fun forbidden(error: ErrorDTO) = error(HttpStatusCode.Forbidden, error)
+        fun forbidden(error: String) = forbidden(ErrorDTO.of(error))
         fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }

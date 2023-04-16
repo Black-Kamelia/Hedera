@@ -1,6 +1,6 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.ErrorDTO
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.Response
@@ -17,7 +17,7 @@ import kotlin.math.ceil
 
 object FileService {
 
-    suspend fun handleFile(part: PartData.FileItem, creator: User): Response<FileRepresentationDTO, List<ErrorDTO>> {
+    suspend fun handleFile(part: PartData.FileItem, creator: User): Response<FileRepresentationDTO, String> {
         val filename = requireNotNull(part.originalFileName) { "errors.file.name.empty" }
         require(filename.isNotBlank()) { "errors.file.name.empty" }
 
@@ -36,7 +36,7 @@ object FileService {
     suspend fun getFile(
         code: String,
         user: User?,
-    ): Response<FileRepresentationDTO, ErrorDTO> = Files
+    ): Response<FileRepresentationDTO, String> = Files
         .findByCode(code)
         ?.takeUnless { file ->
             val isPrivate = file.visibility == FileVisibility.PRIVATE
@@ -53,7 +53,7 @@ object FileService {
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean = false,
-    ): Response<FilePageDTO, List<ErrorDTO>> {
+    ): Response<FilePageDTO, String> {
         val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
         return Response.ok(
             FilePageDTO(
@@ -72,8 +72,8 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<FileRepresentationDTO, List<ErrorDTO>> {
-        val user = Users.findById(userId) ?: return Response.unauthorized()
+    ): Response<FileRepresentationDTO, String> {
+        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: return Response.notFound()
 
         if (file.ownerId != user.uuid) {
@@ -89,8 +89,8 @@ object FileService {
     suspend fun deleteFile(
         fileId: UUID,
         userId: UUID,
-    ): Response<FileRepresentationDTO, List<ErrorDTO>> {
-        val user = Users.findById(userId) ?: return Response.unauthorized()
+    ): Response<FileRepresentationDTO, String> {
+        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: return Response.notFound()
 
         if (file.ownerId != user.uuid && user.role eq UserRole.REGULAR) {
@@ -105,7 +105,7 @@ object FileService {
     }
 
     /*
-    suspend fun deleteFileByCodeAsAdmin(code: String): QueryResult<FileRepresentationDTO, List<ErrorDTO>> {
+    suspend fun deleteFileByCodeAsAdmin(code: String): QueryResult<FileRepresentationDTO, String> {
         val file = Files.findByCode(code) ?: return QueryResult.notFound()
 
         FileUtils.delete(file.ownerId, file.code)

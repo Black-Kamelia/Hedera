@@ -12,7 +12,7 @@ export interface Tokens {
 
 export interface AuthReturn {
   tokens: Ref<Nullable<Tokens>>
-  isAuthed: ComputedRef<boolean>
+  isAuthenticated: ComputedRef<boolean>
   login: (values: Record<string, any>) => Promise<void>
   refresh: () => Promise<boolean>
   logout: () => Promise<void>
@@ -28,7 +28,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
   // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
 
-  const isAuthed = computed(() => !!tokens.value)
+  const isAuthenticated = computed(() => !!tokens.value)
 
   async function login(values: Record<string, any>) {
     const { data, error } = await executeLogin({ data: values })
@@ -81,7 +81,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
 
   return {
     tokens,
-    isAuthed,
+    isAuthenticated,
 
     login,
     refresh,

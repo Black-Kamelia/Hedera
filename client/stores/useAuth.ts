@@ -35,7 +35,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', (): AuthReturn => {
   async function login(values: Record<string, any>) {
     const { data, error } = await executeLogin({ data: values })
     if (!error.value) {
-      tokens.value = data.value
+      setTokens(data.value)
       toast.add({
         severity: 'success',
         summary: 'Login',
@@ -61,7 +61,7 @@ export const useAuth = s<AuthReturn>(defineStore('auth', (): AuthReturn => {
     if (error.value)
       return
 
-    tokens.value = null
+    setTokens(null)
     navigateTo('/login')
     toast.add({
       severity: 'success',

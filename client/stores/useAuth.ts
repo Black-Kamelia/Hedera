@@ -1,10 +1,3 @@
-// export interface User {
-//   id: string
-//   email: string
-//   username: string
-//   role: string
-// }
-
 export interface Tokens {
   accessToken: string
   refreshToken: string
@@ -19,7 +12,8 @@ export interface UseAuthComposer {
 }
 
 export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthComposer => {
-  const toast = useToast()
+  const loggedInEvent = useEventBus(LoggedInEvent)
+  const loggedOutEvent = useEventBus(LoggedOutEvent)
 
   const { execute: executeLogin } = useAPI('/login', { method: 'POST' }, { immediate: false })
   const { execute: executeLogout } = useAPI('/logout', { method: 'POST' }, { immediate: false })
@@ -36,17 +30,10 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
     const { data, error } = await executeLogin({ data: values })
     if (!error.value) {
       setTokens(data.value)
-      toast.add({
-        severity: 'success',
-        summary: 'Login',
-        detail: 'Login successful',
-        life: 3000,
-        closable: true,
-      })
-      navigateTo('/')
+      loggedInEvent.emit({ tokens: data.value })
     }
     else {
-      throw error.value
+      loggedInEvent.emit({ error: error.value })
     }
   }
 
@@ -57,13 +44,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
 
     setTokens(null)
     navigateTo('/login')
-    toast.add({
-      severity: 'success',
-      summary: 'Logout',
-      detail: 'Logout successful',
-      life: 3000,
-      closable: true,
-    })
+    loggedOutEvent.emit()
   }
 
   return {

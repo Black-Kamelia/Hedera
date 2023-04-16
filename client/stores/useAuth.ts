@@ -13,22 +13,24 @@ export interface Tokens {
 export interface AuthReturn {
   tokens: Ref<Nullable<Tokens>>
   isAuthenticated: ComputedRef<boolean>
+  setTokens: (newTokens: Nullable<Tokens>) => void
   login: (values: Record<string, any>) => Promise<void>
-  refresh: () => Promise<boolean>
   logout: () => Promise<void>
 }
 
-export const useAuth = s<AuthReturn>(defineStore('auth', () => {
+export const useAuth = s<AuthReturn>(defineStore('auth', (): AuthReturn => {
   const toast = useToast()
 
-  const { execute: executeLogin } = useAPI('/login', { method: 'POST' })
-  const { execute: executeRefresh } = useAPI('/refresh', { method: 'POST' })
-  const { execute: executeLogout } = useAPI('/logout', { method: 'POST' })
+  const { execute: executeLogin } = useAPI('/login', { method: 'POST' }, { immediate: false })
+  const { execute: executeLogout } = useAPI('/logout', { method: 'POST' }, { immediate: false })
 
-  // const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
 
   const isAuthenticated = computed(() => !!tokens.value)
+
+  function setTokens(newTokens: Nullable<Tokens>) {
+    tokens.value = newTokens
+  }
 
   async function login(values: Record<string, any>) {
     const { data, error } = await executeLogin({ data: values })
@@ -38,7 +40,8 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
         severity: 'success',
         summary: 'Login',
         detail: 'Login successful',
-        life: 5000,
+        life: 3000,
+        closable: true,
       })
       navigateTo('/')
     }
@@ -47,20 +50,9 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
         severity: 'error',
         summary: 'Login',
         detail: 'Login failed',
-        life: 5000,
+        life: 3000,
+        closable: true,
       })
-    }
-  }
-
-  async function refresh(): Promise<boolean> {
-    const { data, error } = await executeRefresh()
-    if (!error.value) {
-      tokens.value = data.value
-      return true
-    }
-    else {
-      tokens.value = null
-      return false
     }
   }
 
@@ -75,7 +67,8 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
       severity: 'success',
       summary: 'Logout',
       detail: 'Logout successful',
-      life: 5000,
+      life: 3000,
+      closable: true,
     })
   }
 
@@ -83,8 +76,8 @@ export const useAuth = s<AuthReturn>(defineStore('auth', () => {
     tokens,
     isAuthenticated,
 
+    setTokens,
     login,
-    refresh,
     logout,
   }
 }, {

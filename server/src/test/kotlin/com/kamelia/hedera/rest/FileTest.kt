@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
+import com.kamelia.hedera.core.ErrorDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -12,37 +13,23 @@ import com.kamelia.hedera.rest.file.FilePageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.delete
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.forms.submitForm
-import io.ktor.client.request.forms.submitFormWithBinaryData
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.patch
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.server.testing.testApplication
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.UUID
-import java.util.stream.Stream
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Named
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.*
+import java.util.stream.Stream
 import kotlin.test.assertContains
 import kotlin.test.assertTrue
 
@@ -130,8 +117,9 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val errors = Json.decodeFromString<List<String>>(response.bodyAsText())
-        assertContains(errors, "errors.headers.missing.`content-type`")
+        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        assertEquals(error.key, "errors.headers.missing")
+        assertEquals(error.template!!["header"], "content-type")
     }
 
     @DisplayName("Uploading a file with no file")
@@ -145,8 +133,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val errors = Json.decodeFromString<List<String>>(response.bodyAsText())
-        assertContains(errors, "errors.uploads.missing_file")
+        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        assertContains(error.key, "errors.uploads.missing_file")
     }
 
     @DisplayName("Uploading a file with an empty name")
@@ -162,8 +150,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val errors = Json.decodeFromString<List<String>>(response.bodyAsText())
-        assertContains(errors, "errors.file.name.empty")
+        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        assertContains(error.key, "errors.file.name.empty")
     }
 
     @DisplayName("Downloading a file")

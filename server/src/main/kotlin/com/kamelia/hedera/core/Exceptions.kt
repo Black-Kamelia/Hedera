@@ -2,24 +2,26 @@ package com.kamelia.hedera.core
 
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 
-class InvalidUUIDException : Exception("errors.uuid.invalid")
+open class HederaException(val error: ErrorDTO) : Exception()
 
-class MissingParameterException(name: String) : Exception("errors.parameters.missing.`$name`")
+class InvalidUUIDException : HederaException(ErrorDTO.of("errors.uuid.invalid"))
 
-class MissingHeaderException(header: String) : Exception("errors.headers.missing.`$header`")
+class MissingParameterException(parameter: String) : HederaException(ErrorDTO.of("errors.parameters.missing", "parameter" to parameter))
 
-class MissingTokenException : Exception("errors.tokens.missing")
+class MissingHeaderException(header: String) : HederaException(ErrorDTO.of("errors.headers.missing", "header" to header))
 
-class ExpiredOrInvalidTokenException : Exception("errors.tokens.expired_or_invalid")
+class MissingTokenException : HederaException(ErrorDTO.of("errors.tokens.missing"))
 
-class UploadCodeGenerationException : Exception("errors.uploads.code_generation")
+class ExpiredOrInvalidTokenException : HederaException(ErrorDTO.of("errors.tokens.expired_or_invalid"))
 
-class MultipartParseException : Exception("errors.uploads.multipart_parse")
+class UploadCodeGenerationException : HederaException(ErrorDTO.of("errors.uploads.code_generation"))
 
-class IllegalFilterException(filter: FilterObject) : Exception("errors.filters.illegal.`$filter`")
+class MultipartParseException : HederaException(ErrorDTO.of("errors.uploads.multipart_parse"))
 
-class UnknownFilterFieldException(field: String) : Exception("errors.filters.unknown_field.`$field`")
+class IllegalFilterException(filter: FilterObject) : HederaException(ErrorDTO.of("errors.filters.illegal", "filter" to filter.toString()))
 
-class IllegalActionException : Exception("errors.actions.illegal")
+class UnknownFilterFieldException(field: String) : HederaException(ErrorDTO.of("errors.filters.unknown_field", "field" to field))
 
-class InsufficientPermissionsException : Exception("errors.permissions.insufficient")
+class IllegalActionException : HederaException(ErrorDTO.of("errors.actions.illegal"))
+
+class InsufficientPermissionsException : HederaException(ErrorDTO.of("errors.permissions.insufficient"))

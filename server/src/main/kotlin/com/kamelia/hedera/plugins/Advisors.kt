@@ -32,16 +32,22 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
     else -> unhandledError(call, cause)
 }
 
-private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
-    call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
+private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.badRequest(cause.error))
+    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
+}
 
-private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) =
-    call.respondNoSuccess(Response.unauthorized(cause.message ?: cause.javaClass.name))
+private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.unauthorized(cause.error))
+    else -> call.respondNoSuccess(Response.unauthorized(cause.message ?: cause.javaClass.name))
+}
 
-private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) =
-    call.respondNoSuccess(Response.forbidden(cause.message ?: cause.javaClass.name))
+private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.forbidden(cause.error))
+    else -> call.respondNoSuccess(Response.forbidden(cause.message ?: cause.javaClass.name))
+}
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, listOf("errors.unknown")))
+    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, ErrorDTO.of("errors.unknown")))
     call.application.log.error("Unexpected error", cause)
 }

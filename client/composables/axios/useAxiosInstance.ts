@@ -4,25 +4,23 @@ import createAuthRefreshInterceptor from 'axios-auth-refresh'
 import type { Tokens } from '~/stores/useAuth'
 
 function tryRefreshFactory(axios: AxiosInstance) {
-  return function useTryRefresh(failedRequest: AxiosError) {
+  return async function useTryRefresh(failedRequest: AxiosError) {
     if (skipRefreshRoutes.includes(failedRequest.response?.config.url ?? ''))
       return Promise.reject(failedRequest)
 
     const { setTokens } = useAuth()
 
-    return axios.post('/refresh').then((tokenRefreshResponse) => {
-      const tokens = tokenRefreshResponse.data as Tokens
-      failedRequest.response!.config.headers.Authorization = `Bearer ${tokens?.accessToken}`
-      setTokens(tokens)
-      return Promise.resolve()
-    })
+    const tokenRefreshResponse = await axios.post('/refresh')
+    const tokens = tokenRefreshResponse.data as Tokens
+    failedRequest.response!.config.headers.Authorization = `Bearer ${tokens?.accessToken}`
+    setTokens(tokens)
+    return await Promise.resolve()
   }
 }
 
 export function useAxiosInstance() {
   const appConfig = useRuntimeConfig()
   const axiosMiddlewares = useAxiosMiddlewares()
-  const toast = useToast()
 
   const axiosInstance = computed(() => {
     const it = axios.create({

@@ -1,40 +1,46 @@
 global:
+
+  #### TEMP #####
   login: Connexion
-  logout: Se déconnecter
+  logout: Déconnexion
   start: Commencer
-main:
-  title: Bienvenue sur Hedera
+  ###############
+
+  theme:
+    dark: Sombre
+    light: Clair
+
 pages:
   login:
-    forgot_password: Mot de passe oublié ?
-    form:
-      errors:
-        missing_password: Le mot de passe est requis
-        missing_username: Le nom d'utilisateur est requis
-      fields:
-        password: Mot de passe
-        remember_me: Se souvenir de moi
-        username: Nom d'utilisateur
-      submit: Connexion
-    errors:
-      invalid_credentials: Nom d'utilisateur ou mot de passe incorrect.
     tab_title: Connexion • Hedera
     title: Se connecter
+    forgot_password: Mot de passe oublié ?
 
-  resetPassword:
-    form:
-      errors:
-        missing_email: L'adresse e-mail est requise
-      fields:
-        email: Adresse e-mail
-      submit: Envoyer le lien de réinitialisation
+  # resetPassword:
+  #   tab_title: Réinitialiser le mot de passe • Hedera
+  #   title: Réinitialiser le mot de passe
+  #   messages:
+  #     link_sent: Un lien de réinitialisation a été envoyé.
+
+forms:
+  login:
+    fields:
+      password: Mot de passe
+      remember_me: Se souvenir de moi
+      username: Nom d'utilisateur
     errors:
-      unknown_email: Aucun compte n'est associé à cette adresse e-mail.
-    messages:
-      link_sent: Un lien de réinitialisation a été envoyé.
-    tab_title: Réinitialiser le mot de passe • Hedera
-    title: Réinitialiser le mot de passe
+      missing_username: Le nom d'utilisateur est requis
+      missing_password: Le mot de passe est requis
+    submit: Connexion
 
-theme:
-  dark: Sombre
-  light: Clair
+  reset_password:
+    errors:
+      missing_email: L'adresse e-mail est requise
+    fields:
+      email: Adresse e-mail
+    submit: Envoyer le lien de réinitialisation
+
+errors:
+  unknown: Une erreur inattendue est survenue.
+  auth:
+    invalid_credentials: Nom d'utilisateur ou mot de passe incorrect.

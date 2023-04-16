@@ -1,25 +1,46 @@
 global:
+
+  #### TEMP #####
   login: Login
   logout: Logout
   start: Start
-main:
-  title: Welcome to Hedera
+  ###############
+
+  theme:
+    dark: Dark
+    light: Light
+
 pages:
   login:
-    forgot_password: Forgot password?
-    form:
-      errors:
-        missing_password: Password is required
-        missing_username: Username is required
-      fields:
-        password: Password
-        remember_me: Remember me
-        username: Username
-      submit: Submit
-    errors:
-      invalid_credentials: Username or password is incorrect.
-    tab_title: Logging in • Hedera
+    tab_title: Log in • Hedera
     title: Log in
-theme:
-  dark: Dark
-  light: Light
+    forgot_password: Forgot password?
+
+  # resetPassword:
+  #   tab_title: Réinitialiser le mot de passe • Hedera
+  #   title: Réinitialiser le mot de passe
+  #   messages:
+  #     link_sent: Un lien de réinitialisation a été envoyé.
+
+forms:
+  login:
+    fields:
+      password: Password
+      remember_me: Remember me
+      username: Username
+    errors:
+      missing_username: The username is required
+      missing_password: The password is required
+    submit: Submit
+
+  reset_password:
+    errors:
+      missing_email: The email is required
+    fields:
+      email: Email
+    submit: Send reset link
+
+errors:
+  unknown: An unexpected error occurred.
+  auth:
+    invalid_credentials: Username or password is incorrect.

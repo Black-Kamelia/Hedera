@@ -9,7 +9,7 @@ import kotlin.math.ceil
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, List<ErrorDTO>> {
+    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, ErrorDTO> {
         checkEmail(dto.email)?.let { return it }
         checkUsername(dto.username)?.let { return it }
         checkPassword(dto.password)?.let { return it }
@@ -24,12 +24,12 @@ object UserService {
         )
     }
 
-    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, List<ErrorDTO>> {
+    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, ErrorDTO> {
         val user = Users.findById(id) ?: return Response.notFound()
         return Response.ok(user.toRepresentationDTO())
     }
 
-    suspend fun getUsers(): Response<UserPageDTO, List<ErrorDTO>> {
+    suspend fun getUsers(): Response<UserPageDTO, ErrorDTO> {
         val users = Users.getAll()
         val total = Users.countAll()
         return Response.ok(
@@ -45,7 +45,7 @@ object UserService {
         )
     }
 
-    suspend fun getUsers(page: Long, pageSize: Int, definition: PageDefinitionDTO): Response<UserPageDTO, List<ErrorDTO>> {
+    suspend fun getUsers(page: Long, pageSize: Int, definition: PageDefinitionDTO): Response<UserPageDTO, String> {
         val (users, total) = Users.getAll(page, pageSize, definition)
         return Response.ok(
             UserPageDTO(
@@ -64,7 +64,7 @@ object UserService {
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): Response<UserRepresentationDTO, List<ErrorDTO>> {
+    ): Response<UserRepresentationDTO, ErrorDTO> {
         val toEdit = Users.findById(id) ?: return Response.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return it }
@@ -88,7 +88,7 @@ object UserService {
         id: UUID,
         dto: UserPasswordUpdateDTO,
         updaterID: UUID,
-    ): Response<UserRepresentationDTO, List<ErrorDTO>> {
+    ): Response<UserRepresentationDTO, ErrorDTO> {
         checkPassword(dto.newPassword)?.let { return it }
 
         val toEdit = Users.findById(id) ?: return Response.notFound()
@@ -104,12 +104,12 @@ object UserService {
         )
     }
 
-    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, List<ErrorDTO>> =
+    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> =
         Users.delete(id)
             ?.let { Response.ok(it.toRepresentationDTO()) }
             ?: Response.notFound()
 
-    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, List<ErrorDTO>> {
+    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> {
         val user = Users.findById(id) ?: return Response.notFound()
         return Response.ok(
             Users.regenerateUploadToken(user)
@@ -180,17 +180,6 @@ private suspend fun checkUsername(username: String?, toEdit: User? = null) =
  */
 private fun checkPassword(password: String?) =
     if (password != null) {
-        val errors = mutableListOf<String>()
-        if (password.length < 8) errors += "errors.users.password.too_short"
-        if (password == password.lowercase()) errors += "errors.users.password.no_uppercase"
-        if (password == password.uppercase()) errors += "errors.users.password.no_lowercase"
-        if (password.none(Char::isDigit)) errors += "errors.users.password.no_digit"
-        if (password.none(Char::isLetter)) errors += "errors.users.password.no_letter"
-        if (password.all(Char::isLetterOrDigit)) errors += "errors.users.password.no_special"
-
-        if (errors.isEmpty()) {
-            null
-        } else {
-            Response.forbidden(*errors.toTypedArray())
-        }
+        if (password.length < 8) Response.forbidden("errors.users.password.too_short")
+        else null
     } else null

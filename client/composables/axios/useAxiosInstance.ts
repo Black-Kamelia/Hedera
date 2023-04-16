@@ -1,31 +1,21 @@
-import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import createAuthRefreshInterceptor from 'axios-auth-refresh'
-import type { ToastServiceMethods } from 'primevue/toastservice'
+import type { Tokens } from '~/stores/useAuth'
 
-function tryRefresh(toast: ToastServiceMethods) {
-  return async function (failedRequest: AxiosError) {
+function tryRefreshFactory(axios: AxiosInstance) {
+  return function useTryRefresh(failedRequest: AxiosError) {
     if (skipRefreshRoutes.includes(failedRequest.response?.config.url ?? ''))
       return Promise.reject(failedRequest)
 
-    const { refresh } = useAuth()
-    const refreshed = await refresh()
+    const { setTokens } = useAuth()
 
-    if (!refreshed) {
-      clearTokensFromLocalStorage()
-      toast.add({
-        severity: 'error',
-        summary: 'Session',
-        detail: 'Session expired, please login again',
-        life: 5000,
-      })
-      navigateTo('/login')
-      return Promise.reject(failedRequest)
-    }
-
-    const tokens = getTokensFromLocalStorage()
-    failedRequest.response!.config.headers.Authorization = `Bearer ${tokens?.accessToken}`
-    return Promise.resolve()
+    return axios.post('/refresh').then((tokenRefreshResponse) => {
+      const tokens = tokenRefreshResponse.data as Tokens
+      failedRequest.response!.config.headers.Authorization = `Bearer ${tokens?.accessToken}`
+      setTokens(tokens)
+      return Promise.resolve()
+    })
   }
 }
 
@@ -51,7 +41,7 @@ export function useAxiosInstance() {
       (error: AxiosError) => error.response?.config.url ?? '',
     ))
 
-    createAuthRefreshInterceptor(it, tryRefresh(toast))
+    createAuthRefreshInterceptor(it, tryRefreshFactory(it))
 
     return it
   })

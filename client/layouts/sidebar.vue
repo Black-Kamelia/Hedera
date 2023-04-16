@@ -39,8 +39,8 @@ function doLogout() {
       <div class="header flex flex-row items-center">
         <div class="flex-grow overflow-hidden">
           <Transition>
-            <h1 v-show="open" class="text-4xl ml-3">
-              Hedera
+            <h1 v-show="open" class="text-4xl ml-2">
+              {{ t('app_name') }}
             </h1>
           </Transition>
         </div>
@@ -65,30 +65,19 @@ function doLogout() {
             :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
           />
           <SidebarButton
+            icon="i-tabler-chart-bar" label="Statistiques" :open="open"
+            :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
+          />
+          <SidebarButton
             icon="i-tabler-settings" :label="t('sidebar.config')" :open="open"
             :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
           />
         </div>
-        <div class="flex flex-col-reverse p-4">
-          <div class="flex top-sep pt-4">
-            <PButton rounded class="flex-grow flex flex-row gap-4 items-start" :class="{ open }">
-              <div class="flex">
-                <i class="i-tabler-user-circle" />
-              </div>
-              <Transition>
-                <div v-show="open" class="flex-grow flex flex-row">
-                  <span class="flex-grow overflow-hidden text-left whitespace-nowrap">
-                    Slama
-                  </span>
-                  <i class="i-tabler-chevron-up" />
-                </div>
-              </Transition>
-            </PButton>
-          </div>
-          <div class="flex flex-col-reverse pb-4 gap-2">
-            <SidebarButton :icon="themeIcon" :label="themeName" :open="open" @click="toggle()" />
-            <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="open" />
-          </div>
+        <div class="flex flex-col p-4 gap-2">
+          <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="open" />
+          <SidebarButton :icon="themeIcon" :label="themeName" :open="open" @click="toggle()" />
+          <div class="sep" />
+          <SidebarButton icon="i-tabler-user-circle" label="{Username goes here}" :open="open" />
         </div>
       </div>
     </aside>
@@ -98,10 +87,7 @@ function doLogout() {
           <i class="i-tabler-search" />
           <PInputText class="search p-inputtext-lg w-full" placeholder="Recherche..." />
         </span>
-        <div class="flex flex-col gap-1.5 sep">
-          <PProgressBar style="height: .5em;" value="50" :show-value="false" />
-          <span class="text-xs">2.50 Gio / 5.00 Gio</span>
-        </div>
+        <QuotaPreviewer quota="536870912" max="1073741824" />
         <div class="flex flex-row gap-2">
           <div class="card flex justify-content-center">
             <PButton icon="i-tabler-bell" text rounded />
@@ -109,7 +95,7 @@ function doLogout() {
           <PButton icon="i-tabler-logout" text rounded @click="doLogout()" />
         </div>
       </div>
-      <div class="p-5">
+      <div class="py-4 px-8">
         <slot />
       </div>
     </div>
@@ -129,13 +115,6 @@ function doLogout() {
 
 .toolbar {
   border-bottom: 1px solid var(--surface-border);
-}
-
-.sep {
-  border-left: 1px solid var(--surface-border);
-  padding-left: 1.5rem;
-  border-right: 1px solid var(--surface-border);
-  padding-right: 1.5rem;
 }
 
 .sidebar {
@@ -198,8 +177,10 @@ function doLogout() {
   background-color: var(--primary-700);
 }
 
-.top-sep {
+.sep {
+  margin: .25rem 0;
   border-top: 1px solid var(--primary-400);
+  border-left: 1px solid var(--primary-400);
 }
 
 .fade-enter-active,

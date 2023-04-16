@@ -1,9 +1,23 @@
+app_name: Hedera
+
 global:
   login: Connexion
   logout: Se déconnecter
   start: Commencer
 main:
   title: Bienvenue sur Hedera
+
+sizeUnits:
+  0: octets
+  10: Kio
+  20: Mio
+  30: Gio
+  40: Tio
+  50: Pio
+  60: Eio
+  70: Zio
+  80: Yio
+unlimited-quota: Quota illimité
 
 sidebar:
   files: Fichiers

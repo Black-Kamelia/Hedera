@@ -8,6 +8,10 @@ html {
 }
 
 /* primevue additions */
+body {
+  color: var(--text-color);
+}
+
 .p-input-icon-left > i,
 .p-input-icon-right > i {
   margin-top: -12px !important;

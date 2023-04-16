@@ -4,9 +4,9 @@ useTheme()
 
 <template>
   <div font="text" class="p-input-filled">
+    <PToast close-icon="i-tabler-x" error-icon="i-tabler-alert-circle-filled" />
     <NuxtLoadingIndicator />
     <NuxtLayout>
-      <PToast close-icon="i-tabler-x" error-icon="i-tabler-alert-circle-filled" />
       <NuxtPage />
     </NuxtLayout>
   </div>

@@ -46,13 +46,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
       navigateTo('/')
     }
     else {
-      toast.add({
-        severity: 'error',
-        summary: 'Login',
-        detail: 'Login failed',
-        life: 3000,
-        closable: true,
-      })
+      throw error.value
     }
   }
 

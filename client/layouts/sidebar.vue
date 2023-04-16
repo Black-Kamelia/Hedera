@@ -61,15 +61,19 @@ function doLogout() {
             :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
           />
           <SidebarButton
-            icon="i-tabler-upload" :label="t('sidebar.upload')" :open="open"
+            icon="i-tabler-star" :label="t('sidebar.favorites')" :open="open"
+            :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
+          />
+          <SidebarButton
+            icon="i-tabler-cloud-upload" :label="t('sidebar.upload')" :open="open"
             :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
           />
           <SidebarButton
-            icon="i-tabler-chart-bar" label="Statistiques" :open="open"
+            icon="i-tabler-timeline" :label="t('sidebar.analytics')" :open="open"
             :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
           />
           <SidebarButton
-            icon="i-tabler-settings" :label="t('sidebar.config')" :open="open"
+            icon="i-tabler-settings" :label="t('sidebar.configuration')" :open="open"
             :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
           />
         </div>
@@ -178,7 +182,7 @@ function doLogout() {
 }
 
 .sep {
-  margin: .25rem 0;
+  margin: .5rem 0;
   border-top: 1px solid var(--primary-400);
   border-left: 1px solid var(--primary-400);
 }

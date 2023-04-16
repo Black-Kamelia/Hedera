@@ -21,8 +21,10 @@ unlimited-quota: Quota illimité
 
 sidebar:
   files: Fichiers
+  favorites: Favoris
   upload: Mettre en ligne
-  config: Configuration
+  analytics: Statistiques
+  configuration: Configuration
   docs: Documentation
   dark_mode: Mode sombre
   light_mode: Mode clair

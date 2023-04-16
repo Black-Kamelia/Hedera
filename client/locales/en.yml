@@ -20,8 +20,10 @@ sizeUnits:
 
 sidebar:
   files: Files
+  favorites: Favorites
   upload: Upload
-  config: Configuration
+  analytics: Analytics
+  configuration: Configuration
   docs: Documentation
   dark_mode: Dark mode
   light_mode: Light mode

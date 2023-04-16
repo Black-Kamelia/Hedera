@@ -15,9 +15,7 @@ import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.ContentDisposition
 import io.ktor.http.HttpHeaders
-import io.ktor.http.content.MultiPartData
-import io.ktor.http.content.PartData
-import io.ktor.http.content.forEachPart
+import io.ktor.http.content.*
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -144,10 +142,12 @@ suspend fun ApplicationCall.doWithForm(
                     visitedFormItem.add(field)
                     onFields[field]?.invoke(part)
                 }
+
                 is PartData.FileItem -> {
                     visitedFileItem.add(field)
                     onFiles[field]?.invoke(part)
                 }
+
                 else -> {}
             }
             part.dispose()

@@ -27,6 +27,7 @@ fun Application.configureRouting() {
             isDev -> get("/") {
                 call.respondRedirect("http://localhost:3000")
             }
+
             isProd -> {
                 static("/") {
                     resource("/", "static/index.html")

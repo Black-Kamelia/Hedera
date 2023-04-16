@@ -7,26 +7,24 @@ import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.auth.UserState
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.getHeader
-import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.install
-import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.AuthenticationConfig
-import io.ktor.server.auth.Principal
-import io.ktor.server.auth.jwt.JWTCredential
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.jwt.jwt
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+
+const val AuthJwt = "auth-jwt"
+const val RefreshJwt = "refresh-jwt"
 
 fun Application.configureAuthentication() {
     install(Authentication) {
-        configureJWT("auth-jwt", Environment.secretAccess) { call, _ ->
-            val token = call.getHeader("Authorization").replace("Bearer ", "")
+        configureJWT(AuthJwt, Environment.secretAccess) { call, _ ->
+            val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
             val user = SessionManager.verify(token)
             requireNotNull(user)
             UserPrincipal(user, token)
         }
-        configureJWT("refresh-jwt", Environment.secretRefresh) { call, cred ->
-            val token = call.getHeader("Authorization").replace("Bearer ", "")
+        configureJWT(RefreshJwt, Environment.secretRefresh) { call, cred ->
+            val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
             SessionManager.verifyRefresh(token)
             JWTPrincipal(cred.payload)
         }

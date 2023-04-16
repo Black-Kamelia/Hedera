@@ -33,14 +33,14 @@ function hideErrorMessage() {
   errorMessage.value = null
 }
 
-const onSubmit = handleSubmit((values) => {
-  login(values).catch((err) => {
-    if (err.response?.status === 401) {
-      resetField('password')
-      errorMessage.value = e(err.response?.data ?? 'errors.unknown')
-    }
-  })
+useEventBus(LoggedInEvent).on((event) => {
+  if (event.error.response?.status === 401) {
+    resetField('password')
+    errorMessage.value = e(event.error.response?.data ?? { key: 'errors.unknown' })
+  }
 })
+
+const onSubmit = handleSubmit(login)
 </script>
 
 <template>

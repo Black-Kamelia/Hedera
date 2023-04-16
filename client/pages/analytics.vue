@@ -8,6 +8,6 @@ definePageMeta({
 
 <template>
   <h2 class="text-3xl" style="margin: .375rem 0;">
-    {{ t('sidebar.configuration') }}
+    {{ t('sidebar.analytics') }}
   </h2>
 </template>

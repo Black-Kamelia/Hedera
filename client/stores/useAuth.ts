@@ -30,11 +30,10 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
     const { data, error } = await executeLogin({ data: values })
     if (!error.value) {
       setTokens(data.value)
-      loggedInEvent.emit({ success: true, tokens: data.value })
-      navigateTo('/')
+      loggedInEvent.emit({ tokens: data.value })
     }
     else {
-      loggedInEvent.emit({ success: false })
+      loggedInEvent.emit({ error: error.value })
     }
   }
 

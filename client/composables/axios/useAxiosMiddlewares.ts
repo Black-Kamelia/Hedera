@@ -42,8 +42,7 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
 
           const { setTokens } = useAuth()
           setTokens(null)
-          refreshTokenExpiredEvent.emit()
-          navigateTo('/login')
+          refreshTokenExpiredEvent.emit({ error })
 
           return Promise.resolve()
         },

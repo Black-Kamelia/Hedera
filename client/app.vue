@@ -4,7 +4,7 @@ useTheme()
 const toast = useToast()
 
 useEventBus(LoggedInEvent).on((event) => {
-  if (!event.success)
+  if (event.error)
     return
 
   toast.add({
@@ -12,6 +12,7 @@ useEventBus(LoggedInEvent).on((event) => {
     summary: 'Logged in',
     detail: 'Logged in successfully.',
   })
+  navigateTo('/')
 })
 
 useEventBus(RefreshTokenExpiredEvent).on(() => {
@@ -20,6 +21,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
     summary: 'Session expired',
     detail: 'Your session has expired. Please log in again.',
   })
+  navigateTo('/login')
 })
 
 useEventBus(LoggedOutEvent).on(() => {
@@ -28,6 +30,7 @@ useEventBus(LoggedOutEvent).on(() => {
     summary: 'Logged out',
     detail: 'Logged out successfully.',
   })
+  navigateTo('/login')
 })
 </script>
 

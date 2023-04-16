@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Application" type="JetRunConfigurationType">
+    <envs>
+      <env name="HEDERA_ENV" value="dev" />
+      <env name="HEDERA_JWT_SECRET" value="secret" />
+      <env name="HEDERA_JWT_SECRET_REFRESH" value="secretRefresh" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.kamelia.hedera.ApplicationKt" />
+    <module name="Hedera.server.main" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

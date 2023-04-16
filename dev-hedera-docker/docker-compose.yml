@@ -1,0 +1,20 @@
+version: '3'
+services:
+  hederadb:
+    image: postgres:alpine
+    container_name: hederadb
+    environment:
+      - POSTGRES_USER=hedera
+      - POSTGRES_PASSWORD=hedera
+      - DB_NAME=jellyfish
+      - ALLOW_IP_RANGE=0.0.0.0/0
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    restart: always
+    mem_limit: 128m
+
+volumes:
+  data:
+    driver: local

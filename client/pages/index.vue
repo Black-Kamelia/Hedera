@@ -10,6 +10,18 @@ const digits = ref(createEmptyOTP())
 function onCompleted(digits: Nullable<number>[]) {
   console.log(digits) // eslint-disable-line no-console
 }
+
+const { execute } = useAPI('/files/paged')
+async function test() {
+  const { data, error } = await execute()
+
+  if (error.value) {
+    console.error(error.value)
+    return
+  }
+
+  console.log(data.value) // eslint-disable-line no-console
+}
 </script>
 
 <template>
@@ -41,5 +53,8 @@ function onCompleted(digits: Nullable<number>[]) {
     <div class="flex flex-row">
       <span v-for="(digit, index) in digits" :key="index">{{ digit ?? 'X' }}</span>
     </div>
+    <button @click="test">
+      Test
+    </button>
   </div>
 </template>

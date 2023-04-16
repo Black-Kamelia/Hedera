@@ -11,14 +11,9 @@ function onCompleted(digits: Nullable<number>[]) {
   console.log(digits) // eslint-disable-line no-console
 }
 
-const { execute } = useAPI('/files/paged')
+const { execute } = useAPI('/files/paged', {}, { immediate: false })
 async function test() {
-  const { data, error } = await execute()
-
-  if (error.value) {
-    console.error(error.value)
-    return
-  }
+  const { data } = await execute()
 
   console.log(data.value) // eslint-disable-line no-console
 }

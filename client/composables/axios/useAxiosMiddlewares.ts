@@ -42,7 +42,6 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
 
           const { setTokens } = useAuth()
           setTokens(null)
-          clearTokensFromLocalStorage()
           toast.add({
             severity: 'error',
             summary: 'Session',

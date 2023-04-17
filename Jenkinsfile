@@ -17,6 +17,7 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
+                sh 'gradle --quiet -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false'
             }
         }
         stage('Build') {

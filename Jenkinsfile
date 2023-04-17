@@ -17,19 +17,20 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                sh 'gradle --quiet -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false'
+                sh 'echo "Warming up"'
+                sh 'gradle -q'
             }
         }
         stage('Build') {
             parallel {
                 stage('Build Back-end') {
                     steps {
-                        sh 'gradle -q build -x test -x bundleClient'
+                        sh 'gradle build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
                     steps {
-                        sh 'gradle -q pnpmBuild'
+                        sh 'gradle pnpmBuild'
                     }
                 }
             }
@@ -38,7 +39,7 @@ pipeline {
             parallel {
                 stage('Test Back-end') {
                     steps {
-                        sh 'gradle -q test'
+                        sh 'gradle test'
                     }
                     post {
                         always {
@@ -61,7 +62,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'gradle -q build -x test -x pnpmBuild'
+                sh 'gradle build -x test -x pnpmBuild'
             }
         }
         stage('Deploy') {

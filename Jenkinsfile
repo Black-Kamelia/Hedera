@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'openjdk:17-slim'
+            image 'gradle:7.6.0-jdk17'
             reuseNode true
         }
     }
@@ -17,18 +17,19 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
+                sh 'gradle --quiet -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false'
             }
         }
         stage('Build') {
             parallel {
                 stage('Build Back-end') {
                     steps {
-                        sh './gradlew build -x test -x bundleClient'
+                        sh 'gradle build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
                     steps {
-                        sh './gradlew pnpmBuild'
+                        sh 'gradle pnpmBuild'
                     }
                 }
             }
@@ -37,7 +38,7 @@ pipeline {
             parallel {
                 stage('Test Back-end') {
                     steps {
-                        sh './gradlew test'
+                        sh 'gradle test'
                     }
                     post {
                         always {
@@ -57,7 +58,7 @@ pipeline {
         }
         stage('Package') {
             steps {
-                sh './gradlew build -x test -x pnpmBuild'
+                sh 'gradle build -x test -x pnpmBuild'
             }
         }
         stage('Deploy') {

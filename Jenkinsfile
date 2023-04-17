@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Precondition') {
             steps {
                 script {
                     def branch = env.CHANGE_BRANCH
@@ -17,18 +17,60 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                sh 'gradle build -x test'
+                sh 'echo "Warming up"'
+                sh 'gradle -q'
+            }
+        }
+        stage('Build') {
+            parallel {
+                stage('Build Back-end') {
+                    steps {
+                        sh 'gradle build -x test -x bundleClient'
+                    }
+                }
+                stage('Build Front-end') {
+                    steps {
+                        sh 'gradle pnpmBuild'
+                    }
+                }
             }
         }
         stage('Test') {
-            steps {
-                sh 'gradle test'
-            }
-            post {
-                always {
-                    junit checksName: 'Tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
-                    publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+            parallel {
+                stage('Test Back-end') {
+                    steps {
+                        sh 'gradle test'
+                    }
+                    post {
+                        always {
+                            junit checksName: 'Tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                            publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                        }
+                    }
                 }
+                stage('Test Front-end') {
+                    steps {
+                        script {
+                            currentBuild.result = 'SUCCESS'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Package') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'gradle build -x test -x pnpmBuild'
+            }
+        }
+        stage('Deploy') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'echo "Push to Docker Hub"'
             }
         }
     }

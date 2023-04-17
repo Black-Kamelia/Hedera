@@ -24,12 +24,12 @@ pipeline {
             parallel {
                 stage('Build Back-end') {
                     steps {
-                        sh 'gradle build -x test -x bundleClient'
+                        sh 'gradle -q build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
                     steps {
-                        sh 'gradle pnpmBuild'
+                        sh 'gradle -q pnpmBuild'
                     }
                 }
             }
@@ -38,7 +38,7 @@ pipeline {
             parallel {
                 stage('Test Back-end') {
                     steps {
-                        sh 'gradle test'
+                        sh 'gradle -q test'
                     }
                     post {
                         always {
@@ -58,7 +58,7 @@ pipeline {
         }
         stage('Package') {
             steps {
-                sh 'gradle build -x test -x pnpmBuild'
+                sh 'gradle -q build -x test -x pnpmBuild'
             }
         }
         stage('Deploy') {

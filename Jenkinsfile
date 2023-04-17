@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Precondition') {
             steps {
                 script {
                     def branch = env.CHANGE_BRANCH
@@ -18,6 +18,8 @@ pipeline {
                     }
                 }
             }
+        }
+        stage('Build') {
             parallel {
                 stage('Build Back-end') {
                     steps {

@@ -57,11 +57,17 @@ pipeline {
             }
         }
         stage('Package') {
+            when {
+                branch 'master'
+            }
             steps {
                 sh 'gradle -q build -x test -x pnpmBuild'
             }
         }
         stage('Deploy') {
+            when {
+                branch 'master'
+            }
             steps {
                 sh 'echo "Push to Docker Hub"'
             }

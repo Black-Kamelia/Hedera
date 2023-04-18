@@ -30,6 +30,7 @@ pipeline {
                 }
                 stage('Build Front-end') {
                     steps {
+                        sh 'gradle --status'
                         sh 'gradle pnpmBuild'
                     }
                 }

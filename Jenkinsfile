@@ -59,11 +59,12 @@ pipeline {
             }
         }
         stage('Package') {
-            when {
-                branch 'master'
-            }
+            // when {
+            //     branch 'master'
+            // }
             steps {
-                sh 'gradle package'
+                sh 'gradle package -x pnpmBuild'
+                archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
             }
         }
         stage('Deploy') {

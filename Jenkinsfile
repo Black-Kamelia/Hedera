@@ -46,7 +46,7 @@ pipeline {
                     stages {
                         stage('Lint') {
                             steps {
-                                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                                     sh 'gradle --parallel pnpmLint'
                                 }
                             }

@@ -5,6 +5,12 @@ pipeline {
             reuseNode true
         }
     }
+    options {
+        timestamps()
+        ansiColor('xterm')
+        timeout(time: 15, unit: 'MINUTES')
+    }
+
     stages {
         stage('Precondition') {
             steps {
@@ -17,7 +23,7 @@ pipeline {
                     }
                 }
                 echo 'Warming up Gradle'
-                sh 'gradle --parallel -q'
+                sh 'gradle -q'
             }
         }
         stage('Build and test') {
@@ -46,7 +52,7 @@ pipeline {
                     stages {
                         stage('Lint') {
                             steps {
-                                catchError(buildResult: 'UNSTABLE', message: 'Lint failed', stageResult: 'UNSTABLE') {
+                                warnError(message: 'Lint failed') {
                                     sh 'gradle --parallel pnpmLint'
                                 }
                             }
@@ -57,11 +63,7 @@ pipeline {
                             }
                         }
                         stage('Test') {
-                            steps {
-                                catchError(buildResult: 'SUCCESS', stageResult: 'NOT_BUILT') {
-                                    sh 'exit 1'
-                                }
-                            }
+                            // For now, we don't have any front-end tests
                         }
                     }
                 }

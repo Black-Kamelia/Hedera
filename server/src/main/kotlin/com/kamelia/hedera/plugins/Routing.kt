@@ -7,9 +7,7 @@ import com.kamelia.hedera.util.Environment.isDev
 import com.kamelia.hedera.util.Environment.isProd
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
-import io.ktor.server.http.content.resource
-import io.ktor.server.http.content.resources
-import io.ktor.server.http.content.static
+import io.ktor.server.http.content.*
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
@@ -28,11 +26,10 @@ fun Application.configureRouting() {
                 call.respondRedirect("http://localhost:3000")
             }
 
-            isProd -> {
-                static("/") {
-                    resource("/", "static/index.html")
-                    resources("static")
-                }
+            isProd -> singlePageApplication {
+                useResources = true
+                filesPath = "static"
+                defaultPage = "index.html"
             }
         }
     }

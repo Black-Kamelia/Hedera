@@ -18,9 +18,9 @@ pipeline {
                 }
             }
         }
-        stage('') {
+        stage('Build and test') {
             parallel {
-                stage('Back-end') {
+                stage('Back') {
                     stages {
                         stage('Build') {
                             steps {
@@ -40,7 +40,7 @@ pipeline {
                         }
                     }
                 }
-                stage ('Front-end') {
+                stage ('Front') {
                     stages {
                         stage('Build') {
                             steps {

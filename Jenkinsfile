@@ -26,12 +26,12 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                sh 'gradle build -x test -x bundleClient'
+                                sh 'gradle --parallel build -x test'
                             }
                         }
                         stage('Test') {
                             steps {
-                                sh 'gradle test'
+                                sh 'gradle --parallel test'
                             }
                             post {
                                 always {
@@ -46,7 +46,7 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                sh 'gradle pnpmBuild'
+                                sh 'gradle --parallel pnpmBuild'
                             }
                         }
                     }
@@ -58,7 +58,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'gradle build -x test -x pnpmBuild'
+                sh 'gradle package'
             }
         }
         stage('Deploy') {

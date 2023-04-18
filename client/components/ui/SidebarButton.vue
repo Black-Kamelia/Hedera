@@ -1,28 +1,31 @@
 <script setup lang="ts">
-interface SidebarButtonProps {
+export interface SidebarButtonProps {
   open: boolean
   icon: string
   label: string
   active?: (route: any) => boolean
 }
 
-const props = defineProps<SidebarButtonProps>()
+const {
+  open,
+  icon,
+  label,
+  active,
+} = definePropsRefs<SidebarButtonProps>()
 
 const router = useRouter()
 
-const activeRoute = computed(() => {
-  return props.active?.(router.currentRoute.value.fullPath)
-})
+const activeRoute = computed(() => active.value?.(router.currentRoute.value.fullPath) ?? false)
 </script>
 
 <template>
-  <PButton rounded class="flex flex-row gap-4 items-start" :class="{ active: activeRoute, open: props.open }">
+  <PButton rounded class="flex flex-row gap-4 items-start" :class="{ active: activeRoute, open }">
     <div class="flex">
-      <i :class="props.icon" />
+      <i :class="icon" />
     </div>
     <Transition>
-      <span v-show="props.open" class="flex-grow overflow-hidden text-left whitespace-nowrap">
-        {{ props.label }}
+      <span v-show="open" class="flex-grow overflow-hidden text-left whitespace-nowrap">
+        {{ label }}
       </span>
     </Transition>
   </PButton>

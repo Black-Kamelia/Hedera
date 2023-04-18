@@ -1,5 +1,5 @@
 <script setup lang="ts">
-interface QuotaPreviewerProps {
+export interface QuotaPreviewerProps {
   quota: number
   max: number
   unlimited?: boolean

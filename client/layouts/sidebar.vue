@@ -3,27 +3,24 @@ import SidebarButton from '~/components/ui/SidebarButton.vue'
 
 const { t } = useI18n()
 
+// TODO: make the theme toggle a component
 const { isDark, toggle } = useDark()
-const themeIcon = computed(() => {
-  return isDark.value ? 'i-tabler-sun' : 'i-tabler-moon'
-})
-const themeName = computed(() => {
-  return isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode')
-})
+const themeIcon = computed(() => isDark.value ? 'i-tabler-sun' : 'i-tabler-moon')
+const themeName = computed(() => isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode'))
 
-const open = ref<Boolean>(true)
+const open = ref(true)
 
-const sidebarRef = ref()
+const sidebarRef = ref<HTMLElement | null>(null)
 const isSidebarHovered = useElementHover(sidebarRef)
 
 function toggleSidebar() {
   open.value = !open.value
 }
 
-const op = ref()
-function toggleOp(event) {
-  op.value.toggle(event)
-}
+// const op = ref(null) // TODO: i dunno what this is, but explicit the type if it starts at null
+// function toggleOp(event) { // TODO: add type for event
+//   op.value?.toggle(event)
+// }
 
 const { logout } = useAuth()
 
@@ -91,7 +88,7 @@ function doLogout() {
           <i class="i-tabler-search" />
           <PInputText class="search p-inputtext-lg w-full" placeholder="Recherche..." />
         </span>
-        <QuotaPreviewer quota="536870912" max="1073741824" />
+        <QuotaPreviewer :quota="536870912" :max="1073741824" />
         <div class="flex flex-row gap-2">
           <div class="card flex justify-content-center">
             <PButton icon="i-tabler-bell" text rounded />
@@ -106,6 +103,7 @@ function doLogout() {
   </div>
 </template>
 
+<!-- TODO: you can use SCSS if you want ; but you could also use UNO; the importants are weird -->
 <style scoped>
 .search,
 .search:hover,

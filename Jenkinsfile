@@ -2,7 +2,7 @@ pipeline {
     agent none
     stages {
         stage('Precondition') {
-            agent { docker { image 'gradle:7.6.0-jdk17' }}
+            agent any
             steps {
                 script {
                     def branch = env.CHANGE_BRANCH
@@ -21,14 +21,13 @@ pipeline {
                 stage('Build Back-end') {
                     agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
-                        sh 'gradle build -x test -x bundleClient'
+                        sh 'gradle --no-daemon build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
                     agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
-                        sh 'gradle --status'
-                        sh 'gradle pnpmBuild'
+                        sh 'gradle --no-daemon pnpmBuild'
                     }
                 }
             }
@@ -38,7 +37,7 @@ pipeline {
                 stage('Test Back-end') {
                     agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
-                        sh 'gradle test'
+                        sh 'gradle --no-daemon test'
                     }
                     post {
                         always {
@@ -63,7 +62,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'gradle build -x test -x pnpmBuild'
+                sh 'gradle --no-daemon build -x test -x pnpmBuild'
             }
         }
         stage('Deploy') {

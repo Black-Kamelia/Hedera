@@ -5,6 +5,8 @@ pipeline {
             reuseNode true
             label 'hedera-back'
         }
+    }
+    agent {
         docker {
             image 'gradle:7.6.0-jdk17'
             reuseNode true
@@ -30,13 +32,11 @@ pipeline {
         stage('Build') {
             parallel {
                 stage('Build Back-end') {
-                    agent 'hedera-back'
                     steps {
                         sh 'gradle build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
-                    agent 'hedera-front'
                     steps {
                         sh 'gradle --status'
                         sh 'gradle pnpmBuild'
@@ -47,7 +47,6 @@ pipeline {
         stage('Test') {
             parallel {
                 stage('Test Back-end') {
-                    agent 'hedera-back'
                     steps {
                         sh 'gradle test'
                     }
@@ -59,7 +58,6 @@ pipeline {
                     }
                 }
                 stage('Test Front-end') {
-                    agent 'hedera-front'
                     steps {
                         script {
                             currentBuild.result = 'SUCCESS'
@@ -69,7 +67,6 @@ pipeline {
             }
         }
         stage('Package') {
-            agent any
             when {
                 branch 'master'
             }
@@ -78,7 +75,6 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent any
             when {
                 branch 'master'
             }

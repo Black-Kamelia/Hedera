@@ -17,7 +17,7 @@ pipeline {
                     }
                 }
                 echo 'Warming up Gradle'
-                sh 'gradle -q'
+                sh 'gradle --parallel -q'
             }
         }
         stage('Build and test') {

@@ -28,8 +28,7 @@ fun Application.configureRouting() {
 
             isProd -> singlePageApplication {
                 useResources = true
-                filesPath = "static"
-                defaultPage = "index.html"
+                vue("static")
             }
         }
     }

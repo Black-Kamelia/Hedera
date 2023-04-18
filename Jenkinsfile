@@ -2,7 +2,6 @@ pipeline {
     agent none
     stages {
         stage('Precondition') {
-            agent any
             steps {
                 script {
                     def branch = env.CHANGE_BRANCH
@@ -12,20 +11,20 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
+                echo 'Warming up Gradle'
+                sh 'gradle -q'
             }
         }
         stage('Build') {
             parallel {
                 stage('Build Back-end') {
-                    agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
-                        sh 'gradle --no-daemon build -x test -x bundleClient'
+                        sh 'gradle build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
-                    agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
-                        sh 'gradle --no-daemon pnpmBuild'
+                        sh 'gradle pnpmBuild'
                     }
                 }
             }
@@ -33,9 +32,8 @@ pipeline {
         stage('Test') {
             parallel {
                 stage('Test Back-end') {
-                    agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
-                        sh 'gradle --no-daemon test'
+                        sh 'gradle test'
                     }
                     post {
                         always {
@@ -45,7 +43,6 @@ pipeline {
                     }
                 }
                 stage('Test Front-end') {
-                    agent { docker { image 'gradle:7.6.0-jdk17' }}
                     steps {
                         script {
                             currentBuild.result = 'SUCCESS'
@@ -55,16 +52,14 @@ pipeline {
             }
         }
         stage('Package') {
-            agent { docker { image 'gradle:7.6.0-jdk17' }}
             when {
                 branch 'master'
             }
             steps {
-                sh 'gradle --no-daemon build -x test -x pnpmBuild'
+                sh 'gradle build -x test -x pnpmBuild'
             }
         }
         stage('Deploy') {
-            agent { docker { image 'gradle:7.6.0-jdk17' }}
             when {
                 branch 'master'
             }

@@ -46,7 +46,7 @@ pipeline {
                     stages {
                         stage('Lint') {
                             steps {
-                                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                                catchError(buildResult: 'UNSTABLE', message: 'Lint failed', stageResult: 'UNSTABLE') {
                                     sh 'gradle --parallel pnpmLint'
                                 }
                             }
@@ -54,6 +54,13 @@ pipeline {
                         stage('Build') {
                             steps {
                                 sh 'gradle --parallel pnpmBuild'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'NOT_BUILT') {
+                                    sh 'exit 1'
+                                }
                             }
                         }
                     }

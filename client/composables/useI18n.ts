@@ -1,9 +1,6 @@
+import { AxiosError } from 'axios'
 import { useI18n as _useI18n } from 'vue-i18n'
-
-interface ErrorDTO {
-  key: string
-  template?: Map<string, string>
-}
+import { type ErrorDTO, getDTOFromError } from '~/utils/errors'
 
 export default function useI18n(fallback = 'en') {
   const i18n = _useI18n()
@@ -13,8 +10,9 @@ export default function useI18n(fallback = 'en') {
     i18n.locale.value = value
   })
 
-  function e(error: ErrorDTO): String {
-    const { key, template } = error
+  function e(error?: ErrorDTO | AxiosError): String {
+    const dto = (error instanceof AxiosError ? getDTOFromError(error) : error) ?? { key: 'errors.unknown' }
+    const { key, template } = dto
 
     if (template) {
       // map every value to a translated value

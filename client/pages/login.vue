@@ -34,9 +34,10 @@ function hideErrorMessage() {
 }
 
 useEventBus(LoggedInEvent).on((event) => {
-  if (event.error.response?.status === 401)
+  if (event.error?.response?.status === 401)
     resetField('password')
-  errorMessage.value = e(event.error.response?.data ?? { key: 'errors.unknown' })
+
+  errorMessage.value = e(event.error)
 })
 
 const onSubmit = handleSubmit(login)

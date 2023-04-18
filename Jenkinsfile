@@ -46,11 +46,8 @@ pipeline {
                     stages {
                         stage('Lint') {
                             steps {
-                                script {
-                                    def status = sh script: 'gradle --parallel pnpmLint', returnStatus: true
-                                    if (status != 0) {
-                                        currentBuild.result = 'UNSTABLE'
-                                    }
+                                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                                    sh 'gradle --parallel pnpmLint'
                                 }
                             }
                         }

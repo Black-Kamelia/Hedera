@@ -64,7 +64,7 @@ pipeline {
                         }
                         stage('Test') {
                             steps {
-                                echo 'For now, we don't have any front-end tests'
+                                echo "For now, we don't have any front-end tests"
                             }
                         }
                     }

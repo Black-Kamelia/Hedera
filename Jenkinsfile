@@ -44,6 +44,11 @@ pipeline {
                 }
                 stage ('Front') {
                     stages {
+                        stage('Lint') {
+                            steps {
+                                sh 'gradle --parallel pnpmLint'
+                            }
+                        }
                         stage('Build') {
                             steps {
                                 sh 'gradle --parallel pnpmBuild'

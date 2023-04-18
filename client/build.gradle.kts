@@ -24,6 +24,12 @@ tasks {
     delete(file("${rootProject.projectDir}/server/src/main/resources/static"))
   }
 
+  register<PnpmTask>("pnpmLint") {
+    dependsOn(pnpmInstall)
+    pnpmCommand.set(listOf("lint"))
+    ignoreExitValue.set(false)
+  }
+
   val pnpmBuild = register<PnpmTask>("pnpmBuild") {
     dependsOn(pnpmInstall)
     pnpmCommand.set(listOf("generate"))

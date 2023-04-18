@@ -1,21 +1,8 @@
 pipeline {
-    agent {
-        docker {
-            image 'gradle:7.6.0-jdk17'
-            reuseNode true
-            label 'hedera-back'
-        }
-    }
-    agent {
-        docker {
-            image 'gradle:7.6.0-jdk17'
-            reuseNode true
-            label 'hedera-front'
-        }
-    }
-
+    agent none
     stages {
         stage('Precondition') {
+            docker { image 'gradle:7.6.0-jdk17' }
             steps {
                 script {
                     def branch = env.CHANGE_BRANCH
@@ -32,11 +19,13 @@ pipeline {
         stage('Build') {
             parallel {
                 stage('Build Back-end') {
+                    docker { image 'gradle:7.6.0-jdk17' }
                     steps {
                         sh 'gradle build -x test -x bundleClient'
                     }
                 }
                 stage('Build Front-end') {
+                    docker { image 'gradle:7.6.0-jdk17' }
                     steps {
                         sh 'gradle --status'
                         sh 'gradle pnpmBuild'
@@ -47,6 +36,7 @@ pipeline {
         stage('Test') {
             parallel {
                 stage('Test Back-end') {
+                    docker { image 'gradle:7.6.0-jdk17' }
                     steps {
                         sh 'gradle test'
                     }
@@ -58,6 +48,7 @@ pipeline {
                     }
                 }
                 stage('Test Front-end') {
+                    docker { image 'gradle:7.6.0-jdk17' }
                     steps {
                         script {
                             currentBuild.result = 'SUCCESS'
@@ -67,6 +58,7 @@ pipeline {
             }
         }
         stage('Package') {
+            docker { image 'gradle:7.6.0-jdk17' }
             when {
                 branch 'master'
             }
@@ -75,6 +67,7 @@ pipeline {
             }
         }
         stage('Deploy') {
+            docker { image 'gradle:7.6.0-jdk17' }
             when {
                 branch 'master'
             }

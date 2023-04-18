@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        docker { image 'gradle:7.6.1-jdk17' }
+        docker {
+            image 'gradle:7.6.1-jdk17'
+            reuseNode true
+        }
     }
     stages {
         stage('Precondition') {
@@ -15,37 +18,34 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('') {
             parallel {
-                stage('Build Back-end') {
-                    steps {
-                        sh 'gradle build -x test -x bundleClient'
-                    }
-                }
-                stage('Build Front-end') {
-                    steps {
-                        sh 'gradle pnpmBuild'
-                    }
-                }
-            }
-        }
-        stage('Test') {
-            parallel {
-                stage('Test Back-end') {
-                    steps {
-                        sh 'gradle test'
-                    }
-                    post {
-                        always {
-                            junit checksName: 'Tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
-                            publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                stage('Back-end') {
+                    stages {
+                        stage('Build') {
+                            steps {
+                                sh 'gradle build -x test -x bundleClient'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                sh 'gradle test'
+                            }
+                            post {
+                                always {
+                                    junit checksName: 'Back-end tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                                    publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                                }
+                            }
                         }
                     }
                 }
-                stage('Test Front-end') {
-                    steps {
-                        script {
-                            currentBuild.result = 'SUCCESS'
+                stage ('Front-end') {
+                    stages {
+                        stage('Build') {
+                            steps {
+                                sh 'gradle pnpmBuild'
+                            }
                         }
                     }
                 }

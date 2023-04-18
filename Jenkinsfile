@@ -13,8 +13,6 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                echo 'Warming up Gradle'
-                sh 'gradle -q'
             }
         }
         stage('Build') {

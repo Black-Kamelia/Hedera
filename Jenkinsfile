@@ -23,7 +23,7 @@ pipeline {
                     }
                 }
                 echo 'Warming up Gradle'
-                sh 'gradle -q'
+                sh 'gradle --parallel -q'
             }
         }
         stage('Build and test') {
@@ -52,8 +52,12 @@ pipeline {
                     stages {
                         stage('Lint') {
                             steps {
-                                warnError(message: 'Lint failed') {
-                                    sh 'gradle --parallel pnpmLint'
+                                script {
+                                    def status = sh(script: 'gradle --parallel pnpmLint', returnStatus: true)
+                                    if (status != 0) {
+                                        currentBuild.result = 'UNSTABLE'
+                                        error 'Lint failed'
+                                    }
                                 }
                             }
                         }

@@ -63,7 +63,9 @@ pipeline {
                             }
                         }
                         stage('Test') {
-                            // For now, we don't have any front-end tests
+                            steps {
+                                echo 'For now, we don't have any front-end tests'
+                            }
                         }
                     }
                 }

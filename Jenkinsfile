@@ -1,5 +1,7 @@
 pipeline {
-    agent none
+    agent {
+        docker { image 'gradle:7.6.1-jdk17-alpine' }
+    }
     stages {
         stage('Precondition') {
             steps {

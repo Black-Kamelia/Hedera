@@ -43,6 +43,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
+    implementation("io.ktor", "ktor-server-websockets", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -55,6 +56,8 @@ dependencies {
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)
     implementation("com.zaxxer", "HikariCP", hikaricpVersion)
     implementation("at.favre.lib", "bcrypt", bcryptVersion)
+    implementation("io.ktor:ktor-server-core-jvm:2.2.4")
+    implementation("io.ktor:ktor-server-websockets-jvm:2.2.4")
 
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)
@@ -86,6 +89,7 @@ tasks {
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
         )
         classpath = sourceSets["main"].runtimeClasspath
         mainClass.set("com.kamelia.hedera.ApplicationKt")
@@ -98,6 +102,7 @@ tasks {
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
         )
         finalizedBy(koverVerify)
     }

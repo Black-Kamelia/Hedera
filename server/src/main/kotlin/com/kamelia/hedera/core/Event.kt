@@ -25,7 +25,7 @@ interface Event<E> {
      * @param event The event data to emit.
      * @param owner The event owner key of this event, or null. If the event was created with an event owner key, then the owner must be the same as the key.
      */
-    fun emit(event: E, owner: EventOwnerKey? = null)
+    suspend fun emit(event: E, owner: EventOwnerKey? = null)
 
     /**
      * Emits an event.
@@ -33,7 +33,7 @@ interface Event<E> {
      * @param event The event data to emit.
      * @param owner The event owner key of this event, or null. If the event was created with an event owner key, then the owner must be the same as the key.
      */
-    operator fun invoke(event: E, owner: EventOwnerKey? = null) = emit(event, owner)
+    suspend operator fun invoke(event: E, owner: EventOwnerKey? = null) = emit(event, owner)
 
     /**
      * Subscribes to this event.
@@ -41,7 +41,7 @@ interface Event<E> {
      * @param listener The listener to subscribe.
      * @return A function that can be called to unsubscribe the listener.
      */
-    fun subscribe(listener: (E) -> Unit): () -> Unit
+    fun subscribe(listener: suspend (E) -> Unit): () -> Unit
 
     /**
      * Subscribes to this event.
@@ -49,7 +49,7 @@ interface Event<E> {
      * @param listener The listener to subscribe.
      * @return A function that can be called to unsubscribe the listener.
      */
-    operator fun plusAssign(listener: (E) -> Unit) {
+    operator fun plusAssign(listener: suspend (E) -> Unit) {
         subscribe(listener)
     }
 
@@ -59,7 +59,7 @@ interface Event<E> {
      * @param listener The listener to subscribe.
      * @return A function that can be called to unsubscribe the listener.
      */
-    fun subscribeOnce(listener: (E) -> Unit): () -> Unit
+    fun subscribeOnce(listener: suspend (E) -> Unit): () -> Unit
 
 
 /**
@@ -67,14 +67,14 @@ interface Event<E> {
      *
      * @param listener The listener to unsubscribe.
      */
-    fun unsubscribe(listener: (E) -> Unit)
+    fun unsubscribe(listener: suspend (E) -> Unit)
 
     /**
      * Unsubscribes a listener from this event.
      *
      * @param listener The listener to unsubscribe.
      */
-    operator fun minusAssign(listener: (E) -> Unit) {
+    operator fun minusAssign(listener: suspend (E) -> Unit) {
         unsubscribe(listener)
     }
 }
@@ -87,20 +87,20 @@ interface Event<E> {
  */
 fun <E> event(key: EventOwnerKey? = null): Event<E> = object : Event<E> {
 
-    private val listeners = mutableSetOf<(E) -> Unit>()
+    private val listeners = mutableSetOf<suspend (E) -> Unit>()
 
-    override fun emit(event: E, owner: EventOwnerKey?) {
+    override suspend fun emit(event: E, owner: EventOwnerKey?) {
         if (key != owner) throw IllegalStateException("Event key mismatch")
         listeners.forEach { it(event) }
     }
 
-    override fun subscribe(listener: (E) -> Unit): () -> Unit {
+    override fun subscribe(listener: suspend (E) -> Unit): () -> Unit {
         listeners.add(listener)
         return { unsubscribe(listener) }
     }
 
-    override fun subscribeOnce(listener: (E) -> Unit): () -> Unit {
-        lateinit var onceListener: (E) -> Unit
+    override fun subscribeOnce(listener: suspend (E) -> Unit): () -> Unit {
+        lateinit var onceListener: suspend (E) -> Unit
         onceListener = { event ->
             listener(event)
             listeners.remove(onceListener)
@@ -108,7 +108,7 @@ fun <E> event(key: EventOwnerKey? = null): Event<E> = object : Event<E> {
         return subscribe(onceListener)
     }
 
-    override fun unsubscribe(listener: (E) -> Unit) {
+    override fun unsubscribe(listener: suspend (E) -> Unit) {
         listeners.remove(listener)
     }
 }

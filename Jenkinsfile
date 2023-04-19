@@ -11,7 +11,7 @@ pipeline {
         timeout(time: 15, unit: 'MINUTES')
     }
     environment {
-        GRADLE_OPTS = "-Dorg.gradle.daemon=true"
+        GRADLE_OPTS = "-Dorg.gradle.daemon=false"
     }
 
     stages {

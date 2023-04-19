@@ -21,6 +21,7 @@ tasks {
     delete(file("${rootProject.projectDir}/client/.output"))
     delete(file("${rootProject.projectDir}/client/.nuxt"))
     delete(file("${rootProject.projectDir}/client/dist"))
+    delete(file("${rootProject.projectDir}/client/eslint-report.html"))
     delete(file("${rootProject.projectDir}/server/src/main/resources/static"))
   }
 
@@ -31,7 +32,7 @@ tasks {
 
   register<PnpmTask>("pnpmLint") {
     dependsOn(pnpmInstall)
-    pnpmCommand.set(listOf("lint"))
+    pnpmCommand.set(listOf("lint:ci"))
     ignoreExitValue.set(false)
   }
 

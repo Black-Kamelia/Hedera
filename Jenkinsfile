@@ -81,7 +81,6 @@ pipeline {
             when {
                 anyOf {
                     branch 'master'
-                    branch 'develop'
                     branch 'continuous-integration'
                 }
             }

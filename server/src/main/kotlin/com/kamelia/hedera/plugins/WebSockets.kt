@@ -1,6 +1,7 @@
 package com.kamelia.hedera.plugins
 
 import com.kamelia.hedera.websocket.webSocketRoutes
+import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
@@ -13,6 +14,7 @@ fun Application.configureWebSockets() {
         timeout = 15.seconds.toJavaDuration()
         maxFrameSize = Long.MAX_VALUE
         masking = false
+        contentConverter = KotlinxWebsocketSerializationConverter(HederaJsonModule)
     }
 
     routing {

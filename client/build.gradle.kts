@@ -8,7 +8,7 @@ group = "com.kamelia"
 version = project.properties["project.version"] as String
 
 node {
-  version.set("18.13.0") // lts version
+  version.set("18.16.0") // lts version
   distBaseUrl.set("https://nodejs.org/dist")
   download.set(true)
   nodeProjectDir.set(file("${rootProject.projectDir}/client"))

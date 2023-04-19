@@ -9,7 +9,8 @@
     "postinstall": "nuxt prepare",
     "nuxi": "nuxi",
     "taze": "taze major -I",
-    "lint": "eslint --ext .js,.ts,.vue,.json ."
+    "lint": "eslint --ext .js,.ts,.vue,.json .",
+    "lint:ci": "node ./scripts/eslint-format.cjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.38.4",

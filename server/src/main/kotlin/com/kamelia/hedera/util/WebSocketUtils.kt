@@ -13,17 +13,26 @@ suspend fun <E> DefaultWebSocketServerSession.defineEventListener(event: Event<E
     }
 }
 
-suspend fun DefaultWebSocketServerSession.forcefullyClose(reason: String, closer: (() -> Unit)? = null) {
-    close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, reason))
-    closer?.invoke()
-}
+suspend fun DefaultWebSocketServerSession.forcefullyClose(
+    reason: String,
+    closer: (() -> Unit)? = null
+) = closeWithReason(reason, CloseReason.Codes.VIOLATED_POLICY, closer)
 
-suspend fun DefaultWebSocketServerSession.violentlyClose(reason: String, closer: (() -> Unit)? = null) {
-    close(CloseReason(CloseReason.Codes.INTERNAL_ERROR, reason))
-    closer?.invoke()
-}
+suspend fun DefaultWebSocketServerSession.violentlyClose(
+    reason: String,
+    closer: (() -> Unit)? = null,
+) = closeWithReason(reason, CloseReason.Codes.INTERNAL_ERROR, closer)
 
-suspend fun DefaultWebSocketServerSession.gracefullyClose(reason: String, closer: (() -> Unit)? = null) {
-    close(CloseReason(CloseReason.Codes.NORMAL, reason))
+suspend fun DefaultWebSocketServerSession.gracefullyClose(
+    reason: String,
+    closer: (() -> Unit)? = null,
+) = closeWithReason(reason, CloseReason.Codes.NORMAL, closer)
+
+suspend fun DefaultWebSocketServerSession.closeWithReason(
+    reason: String,
+    type: CloseReason.Codes,
+    closer: (() -> Unit)? = null,
+) {
+    close(CloseReason(type, reason))
     closer?.invoke()
 }

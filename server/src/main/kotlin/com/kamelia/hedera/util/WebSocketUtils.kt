@@ -1,16 +1,19 @@
 package com.kamelia.hedera.util
 
 import com.kamelia.hedera.core.Event
+import com.kamelia.hedera.rest.core.DTO
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.serialization.Serializable
 
-suspend fun <E> WebSocketServerSession.defineEventListener(event: Event<E>, listener: suspend (E) -> Unit) {
+suspend fun <E> WebSocketServerSession.defineEventListener(event: Event<E>, listener: suspend (E) -> Unit): () -> Unit {
     var closer: (() -> Unit)? = null
-    try {
+    runCatching {
         closer = event.subscribe(listener)
-    } finally {
+    }.onFailure {
         violentlyClose("An error occurred on the server", closer)
     }
+    return closer!!
 }
 
 suspend fun WebSocketServerSession.forcefullyClose(
@@ -37,12 +40,12 @@ suspend fun WebSocketServerSession.closeWithReason(
     closer?.invoke()
 }
 
+@Serializable
+data class WebSocketMessage<E>(
+    val type: String,
+    val data: E,
+) : DTO
 
-const val TYPE = "type"
-const val DATA = "data"
 suspend inline fun <reified E> WebSocketServerSession.sendEvent(type: String, data: E) {
-    sendSerialized(mapOf(
-        TYPE to type,
-        DATA to data
-    ))
+    sendSerialized(WebSocketMessage(type, data))
 }

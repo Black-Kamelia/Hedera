@@ -11,7 +11,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 
-fun Route.webSocketRoutes() = route("/ws") {
+fun Route.webSocketRoutes() = route("/") {
     authenticate(AuthJwt) {
         getWebSocketToken()
     }
@@ -19,13 +19,13 @@ fun Route.webSocketRoutes() = route("/ws") {
     socketRoute()
 }
 
-private fun Route.getWebSocketToken() = get("/token") {
+private fun Route.getWebSocketToken() = get("/api/ws") {
     val user = authenticatedUser ?: throw ExpiredOrInvalidTokenException()
     val token = createToken(user)
     call.respondNoError(Response.ok(mapOf("token" to token)))
 }
 
-private fun Route.socketRoute() = webSocket("/") {
+private fun Route.socketRoute() = webSocket("/ws") {
     val token = call.request.queryParameters["token"]
         ?: return@webSocket forcefullyClose("Missing token")
 

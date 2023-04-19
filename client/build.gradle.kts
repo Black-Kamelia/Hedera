@@ -24,6 +24,11 @@ tasks {
     delete(file("${rootProject.projectDir}/server/src/main/resources/static"))
   }
 
+  pnpmInstall {
+    doNotTrackState("node_modules")
+    ignoreExitValue.set(false)
+  }
+
   register<PnpmTask>("pnpmLint") {
     dependsOn(pnpmInstall)
     pnpmCommand.set(listOf("lint"))

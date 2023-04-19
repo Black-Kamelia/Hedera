@@ -31,6 +31,37 @@ You can see Hedera like a self-hosted Imgur. You simply take screenshots and hos
 
 *Coming soon*
 
+## 🏗️ Building
+
+### Front-end
+
+Building the front-end is pretty straightforward. 
+You just need to run the dedicated Gradle tasks.
+This tasks install Node.js, sets everything up through pNPM and builds the front-end.
+
+```bash
+gradle pnpmBuild
+```
+
+### Back-end
+
+Building the back-end is also very easy.
+Simply run the default Gradle build task.
+This task will compile the back-end and run the tests.
+
+```bash
+gradle build
+```
+
+### Full build
+
+To build a complete production-ready JAR, run the package task.
+This tasks bundles the front-end, and compiles the JAR using the shadow plugin.
+
+```bash
+gradle package
+```
+
 ## ⚙ How to update?
 
 *Coming soon*

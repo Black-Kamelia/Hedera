@@ -20,6 +20,8 @@ object Environment {
     val expirationAccess get() = config.property("hedera.jwt.expirationAccess").getString().toLong()
     val secretRefresh get() = config.property("hedera.jwt.secretRefresh").getString()
     val expirationRefresh get() = config.property("hedera.jwt.expirationRefresh").getString().toLong()
+    val secretWSToken get() = config.property("hedera.jwt.secretWSToken").getString()
+    val expirationWSToken get() = config.property("hedera.jwt.expirationWSToken").getString().toLong()
     val jwtRealm get() = config.property("hedera.jwt.realm").getString()
 }
 

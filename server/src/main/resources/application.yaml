@@ -19,4 +19,6 @@ hedera:
     expirationAccess: "$HEDERA_JWT_EXPIRATION:3600000" # Default 1 hour
     secretRefresh: $HEDERA_JWT_SECRET_REFRESH
     expirationRefresh: "$HEDERA_JWT_EXPIRATION_REFRESH:2592000000" # Default 30 days
+    secretWSToken: $HEDERA_JWT_SECRET_WS_TOKEN
+    expirationWSToken: "$HEDERA_JWT_EXPIRATION_WS_TOKEN:1800000" # Default 30 minutes
     realm: hedera login-locked

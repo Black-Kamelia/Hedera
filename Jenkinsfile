@@ -22,8 +22,8 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                echo 'Warming up Gradle'
-                sh 'gradle --parallel -q'
+                // echo 'Warming up Gradle'
+                // sh 'gradle --parallel -q'
             }
         }
         stage('Build and test') {
@@ -32,12 +32,12 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                sh 'gradle --parallel server:jar'
+                                sh 'gradle --parallel server:jar -x client:bundle'
                             }
                         }
                         stage('Test') {
                             steps {
-                                sh 'gradle --parallel server:test'
+                                sh 'gradle --parallel server:test -x client:bundle'//
                             }
                             post {
                                 always {

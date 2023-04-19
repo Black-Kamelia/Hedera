@@ -10,6 +10,9 @@ pipeline {
         ansiColor('xterm')
         timeout(time: 15, unit: 'MINUTES')
     }
+    environment {
+        GRADLE_OPTS = "-Dorg.gradle.daemon=true"
+    }
 
     stages {
         stage('Precondition') {
@@ -22,7 +25,6 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                sh 'export GRADLE_OPTS="-Dorg.gradle.daemon=true"'
                 // echo 'Warming up Gradle'
                 // sh 'gradle --parallel -q'
             }

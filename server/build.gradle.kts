@@ -16,7 +16,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
     kotlin("jvm")
     kotlin("plugin.serialization") version "1.8.10"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.kamelia"
@@ -72,6 +72,10 @@ tasks {
         archiveClassifier.set("")
         archiveVersion.set(project.version.toString())
         destinationDirectory.set(file("$rootDir/executables"))
+    }
+
+    processResources {
+        dependsOn(":client:bundleClient")
     }
 
     jar {

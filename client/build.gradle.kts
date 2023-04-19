@@ -27,6 +27,9 @@ tasks {
   register<PnpmTask>("lint") {
     dependsOn(pnpmInstall)
     ignoreExitValue.set(false)
+
+    outputs.file(file("${rootProject.projectDir}/client/eslint-report.html"))
+
     pnpmCommand.set(listOf("lint:ci"))
   }
 

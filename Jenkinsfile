@@ -10,9 +10,6 @@ pipeline {
         ansiColor('xterm')
         timeout(time: 15, unit: 'MINUTES')
     }
-    environment {
-        GRADLE_OPTS = "-Dorg.gradle.daemon=false"
-    }
 
     stages {
         stage('Precondition') {
@@ -25,8 +22,8 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                // echo 'Warming up Gradle'
-                // sh 'gradle --parallel -q'
+                echo 'Warming up Gradle'
+                sh 'gradle --parallel -q'
             }
         }
         stage('Build and test') {
@@ -81,9 +78,9 @@ pipeline {
             }
         }
         stage('Package') {
-            //when {
-            //    branch 'master'
-            //}
+            when {
+                branch 'master'
+            }
             steps {
                 sh 'gradle assemble'
                 archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true

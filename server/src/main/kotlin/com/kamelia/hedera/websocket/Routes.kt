@@ -27,16 +27,10 @@ private fun Route.getWebSocketToken() = get("/token") {
 
 private fun Route.socketRoute() = webSocket("/") {
     val token = call.request.queryParameters["token"]
-    if (token == null) {
-        close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No token"))
-        return@webSocket
-    }
+        ?: return@webSocket close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No token"))
 
     val userId = validateToken(token)
-    if (userId == null) {
-        close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Invalid or expired token"))
-        return@webSocket
-    }
+        ?: return@webSocket close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Invalid or expired token"))
 
     handleSession(userId)
 }

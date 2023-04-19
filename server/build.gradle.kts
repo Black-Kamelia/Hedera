@@ -87,7 +87,7 @@ tasks {
     }
 
     processResources {
-        dependsOn(":client:bundleClient")
+        dependsOn(":client:bundle")
     }
 
     jar {
@@ -124,6 +124,5 @@ tasks {
 
     koverXmlReport {
         finalizedBy(koverHtmlReport)
-
     }
 }

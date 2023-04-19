@@ -16,35 +16,56 @@ node {
 }
 
 tasks {
-  register<Delete>("pnpmClean") {
+  pnpmInstall {
+    doNotTrackState("node_modules")
+    ignoreExitValue.set(false)
+
+    outputs.dir(file("${rootProject.projectDir}/client/node_modules"))
+    outputs.dir(file("${rootProject.projectDir}/client/.nuxt"))
+  }
+
+  register<PnpmTask>("lint") {
+    dependsOn(pnpmInstall)
+    ignoreExitValue.set(false)
+    pnpmCommand.set(listOf("lint:ci"))
+  }
+
+  val build= register<PnpmTask>("build") {
+    dependsOn(pnpmInstall)
+    ignoreExitValue.set(false)
+
+    inputs.dir(file("${rootProject.projectDir}/client/components"))
+    inputs.dir(file("${rootProject.projectDir}/client/composables"))
+    inputs.dir(file("${rootProject.projectDir}/client/layouts"))
+    inputs.dir(file("${rootProject.projectDir}/client/locales"))
+    inputs.dir(file("${rootProject.projectDir}/client/pages"))
+    inputs.dir(file("${rootProject.projectDir}/client/plugins"))
+    inputs.dir(file("${rootProject.projectDir}/client/public"))
+    inputs.dir(file("${rootProject.projectDir}/client/stores"))
+    inputs.dir(file("${rootProject.projectDir}/client/types"))
+    inputs.dir(file("${rootProject.projectDir}/client/utils"))
+    outputs.dir(file("${rootProject.projectDir}/client/.output"))
+
+    pnpmCommand.set(listOf("generate"))
+  }
+
+  register<Copy>("bundle") {
+    dependsOn(build)
+
+    inputs.dir(file("${rootProject.projectDir}/client/.output/public"))
+    outputs.dir(file("${rootProject.projectDir}/server/src/main/resources/static"))
+
+    from("${rootProject.projectDir}/client/.output/public")
+    into("${rootProject.projectDir}/server/src/main/resources/static")
+  }
+
+  register<Delete>("clean") {
     delete(file("${rootProject.projectDir}/client/node_modules"))
     delete(file("${rootProject.projectDir}/client/.output"))
     delete(file("${rootProject.projectDir}/client/.nuxt"))
     delete(file("${rootProject.projectDir}/client/dist"))
+    delete(file("${rootProject.projectDir}/client/build"))
     delete(file("${rootProject.projectDir}/client/eslint-report.html"))
     delete(file("${rootProject.projectDir}/server/src/main/resources/static"))
-  }
-
-  pnpmInstall {
-    doNotTrackState("node_modules")
-    ignoreExitValue.set(false)
-  }
-
-  register<PnpmTask>("pnpmLint") {
-    dependsOn(pnpmInstall)
-    pnpmCommand.set(listOf("lint:ci"))
-    ignoreExitValue.set(false)
-  }
-
-  val pnpmBuild = register<PnpmTask>("pnpmBuild") {
-    dependsOn(pnpmInstall)
-    pnpmCommand.set(listOf("generate"))
-    ignoreExitValue.set(false)
-  }
-
-  register<Copy>("bundleClient") {
-    dependsOn(pnpmBuild)
-    from("${rootProject.projectDir}/client/.output/public")
-    into("${rootProject.projectDir}/server/src/main/resources/static")
   }
 }

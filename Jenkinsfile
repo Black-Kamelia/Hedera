@@ -32,12 +32,12 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                sh 'gradle --parallel server:jar -x client:bundle'
+                                sh 'gradle --no-daemon --parallel server:jar -x client:bundle'
                             }
                         }
                         stage('Test') {
                             steps {
-                                sh 'gradle --parallel server:test -x client:bundle'//
+                                sh 'gradle --no-daemon --parallel server:test -x client:bundle'
                             }
                             post {
                                 always {
@@ -54,7 +54,7 @@ pipeline {
                             steps {
                                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                                     script {
-                                        def status = sh(script: 'gradle --parallel client:lint', returnStatus: true)
+                                        def status = sh(script: 'gradle --no-daemon --parallel client:lint', returnStatus: true)
                                         if (status != 0) {
                                             currentBuild.result = 'UNSTABLE'
                                             error 'Lint failed'
@@ -65,7 +65,7 @@ pipeline {
                         }
                         stage('Build') {
                             steps {
-                                sh 'gradle --parallel client:build'
+                                sh 'gradle --no-daemon --parallel client:build'
                             }
                         }
                         stage('Test') {

@@ -11,14 +11,15 @@ repositories {
 
 tasks {
     clean {
-        dependsOn(":client:pnpmClean")
+        dependsOn(":client:clean")
         delete(file("${project.projectDir}/executables"))
         delete(file("${project.projectDir}/upload"))
         delete(file("${project.projectDir}/server/upload"))
     }
 
-    register<GradleBuild>("package") {
-        dependsOn(":client:bundleClient")
+    build {
+        actions.clear()
+        dependsOn(":client:bundle")
         dependsOn(":server:shadowJar")
     }
 }

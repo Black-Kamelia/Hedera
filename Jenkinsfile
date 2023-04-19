@@ -79,7 +79,11 @@ pipeline {
         }
         stage('Package') {
             when {
-                branch 'master'
+                anyOf {
+                    branch 'master'
+                    branch 'develop'
+                    branch 'continuous-integration'
+                }
             }
             steps {
                 sh 'gradle assemble'

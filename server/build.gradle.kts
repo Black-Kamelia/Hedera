@@ -1,3 +1,4 @@
+val jvmVersion: String = project.properties["jvm.version"] as String
 val kotlinVersion: String = project.properties["kotlin.version"] as String
 val ktorVersion: String = project.properties["ktor.version"] as String
 val coroutinesVersion: String = project.properties["coroutines.version"] as String
@@ -67,6 +68,17 @@ dependencies {
 }
 
 tasks {
+    compileJava {
+        sourceCompatibility = jvmVersion
+        targetCompatibility = jvmVersion
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = jvmVersion
+        }
+    }
+
     shadowJar {
         archiveBaseName.set("Hedera")
         archiveClassifier.set("")

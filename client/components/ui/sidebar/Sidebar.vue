@@ -32,8 +32,7 @@ function toggleSidebar() {
           <Transition mode="out-in" name="fade">
             <i v-if="isSidebarHovered && !sidebarOpen" class="i-tabler-menu-2" />
             <i v-else-if="sidebarOpen" class="i-tabler-indent-decrease" />
-            <!-- TODO: Replace with actual application logo -->
-            <i v-else class="i-tabler-leaf" />
+            <i v-else class="i-hedera" />
           </Transition>
         </PButton>
       </div>

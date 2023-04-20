@@ -61,6 +61,7 @@ pipeline {
                                             error 'Lint failed'
                                         }
                                     }
+                                    archiveArtifacts artifacts: 'client/eslint-report.html', followSymlinks: false, onlyIfSuccessful: false
                                 }
                             }
                         }

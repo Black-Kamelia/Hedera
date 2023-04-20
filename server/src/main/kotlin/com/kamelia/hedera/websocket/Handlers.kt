@@ -7,6 +7,7 @@ import com.kamelia.hedera.util.gracefullyClose
 import com.kamelia.hedera.util.sendEvent
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import java.awt.SystemColor.text
 import java.util.*
 
 suspend fun WebSocketServerSession.handleSession(userId: UUID) {
@@ -27,7 +28,7 @@ private suspend fun WebSocketServerSession.onUserUpdate(currentId: UUID, user: U
 private const val CONNECTION_CLOSED_BY_CLIENT = "connection-closed-by-client"
 private suspend fun WebSocketServerSession.keepAlive(closers: List<() -> Unit>) {
     for (frame in incoming) {
-        frame as? Frame.Text ?: continue
+        if (frame !is Frame.Text) continue
         val text = frame.readText()
         if (text.lowercase() == "close") break
     }

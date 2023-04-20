@@ -20,11 +20,6 @@ sizeUnits:
 unlimited-quota: Quota illimité
 
 sidebar:
-  files: Fichiers
-  favorites: Favoris
-  upload: Mettre en ligne
-  analytics: Statistiques
-  configuration: Configuration
   docs: Documentation
   dark_mode: Mode sombre
   light_mode: Mode clair
@@ -43,6 +38,17 @@ pages:
       submit: Connexion
     tab_title: Connexion • Hedera
     title: Se connecter
+  files:
+    page_name: Fichiers
+  favorites:
+    page_name: Favoris
+  upload:
+    page_name: Mettre en ligne
+  analytics:
+    page_name: Statistiques
+  configuration:
+    page_name: Configuration
+
 theme:
   dark: Sombre
   light: Clair

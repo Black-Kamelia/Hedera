@@ -19,11 +19,6 @@ sizeUnits:
   80: YiB
 
 sidebar:
-  files: Files
-  favorites: Favorites
-  upload: Upload
-  analytics: Analytics
-  configuration: Configuration
   docs: Documentation
   dark_mode: Dark mode
   light_mode: Light mode
@@ -42,6 +37,17 @@ pages:
       submit: Submit
     tab_title: Logging in • Hedera
     title: Log in
+  files:
+    page_name: Files
+  favorites:
+    page_name: Favorites
+  upload:
+    page_name: Upload
+  analytics:
+    page_name: Analytics
+  configuration:
+    page_name: Configuration
+
 theme:
   dark: Dark
   light: Light

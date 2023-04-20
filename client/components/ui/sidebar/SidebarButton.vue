@@ -32,12 +32,6 @@ const activeRoute = computed(() => active.value?.(router.currentRoute.value.full
 </template>
 
 <style scoped>
-/*
-.p-button {
-    transition: border-radius 0.3s ease;
-}
-*/
-
 .v-enter-active,
 .v-leave-active {
   transition: opacity .3s ease;

@@ -56,8 +56,6 @@ dependencies {
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)
     implementation("com.zaxxer", "HikariCP", hikaricpVersion)
     implementation("at.favre.lib", "bcrypt", bcryptVersion)
-    implementation("io.ktor:ktor-server-core-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-websockets-jvm:2.2.4")
 
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)

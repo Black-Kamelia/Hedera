@@ -1,9 +1,15 @@
 pipeline {
     agent {
         docker {
-            image 'gradle:7.6.0-jdk17'
+            image 'gradle:8.1.0-jdk17'
             reuseNode true
         }
+    }
+    options {
+        disableConcurrentBuilds(abortPrevious: true)
+        timestamps()
+        ansiColor('xterm')
+        timeout(time: 15, unit: 'MINUTES')
     }
 
     stages {
@@ -17,41 +23,56 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                sh 'echo "Warming up"'
-                sh 'gradle -q'
+                echo 'Warming up Gradle'
+                sh 'gradle --parallel -q'
             }
         }
-        stage('Build') {
+        stage('Build and test') {
             parallel {
-                stage('Build Back-end') {
-                    steps {
-                        sh 'gradle build -x test -x bundleClient'
-                    }
-                }
-                stage('Build Front-end') {
-                    steps {
-                        sh 'gradle pnpmBuild'
-                    }
-                }
-            }
-        }
-        stage('Test') {
-            parallel {
-                stage('Test Back-end') {
-                    steps {
-                        sh 'gradle test'
-                    }
-                    post {
-                        always {
-                            junit checksName: 'Tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
-                            publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                stage('Back') {
+                    stages {
+                        stage('Build') {
+                            steps {
+                                sh 'gradle --parallel server:jar -x client:bundle'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                sh 'gradle --parallel server:test -x client:bundle'
+                            }
+                            post {
+                                always {
+                                    junit checksName: 'Back-end tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                                    publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                                }
+                            }
                         }
                     }
                 }
-                stage('Test Front-end') {
-                    steps {
-                        script {
-                            currentBuild.result = 'SUCCESS'
+                stage ('Front') {
+                    stages {
+                        stage('Lint') {
+                            steps {
+                                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                                    script {
+                                        def status = sh(script: 'gradle --parallel client:lint', returnStatus: true)
+                                        if (status != 0) {
+                                            currentBuild.result = 'UNSTABLE'
+                                            error 'Lint failed'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Build') {
+                            steps {
+                                sh 'gradle --parallel client:build'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                echo "For now, we don't have any front-end tests"
+                            }
                         }
                     }
                 }
@@ -59,10 +80,14 @@ pipeline {
         }
         stage('Package') {
             when {
-                branch 'master'
+                anyOf {
+                    branch 'master'
+                    branch 'continuous-integration'
+                }
             }
             steps {
-                sh 'gradle build -x test -x pnpmBuild'
+                sh 'gradle assemble'
+                archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
             }
         }
         stage('Deploy') {

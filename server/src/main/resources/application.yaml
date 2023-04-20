@@ -2,7 +2,7 @@ ktor:
   environment: "$HEDERA_ENV:prod"
 
   deployment:
-    port: 8080
+    port: "$HEDERA_PORT:8080"
 
   application:
     modules:

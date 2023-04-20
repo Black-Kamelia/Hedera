@@ -1,11 +1,12 @@
 pipeline {
     agent {
         docker {
-            image 'gradle:7.6.1-jdk17'
+            image 'gradle:8.1.0-jdk17'
             reuseNode true
         }
     }
     options {
+        disableConcurrentBuilds(abortPrevious: true)
         timestamps()
         ansiColor('xterm')
         timeout(time: 15, unit: 'MINUTES')
@@ -32,12 +33,12 @@ pipeline {
                     stages {
                         stage('Build') {
                             steps {
-                                sh 'gradle --parallel build -x test'
+                                sh 'gradle --parallel server:jar -x client:bundle'
                             }
                         }
                         stage('Test') {
                             steps {
-                                sh 'gradle --parallel test'
+                                sh 'gradle --parallel server:test -x client:bundle'
                             }
                             post {
                                 always {
@@ -54,7 +55,7 @@ pipeline {
                             steps {
                                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                                     script {
-                                        def status = sh(script: 'gradle --parallel pnpmLint', returnStatus: true)
+                                        def status = sh(script: 'gradle --parallel client:lint', returnStatus: true)
                                         if (status != 0) {
                                             currentBuild.result = 'UNSTABLE'
                                             error 'Lint failed'
@@ -65,7 +66,7 @@ pipeline {
                         }
                         stage('Build') {
                             steps {
-                                sh 'gradle --parallel pnpmBuild'
+                                sh 'gradle --parallel client:build'
                             }
                         }
                         stage('Test') {
@@ -79,10 +80,13 @@ pipeline {
         }
         stage('Package') {
             when {
-                branch 'master'
+                anyOf {
+                    branch 'master'
+                    branch 'continuous-integration'
+                }
             }
             steps {
-                sh 'gradle package -x pnpmBuild'
+                sh 'gradle assemble'
                 archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
             }
         }

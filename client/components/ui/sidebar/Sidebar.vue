@@ -36,7 +36,7 @@ function toggleSidebar() {
         </PButton>
       </div>
     </div>
-    <div class="items flex flex-col justify-between h-full overflow-scroll">
+    <div class="items flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden">
       <div class="flex flex-col justify-start gap-2 p-4 grow">
         <SidebarButton
           icon="i-tabler-file" :label="t('pages.files.page_name')" :open="sidebar.open"

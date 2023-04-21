@@ -22,6 +22,14 @@ export default defineConfig({
     presetIcons({
       scale: 1.5,
       warn: true,
+      extraProperties: {
+        'background-color': 'currentColor',
+        'color': 'inherit',
+      },
+      collections: {
+        tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default),
+        hedera: () => import('./public/icons/hedera.json').then(i => i.default),
+      },
     }),
     presetTypography(),
     presetWebFonts({

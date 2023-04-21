@@ -3,18 +3,20 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "pnpm icons && nuxt generate",
     "preview": "nuxt preview",
     "il": "pnpm install --frozen-lockfile",
     "postinstall": "nuxt prepare",
     "nuxi": "nuxi",
     "taze": "taze major -I",
     "lint": "eslint --ext .js,.ts,.vue,.json .",
-    "lint:ci": "node ./scripts/eslint-format.cjs"
+    "lint:ci": "node ./scripts/eslint-format.cjs",
+    "icons": "node ./scripts/export-icons.cjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.38.5",
     "@iconify-json/tabler": "^1.1.73",
+    "@iconify/tools": "^2.2.6",
     "@intlify/unplugin-vue-i18n": "^0.10.0",
     "@notkamui/nuxt-primevue": "^0.4.0",
     "@nuxt/devtools": "^0.4.1",

@@ -11,14 +11,16 @@ html {
 .dark ::selection {
   background: #444;
 }
-div {
-  display: flex;
-  flex-direction: column;
-}
 
 /* primevue additions */
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap');
+
 body {
   color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Red Hat Display', sans-serif;
 }
 
 .p-input-icon-left > i,
@@ -32,4 +34,9 @@ body {
 
 .p-input-icon-right > .p-inputtext {
     padding-right: calc(1.25rem + 24px);
+}
+
+.large-icon {
+  width: 2em;
+  height: 2em;
 }

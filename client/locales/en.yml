@@ -1,9 +1,29 @@
+app_name: Hedera
+
 global:
   login: Login
   logout: Logout
   start: Start
 main:
   title: Welcome to Hedera
+
+sizeUnits:
+  0: bytes
+  10: KiB
+  20: MiB
+  30: GiB
+  40: TiB
+  50: PiB
+  60: EiB
+  70: ZiB
+  80: YiB
+unlimited-quota: Unlimited quota
+
+sidebar:
+  docs: Documentation
+  dark_mode: Dark mode
+  light_mode: Light mode
+
 pages:
   login:
     forgot_password: Forgot password?
@@ -18,6 +38,17 @@ pages:
       submit: Submit
     tab_title: Logging in • Hedera
     title: Log in
+  files:
+    page_name: Files
+  favorites:
+    page_name: Favorites
+  upload:
+    page_name: Upload
+  analytics:
+    page_name: Analytics
+  configuration:
+    page_name: Configuration
+
 theme:
   dark: Dark
   light: Light

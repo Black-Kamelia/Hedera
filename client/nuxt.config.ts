@@ -80,7 +80,7 @@ export default defineNuxtConfig({
     storageKey: 'color-scheme',
   },
   primevue: {
-    ripple: true,
+    ripple: false,
     inputStyle: 'filled',
   },
 })

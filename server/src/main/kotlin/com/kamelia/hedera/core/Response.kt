@@ -1,9 +1,8 @@
 package com.kamelia.hedera.core
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.isSuccess
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.response.respond
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 
 typealias ErrorDTO = String
 
@@ -53,10 +52,50 @@ data class ResultData<T>(
     val data: T? = null
 )
 
-suspend inline fun ApplicationCall.respond(response: Response<*, *>) {
-    val res: suspend (ResultData<*>) -> Unit = { result ->
-        this.response.status(response.status)
-        result.data?.let { respond(it) }
-    }
-    response.ifSuccessOrElse(res, res)
+suspend inline fun <reified S, reified E> ApplicationCall.respond(response: Response<S, E>) {
+    response.ifSuccessOrElse(
+        { result ->
+            this.response.status(response.status)
+            result.data?.let { respond(it) }
+        },
+        { result ->
+            this.response.status(response.status)
+            result.data?.let { respond(it) }
+        }
+    )
+}
+
+suspend inline fun <reified E> ApplicationCall.respondNoSuccess(response: Response<Nothing, E>) {
+    response.ifSuccessOrElse(
+        {
+            this.response.status(response.status)
+        },
+        { result ->
+            this.response.status(response.status)
+            result.data?.let { respond(it) }
+        }
+    )
+}
+
+suspend inline fun <reified S> ApplicationCall.respondNoError(response: Response<S, Nothing>) {
+    response.ifSuccessOrElse(
+        { result ->
+            this.response.status(response.status)
+            result.data?.let { respond(it) }
+        },
+        {
+            this.response.status(response.status)
+        }
+    )
+}
+
+suspend inline fun ApplicationCall.respondNothing(response: Response<Nothing, Nothing>) {
+    response.ifSuccessOrElse(
+        {
+            this.response.status(response.status)
+        },
+        {
+            this.response.status(response.status)
+        }
+    )
 }

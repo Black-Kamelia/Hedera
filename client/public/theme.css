@@ -36,18 +36,6 @@ h1, h2, h3, h4, h5, h6 {
     padding-right: calc(1.25rem + 24px);
 }
 
-.i-hedera {
-  --un-icon: url('/hedera.svg');
-  -webkit-mask: var(--un-icon) no-repeat;
-  mask: var(--un-icon) no-repeat;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  background-color: currentColor;
-  color: inherit;
-  width: 1.5em;
-  height: 1.5em;
-}
-
 .large-icon {
   width: 2em;
   height: 2em;

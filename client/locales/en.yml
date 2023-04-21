@@ -17,6 +17,7 @@ sizeUnits:
   60: EiB
   70: ZiB
   80: YiB
+unlimited-quota: Unlimited quota
 
 sidebar:
   docs: Documentation

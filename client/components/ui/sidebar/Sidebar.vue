@@ -70,7 +70,6 @@ function toggleSidebar() {
   </aside>
 </template>
 
-<!-- TODO: you can use SCSS if you want ; but you could also use UNO; the importants are weird -->
 <style scoped lang="scss">
 .sidebar {
   width: 5em;

@@ -1,13 +1,19 @@
 pipeline {
     agent {
         docker {
-            image 'gradle:7.6.0-jdk17'
+            image 'gradle:8.1.0-jdk17'
             reuseNode true
         }
     }
+    options {
+        disableConcurrentBuilds(abortPrevious: true)
+        timestamps()
+        ansiColor('xterm')
+        timeout(time: 15, unit: 'MINUTES')
+    }
 
     stages {
-        stage('Build') {
+        stage('Precondition') {
             steps {
                 script {
                     def branch = env.CHANGE_BRANCH
@@ -17,18 +23,79 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                sh 'gradle build -x test'
+                echo 'Warming up Gradle'
+                sh 'gradle --parallel -q'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'gradle test'
-            }
-            post {
-                always {
-                    junit checksName: 'Tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
-                    publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+        stage('Build and test') {
+            parallel {
+                stage('Back') {
+                    stages {
+                        stage('Build') {
+                            steps {
+                                sh 'gradle --parallel server:jar -x client:bundle'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                sh 'gradle --parallel server:test -x client:bundle'
+                            }
+                            post {
+                                always {
+                                    junit checksName: 'Back-end tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                                    publishCoverage adapters: [jacocoAdapter(mergeToOneReport: true, path: '**/build/reports/kover/xml/*.xml')], sourceDirectories: [[path: 'server/src/main/kotlin']], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                                }
+                            }
+                        }
+                    }
                 }
+                stage ('Front') {
+                    stages {
+                        stage('Lint') {
+                            steps {
+                                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                                    script {
+                                        def status = sh(script: 'gradle --parallel client:lint', returnStatus: true)
+                                        if (status != 0) {
+                                            currentBuild.result = 'UNSTABLE'
+                                            error 'Lint failed'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Build') {
+                            steps {
+                                sh 'gradle --parallel client:build'
+                            }
+                        }
+                        stage('Test') {
+                            steps {
+                                echo "For now, we don't have any front-end tests"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Package') {
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'continuous-integration'
+                }
+            }
+            steps {
+                sh 'gradle assemble'
+                archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
+            }
+        }
+        stage('Deploy') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'echo "Push to Docker Hub"'
             }
         }
     }

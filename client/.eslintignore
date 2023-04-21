@@ -6,4 +6,4 @@ node_modules
 .output
 .env
 dist
-eslint-report.html
+.DS_Store

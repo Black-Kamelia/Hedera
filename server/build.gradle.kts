@@ -1,3 +1,4 @@
+val jvmVersion: String = project.properties["jvm.version"] as String
 val kotlinVersion: String = project.properties["kotlin.version"] as String
 val ktorVersion: String = project.properties["ktor.version"] as String
 val coroutinesVersion: String = project.properties["coroutines.version"] as String
@@ -15,8 +16,8 @@ plugins {
     application
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
     kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("plugin.serialization") version "1.8.10"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.kamelia"
@@ -31,15 +32,15 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor", "ktor-server-core-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-server-auth-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-server-auth-jwt-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-server-sessions-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-server-host-common-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-server-content-negotiation-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-server-core", ktorVersion)
+    implementation("io.ktor", "ktor-server-auth", ktorVersion)
+    implementation("io.ktor", "ktor-server-auth-jwt", ktorVersion)
+    implementation("io.ktor", "ktor-server-sessions", ktorVersion)
+    implementation("io.ktor", "ktor-server-host-common", ktorVersion)
+    implementation("io.ktor", "ktor-server-content-negotiation", ktorVersion)
     implementation("io.ktor", "ktor-server-status-pages", ktorVersion)
-    implementation("io.ktor", "ktor-serialization-kotlinx-json-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-server-netty-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-serialization-kotlinx-json", ktorVersion)
+    implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
@@ -59,7 +60,7 @@ dependencies {
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
-    testImplementation("io.ktor", "ktor-server-tests-jvm", ktorVersion)
+    testImplementation("io.ktor", "ktor-server-tests", ktorVersion)
     testImplementation("org.jetbrains.kotlin", "kotlin-test", kotlinVersion)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion)
 
@@ -67,11 +68,26 @@ dependencies {
 }
 
 tasks {
+    compileJava {
+        sourceCompatibility = jvmVersion
+        targetCompatibility = jvmVersion
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = jvmVersion
+        }
+    }
+
     shadowJar {
         archiveBaseName.set("Hedera")
         archiveClassifier.set("")
         archiveVersion.set(project.version.toString())
         destinationDirectory.set(file("$rootDir/executables"))
+    }
+
+    processResources {
+        dependsOn(":client:bundle")
     }
 
     jar {
@@ -108,6 +124,5 @@ tasks {
 
     koverXmlReport {
         finalizedBy(koverHtmlReport)
-
     }
 }

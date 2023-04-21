@@ -2,8 +2,7 @@ package com.kamelia.hedera.util
 
 import com.kamelia.hedera.core.UploadCodeGenerationException
 import com.kamelia.hedera.rest.file.Files
-import io.ktor.http.content.PartData
-import io.ktor.http.content.streamProvider
+import io.ktor.http.content.*
 import java.io.File
 import java.nio.file.Path
 import java.util.UUID

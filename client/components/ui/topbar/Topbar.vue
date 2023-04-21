@@ -7,7 +7,7 @@ const pageName = usePageName()
 </script>
 
 <template>
-  <div class="top-bar flex items-center gap-4 px-8 py-5 h-20 w-full" style="background-color: var(--surface-overlay);">
+  <div class="top-bar flex items-center gap-4 px-8 py-5 h-20 w-full bg-[var(--surface-overlay)]">
     <h2 class="text-3xl w-full">
       {{ pageName }}
     </h2>

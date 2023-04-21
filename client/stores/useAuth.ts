@@ -1,3 +1,5 @@
+import type { AxiosError } from 'axios'
+
 export interface Tokens {
   accessToken: string
   refreshToken: string
@@ -14,9 +16,7 @@ export interface UseAuthComposer {
 export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
-
-  const { execute: executeLogin } = useAPI('/login', { method: 'POST' }, { immediate: false })
-  const { execute: executeLogout } = useAPI('/logout', { method: 'POST' }, { immediate: false })
+  const axios = useAxiosInstance()
 
   const tokens = ref<Nullable<Tokens>>(null)
 
@@ -27,23 +27,30 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   }
 
   async function login(values: Record<string, any>) {
-    const { data, error } = await executeLogin({ data: values })
-    if (!error.value) {
-      setTokens(data.value)
-      loggedInEvent.emit({ tokens: data.value })
+    let tokens: Tokens
+    try {
+      const { data } = await axios.value.post<Tokens>('/login', values)
+      tokens = data
     }
-    else {
-      loggedInEvent.emit({ error: error.value })
+    catch (error) {
+      loggedInEvent.emit({ error: error as AxiosError })
+      return
     }
+
+    setTokens(tokens)
+    loggedInEvent.emit({ tokens })
   }
 
   async function logout() {
-    const { error } = await executeLogout()
-    if (error.value)
+    try {
+      await axios.value.post('/logout')
+    }
+    catch (error) {
+      loggedOutEvent.emit({ error: error as AxiosError })
       return
+    }
 
     setTokens(null)
-    navigateTo('/login')
     loggedOutEvent.emit()
   }
 

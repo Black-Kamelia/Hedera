@@ -8,7 +8,7 @@ export interface InputOTPEmits {
 }
 
 const emit = defineEmits<InputOTPEmits>()
-const { disabled = false } = definePropsRefs<InputOTPProps>()
+const { disabled = computed(() => false) } = definePropsRefs<InputOTPProps>()
 const { modelValue } = defineModels<{
   modelValue: OTP
 }>()

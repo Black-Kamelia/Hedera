@@ -1,9 +1,29 @@
+app_name: Hedera
+
 global:
   login: Connexion
   logout: Se déconnecter
   start: Commencer
 main:
   title: Bienvenue sur Hedera
+
+sizeUnits:
+  0: octets
+  10: Kio
+  20: Mio
+  30: Gio
+  40: Tio
+  50: Pio
+  60: Eio
+  70: Zio
+  80: Yio
+unlimited-quota: Quota illimité
+
+sidebar:
+  docs: Documentation
+  dark_mode: Mode sombre
+  light_mode: Mode clair
+
 pages:
   login:
     forgot_password: Mot de passe oublié ?
@@ -18,6 +38,17 @@ pages:
       submit: Connexion
     tab_title: Connexion • Hedera
     title: Se connecter
+  files:
+    page_name: Fichiers
+  favorites:
+    page_name: Favoris
+  upload:
+    page_name: Mettre en ligne
+  analytics:
+    page_name: Statistiques
+  configuration:
+    page_name: Configuration
+
 theme:
   dark: Sombre
   light: Clair

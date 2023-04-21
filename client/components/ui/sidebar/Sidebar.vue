@@ -18,7 +18,7 @@ function toggleSidebar() {
 </script>
 
 <template>
-  <aside ref="sidebarRef" class="sidebar flex flex-col p-0" :class="{ expanded: sidebarOpen }">
+  <aside ref="sidebarRef" class="sidebar flex flex-col p-0 h-full" :class="{ expanded: sidebarOpen }">
     <div class="header flex flex-row items-center">
       <div class="flex-grow overflow-hidden">
         <Transition>
@@ -30,15 +30,15 @@ function toggleSidebar() {
       <div>
         <PButton rounded @click="toggleSidebar()">
           <Transition mode="out-in" name="fade">
-            <i v-if="isSidebarHovered && !sidebarOpen" class="i-tabler-menu-2" />
-            <i v-else-if="sidebarOpen" class="i-tabler-indent-decrease" />
-            <i v-else class="i-hedera-logo" />
+            <span v-if="isSidebarHovered && !sidebarOpen" class="i-tabler-menu-2" />
+            <span v-else-if="sidebarOpen" class="i-tabler-indent-decrease" />
+            <span v-else class="i-hedera-logo" />
           </Transition>
         </PButton>
       </div>
     </div>
-    <div class="items flex flex-col justify-between" style="flex-grow: 1;">
-      <div class="flex flex-col justify-start gap-2 p-4">
+    <div class="items flex flex-col justify-between h-full overflow-scroll">
+      <div class="flex flex-col justify-start gap-2 p-4 grow">
         <SidebarButton
           icon="i-tabler-file" :label="t('pages.files.page_name')" :open="sidebarOpen"
           :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
@@ -127,9 +127,9 @@ function toggleSidebar() {
   }
 
   .p-button, .p-button:active, .p-button:hover {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+    border: none;
+    outline: none;
+    box-shadow: none;
   }
 }
 

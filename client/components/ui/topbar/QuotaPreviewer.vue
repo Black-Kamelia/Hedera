@@ -13,10 +13,10 @@ const maxFormat = computed(() => humanSize(max.value, locale.value, t))
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center gap-1.5 h-full quota">
-    <PProgressBar style="height: .5em; width: 100%" :value="unlimited ? 100 : quota / max * 100" :show-value="false" />
-    <span v-if="!unlimited" class="text-xs" style="margin-bottom: -.25rem;">{{ quotaFormat }} / {{ maxFormat }}</span>
-    <span v-else class="text-xs" style="margin-bottom: -.25rem;">{{ t('unlimited-quota') }}</span>
+  <div class="flex-center flex-col gap-1.5 h-full quota">
+    <PProgressBar class="max-h-2 w-full" :value="unlimited ? 100 : quota / max * 100" :show-value="false" />
+    <span v-if="!unlimited" class="text-xs mb--1">{{ quotaFormat }} / {{ maxFormat }}</span>
+    <span v-else class="text-xs mb--1">{{ t('unlimited-quota') }}</span>
   </div>
 </template>
 

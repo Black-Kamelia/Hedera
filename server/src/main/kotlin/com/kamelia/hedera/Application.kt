@@ -2,11 +2,7 @@ package com.kamelia.hedera
 
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.database.configureLiquibase
-import com.kamelia.hedera.plugins.configureAuthentication
-import com.kamelia.hedera.plugins.configureCORS
-import com.kamelia.hedera.plugins.configureExceptionAdvisors
-import com.kamelia.hedera.plugins.configureRouting
-import com.kamelia.hedera.plugins.configureSerialization
+import com.kamelia.hedera.plugins.*
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.isDev
@@ -25,12 +21,13 @@ fun Application.module() {
     if (isDev) log.info("Running in development mode")
     Connection.init()
     MimeTypes.init()
+    configureExceptionAdvisors()
     configureLiquibase()
     configureAuthentication()
-    configureRouting()
     configureSerialization()
     configureCORS()
-    configureExceptionAdvisors()
+    configureRouting()
+    configureWebSockets()
     install(AutoHeadResponse)
 
     SessionManager.startPruning()

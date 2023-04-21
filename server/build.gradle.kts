@@ -44,6 +44,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
+    implementation("io.ktor", "ktor-server-websockets", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -102,6 +103,7 @@ tasks {
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
         )
         classpath = sourceSets["main"].runtimeClasspath
         mainClass.set("com.kamelia.hedera.ApplicationKt")
@@ -114,6 +116,7 @@ tasks {
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
         )
         finalizedBy(koverVerify)
     }

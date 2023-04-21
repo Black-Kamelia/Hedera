@@ -22,10 +22,6 @@ const maxFormat = computed(() => humanSize(max.value, locale.value, t))
 
 <style scoped>
 .quota {
-  min-width: 12.5rem;
-  border-left: 1px solid var(--surface-border);
-  padding-left: 1.75rem;
-  border-right: 1px solid var(--surface-border);
-  padding-right: 1.75rem;
+  min-width: 10rem;
 }
 </style>

@@ -1,0 +1,11 @@
+{
+  "prefix": "hedera",
+  "lastModified": 1682074932,
+  "icons": {
+    "logo": {
+      "body": "<path fill=\"none\" stroke=\"#fff\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"2\" d=\"M12 17c-.994 1.772-3.347 3-8 3-.36-1.77 1-5 1-5s-3.249-2.46-4-5c1.725-1.13 6-1 6-1s.582-5.58 5-8m0 16c.994 1.772 3.347 3 8 3 .36-1.77-1-5-1-5s3.249-2.46 4-5c-1.725-1.13-6-1-6-1s-.582-5.58-5-8m0 22V10.5M9 16l3 1 3-1\"/>",
+      "width": 24,
+      "height": 24
+    }
+  }
+}

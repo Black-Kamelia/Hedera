@@ -3,18 +3,6 @@ useTheme()
 
 const toast = useToast()
 
-useEventBus(LoggedInEvent).on((event) => {
-  if (event.error)
-    return
-
-  toast.add({
-    severity: 'success',
-    summary: 'Logged in',
-    detail: 'Logged in successfully.',
-  })
-  navigateTo('/')
-})
-
 useEventBus(RefreshTokenExpiredEvent).on(() => {
   toast.add({
     severity: 'error',

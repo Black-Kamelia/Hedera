@@ -7,22 +7,21 @@ const { isDark, toggle } = useDark()
 const themeIcon = computed(() => isDark.value ? 'i-tabler-sun' : 'i-tabler-moon')
 const themeName = computed(() => isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode'))
 
-const sidebar = useStorage('sidebar', { open: true })
-const sidebarOpen = computed(() => sidebar.value.open)
+const sidebar = toReactive(useStorage('sidebar', { open: true }))
 const sidebarRef = ref<HTMLElement | null>(null)
 
 const isSidebarHovered = useElementHover(sidebarRef)
 function toggleSidebar() {
-  sidebar.value = { ...sidebar.value, open: !sidebar.value.open }
+  sidebar.open = !sidebar.open
 }
 </script>
 
 <template>
-  <aside ref="sidebarRef" class="sidebar flex flex-col p-0 h-full" :class="{ expanded: sidebarOpen }">
+  <aside ref="sidebarRef" class="sidebar flex flex-col p-0 h-full" :class="{ expanded: sidebar.open }">
     <div class="header flex flex-row items-center">
       <div class="flex-grow overflow-hidden">
         <Transition>
-          <h1 v-show="sidebarOpen" class="text-4xl ml-2">
+          <h1 v-show="sidebar.open" class="text-4xl ml-2">
             {{ t('app_name') }}
           </h1>
         </Transition>
@@ -30,8 +29,8 @@ function toggleSidebar() {
       <div>
         <PButton rounded @click="toggleSidebar()">
           <Transition mode="out-in" name="fade">
-            <span v-if="isSidebarHovered && !sidebarOpen" class="i-tabler-menu-2" />
-            <span v-else-if="sidebarOpen" class="i-tabler-indent-decrease" />
+            <span v-if="isSidebarHovered && !sidebar.open" class="i-tabler-menu-2" />
+            <span v-else-if="sidebar.open" class="i-tabler-indent-decrease" />
             <span v-else class="i-hedera-logo" />
           </Transition>
         </PButton>
@@ -40,31 +39,31 @@ function toggleSidebar() {
     <div class="items flex flex-col justify-between h-full overflow-scroll">
       <div class="flex flex-col justify-start gap-2 p-4 grow">
         <SidebarButton
-          icon="i-tabler-file" :label="t('pages.files.page_name')" :open="sidebarOpen"
+          icon="i-tabler-file" :label="t('pages.files.page_name')" :open="sidebar.open"
           :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
         />
         <SidebarButton
-          icon="i-tabler-star" :label="t('pages.favorites.page_name')" :open="sidebarOpen"
+          icon="i-tabler-star" :label="t('pages.favorites.page_name')" :open="sidebar.open"
           :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
         />
         <SidebarButton
-          icon="i-tabler-upload" :label="t('pages.upload.page_name')" :open="sidebarOpen"
+          icon="i-tabler-upload" :label="t('pages.upload.page_name')" :open="sidebar.open"
           :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
         />
         <SidebarButton
-          icon="i-tabler-timeline" :label="t('pages.analytics.page_name')" :open="sidebarOpen"
+          icon="i-tabler-timeline" :label="t('pages.analytics.page_name')" :open="sidebar.open"
           :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
         />
         <SidebarButton
-          icon="i-tabler-settings" :label="t('pages.configuration.page_name')" :open="sidebarOpen"
+          icon="i-tabler-settings" :label="t('pages.configuration.page_name')" :open="sidebar.open"
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
       </div>
       <div class="flex flex-col p-4 gap-2">
-        <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebarOpen" />
-        <SidebarButton :icon="themeIcon" :label="themeName" :open="sidebarOpen" @click="toggle()" />
+        <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
+        <SidebarButton :icon="themeIcon" :label="themeName" :open="sidebar.open" @click="toggle()" />
         <div class="sep" />
-        <SidebarButton icon="i-tabler-user-circle" label="{Username goes here}" :open="sidebarOpen" />
+        <SidebarButton icon="i-tabler-user-circle" label="{Username goes here}" :open="sidebar.open" />
       </div>
     </div>
   </aside>

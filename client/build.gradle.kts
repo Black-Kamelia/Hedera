@@ -49,7 +49,7 @@ tasks {
     inputs.dir(file("${rootProject.projectDir}/client/utils"))
     outputs.dir(file("${rootProject.projectDir}/client/.output"))
 
-    pnpmCommand.set(listOf("generate"))
+    pnpmCommand.set(listOf("generate:ci"))
   }
 
   register<Copy>("bundle") {

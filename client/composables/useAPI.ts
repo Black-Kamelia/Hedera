@@ -7,9 +7,9 @@ export default function useAPI<T = any, R = AxiosResponse<T>, D = any>(
   config?: RawAxiosRequestConfig<D> & { skipAuthRefresh?: boolean },
   options?: UseAxiosOptions<T>,
 ): StrictUseAxiosReturn<T, R, D> & PromiseLike<StrictUseAxiosReturn<T, R, D>> {
-  const axiosInstance = useAxiosInstance()
+  const axios = useAxiosFactory()
   if (options)
-    return useAxios(url, config ?? {}, axiosInstance.value, options)
+    return useAxios(url, config ?? {}, axios(), options)
   else
-    return useAxios(url, config ?? {}, axiosInstance.value)
+    return useAxios(url, config ?? {}, axios())
 }

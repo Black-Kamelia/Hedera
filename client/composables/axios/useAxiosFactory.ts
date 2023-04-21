@@ -24,31 +24,29 @@ function tryRefreshFactory(axios: AxiosInstance) {
   }
 }
 
-export function useAxiosInstance() {
-  const appConfig = useRuntimeConfig()
-  const axiosMiddlewares = useAxiosMiddlewares()
+const appConfig = useRuntimeConfig()
+const axiosMiddlewares = useAxiosMiddlewares()
 
-  const axiosInstance = computed(() => {
-    const it = axios.create({
+export function useAxiosFactory() {
+  return () => {
+    const axiosInstance = axios.create({
       baseURL: appConfig.public.apiBaseUrl,
     })
 
     axiosMiddlewares.value.requestMiddlewares.forEach(createInterceptorFactory(
-      it.interceptors.request,
+      axiosInstance.interceptors.request,
       (config: InternalAxiosRequestConfig<any>) => config.url ?? '',
       (error: AxiosError) => error.config?.url ?? '',
     ))
 
     axiosMiddlewares.value.responseMiddlewares.forEach(createInterceptorFactory(
-      it.interceptors.response,
+      axiosInstance.interceptors.response,
       (response: AxiosResponse<any, any>) => response.config.url ?? '',
       (error: AxiosError) => error.response?.config.url ?? '',
     ))
 
-    createAuthRefreshInterceptor(it, tryRefreshFactory(it))
+    createAuthRefreshInterceptor(axiosInstance, tryRefreshFactory(axiosInstance))
 
-    return it
-  })
-
-  return axiosInstance
+    return axiosInstance
+  }
 }

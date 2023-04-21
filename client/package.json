@@ -3,7 +3,8 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "pnpm icons && nuxt generate",
+    "generate": "nuxt generate",
+    "generate:ci": "pnpm icons && nuxt generate",
     "preview": "nuxt preview",
     "il": "pnpm install --frozen-lockfile",
     "postinstall": "nuxt prepare",

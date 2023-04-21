@@ -16,7 +16,7 @@ export interface UseAuthComposer {
 export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
-  const axios = useAxiosInstance()
+  const axios = useAxiosFactory()
 
   const tokens = ref<Nullable<Tokens>>(null)
 
@@ -29,7 +29,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   async function login(values: Record<string, any>) {
     let tokens: Tokens
     try {
-      const { data } = await axios.value.post<Tokens>('/login', values)
+      const { data } = await axios().post<Tokens>('/login', values)
       tokens = data
     }
     catch (error) {
@@ -43,7 +43,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
 
   async function logout() {
     try {
-      await axios.value.post('/logout')
+      await axios().post('/logout')
     }
     catch (error) {
       loggedOutEvent.emit({ error: error as AxiosError })

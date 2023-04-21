@@ -19,4 +19,6 @@ hedera:
     expirationAccess: 1000
     secretRefresh: $HEDERA_JWT_SECRET_REFRESH
     expirationRefresh: 2000
+    secretWSToken: $HEDERA_JWT_SECRET_WS_TOKEN
+    expirationWSToken: 1000
     realm: hedera login-locked

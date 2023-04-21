@@ -1,3 +1,4 @@
+val jvmVersion: String = project.properties["jvm.version"] as String
 val kotlinVersion: String = project.properties["kotlin.version"] as String
 val ktorVersion: String = project.properties["ktor.version"] as String
 val coroutinesVersion: String = project.properties["coroutines.version"] as String
@@ -16,7 +17,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.6.1"
     kotlin("jvm")
     kotlin("plugin.serialization") version "1.8.10"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.kamelia"
@@ -43,6 +44,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
+    implementation("io.ktor", "ktor-server-websockets", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -67,11 +69,26 @@ dependencies {
 }
 
 tasks {
+    compileJava {
+        sourceCompatibility = jvmVersion
+        targetCompatibility = jvmVersion
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = jvmVersion
+        }
+    }
+
     shadowJar {
         archiveBaseName.set("Hedera")
         archiveClassifier.set("")
         archiveVersion.set(project.version.toString())
         destinationDirectory.set(file("$rootDir/executables"))
+    }
+
+    processResources {
+        dependsOn(":client:bundle")
     }
 
     jar {
@@ -86,6 +103,7 @@ tasks {
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
         )
         classpath = sourceSets["main"].runtimeClasspath
         mainClass.set("com.kamelia.hedera.ApplicationKt")
@@ -98,6 +116,7 @@ tasks {
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
+            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
         )
         finalizedBy(koverVerify)
     }
@@ -108,6 +127,5 @@ tasks {
 
     koverXmlReport {
         finalizedBy(koverHtmlReport)
-
     }
 }

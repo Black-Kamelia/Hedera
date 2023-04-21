@@ -38,12 +38,10 @@ export default defineNuxtConfig({
     '@vue-macros/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/critters',
-    '@nuxt/image-edge',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/color-mode',
     '@notkamui/nuxt-primevue',
-    '@formkit/nuxt',
   ],
   devtools: {
     enabled: true,
@@ -82,7 +80,7 @@ export default defineNuxtConfig({
     storageKey: 'color-scheme',
   },
   primevue: {
-    ripple: true,
+    ripple: false,
     inputStyle: 'filled',
   },
 })

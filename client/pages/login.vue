@@ -5,11 +5,9 @@ import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t, e } = useI18n()
 
+usePageName(t('pages.login.page_name'))
 definePageMeta({
   layout: 'centercard',
-})
-useHead({
-  title: t('pages.login.tab_title'),
 })
 
 const schema = object({
@@ -20,9 +18,9 @@ const { handleSubmit, errors, resetField } = useForm({
   validationSchema: schema,
 })
 
-const { tokens, login } = useAuth()
+const { isAuthenticated, login } = useAuth()
 onMounted(() => {
-  if (tokens.value)
+  if (isAuthenticated.value)
     navigateTo('/', { replace: true })
 })
 
@@ -34,10 +32,19 @@ function hideErrorMessage() {
 }
 
 useEventBus(LoggedInEvent).on((event) => {
-  if (event.error?.response?.status === 401)
-    resetField('password')
+  if (event.error) {
+    if (event.error?.response?.status === 401)
+      resetField('password')
+    if (event.error?.response?.status === 403) {
+      resetField('username')
+      resetField('password')
+    }
 
-  errorMessage.value = e(event.error)
+    errorMessage.value = e(event.error)
+  }
+  else {
+    navigateTo('/')
+  }
 })
 
 const onSubmit = handleSubmit(login)

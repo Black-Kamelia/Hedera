@@ -8,6 +8,7 @@ export const LoggedInEvent: EventBusKey<{
 }> = Symbol('logged-in')
 
 export const LoggedOutEvent: EventBusKey<{
+  error?: AxiosError
 }> = Symbol('logged-out')
 
 export const TokensRefreshedEvent: EventBusKey<{

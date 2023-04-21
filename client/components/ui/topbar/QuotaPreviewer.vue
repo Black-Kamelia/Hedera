@@ -8,8 +8,8 @@ export interface QuotaPreviewerProps {
 const { quota, max, unlimited = computed(() => false) } = definePropsRefs<QuotaPreviewerProps>()
 const { locale, t } = useI18n()
 
-const quotaFormat = humanSize(quota.value, locale.value, t)
-const maxFormat = humanSize(max.value, locale.value, t)
+const quotaFormat = computed(() => humanSize(quota.value, locale.value, t))
+const maxFormat = computed(() => humanSize(max.value, locale.value, t))
 </script>
 
 <template>

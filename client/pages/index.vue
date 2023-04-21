@@ -1,6 +1,12 @@
 <script lang="ts" setup>
-import InputOTP from '~/components/input/InputOTP.vue'
-
+const { isAuthenticated } = useAuth()
+onMounted(() => {
+  if (!isAuthenticated.value)
+    navigateTo('/login')
+  else
+    navigateTo('/files')
+})
+/*
 const { toggle } = useDark()
 const { locale, t } = useI18n()
 
@@ -17,8 +23,11 @@ async function test() {
 
   console.log(data.value) // eslint-disable-line no-console
 }
+
+ */
 </script>
 
+<!--
 <template>
   <div flex-center h-screen>
     <div class="absolute top-10 right-10 flex flex-row gap-2">
@@ -53,3 +62,4 @@ async function test() {
     </button>
   </div>
 </template>
+-->

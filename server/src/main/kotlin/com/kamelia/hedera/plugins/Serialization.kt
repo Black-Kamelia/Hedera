@@ -8,12 +8,14 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 
+val HederaJsonModule = Json {
+    serializersModule = SerializersModule {
+        contextual(UUIDSerializer)
+    }
+}
+
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json(Json {
-            serializersModule = SerializersModule {
-                contextual(UUIDSerializer)
-            }
-        })
+        json(HederaJsonModule)
     }
 }

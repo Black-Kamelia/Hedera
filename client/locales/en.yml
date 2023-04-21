@@ -1,46 +1,60 @@
-global:
+app_name: Hedera
 
-  #### TEMP #####
+global:
   login: Login
   logout: Logout
   start: Start
-  ###############
+main:
+  title: Welcome to Hedera
 
-  theme:
-    dark: Dark
-    light: Light
+sizeUnits:
+  0: bytes
+  10: KiB
+  20: MiB
+  30: GiB
+  40: TiB
+  50: PiB
+  60: EiB
+  70: ZiB
+  80: YiB
+unlimited-quota: Unlimited quota
+
+sidebar:
+  docs: Documentation
+  dark_mode: Dark mode
+  light_mode: Light mode
 
 pages:
   login:
-    tab_title: Log in • Hedera
-    title: Log in
     forgot_password: Forgot password?
-
-  # resetPassword:
-  #   tab_title: Réinitialiser le mot de passe • Hedera
-  #   title: Réinitialiser le mot de passe
-  #   messages:
-  #     link_sent: Un lien de réinitialisation a été envoyé.
+    page_name: Logging in
+    title: Log in
+  files:
+    page_name: Files
+  favorites:
+    page_name: Favorites
+  upload:
+    page_name: Upload
+  analytics:
+    page_name: Analytics
+  configuration:
+    page_name: Configuration
 
 forms:
   login:
+    errors:
+      missing_username: Username is required
+      missing_password: Password is required
     fields:
       password: Password
       remember_me: Remember me
       username: Username
-    errors:
-      missing_username: The username is required
-      missing_password: The password is required
     submit: Submit
 
-  reset_password:
-    errors:
-      missing_email: The email is required
-    fields:
-      email: Email
-    submit: Send reset link
-
 errors:
-  unknown: An unexpected error occurred.
   auth:
-    invalid_credentials: Username or password is incorrect.
+    invalid_credentials: Username or password is incorrect
+
+theme:
+  dark: Dark
+  light: Light

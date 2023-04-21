@@ -1,46 +1,61 @@
+app_name: Hedera
+
 global:
-
-  #### TEMP #####
   login: Connexion
-  logout: Déconnexion
+  logout: Se déconnecter
   start: Commencer
-  ###############
+main:
+  title: Bienvenue sur Hedera
 
-  theme:
-    dark: Sombre
-    light: Clair
+sizeUnits:
+  0: octets
+  10: Kio
+  20: Mio
+  30: Gio
+  40: Tio
+  50: Pio
+  60: Eio
+  70: Zio
+  80: Yio
+unlimited-quota: Quota illimité
+
+sidebar:
+  docs: Documentation
+  dark_mode: Mode sombre
+  light_mode: Mode clair
 
 pages:
   login:
-    tab_title: Connexion • Hedera
-    title: Se connecter
     forgot_password: Mot de passe oublié ?
-
-  # resetPassword:
-  #   tab_title: Réinitialiser le mot de passe • Hedera
-  #   title: Réinitialiser le mot de passe
-  #   messages:
-  #     link_sent: Un lien de réinitialisation a été envoyé.
+    page_name: Connexion
+    title: Se connecter
+  files:
+    page_name: Fichiers
+  favorites:
+    page_name: Favoris
+  upload:
+    page_name: Mettre en ligne
+  analytics:
+    page_name: Statistiques
+  configuration:
+    page_name: Configuration
 
 forms:
   login:
+    errors:
+      missing_username: Nom d'utilisateur requis
+      missing_password: Mot de passe requis
     fields:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d'utilisateur
-    errors:
-      missing_username: Le nom d'utilisateur est requis
-      missing_password: Le mot de passe est requis
-    submit: Connexion
-
-  reset_password:
-    errors:
-      missing_email: L'adresse e-mail est requise
-    fields:
-      email: Adresse e-mail
-    submit: Envoyer le lien de réinitialisation
+    submit: Valider
 
 errors:
-  unknown: Une erreur inattendue est survenue.
+  unknown: Une erreur inattendue est survenue
   auth:
-    invalid_credentials: Nom d'utilisateur ou mot de passe incorrect.
+    invalid_credentials: Nom d'utilisateur ou mot de passe incorrect
+
+theme:
+  dark: Sombre
+  light: Clair

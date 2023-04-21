@@ -2,7 +2,7 @@ ktor:
   environment: "$HEDERA_ENV:prod"
 
   deployment:
-    port: 8080
+    port: "$HEDERA_PORT:8080"
 
   application:
     modules:
@@ -19,4 +19,6 @@ hedera:
     expirationAccess: "$HEDERA_JWT_EXPIRATION:3600000" # Default 1 hour
     secretRefresh: $HEDERA_JWT_SECRET_REFRESH
     expirationRefresh: "$HEDERA_JWT_EXPIRATION_REFRESH:2592000000" # Default 30 days
+    secretWSToken: $HEDERA_JWT_SECRET_WS_TOKEN
+    expirationWSToken: "$HEDERA_JWT_EXPIRATION_WS_TOKEN:300000" # Default 5 minutes
     realm: hedera login-locked

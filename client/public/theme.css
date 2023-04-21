@@ -8,8 +8,14 @@ html {
 }
 
 /* primevue additions */
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap');
+
 body {
   color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Red Hat Display', sans-serif;
 }
 
 .p-input-icon-left > i,
@@ -40,4 +46,9 @@ body {
 
 input:focus::placeholder {
   color: transparent;
+}
+
+.large-icon {
+  width: 2em;
+  height: 2em;
 }

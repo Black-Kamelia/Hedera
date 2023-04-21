@@ -12,6 +12,6 @@
   "unwantedRecommendations": [
     "vscode.typescript-language-features",
     "octref.vetur",
-    "vue.vscode-typescript-vue-plugin",
+    "vue.vscode-typescript-vue-plugin"
   ]
 }

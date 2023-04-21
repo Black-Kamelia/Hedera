@@ -48,7 +48,7 @@ function toggleSidebar() {
           :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
         />
         <SidebarButton
-          icon="i-tabler-cloud-upload" :label="t('pages.upload.page_name')" :open="sidebarOpen"
+          icon="i-tabler-upload" :label="t('pages.upload.page_name')" :open="sidebarOpen"
           :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
         />
         <SidebarButton

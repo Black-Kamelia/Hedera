@@ -64,9 +64,9 @@ tasks {
 
   register<Delete>("clean") {
     delete(file("${rootProject.projectDir}/client/node_modules"))
+    delete(file("${rootProject.projectDir}/client/dist"))
     delete(file("${rootProject.projectDir}/client/.output"))
     delete(file("${rootProject.projectDir}/client/.nuxt"))
-    delete(file("${rootProject.projectDir}/client/dist"))
     delete(file("${rootProject.projectDir}/client/build"))
     delete(file("${rootProject.projectDir}/client/eslint-report.html"))
     delete(file("${rootProject.projectDir}/server/src/main/resources/static"))

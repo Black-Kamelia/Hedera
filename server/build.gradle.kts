@@ -88,7 +88,7 @@ tasks {
     }
 
     processResources {
-        dependsOn(":client:bundle")
+        mustRunAfter(":client:bundle")
     }
 
     jar {

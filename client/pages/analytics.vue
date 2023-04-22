@@ -4,6 +4,7 @@ const { t } = useI18n()
 usePageName(t('pages.analytics.page_name'))
 definePageMeta({
   layout: 'sidebar',
+  middleware: ['auth'],
 })
 </script>
 

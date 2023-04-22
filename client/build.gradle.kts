@@ -24,17 +24,27 @@ tasks {
     outputs.dir(file("${rootProject.projectDir}/client/.nuxt"))
   }
 
-  register<PnpmTask>("lint") {
+  val lint = register<PnpmTask>("lint") {
     dependsOn(pnpmInstall)
     ignoreExitValue.set(false)
 
     outputs.file(file("${rootProject.projectDir}/client/eslint-report.html"))
 
-    pnpmCommand.set(listOf("lint:ci"))
+    pnpmCommand.set(listOf("lint"))
+  }
+
+  val icons = register<PnpmTask>("icons") {
+    dependsOn(lint)
+    ignoreExitValue.set(false)
+
+    inputs.dir(file("${rootProject.projectDir}/client/public/icons/files"))
+    outputs.dir(file("${rootProject.projectDir}/client/public/icons"))
+
+    pnpmCommand.set(listOf("generate", "icons"))
   }
 
   val build= register<PnpmTask>("build") {
-    dependsOn(pnpmInstall)
+    dependsOn(icons)
     ignoreExitValue.set(false)
 
     inputs.dir(file("${rootProject.projectDir}/client/components"))
@@ -49,7 +59,7 @@ tasks {
     inputs.dir(file("${rootProject.projectDir}/client/utils"))
     outputs.dir(file("${rootProject.projectDir}/client/.output"))
 
-    pnpmCommand.set(listOf("generate:ci"))
+    pnpmCommand.set(listOf("generate"))
   }
 
   register<Copy>("bundle") {

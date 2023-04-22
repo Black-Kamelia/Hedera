@@ -7,6 +7,7 @@ const { t } = useI18n()
 
 definePageMeta({
   layout: 'centercard',
+  middleware: ['auth'],
 })
 useHead({
   title: t('pages.login.tab_title'),
@@ -22,7 +23,7 @@ const { handleSubmit, errors, resetField } = useForm({
 const { tokens, login } = useAuth()
 onMounted(() => {
   if (tokens.value)
-    navigateTo('/', { replace: true })
+    navigateTo('/files', { replace: true })
 })
 
 const usernamePlaceholder = getRandomDeveloperName()

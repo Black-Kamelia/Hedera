@@ -21,7 +21,7 @@ const { handleSubmit, errors, resetField } = useForm({
 const { isAuthenticated, login } = useAuth()
 onMounted(() => {
   if (isAuthenticated.value)
-    navigateTo('/', { replace: true })
+    navigateTo('/files', { replace: true })
 })
 
 const usernamePlaceholder = getRandomDeveloperName()
@@ -43,7 +43,7 @@ useEventBus(LoggedInEvent).on((event) => {
     errorMessage.value = e(event.error)
   }
   else {
-    navigateTo('/')
+    navigateTo('/files')
   }
 })
 

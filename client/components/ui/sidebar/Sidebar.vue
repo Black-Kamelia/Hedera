@@ -39,23 +39,23 @@ function toggleSidebar() {
     <div class="items flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden">
       <div class="flex flex-col justify-start gap-2 p-4 grow">
         <SidebarButton
-          icon="i-tabler-file" :label="t('pages.files.page_name')" :open="sidebar.open"
+          icon="i-tabler-file" :label="t('pages.files.title')" :open="sidebar.open"
           :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
         />
         <SidebarButton
-          icon="i-tabler-star" :label="t('pages.favorites.page_name')" :open="sidebar.open"
+          icon="i-tabler-star" :label="t('pages.favorites.title')" :open="sidebar.open"
           :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
         />
         <SidebarButton
-          icon="i-tabler-upload" :label="t('pages.upload.page_name')" :open="sidebar.open"
+          icon="i-tabler-upload" :label="t('pages.upload.title')" :open="sidebar.open"
           :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
         />
         <SidebarButton
-          icon="i-tabler-timeline" :label="t('pages.analytics.page_name')" :open="sidebar.open"
+          icon="i-tabler-timeline" :label="t('pages.analytics.title')" :open="sidebar.open"
           :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
         />
         <SidebarButton
-          icon="i-tabler-settings" :label="t('pages.configuration.page_name')" :open="sidebar.open"
+          icon="i-tabler-settings" :label="t('pages.configuration.title')" :open="sidebar.open"
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
       </div>

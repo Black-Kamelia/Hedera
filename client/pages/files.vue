@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const { t } = useI18n()
 
-usePageName(t('pages.files.page_name'))
+usePageName(t('pages.files.title'))
 definePageMeta({
   layout: 'sidebar',
   middleware: ['auth'],

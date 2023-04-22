@@ -27,18 +27,17 @@ sidebar:
 pages:
   login:
     forgot_password: Forgot password?
-    page_name: Logging in
     title: Log in
   files:
-    page_name: Files
+    title: Files
   favorites:
-    page_name: Favorites
+    title: Favorites
   upload:
-    page_name: Upload
+    title: Upload
   analytics:
-    page_name: Analytics
+    title: Analytics
   configuration:
-    page_name: Configuration
+    title: Configuration
 
 forms:
   login:
@@ -54,6 +53,8 @@ forms:
 errors:
   auth:
     invalid_credentials: Username or password is incorrect
+  tokens:
+    expired_or_invalid: Your session has expired, please log in again
 
 theme:
   dark: Dark

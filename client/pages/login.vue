@@ -8,6 +8,7 @@ const { t, e } = useI18n()
 usePageName(t('pages.login.page_name'))
 definePageMeta({
   layout: 'centercard',
+  middleware: ['auth'],
 })
 
 const schema = object({
@@ -18,11 +19,7 @@ const { handleSubmit, errors, resetField } = useForm({
   validationSchema: schema,
 })
 
-const { isAuthenticated, login } = useAuth()
-onMounted(() => {
-  if (isAuthenticated.value)
-    navigateTo('/files', { replace: true })
-})
+const { login } = useAuth()
 
 const usernamePlaceholder = getRandomDeveloperName()
 const errorMessage = ref<Nullable<String>>(null)

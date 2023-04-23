@@ -40,7 +40,7 @@ tasks {
     inputs.dir(file("${rootProject.projectDir}/client/public/icons/files"))
     outputs.dir(file("${rootProject.projectDir}/client/public/icons"))
 
-    pnpmCommand.set(listOf("generate", "icons"))
+    pnpmCommand.set(listOf("icons"))
   }
 
   val build= register<PnpmTask>("build") {

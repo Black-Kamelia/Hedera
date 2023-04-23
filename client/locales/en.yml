@@ -28,6 +28,9 @@ pages:
   login:
     forgot_password: Forgot password?
     title: Log in
+  resetPassword:
+      title: Reset password
+      login: Back to login
   files:
     title: Files
   favorites:
@@ -40,6 +43,7 @@ pages:
     title: Configuration
 
 forms:
+  submit: Submit
   login:
     errors:
       missing_username: Username is required
@@ -48,7 +52,12 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
-    submit: Submit
+  resetPassword:
+    errors:
+      missing_email: Email is required
+      invalid_email: Invalid email address format
+    fields:
+      email: Email address
 
 errors:
   auth:

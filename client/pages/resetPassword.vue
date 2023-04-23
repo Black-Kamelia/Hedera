@@ -5,25 +5,19 @@ import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
 
+usePageName(t('pages.resetPassword.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
 })
-useHead({
-  title: t('pages.login.tab_title'),
-})
 
 const schema = object({
-  email: string().email().required(t('pages.resetPassword.form.errors.missing_email')),
+  email: string()
+    .email(t('forms.resetPassword.errors.invalid_email'))
+    .required(t('forms.resetPassword.errors.missing_email')),
 })
-const { handleSubmit, errors, resetField } = useForm({
+const { handleSubmit, errors } = useForm({
   validationSchema: schema,
-})
-
-const { tokens, login } = useAuth()
-onMounted(() => {
-  if (tokens.value)
-    navigateTo('/files', { replace: true })
 })
 
 const usernamePlaceholder = getRandomDeveloperName()
@@ -34,12 +28,7 @@ function hideErrorMessage() {
 }
 
 const onSubmit = handleSubmit((values) => {
-  login(values).catch((err) => {
-    if (err.response?.status === 401) {
-      resetField('password')
-      showErrorMessage.value = true
-    }
-  })
+  console.log('Not implemented yet')
 })
 </script>
 
@@ -53,17 +42,9 @@ const onSubmit = handleSubmit((values) => {
     </h2>
   </div>
 
-  <PMessage v-show="showErrorMessage" severity="error" icon="i-tabler-alert-circle-filled" :closable="false">
-    {{ t('pages.login.errors.invalid_credentials') }}
-  </PMessage>
-
-  <PMessage v-show="false" severity="success" icon="i-tabler-circle-check-filled" :closable="false">
-    {{ t('pages.resetPassword.messages.link_sent') }}
-  </PMessage>
-
   <form @submit="onSubmit">
-    <label for="email1" class="block font-900 font-medium mb-2">{{ t('pages.resetPassword.form.fields.email') }}</label>
-    <div class="mb-6">
+    <label for="email1" class="block font-900 font-medium mb-2">{{ t('forms.resetPassword.fields.email') }}</label>
+    <div class="mb-3">
       <span class="p-input-icon-left w-full">
         <i class="i-tabler-mail" />
         <InputText
@@ -74,6 +55,12 @@ const onSubmit = handleSubmit((values) => {
       <small v-if="errors.email" id="text-error" class="p-error mt-1">{{ errors.email }}</small>
     </div>
 
-    <PButton :label="t('pages.resetPassword.form.submit')" class="w-full" type="submit" />
+    <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
+      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+        {{ t('pages.resetPassword.login') }}
+      </NuxtLink>
+    </div>
+
+    <PButton :label="t('forms.submit')" class="w-full" type="submit" />
   </form>
 </template>

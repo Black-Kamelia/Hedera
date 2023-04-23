@@ -35,7 +35,7 @@ const onSubmit = handleSubmit((values) => {
 <template>
   <div class="text-center mb-10">
     <h1 class="font-extrabold text-4xl mb-1">
-      Hedera
+      {{ t('app_name') }}
     </h1>
     <h2 class="font-extrabold text-2xl mb-3">
       {{ t('pages.resetPassword.title') }}

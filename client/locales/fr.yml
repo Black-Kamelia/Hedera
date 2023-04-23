@@ -28,6 +28,9 @@ pages:
   login:
     forgot_password: Mot de passe oublié ?
     title: Connexion
+  resetPassword:
+    title: Réinitialiser le mot de passe
+    login: Retour à la connexion
   files:
     title: Fichiers
   favorites:
@@ -40,6 +43,7 @@ pages:
     title: Configuration
 
 forms:
+  submit: Valider
   login:
     errors:
       missing_username: Nom d'utilisateur requis
@@ -48,7 +52,12 @@ forms:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d'utilisateur
-    submit: Valider
+  resetPassword:
+    errors:
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d'adresse e-mail invalide
+    fields:
+      email: Adresse e-mail
 
 errors:
   unknown: Une erreur inattendue est survenue

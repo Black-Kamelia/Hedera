@@ -1,4 +1,4 @@
-import type { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 
 export interface Tokens {
   accessToken: string
@@ -27,31 +27,33 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   }
 
   async function login(values: Record<string, any>) {
-    let tokens: Tokens
     try {
-      const { data } = await axios().post<Tokens>('/login', values)
-      tokens = data
+      const { data: tokens } = await axios().post<Tokens>('/login', values)
+      setTokens(tokens)
+      loggedInEvent.emit({ tokens })
     }
     catch (error) {
-      loggedInEvent.emit({ error: error as AxiosError })
-      return
+      if (error instanceof AxiosError) {
+        loggedInEvent.emit({ error })
+        return
+      }
+      throw error
     }
-
-    setTokens(tokens)
-    loggedInEvent.emit({ tokens })
   }
 
   async function logout() {
     try {
       await axios().post('/logout')
+      setTokens(null)
+      loggedOutEvent.emit()
     }
     catch (error) {
-      loggedOutEvent.emit({ error: error as AxiosError })
-      return
+      if (error instanceof AxiosError) {
+        loggedOutEvent.emit({ error })
+        return
+      }
+      throw error
     }
-
-    setTokens(null)
-    loggedOutEvent.emit()
   }
 
   return {

@@ -94,7 +94,7 @@ const onSubmit = handleSubmit(login)
     </div>
 
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/resetPassword" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+      <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
         {{ t('pages.login.forgot_password') }}
       </NuxtLink>
     </div>

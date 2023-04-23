@@ -1,4 +1,5 @@
-/* Reset */
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap'); /* Reset */
+
 html {
   scrollbar-gutter: stable;
 }
@@ -8,8 +9,6 @@ html {
 }
 
 /* primevue additions */
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap');
-
 body {
   color: var(--text-color);
 }
@@ -32,16 +31,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .p-toast .p-toast-message .p-toast-message-content {
-  border-width: 0!important;
+  border-width: 0 !important;
 }
 
 .p-toast .p-toast-message,
 .p-message {
-  border: 0 none!important;
+  border: 0 none !important;
 }
 
 .p-toast-message-icon {
-  height: 1em!important;
+  height: 1em !important;
 }
 
 input:focus::placeholder {

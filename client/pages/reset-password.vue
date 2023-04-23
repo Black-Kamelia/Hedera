@@ -27,8 +27,8 @@ function hideErrorMessage() {
   showErrorMessage.value = false
 }
 
-const onSubmit = handleSubmit((values) => {
-  console.log('Not implemented yet')
+const onSubmit = handleSubmit((_) => {
+  // TODO: not implemented yet
 })
 </script>
 

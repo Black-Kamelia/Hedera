@@ -4,11 +4,24 @@ import { object, string } from 'yup'
 import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t, e } = useI18n()
+const { login } = useAuth()
 
-usePageName(t('pages.login.page_name'))
+const usernamePlaceholder = getRandomDeveloperName()
+const message = ref<Nullable<string>>(null)
+const messageSeverity = ref<'success' | 'info' | 'warn' | 'error' | undefined>('error')
+
+usePageName(t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
+})
+const { currentRoute } = useRouter()
+
+onMounted(() => {
+  if (Object.keys(currentRoute.value.query).includes('expired')) {
+    message.value = t('errors.tokens.expired_or_invalid')
+    messageSeverity.value = 'warn'
+  }
 })
 
 const schema = object({
@@ -19,13 +32,8 @@ const { handleSubmit, errors, resetField } = useForm({
   validationSchema: schema,
 })
 
-const { login } = useAuth()
-
-const usernamePlaceholder = getRandomDeveloperName()
-const errorMessage = ref<Nullable<String>>(null)
-
 function hideErrorMessage() {
-  errorMessage.value = null
+  message.value = null
 }
 
 useEventBus(LoggedInEvent).on((event) => {
@@ -37,7 +45,8 @@ useEventBus(LoggedInEvent).on((event) => {
       resetField('password')
     }
 
-    errorMessage.value = e(event.error)
+    message.value = e(event.error)
+    messageSeverity.value = 'error'
   }
   else {
     navigateTo('/files')
@@ -57,8 +66,8 @@ const onSubmit = handleSubmit(login)
     </h2>
   </div>
 
-  <PMessage v-show="errorMessage" severity="error" icon="i-tabler-alert-circle-filled" :closable="false">
-    {{ errorMessage }}
+  <PMessage v-show="message" :severity="messageSeverity" icon="i-tabler-alert-circle-filled" :closable="false">
+    {{ message }}
   </PMessage>
 
   <form @submit="onSubmit">
@@ -84,18 +93,12 @@ const onSubmit = handleSubmit(login)
       <small v-if="errors.password" id="text-error" class="p-error mt-1">{{ errors.password }}</small>
     </div>
 
-    <div class="flex flex-row items-center justify-between mb-6 w-100%">
-      <div />
-      <!--
-      <div v-tooltip.bottom="{ value: 'Coming soon', class: 'p-0' }" class="flex flex-row items-center">
-        <Checkbox name="rememberMe" :disabled="true" :label="t('pages.login.form.fields.remember_me')" />
-      </div>
-      -->
-      <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+    <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
+      <NuxtLink to="/resetPassword" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
         {{ t('pages.login.forgot_password') }}
-      </a>
+      </NuxtLink>
     </div>
 
-    <PButton :label="t('forms.login.submit')" class="w-full" type="submit" />
+    <PButton :label="t('forms.submit')" class="w-full" type="submit" />
   </form>
 </template>

@@ -10,7 +10,7 @@ export default function useI18n(fallback = 'en') {
     i18n.locale.value = value
   })
 
-  function e(error?: ErrorDTO | AxiosError): String {
+  function e(error?: ErrorDTO | AxiosError): string {
     const dto = (error instanceof AxiosError ? getDTOFromError(error) : error) ?? { key: 'errors.unknown' }
     const { key, template } = dto
 

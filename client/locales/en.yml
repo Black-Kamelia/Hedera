@@ -60,6 +60,7 @@ forms:
       email: Email address
 
 errors:
+  unknown: An unknown error has occurred
   auth:
     invalid_credentials: Username or password is incorrect
   tokens:

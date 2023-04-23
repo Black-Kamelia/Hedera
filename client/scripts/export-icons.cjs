@@ -39,7 +39,7 @@ async function exportIcons() {
 
   const exported = iconSet.export()
   console.log('Loaded icon set: ', exported)
-  fs.writeFileSync(outputPath, JSON.stringify(exported, null, 2))
+  fs.writeFileSync(outputPath, JSON.stringify(exported, null, 2) + '\n')
 }
 
 exportIcons()

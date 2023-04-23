@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 const { t } = useI18n()
 
-usePageName(t('pages.configuration.page_name'))
+usePageName(t('pages.configuration.title'))
 definePageMeta({
   layout: 'sidebar',
+  middleware: ['auth'],
 })
 </script>
 

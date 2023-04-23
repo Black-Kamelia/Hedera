@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 const { t } = useI18n()
 
-usePageName(t('pages.analytics.page_name'))
+usePageName(t('pages.analytics.title'))
 definePageMeta({
   layout: 'sidebar',
+  middleware: ['auth'],
 })
 </script>
 

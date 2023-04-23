@@ -30,6 +30,9 @@ export default defineNuxtConfig({
   },
   components: [{ path: '~/components', pathPrefix: false }],
   runtimeConfig: isDev ? devRuntimeConfig : runtimeConfig,
+  routeRules: {
+    '/': { redirect: '/files' },
+  },
 
   // plugins
   modules: [

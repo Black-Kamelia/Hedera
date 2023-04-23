@@ -27,27 +27,44 @@ sidebar:
 pages:
   login:
     forgot_password: Mot de passe oublié ?
-    form:
-      errors:
-        missing_password: Le mot de passe est requis
-        missing_username: Le nom d'utilisateur est requis
-      fields:
-        password: Mot de passe
-        remember_me: Se souvenir de moi
-        username: Nom d'utilisateur
-      submit: Connexion
-    tab_title: Connexion • Hedera
-    title: Se connecter
+    title: Connexion
+  resetPassword:
+    title: Réinitialiser le mot de passe
+    login: Retour à la connexion
   files:
-    page_name: Fichiers
+    title: Fichiers
   favorites:
-    page_name: Favoris
+    title: Favoris
   upload:
-    page_name: Mettre en ligne
+    title: Mettre en ligne
   analytics:
-    page_name: Statistiques
+    title: Statistiques
   configuration:
-    page_name: Configuration
+    title: Configuration
+
+forms:
+  submit: Valider
+  login:
+    errors:
+      missing_username: Nom d'utilisateur requis
+      missing_password: Mot de passe requis
+    fields:
+      password: Mot de passe
+      remember_me: Se souvenir de moi
+      username: Nom d'utilisateur
+  resetPassword:
+    errors:
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d'adresse e-mail invalide
+    fields:
+      email: Adresse e-mail
+
+errors:
+  unknown: Une erreur inattendue est survenue
+  auth:
+    invalid_credentials: Nom d'utilisateur ou mot de passe incorrect
+  tokens:
+    expired_or_invalid: Votre session a expiré, veuillez vous reconnecter
 
 theme:
   dark: Sombre

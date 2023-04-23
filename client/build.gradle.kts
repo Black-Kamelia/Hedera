@@ -24,17 +24,27 @@ tasks {
     outputs.dir(file("${rootProject.projectDir}/client/.nuxt"))
   }
 
-  register<PnpmTask>("lint") {
+  val lint = register<PnpmTask>("lint") {
     dependsOn(pnpmInstall)
     ignoreExitValue.set(false)
 
     outputs.file(file("${rootProject.projectDir}/client/eslint-report.html"))
 
-    pnpmCommand.set(listOf("lint:ci"))
+    pnpmCommand.set(listOf("lint"))
+  }
+
+  val icons = register<PnpmTask>("icons") {
+    dependsOn(lint)
+    ignoreExitValue.set(false)
+
+    inputs.dir(file("${rootProject.projectDir}/client/public/icons/files"))
+    outputs.dir(file("${rootProject.projectDir}/client/public/icons"))
+
+    pnpmCommand.set(listOf("icons"))
   }
 
   val build= register<PnpmTask>("build") {
-    dependsOn(pnpmInstall)
+    dependsOn(icons)
     ignoreExitValue.set(false)
 
     inputs.dir(file("${rootProject.projectDir}/client/components"))
@@ -64,9 +74,9 @@ tasks {
 
   register<Delete>("clean") {
     delete(file("${rootProject.projectDir}/client/node_modules"))
+    delete(file("${rootProject.projectDir}/client/dist"))
     delete(file("${rootProject.projectDir}/client/.output"))
     delete(file("${rootProject.projectDir}/client/.nuxt"))
-    delete(file("${rootProject.projectDir}/client/dist"))
     delete(file("${rootProject.projectDir}/client/build"))
     delete(file("${rootProject.projectDir}/client/eslint-report.html"))
     delete(file("${rootProject.projectDir}/server/src/main/resources/static"))

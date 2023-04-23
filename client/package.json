@@ -3,14 +3,13 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "generate": "pnpm icons && nuxt generate",
+    "generate": "nuxt generate",
     "preview": "nuxt preview",
     "il": "pnpm install --frozen-lockfile",
     "postinstall": "nuxt prepare",
     "nuxi": "nuxi",
     "taze": "taze major -I",
-    "lint": "eslint --ext .js,.ts,.vue,.json .",
-    "lint:ci": "node ./scripts/eslint-format.cjs",
+    "lint": "node ./scripts/eslint-format.cjs",
     "icons": "node ./scripts/export-icons.cjs"
   },
   "devDependencies": {

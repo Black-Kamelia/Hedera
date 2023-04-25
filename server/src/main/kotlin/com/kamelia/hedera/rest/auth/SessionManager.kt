@@ -66,6 +66,10 @@ object SessionManager {
             role = user.role
             enabled = user.enabled
         }
+
+        if (!user.enabled) {
+            logoutAll(user)
+        }
     }
 
     suspend fun login(username: String, password: String): Response<TokenData, ErrorDTO> {

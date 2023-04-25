@@ -65,10 +65,10 @@ const onSubmit = handleSubmit(login)
 
 <template>
   <div class="text-center mb-10">
-    <h1 class="font-extrabold text-5xl mb-1">
+    <h1 class="font-600 text-5xl mb-1">
       {{ t('app_name') }}
     </h1>
-    <h2 class="font-extrabold text-3xl mb-3">
+    <h2 class="font-600 text-3xl mb-3">
       {{ t('pages.login.title') }}
     </h2>
   </div>

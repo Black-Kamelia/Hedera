@@ -2,7 +2,6 @@
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
 import { getRandomDeveloperName } from '~/utils/developerNames'
-import PInputText from "primevue/inputtext";
 
 const { t, e } = useI18n()
 const { login } = useAuth()
@@ -77,13 +76,13 @@ const onSubmit = handleSubmit(login)
     {{ message }}
   </PMessage>
 
-  <form @submit="onSubmit" v-focus-trap>
+  <form v-focus-trap @submit="onSubmit">
     <label for="username" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.username') }}</label>
     <div class="mb-3">
       <span class="p-input-icon-left w-full">
         <i class="i-tabler-user" />
         <InputText
-          ref="usernameField" id="username" name="username" type="text"
+          id="username" ref="usernameField" name="username" type="text"
           :placeholder="usernamePlaceholder" class="w-full" @input="hideErrorMessage"
         />
       </span>
@@ -95,7 +94,7 @@ const onSubmit = handleSubmit(login)
       <span class="p-input-icon-left w-full">
         <i class="i-tabler-lock" />
         <InputText
-          ref="passwordField" id="password" name="password" type="password"
+          id="password" ref="passwordField" name="password" type="password"
           placeholder="••••••••••••••••" class="w-full" @input="hideErrorMessage"
         />
       </span>

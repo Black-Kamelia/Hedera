@@ -24,10 +24,10 @@ function tryRefreshFactory(axios: AxiosInstance) {
   }
 }
 
-const appConfig = useRuntimeConfig()
-const axiosMiddlewares = useAxiosMiddlewares()
-
 export function useAxiosFactory() {
+  const appConfig = useRuntimeConfig()
+  const axiosMiddlewares = useAxiosMiddlewares()
+
   return () => {
     const axiosInstance = axios.create({
       baseURL: appConfig.public.apiBaseUrl,

@@ -77,29 +77,29 @@ const onSubmit = handleSubmit(login)
   </PMessage>
 
   <form v-focus-trap @submit="onSubmit">
-    <label for="username" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.username') }}</label>
-    <div class="mb-3">
-      <span class="p-input-icon-left w-full">
-        <i class="i-tabler-user" />
-        <InputText
-          id="username" ref="usernameField" name="username" type="text"
-          :placeholder="usernamePlaceholder" class="w-full" @input="hideErrorMessage"
-        />
-      </span>
-      <small v-if="errors.username" id="text-error" class="p-error mt-1">{{ errors.username }}</small>
-    </div>
+    <InputText
+      id="username"
+      ref="usernameField"
+      class="w-full"
+      name="username"
+      type="text"
+      :label="t('forms.login.fields.username')"
+      :placeholder="usernamePlaceholder"
+      start-icon="i-tabler-user"
+      @input="hideErrorMessage"
+    />
 
-    <label for="password" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.password') }}</label>
-    <div class="mb-3">
-      <span class="p-input-icon-left w-full">
-        <i class="i-tabler-lock" />
-        <InputText
-          id="password" ref="passwordField" name="password" type="password"
-          placeholder="••••••••••••••••" class="w-full" @input="hideErrorMessage"
-        />
-      </span>
-      <small v-if="errors.password" id="text-error" class="p-error mt-1">{{ errors.password }}</small>
-    </div>
+    <InputText
+      id="password"
+      ref="passwordField"
+      class="w-full"
+      name="password"
+      type="password"
+      :label="t('forms.login.fields.password')"
+      placeholder="••••••••••••••••"
+      start-icon="i-tabler-lock"
+      @input="hideErrorMessage"
+    />
 
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">

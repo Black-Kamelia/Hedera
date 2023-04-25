@@ -34,26 +34,25 @@ const onSubmit = handleSubmit((_) => {
 
 <template>
   <div class="text-center mb-10">
-    <h1 class="font-600 text-4xl mb-1">
+    <h1 class="font-600 text-5xl mb-1">
       {{ t('app_name') }}
     </h1>
-    <h2 class="font-600 text-2xl mb-3">
+    <h2 class="font-600 text-3xl mb-3">
       {{ t('pages.resetPassword.title') }}
     </h2>
   </div>
 
   <form @submit="onSubmit">
-    <label for="email1" class="block font-900 font-medium mb-2">{{ t('forms.resetPassword.fields.email') }}</label>
-    <div class="mb-3">
-      <span class="p-input-icon-left w-full">
-        <i class="i-tabler-mail" />
-        <InputText
-          name="email" type="text" :placeholder="`${usernamePlaceholder}@example.com`" class="w-full"
-          @input="hideErrorMessage"
-        />
-      </span>
-      <small v-if="errors.email" id="text-error" class="p-error mt-1">{{ errors.email }}</small>
-    </div>
+    <InputText
+      id="email"
+      class="w-full"
+      name="email"
+      type="email"
+      :label="t('forms.resetPassword.fields.email')"
+      :placeholder="`${usernamePlaceholder}@example.com`"
+      start-icon="i-tabler-mail"
+      @input="hideErrorMessage"
+    />
 
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">

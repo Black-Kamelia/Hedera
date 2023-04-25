@@ -75,6 +75,10 @@ object SessionManager {
             return unauthorized
         }
 
+        if (!user.enabled) {
+            return Response.forbidden("errors.auth.account_disabled")
+        }
+
         return Response.ok(generateTokens(user))
     }
 

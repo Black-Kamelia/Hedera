@@ -63,6 +63,7 @@ errors:
   unknown: An unknown error has occurred
   auth:
     invalid_credentials: Username or password is incorrect
+    account_disabled: Your account is disabled
   tokens:
     expired_or_invalid: Your session has expired, please log in again
 

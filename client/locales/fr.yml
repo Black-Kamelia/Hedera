@@ -63,6 +63,7 @@ errors:
   unknown: Une erreur inattendue est survenue
   auth:
     invalid_credentials: Nom d'utilisateur ou mot de passe incorrect
+    account_disabled: Votre compte est désactivé
   tokens:
     expired_or_invalid: Votre session a expiré, veuillez vous reconnecter
 

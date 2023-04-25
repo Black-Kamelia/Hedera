@@ -2,6 +2,7 @@
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
 import { getRandomDeveloperName } from '~/utils/developerNames'
+import PInputText from "primevue/inputtext";
 
 const { t, e } = useI18n()
 const { login } = useAuth()
@@ -9,6 +10,9 @@ const { login } = useAuth()
 const usernamePlaceholder = getRandomDeveloperName()
 const message = ref<Nullable<string>>(null)
 const messageSeverity = ref<'success' | 'info' | 'warn' | 'error' | undefined>('error')
+
+const usernameField = ref()
+const passwordField = ref()
 
 usePageName(t('pages.login.title'))
 definePageMeta({
@@ -38,11 +42,14 @@ function hideErrorMessage() {
 
 useEventBus(LoggedInEvent).on((event) => {
   if (event.error) {
-    if (event.error?.response?.status === 401)
+    if (event.error?.response?.status === 401) {
       resetField('password')
+      passwordField.value?.$el.focus()
+    }
     if (event.error?.response?.status === 403) {
       resetField('username')
       resetField('password')
+      usernameField.value?.$el.focus()
     }
 
     message.value = e(event.error)
@@ -70,24 +77,26 @@ const onSubmit = handleSubmit(login)
     {{ message }}
   </PMessage>
 
-  <form @submit="onSubmit">
-    <label for="email1" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.username') }}</label>
+  <form @submit="onSubmit" v-focus-trap>
+    <label for="username" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.username') }}</label>
     <div class="mb-3">
       <span class="p-input-icon-left w-full">
         <i class="i-tabler-user" />
         <InputText
-          name="username" type="text" :placeholder="usernamePlaceholder" class="w-full" @input="hideErrorMessage"
+          ref="usernameField" id="username" name="username" type="text"
+          :placeholder="usernamePlaceholder" class="w-full" @input="hideErrorMessage"
         />
       </span>
       <small v-if="errors.username" id="text-error" class="p-error mt-1">{{ errors.username }}</small>
     </div>
 
-    <label for="password1" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.password') }}</label>
+    <label for="password" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.password') }}</label>
     <div class="mb-3">
       <span class="p-input-icon-left w-full">
         <i class="i-tabler-lock" />
         <InputText
-          name="password" type="password" placeholder="••••••••••••••••" class="w-full" @input="hideErrorMessage"
+          ref="passwordField" id="password" name="password" type="password"
+          placeholder="••••••••••••••••" class="w-full" @input="hideErrorMessage"
         />
       </span>
       <small v-if="errors.password" id="text-error" class="p-error mt-1">{{ errors.password }}</small>

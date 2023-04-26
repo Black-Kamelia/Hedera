@@ -62,7 +62,7 @@ private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/p
     val uuid = call.getUUID()
     idRestrict(uuid)
 
-    call.respond(UserService.updateUserPassword(uuid, body, uuid))
+    call.respond(UserService.updateUserPassword(uuid, body))
 }
 
 private fun Route.deleteUser() = delete("/{uuid}") {

@@ -30,7 +30,7 @@ private fun Route.uploadFile() = post("/upload") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respondNoSuccess(Response.badRequest("errors.uploads.missing_file"))
+        call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })
 }
 
@@ -41,7 +41,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, user)) }
     ), onMissing = {
-        call.respondNoSuccess(Response.badRequest("errors.uploads.missing_file"))
+        call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })
 }
 

@@ -87,19 +87,17 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-        updaterID: UUID,
     ): Response<UserRepresentationDTO, ErrorDTO> {
         checkPassword(dto.newPassword)?.let { return it }
 
         val toEdit = Users.findById(id) ?: return Response.notFound()
 
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-            return Response.forbidden("errors.users.password.wrong")
+            return Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
         }
 
-        val updater = Users.findById(updaterID) ?: return Response.forbidden("errors.users.role.forbidden")
         return Response.ok(
-            Users.updatePassword(toEdit, dto, updater)
+            Users.updatePassword(toEdit, dto)
                 .toRepresentationDTO()
         )
     }
@@ -135,10 +133,10 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
                 if (it.uuid == toEdit?.uuid) {
                     null
                 } else {
-                    Response.forbidden("errors.users.email.already_exists")
+                    Response.forbidden(Errors.Users.Email.ALREADY_EXISTS)
                 }
             } ?: if ("@" !in email) {
-            Response.badRequest("errors.users.email.invalid")
+            Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
         } else null
     else null
 
@@ -159,7 +157,7 @@ private suspend fun checkUsername(username: String?, toEdit: User? = null) =
                 if (it.uuid == toEdit?.uuid) {
                     null
                 } else {
-                    Response.forbidden("errors.users.username.already_exists")
+                    Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
                 }
             }
     else null
@@ -180,6 +178,6 @@ private suspend fun checkUsername(username: String?, toEdit: User? = null) =
  */
 private fun checkPassword(password: String?) =
     if (password != null) {
-        if (password.length < 8) Response.forbidden("errors.users.password.too_short")
+        if (password.length < 8) Response.forbidden(Errors.Users.Password.TOO_SHORT)
         else null
     } else null

@@ -3,23 +3,11 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.login
-import com.kamelia.hedera.rest.user.UserDTO
-import com.kamelia.hedera.rest.user.UserPasswordUpdateDTO
-import com.kamelia.hedera.rest.user.UserRepresentationDTO
-import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.UserUpdateDTO
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.delete
-import io.ktor.client.request.patch
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.server.testing.testApplication
-import java.util.UUID
-import java.util.stream.Stream
+import com.kamelia.hedera.rest.user.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -29,6 +17,8 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.util.*
+import java.util.stream.Stream
 import kotlin.test.assertNotEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -332,8 +322,8 @@ class UserTest {
     @DisplayName("Updating password with wrong old password")
     @Test
     fun updatePasswordWrong() = testApplication {
-        val (status, tokens) = login("edit_wrong_password", "password")
-        assertEquals(HttpStatusCode.OK, status)
+        val (loginResponse, tokens) = login("edit_wrong_password", "password")
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0012-0000-000000000001/password") {
             contentType(ContentType.Application.Json)
@@ -351,8 +341,8 @@ class UserTest {
     @DisplayName("Updating unknown user")
     @Test
     fun updateUnknownUser() = testApplication {
-        val (status, tokens) = login("admin", "password")
-        assertEquals(HttpStatusCode.OK, status)
+        val (loginResponse, tokens) = login("admin", "password")
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0000-0000-00000000000f") {
             contentType(ContentType.Application.Json)
@@ -385,8 +375,8 @@ class UserTest {
     @DisplayName("Deleting unknown user")
     @Test
     fun deleteUnknownUser() = testApplication {
-        val (status, tokens) = login("admin", "password")
-        assertEquals(HttpStatusCode.OK, status)
+        val (loginResponse, tokens) = login("admin", "password")
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.delete("/api/users/ffffffff-ffff-ffff-ffff-ffffffffffff") {
             bearerAuth(tokens!!.accessToken)

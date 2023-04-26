@@ -48,6 +48,6 @@ private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = 
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, ErrorDTO.of("errors.unknown")))
+    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, ErrorDTO.of(Errors.UNKNOWN)))
     call.application.log.error("Unexpected error", cause)
 }

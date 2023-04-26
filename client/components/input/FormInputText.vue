@@ -30,7 +30,7 @@ defineExpose({
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>
-      <small v-if="errorMessage" id="text-error" class="block p-error">{{ errorMessage }}</small>
+      <small v-if="errorMessage" :id="`${id}-error`" class="block p-error">{{ errorMessage }}</small>
     </Transition>
   </div>
 </template>

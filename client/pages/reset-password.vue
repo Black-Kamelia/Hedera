@@ -16,7 +16,7 @@ const schema = object({
     .email(t('forms.resetPassword.errors.invalid_email'))
     .required(t('forms.resetPassword.errors.missing_email')),
 })
-const { handleSubmit, errors } = useForm({
+const { handleSubmit } = useForm({
   validationSchema: schema,
 })
 

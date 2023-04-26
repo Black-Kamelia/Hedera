@@ -31,7 +31,7 @@ const schema = object({
   username: string().required(t('forms.login.errors.missing_username')),
   password: string().required(t('forms.login.errors.missing_password')),
 })
-const { handleSubmit, errors, resetField } = useForm({
+const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
 })
 
@@ -41,11 +41,12 @@ function hideErrorMessage() {
 
 useEventBus(LoggedInEvent).on((event) => {
   if (event.error) {
-    if (event.error?.response?.status === 401) {
+    const status = event.error?.response?.status
+    if (status === 401) {
       resetField('password')
       passwordField.value?.$el.focus()
     }
-    if (event.error?.response?.status === 403) {
+    if (status === 403) {
       resetField('username')
       resetField('password')
       usernameField.value?.$el.focus()

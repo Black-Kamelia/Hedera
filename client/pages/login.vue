@@ -10,8 +10,8 @@ const usernamePlaceholder = getRandomDeveloperName()
 const message = ref<Nullable<string>>(null)
 const messageSeverity = ref<'success' | 'info' | 'warn' | 'error' | undefined>('error')
 
-const usernameField = ref()
-const passwordField = ref()
+const usernameField = ref<Nullable<CompElement>>(null)
+const passwordField = ref<Nullable<CompElement>>(null)
 
 usePageName(t('pages.login.title'))
 definePageMeta({

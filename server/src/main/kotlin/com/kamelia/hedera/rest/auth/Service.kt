@@ -17,7 +17,7 @@ object AuthService {
         return SessionManager.refresh(jwt)
     }
 
-    fun logout(token: String): Response<Boolean, ErrorDTO> {
+    suspend fun logout(token: String): Response<Boolean, ErrorDTO> {
         SessionManager.logout(token)
         return Response.ok()
     }

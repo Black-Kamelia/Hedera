@@ -2,11 +2,11 @@ package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.*
-import com.kamelia.hedera.rest.user.User
-import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.*
 import io.ktor.server.auth.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
@@ -14,7 +14,7 @@ object SessionManager {
 
     private val PURGE_INTERVAL = 5.minutes
 
-    private val lock = Any()
+    private val mutex = Mutex()
 
     private val sessions = mutableMapOf<String, Session>()
     private val refreshTokens = mutableMapOf<String, TokenData>()
@@ -22,13 +22,13 @@ object SessionManager {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var pruneJob: Job? = null
 
-    fun startPruning() = synchronized(coroutineScope) {
-        if (pruneJob != null) return
+    fun startPruning() = coroutineScope.launch {
+        if (pruneJob != null) return@launch
         pruneJob = coroutineScope.launch {
             while (isActive) {
                 delay(PURGE_INTERVAL)
                 val now = System.currentTimeMillis()
-                synchronized(lock) {
+                mutex.withLock {
                     sessions.entries.removeIf {
                         it.value.tokenData.accessTokenExpiration < now
                     }
@@ -41,13 +41,13 @@ object SessionManager {
         }
     }
 
-    fun stopPruning() = synchronized(coroutineScope) {
+    fun stopPruning() = coroutineScope.launch {
         check(pruneJob != null) { "Pruning not started" }
         pruneJob?.cancel()
         pruneJob = null
     }
 
-    private fun generateTokens(user: User): TokenData = synchronized(lock) {
+    private suspend fun generateTokens(user: User): TokenData = mutex.withLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
             UserState(user.id.value, user.username, user.email, user.role, user.enabled)
         }
@@ -59,7 +59,7 @@ object SessionManager {
         return tokenData
     }
 
-    fun updateSession(userId: UUID, user: User): Unit = synchronized(lock) {
+    suspend fun updateSession(userId: UUID, user: User): Unit = mutex.withLock {
         loggedUsers[userId]?.apply {
             username = user.username
             email = user.email
@@ -68,7 +68,11 @@ object SessionManager {
         }
 
         if (!user.enabled) {
-            logoutAll(user)
+            UserEvents.userForcefullyLoggedOutEvent.emit(UserForcefullyLoggedOutDTO(
+                userId = user.id.value,
+                reason = "force-logout.accounts.disabled",
+            ))
+            unlockedLogoutAll(user)
         }
     }
 
@@ -92,20 +96,20 @@ object SessionManager {
         return Response.ok(generateTokens(user))
     }
 
-    fun verify(token: String): UserState? = synchronized(lock) {
+    suspend fun verify(token: String): UserState? = mutex.withLock {
         return sessions[token]?.user
     }
 
-    fun verifyRefresh(token: String): Unit = synchronized(lock) {
+    suspend fun verifyRefresh(token: String): Unit = mutex.withLock {
         refreshTokens[token] ?: throw ExpiredOrInvalidTokenException()
     }
 
-    fun logout(token: String): Unit = synchronized(lock) {
+    suspend fun logout(token: String): Unit = mutex.withLock {
         val session = sessions.remove(token) ?: throw ExpiredOrInvalidTokenException()
         refreshTokens.remove(session.tokenData.refreshToken)
     }
 
-    fun logoutAll(user: User): Unit = synchronized(lock) {
+    private fun unlockedLogoutAll(user: User) {
         sessions.entries.filter {
             it.value.user.uuid == user.id.value
         }.forEach {
@@ -115,6 +119,14 @@ object SessionManager {
             sessions.remove(it.key)
         }
         loggedUsers.remove(user.id.value)
+    }
+
+    suspend fun logoutAll(user: User) = mutex.withLock {
+        UserEvents.userForcefullyLoggedOutEvent.emit(UserForcefullyLoggedOutDTO(
+            userId = user.id.value,
+            reason = "force-logout.all",
+        ))
+        unlockedLogoutAll(user)
     }
 }
 

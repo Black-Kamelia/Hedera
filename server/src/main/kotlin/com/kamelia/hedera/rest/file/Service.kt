@@ -1,9 +1,6 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.IllegalActionException
-import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.User
@@ -18,8 +15,8 @@ import kotlin.math.ceil
 object FileService {
 
     suspend fun handleFile(part: PartData.FileItem, creator: User): Response<FileRepresentationDTO, String> {
-        val filename = requireNotNull(part.originalFileName) { "errors.file.name.empty" }
-        require(filename.isNotBlank()) { "errors.file.name.empty" }
+        val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
+        require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
         return Response.ok(

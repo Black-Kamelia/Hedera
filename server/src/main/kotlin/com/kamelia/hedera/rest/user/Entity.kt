@@ -2,6 +2,7 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.UnknownFilterFieldException
+import com.kamelia.hedera.core.UnknownSortFieldException
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
@@ -14,11 +15,11 @@ import com.kamelia.hedera.rest.file.File
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.Files
 import com.kamelia.hedera.util.uuid
-import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.selectAll
+import java.util.*
 
 enum class UserRole(private val power: Int) {
     REGULAR(1),
@@ -133,10 +134,10 @@ object Users : AuditableUUIDTable("users") {
         }
     }
 
-    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO, updater: User): User = Connection.transaction {
+    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO): User = Connection.transaction {
         user.apply {
             password = Hasher.hash(dto.newPassword)
-            onUpdate(updater)
+            onUpdate(user)
         }
     }
 
@@ -187,7 +188,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
                         Files.mimeType.name -> Files.mimeType.filter(it)
                         Files.size.name -> Files.size.filter(it)
                         Files.visibility.name -> Files.visibility.filter(it)
-                        else -> throw IllegalArgumentException("errors.filter.unknown_field.`${it.field}`")
+                        else -> throw UnknownFilterFieldException(it.field)
                     }
                 }.applySort(definition.sorter) {
                     when (it) {
@@ -195,7 +196,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
                         Files.mimeType.name -> Files.mimeType
                         Files.size.name -> Files.size
                         Files.visibility.name -> Files.visibility
-                        else -> throw IllegalArgumentException("errors.sort.unknown_field.`${it}`")
+                        else -> throw UnknownSortFieldException(it)
                     }
                 }.let {
                     val rows = File.wrapRows(it)

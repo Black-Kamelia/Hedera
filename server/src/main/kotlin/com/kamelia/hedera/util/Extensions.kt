@@ -2,13 +2,7 @@ package com.kamelia.hedera.util
 
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.IllegalActionException
-import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.InvalidUUIDException
-import com.kamelia.hedera.core.MissingHeaderException
-import com.kamelia.hedera.core.MissingParameterException
-import com.kamelia.hedera.core.MultipartParseException
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -107,12 +101,12 @@ fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
     val params = request.queryParameters
     val page = (params["page"] ?: "0").let {
         val page = it.toLongOrNull() ?: throw IllegalArgumentException("Invalid page number")
-        if (page < 0) throw IllegalArgumentException("errors.number.negative")
+        if (page < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_PAGE_NUMBER)
         page
     }
     val pageSize = (params["pageSize"] ?: "25").let {
         val pageSize = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid page size")
-        if (pageSize < 0) throw IllegalArgumentException("errors.number.negative")
+        if (pageSize < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_PAGE_SIZE)
         pageSize
     }
     return page to pageSize

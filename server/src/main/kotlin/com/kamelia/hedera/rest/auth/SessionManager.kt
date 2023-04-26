@@ -73,7 +73,7 @@ object SessionManager {
     }
 
     suspend fun login(username: String, password: String): Response<TokenData, ErrorDTO> {
-        val unauthorized = Response.unauthorized("errors.auth.invalid_credentials")
+        val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
         val user = Users.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
@@ -81,7 +81,7 @@ object SessionManager {
         }
 
         if (!user.enabled) {
-            return Response.forbidden("errors.auth.account_disabled")
+            return Response.forbidden(Errors.Auth.ACCOUNT_DISABLED)
         }
 
         return Response.ok(generateTokens(user))

@@ -3,12 +3,12 @@ import { useField } from 'vee-validate'
 import type { CheckboxProps } from 'primevue/checkbox'
 import PCheckbox from 'primevue/checkbox'
 
-export interface FormCheckboxProps extends CheckboxProps {
+export interface FormCheckboxProps extends OnlyProps<CheckboxProps> {
   name: string
   label: string
 }
 
-const { name, label } = definePropsRefs<FormCheckboxProps>()
+const { name, label } = $defineProps<FormCheckboxProps>()
 
 const { value } = useField<boolean>(name)
 

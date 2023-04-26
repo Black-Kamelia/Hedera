@@ -1,6 +1,7 @@
 package com.kamelia.hedera.websocket
 
 import com.kamelia.hedera.rest.user.UserEvents
+import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import com.kamelia.hedera.util.defineEventListener
 import com.kamelia.hedera.util.gracefullyClose
@@ -12,12 +13,19 @@ import java.util.*
 suspend fun WebSocketServerSession.handleSession(userId: UUID) = keepAlive(
     // Define event listeners here
     defineEventListener(UserEvents.userUpdatedEvent) { onUserUpdate(userId, it) },
+    defineEventListener(UserEvents.userForcefullyLoggedOutEvent) { onUserForcefullyLoggedOut(userId, it) },
 )
 
 private const val USER_UPDATED = "user-updated"
 private suspend fun WebSocketServerSession.onUserUpdate(currentId: UUID, user: UserRepresentationDTO) {
     if (user.id != currentId) return
     sendEvent(USER_UPDATED, user)
+}
+
+private const val USER_FORCEFULLY_LOGGED_OUT = "user-forcefully-logged-out"
+private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: UUID, payload: UserForcefullyLoggedOutDTO) {
+    if (payload.userId != currentId) return
+    sendEvent(USER_FORCEFULLY_LOGGED_OUT, payload)
 }
 
 private const val CONNECTION_CLOSED_BY_CLIENT = "connection-closed-by-client"

@@ -9,7 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.forms.FormBuilder
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.*
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -46,7 +46,7 @@ fun ApplicationTestBuilder.client() = createClient {
 suspend fun ApplicationTestBuilder.login(
     username: String,
     password: String,
-): Pair<HttpStatusCode, TokenData?> {
+): Pair<HttpResponse, TokenData?> {
     val dto = LoginDTO(username, password)
     val response = client().post("/api/login") {
         contentType(ContentType.Application.Json)
@@ -58,7 +58,7 @@ suspend fun ApplicationTestBuilder.login(
         System.err.println(response.bodyAsText())
         null
     }
-    return response.status to body
+    return response to body
 }
 
 suspend fun ApplicationTestBuilder.loginBlocking(

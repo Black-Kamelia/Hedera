@@ -297,4 +297,40 @@ class AuthTest {
         }
         assertEquals(HttpStatusCode.Forbidden, response3.status)
     }
+
+    @DisplayName("Disabling a user logs them out")
+    @Test
+    fun disablingUserLogsThemOut() = authTestApplication {
+        val (ownerLoginResponse, ownerTokens) = loginBlocking("test-auth-4-owner", "password")
+        assertEquals(HttpStatusCode.OK, ownerLoginResponse.status)
+        val (userLoginResponse, userTokens) = loginBlocking("test-auth-4-regular", "password")
+        assertEquals(HttpStatusCode.OK, userLoginResponse.status)
+
+        /* Perform a request to ensure the user is logged in */
+        val response = client().get("/api/users/00000000-0001-0004-0000-000000000002") {
+            userTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        /* Disabling the user as owner */
+        val updateResponse = client().patch("/api/users/00000000-0001-0004-0000-000000000002") {
+            ownerTokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(enabled = false))
+        }
+        assertEquals(HttpStatusCode.OK, updateResponse.status)
+
+        /* The session should be expired */
+        val testResponse = client().get("/api/users/00000000-0001-0004-0000-000000000002") {
+            userTokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Unauthorized, testResponse.status)
+
+        /* The refresh token should be expired */
+        val refreshResponse = client().post("/api/refresh") {
+            userTokens?.let { bearerAuth(it.refreshToken) }
+        }
+        assertEquals(HttpStatusCode.Unauthorized, refreshResponse.status)
+    }
+
 }

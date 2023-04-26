@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
-import type _CheckboxProps from 'primevue/checkbox'
+import type { CheckboxProps } from 'primevue/checkbox'
 import PCheckbox from 'primevue/checkbox'
 
-export interface CheckboxProps extends _CheckboxProps {
+export interface FormCheckboxProps extends CheckboxProps {
   name: string
   label: string
 }
 
-const { name, label } = definePropsRefs<CheckboxProps>()
+const { name, label } = definePropsRefs<FormCheckboxProps>()
 
 const { value } = useField<boolean>(name)
 

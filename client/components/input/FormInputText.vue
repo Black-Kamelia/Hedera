@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
-import type _InputTextProps from 'primevue/inputtext'
+import type { InputTextProps } from 'primevue/inputtext'
 import PInputText from 'primevue/inputtext'
 
-export interface InputTextProps extends _InputTextProps {
+export interface FormInputTextProps extends InputTextProps {
   id: string
   name: string
   label: string
@@ -11,7 +11,7 @@ export interface InputTextProps extends _InputTextProps {
   endIcon?: string
 }
 
-const { id, name, label, startIcon, endIcon } = definePropsRefs<InputTextProps>()
+const { id, name, label, startIcon, endIcon } = definePropsRefs<FormInputTextProps>()
 
 const { errorMessage, value } = useField<Nullable<string>>(name)
 

@@ -78,7 +78,7 @@ const onSubmit = handleSubmit(login)
   </PMessage>
 
   <form v-focus-trap @submit="onSubmit">
-    <InputText
+    <FormInputText
       id="username"
       ref="usernameField"
       class="w-full"
@@ -90,7 +90,7 @@ const onSubmit = handleSubmit(login)
       @input="hideErrorMessage"
     />
 
-    <InputText
+    <FormInputText
       id="password"
       ref="passwordField"
       class="w-full"

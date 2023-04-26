@@ -66,8 +66,8 @@ class AuthTest {
     @DisplayName("Performing protected request with expired access token")
     @Test
     fun useExpiredAccessToken() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         delay(2000L)
 
@@ -80,8 +80,8 @@ class AuthTest {
     @DisplayName("Refreshing session within expiration time")
     @Test
     fun refreshSessionWithinTime() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         delay(500L)
 
@@ -94,8 +94,8 @@ class AuthTest {
     @DisplayName("Refreshing session after expiration time")
     @Test
     fun refreshSessionAfterTime() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
-        assertEquals(HttpStatusCode.OK, status)
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         delay(3000L)
 
@@ -108,9 +108,9 @@ class AuthTest {
     @DisplayName("Refreshing session gives different tokens")
     @Test
     fun refreshSessionGivesDifferentToken() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
-        assertEquals(HttpStatusCode.OK, status)
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         val response = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
@@ -125,9 +125,9 @@ class AuthTest {
     @DisplayName("Refreshing session gives working new tokens")
     @Test
     fun refreshSessionGivesWorkingTokens() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
-        assertEquals(HttpStatusCode.OK, status)
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         val response = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
@@ -143,9 +143,9 @@ class AuthTest {
     @DisplayName("Logging out invalidates access token")
     @Test
     fun logOutInvalidateAccessToken() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
-        assertEquals(HttpStatusCode.OK, status)
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         val preLogoutResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
             bearerAuth(tokens.accessToken)
@@ -166,9 +166,9 @@ class AuthTest {
     @DisplayName("Logging out invalidates refresh token")
     @Test
     fun logOutInvalidateRefreshToken() = authTestApplication {
-        val (status, tokens) = loginBlocking("user1", "password")
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
-        assertEquals(HttpStatusCode.OK, status)
+        assertEquals(HttpStatusCode.OK, loginResponse.status)
 
         val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)

@@ -5,28 +5,22 @@ import com.kamelia.hedera.rest.auth.LoginDTO
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import com.kamelia.hedera.util.UUIDSerializer
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.forms.FormBuilder
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
-import io.ktor.http.ContentType
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.config.ApplicationConfig
-import io.ktor.server.testing.ApplicationTestBuilder
-import io.ktor.server.testing.testApplication
-import io.ktor.util.KtorDsl
-import java.util.UUID
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.config.*
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import java.util.*
 
 typealias TestUser = Pair<TokenData?, UUID>
 
@@ -64,7 +58,7 @@ suspend fun ApplicationTestBuilder.login(
 suspend fun ApplicationTestBuilder.loginBlocking(
     username: String,
     password: String,
-): Pair<HttpStatusCode, TokenData?> {
+): Pair<HttpResponse, TokenData?> {
     val dto = LoginDTO(username, password)
     val response = runBlocking {
          client().post("/api/login") {
@@ -78,7 +72,7 @@ suspend fun ApplicationTestBuilder.loginBlocking(
         System.err.println(response.bodyAsText())
         null
     }
-    return response.status to body
+    return response to body
 }
 
 fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(

@@ -7,10 +7,12 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
     case 'unknown':
       console.log('Unknown packet received', payload) // eslint-disable-line no-console
       break
-    case 'user-updated':
+    case 'user-updated': {
       // type-safe access to payload.data
-      console.log('User updated', payload.data.username) // eslint-disable-line no-console
+      const { username, email } = payload.data
+      console.log('User updated', username, email) // eslint-disable-line no-console
       break
+    }
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {

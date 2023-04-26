@@ -1,38 +1,49 @@
 import type { HederaWebsocketPayload } from '~/utils/websocketEvents'
 
 export default function useWebsocketAutoConnect() {
-  const appConfig = useRuntimeConfig()
-  const { isAuthenticated, tokens } = useAuth()
-  const { data: wsTokenData, error, execute } = useAPI<{ token: string }>('/ws', { method: 'GET' })
-  const webSocketUrl = computed(() => {
-    return `${appConfig.public.websocketUrl}?token=${wsTokenData.value?.token}`
-  })
-  const { open, close, data, status } = useWebSocket(webSocketUrl, {
-    immediate: false,
-  })
   const websocketPacketReceivedEvent = useEventBus(WebsocketPacketReceivedEvent)
 
-  async function handleConnection(isAuthenticated: boolean) {
-    if (isAuthenticated && status.value === 'CLOSED') {
-      await execute()
-      open()
-    }
+  const appConfig = useRuntimeConfig()
+  const host = appConfig.public.websocketUrl || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
 
-    if (!isAuthenticated && status.value === 'OPEN')
-      close()
+  const axios = useAxiosFactory()
+  const { isAuthenticated } = useAuth()
+
+  const wsToken = ref<Nullable<string>>(null)
+  const webSocketUrl = computed(() => (isAuthenticated.value && wsToken.value)
+    ? `${host}/ws?token=${wsToken.value}`
+    : undefined)
+
+  const { open, close, status, ws } = useWebSocket(webSocketUrl, { immediate: false })
+
+  async function requestWSToken() {
+    const { data } = await axios().get<{ token: string }>('/ws')
+    wsToken.value = data.token
   }
 
-  console.log('websocketUrl', webSocketUrl.value)
-
-  // onMounted(() => handleConnection(isAuthenticated.value))
-
-  watch(isAuthenticated, handleConnection)
-
-  watch(data, (data) => {
-    if (!data)
-      return
-
+  function handleMessage({ data }: MessageEvent) {
     const payload = JSON.parse(data) as HederaWebsocketPayload
     websocketPacketReceivedEvent.emit({ payload })
+  }
+
+  async function handleConnection() {
+    if (isAuthenticated.value && status.value === 'CLOSED') {
+      await requestWSToken()
+      open()
+      ws.value!.addEventListener('message', handleMessage)
+    }
+
+    if (!isAuthenticated.value && status.value === 'OPEN') {
+      ws.value!.removeEventListener('message', handleMessage)
+      close()
+      wsToken.value = null
+    }
+  }
+
+  onMounted(handleConnection)
+  watch(isAuthenticated, handleConnection)
+  onUnmounted(() => {
+    close()
+    ws.value?.removeEventListener('message', handleMessage)
   })
 }

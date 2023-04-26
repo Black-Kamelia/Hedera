@@ -10,6 +10,9 @@ const usernamePlaceholder = getRandomDeveloperName()
 const message = ref<Nullable<string>>(null)
 const messageSeverity = ref<'success' | 'info' | 'warn' | 'error' | undefined>('error')
 
+const usernameField = ref<Nullable<CompElement>>(null)
+const passwordField = ref<Nullable<CompElement>>(null)
+
 usePageName(t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
@@ -28,7 +31,7 @@ const schema = object({
   username: string().required(t('forms.login.errors.missing_username')),
   password: string().required(t('forms.login.errors.missing_password')),
 })
-const { handleSubmit, errors, resetField } = useForm({
+const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
 })
 
@@ -38,11 +41,15 @@ function hideErrorMessage() {
 
 useEventBus(LoggedInEvent).on((event) => {
   if (event.error) {
-    if (event.error?.response?.status === 401)
+    const status = event.error?.response?.status
+    if (status === 401) {
       resetField('password')
-    if (event.error?.response?.status === 403) {
+      passwordField.value?.$el.focus()
+    }
+    if (status === 403) {
       resetField('username')
       resetField('password')
+      usernameField.value?.$el.focus()
     }
 
     message.value = e(event.error)
@@ -58,10 +65,10 @@ const onSubmit = handleSubmit(login)
 
 <template>
   <div class="text-center mb-10">
-    <h1 class="font-extrabold text-5xl mb-1">
+    <h1 class="font-600 text-5xl mb-1">
       {{ t('app_name') }}
     </h1>
-    <h2 class="font-extrabold text-3xl mb-3">
+    <h2 class="font-600 text-3xl mb-3">
       {{ t('pages.login.title') }}
     </h2>
   </div>
@@ -70,28 +77,30 @@ const onSubmit = handleSubmit(login)
     {{ message }}
   </PMessage>
 
-  <form @submit="onSubmit">
-    <label for="email1" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.username') }}</label>
-    <div class="mb-3">
-      <span class="p-input-icon-left w-full">
-        <i class="i-tabler-user" />
-        <InputText
-          name="username" type="text" :placeholder="usernamePlaceholder" class="w-full" @input="hideErrorMessage"
-        />
-      </span>
-      <small v-if="errors.username" id="text-error" class="p-error mt-1">{{ errors.username }}</small>
-    </div>
+  <form v-focus-trap @submit="onSubmit">
+    <InputText
+      id="username"
+      ref="usernameField"
+      class="w-full"
+      name="username"
+      type="text"
+      :label="t('forms.login.fields.username')"
+      :placeholder="usernamePlaceholder"
+      start-icon="i-tabler-user"
+      @input="hideErrorMessage"
+    />
 
-    <label for="password1" class="block font-900 font-medium mb-2">{{ t('forms.login.fields.password') }}</label>
-    <div class="mb-3">
-      <span class="p-input-icon-left w-full">
-        <i class="i-tabler-lock" />
-        <InputText
-          name="password" type="password" placeholder="••••••••••••••••" class="w-full" @input="hideErrorMessage"
-        />
-      </span>
-      <small v-if="errors.password" id="text-error" class="p-error mt-1">{{ errors.password }}</small>
-    </div>
+    <InputText
+      id="password"
+      ref="passwordField"
+      class="w-full"
+      name="password"
+      type="password"
+      :label="t('forms.login.fields.password')"
+      placeholder="••••••••••••••••"
+      start-icon="i-tabler-lock"
+      @input="hideErrorMessage"
+    />
 
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">

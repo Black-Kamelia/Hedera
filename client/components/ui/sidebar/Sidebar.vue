@@ -29,9 +29,9 @@ function toggleSidebar() {
       <div>
         <PButton rounded @click="toggleSidebar()">
           <Transition mode="out-in" name="fade">
-            <span v-if="isSidebarHovered && !sidebar.open" class="i-tabler-menu-2" />
-            <span v-else-if="sidebar.open" class="i-tabler-indent-decrease" />
-            <span v-else class="i-hedera-logo" />
+            <i v-if="isSidebarHovered && !sidebar.open" class="i-tabler-menu-2" />
+            <i v-else-if="sidebar.open" class="i-tabler-indent-decrease" />
+            <i v-else class="i-hedera-logo" />
           </Transition>
         </PButton>
       </div>

@@ -1,4 +1,4 @@
-const ANONYMOUS_ROUTES = ['/login', '/register', '/resetPassword']
+const ANONYMOUS_ROUTES = ['/login', '/register', '/reset-password']
 
 export default defineNuxtRouteMiddleware((to, from) => {
   const { isAuthenticated } = useAuth()

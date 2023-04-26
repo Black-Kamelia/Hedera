@@ -49,7 +49,7 @@ object SessionManager {
 
     private fun generateTokens(user: User): TokenData = synchronized(lock) {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role)
+            UserState(user.id.value, user.username, user.email, user.role, user.enabled)
         }
         val tokenData = TokenData.from(user)
         val session = Session(userState, tokenData)
@@ -64,15 +64,24 @@ object SessionManager {
             username = user.username
             email = user.email
             role = user.role
+            enabled = user.enabled
+        }
+
+        if (!user.enabled) {
+            logoutAll(user)
         }
     }
 
     suspend fun login(username: String, password: String): Response<TokenData, ErrorDTO> {
-        val unauthorized = Response.unauthorized("errors.auth.invalid_credentials")
+        val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
         val user = Users.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
             return unauthorized
+        }
+
+        if (!user.enabled) {
+            return Response.forbidden(Errors.Auth.ACCOUNT_DISABLED)
         }
 
         return Response.ok(generateTokens(user))
@@ -114,6 +123,7 @@ data class UserState(
     var username: String,
     var email: String,
     var role: UserRole,
+    var enabled: Boolean,
 ) : Principal
 
 data class Session(

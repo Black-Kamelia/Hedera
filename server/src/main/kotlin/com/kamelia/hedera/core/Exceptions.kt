@@ -2,26 +2,32 @@ package com.kamelia.hedera.core
 
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 
-open class HederaException(val error: ErrorDTO) : Exception()
+open class HederaException(val error: ErrorDTO) : Exception() {
 
-class InvalidUUIDException : HederaException(ErrorDTO.of("errors.uuid.invalid"))
+    constructor(key: String) : this(ErrorDTO.of(key))
 
-class MissingParameterException(parameter: String) : HederaException(ErrorDTO.of("errors.parameters.missing", "parameter" to parameter))
+}
 
-class MissingHeaderException(header: String) : HederaException(ErrorDTO.of("errors.headers.missing", "header" to header))
+class InvalidUUIDException : HederaException(Errors.Parsing.INVALID_UUID)
 
-class MissingTokenException : HederaException(ErrorDTO.of("errors.tokens.missing"))
+class MissingParameterException(parameter: String) : HederaException(ErrorDTO.of(Errors.Parameters.MISSING_PARAMETER, "parameter" to parameter))
 
-class ExpiredOrInvalidTokenException : HederaException(ErrorDTO.of("errors.tokens.expired_or_invalid"))
+class MissingHeaderException(header: String) : HederaException(ErrorDTO.of(Errors.Headers.MISSING_HEADER, "header" to header))
 
-class UploadCodeGenerationException : HederaException(ErrorDTO.of("errors.uploads.code_generation"))
+class MissingTokenException : HederaException(Errors.Tokens.MISSING_TOKEN)
 
-class MultipartParseException : HederaException(ErrorDTO.of("errors.uploads.multipart_parse"))
+class ExpiredOrInvalidTokenException : HederaException(Errors.Tokens.EXPIRED_OR_INVALID)
 
-class IllegalFilterException(filter: FilterObject) : HederaException(ErrorDTO.of("errors.filters.illegal", "filter" to filter.toString()))
+class UploadCodeGenerationException : HederaException(Errors.Uploads.TOKEN_GENERATION)
 
-class UnknownFilterFieldException(field: String) : HederaException(ErrorDTO.of("errors.filters.unknown_field", "field" to field))
+class MultipartParseException : HederaException(Errors.Uploads.MULTIPART_PARSE)
 
-class IllegalActionException : HederaException(ErrorDTO.of("errors.actions.illegal"))
+class IllegalFilterException(filter: FilterObject) : HederaException(ErrorDTO.of(Errors.Filters.ILLEGAL_FILTER, "filter" to filter.toString()))
 
-class InsufficientPermissionsException : HederaException(ErrorDTO.of("errors.permissions.insufficient"))
+class UnknownFilterFieldException(field: String) : HederaException(ErrorDTO.of(Errors.Filters.UNKNOWN_FIELD, "field" to field))
+
+class UnknownSortFieldException(field: String) : HederaException(ErrorDTO.of(Errors.Sorts.UNKNOWN_FIELD, "field" to field))
+
+class IllegalActionException : HederaException(Errors.ILLEGAL_ACTION)
+
+class InsufficientPermissionsException : HederaException(Errors.INSUFFICIENT_PERMISSIONS)

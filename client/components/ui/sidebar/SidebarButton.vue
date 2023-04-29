@@ -11,11 +11,11 @@ const {
   icon,
   label,
   active,
-} = definePropsRefs<SidebarButtonProps>()
+} = $defineProps<SidebarButtonProps>()
 
 const router = useRouter()
 
-const activeRoute = computed(() => active.value?.(router.currentRoute.value.fullPath) ?? false)
+const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) ?? false)
 </script>
 
 <template>

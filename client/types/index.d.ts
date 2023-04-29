@@ -11,6 +11,7 @@ declare global {
 // BEGIN SECTION: DOM
 declare global {
   type CompElement<T = {}> = { $el: HTMLElement } & T
+  type OnlyProps<T> = Omit<T, "$attrs">
 }
 // END SECTION: DOM
 

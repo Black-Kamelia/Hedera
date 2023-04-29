@@ -67,6 +67,7 @@ export default defineNuxtConfig({
   macros: {
     exportProps: true,
     reactivityTransform: true,
+    betterDefine: true,
   },
   pinia: {
     autoImports: [

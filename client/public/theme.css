@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap'); /* Reset */
 
-html {
-  scrollbar-gutter: stable;
-}
-
 .dark {
   color-scheme: dark;
 }
@@ -11,6 +7,7 @@ html {
 /* primevue additions */
 body {
   color: var(--text-color);
+  font-family: 'Red Hat Text', sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -43,6 +40,25 @@ h1, h2, h3, h4, h5, h6 {
   height: 1em !important;
 }
 
+.p-card {
+  box-shadow: 0 0 1px -1px rgba(0, 0, 0, .2), 0 0 1px 0 rgba(0, 0, 0, .14), 0 0 3px 0 rgba(0, 0, 0, .12) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:last-child > td {
+  border: none;
+}
+
+.p-contextmenu {
+  min-width: 15rem;
+  max-width: 30rem;
+  width: auto;
+  padding: .5rem 0;
+}
+
+.p-contextmenu .p-menuitem-separator {
+  margin: .5rem 0;
+}
+
 input:focus::placeholder {
   color: transparent;
 }
@@ -50,4 +66,13 @@ input:focus::placeholder {
 .large-icon {
   width: 2em;
   height: 2em;
+}
+
+
+.p-toast .p-toast-message:has(.delete-toast) {
+  border-radius: 100em;
+}
+
+.delete-toast .p-toast-icon-close {
+  display: none;
 }

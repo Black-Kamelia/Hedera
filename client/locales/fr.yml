@@ -33,6 +33,11 @@ pages:
     login: Retour à la connexion
   files:
     title: Fichiers
+    visibility:
+      public: Public
+      private: Privé
+      unlisted: Non répertorié
+      protected: Protégé
   favorites:
     title: Favoris
   upload:

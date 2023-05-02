@@ -116,7 +116,7 @@ const products = ref([
     size: 453654,
     type: 'image/png',
     owner: 'Slama',
-    visibility: 'PUBLIC',
+    visibility: 'PUeBLIC',
     uploaded_at: '2021-09-01 12:00:00',
     quantity: 10,
   },
@@ -298,13 +298,25 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
         </PColumn>
         <PColumn field="visibility" sortable header="Visibilité">
           <template #body="slotProps">
-            <div class="flex flex-row items-center gap-2">
-              <i v-if="slotProps.data.visibility === 'PUBLIC'" class="i-tabler-world" />
-              <i v-else-if="slotProps.data.visibility === 'UNLISTED'" class="i-tabler-link" />
-              <i v-else-if="slotProps.data.visibility === 'PROTECTED'" class="i-tabler-lock" />
-              <i v-else-if="slotProps.data.visibility === 'PRIVATE'" class="i-tabler-eye-off" />
-              <i v-else class="i-tabler-help-triangle-filled" />
-              <span>{{ t(`pages.files.visibility.${slotProps.data.visibility}`.toLowerCase()) }}</span>
+            <div v-if="slotProps.data.visibility === 'PUBLIC'" class="flex flex-row items-center gap-2">
+              <i class="i-tabler-world" />
+              <span>{{ t('pages.files.visibility.public') }}</span>
+            </div>
+            <div v-else-if="slotProps.data.visibility === 'UNLISTED'" class="flex flex-row items-center gap-2">
+              <i class="i-tabler-link" />
+              <span>{{ t('pages.files.visibility.unlisted') }}</span>
+            </div>
+            <div v-else-if="slotProps.data.visibility === 'PROTECTED'" class="flex flex-row items-center gap-2">
+              <i class="i-tabler-lock" />
+              <span>{{ t('pages.files.visibility.protected') }}</span>
+            </div>
+            <div v-else-if="slotProps.data.visibility === 'PRIVATE'" class="flex flex-row items-center gap-2">
+              <i class="i-tabler-eye-off" />
+              <span>{{ t('pages.files.visibility.private') }}</span>
+            </div>
+            <div v-else class="flex flex-row items-center gap-2">
+              <i class="i-tabler-help-triangle-filled" />
+              <span>{{ t('pages.files.visibility.unknown') }}</span>
             </div>
           </template>
           <template #loading>

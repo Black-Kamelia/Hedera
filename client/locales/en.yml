@@ -33,6 +33,12 @@ pages:
       login: Back to login
   files:
     title: Files
+    visibility:
+      public: Public
+      private: Private
+      unlisted: Unlisted
+      protected: Protected
+      unknown: Unknown
   favorites:
     title: Favorites
   upload:

@@ -38,6 +38,7 @@ pages:
       private: Privé
       unlisted: Non répertorié
       protected: Protégé
+      unknown: Inconnu
   favorites:
     title: Favoris
   upload:

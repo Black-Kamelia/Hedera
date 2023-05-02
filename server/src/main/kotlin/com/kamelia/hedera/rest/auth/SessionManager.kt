@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.auth
 import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.rest.user.*
+import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -47,7 +48,7 @@ object SessionManager {
         pruneJob = null
     }
 
-    private suspend fun generateTokens(user: User): TokenData = mutex.withLock {
+    private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
             UserState(user.id.value, user.username, user.email, user.role, user.enabled)
         }
@@ -56,10 +57,10 @@ object SessionManager {
 
         sessions[tokenData.accessToken] = session
         refreshTokens[tokenData.refreshToken] = tokenData
-        return tokenData
+        tokenData
     }
 
-    suspend fun updateSession(userId: UUID, user: User): Unit = mutex.withLock {
+    suspend fun updateSession(userId: UUID, user: User): Unit = mutex.withReentrantLock {
         loggedUsers[userId]?.apply {
             username = user.username
             email = user.email
@@ -68,11 +69,7 @@ object SessionManager {
         }
 
         if (!user.enabled) {
-            UserEvents.userForcefullyLoggedOutEvent.emit(UserForcefullyLoggedOutDTO(
-                userId = user.id.value,
-                reason = "force-logout.accounts.disabled",
-            ))
-            unlockedLogoutAll(user)
+            logoutAll(user, "force-logout.accounts.disabled")
         }
     }
 
@@ -96,20 +93,26 @@ object SessionManager {
         return Response.ok(generateTokens(user))
     }
 
-    suspend fun verify(token: String): UserState? = mutex.withLock {
-        return sessions[token]?.user
+    suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
+        sessions[token]?.user
     }
 
-    suspend fun verifyRefresh(token: String): Unit = mutex.withLock {
+    suspend fun verifyRefresh(token: String): Unit = mutex.withReentrantLock {
         refreshTokens[token] ?: throw ExpiredOrInvalidTokenException()
     }
 
-    suspend fun logout(token: String): Unit = mutex.withLock {
+    suspend fun logout(token: String): Unit = mutex.withReentrantLock {
         val session = sessions.remove(token) ?: throw ExpiredOrInvalidTokenException()
         refreshTokens.remove(session.tokenData.refreshToken)
     }
 
-    private fun unlockedLogoutAll(user: User) {
+    suspend fun logoutAll(user: User, reason: String = "force-logout.all") = mutex.withReentrantLock {
+        UserEvents.userForcefullyLoggedOutEvent.emit(
+            UserForcefullyLoggedOutDTO(
+                userId = user.id.value,
+                reason = reason,
+            )
+        )
         sessions.entries.filter {
             it.value.user.uuid == user.id.value
         }.forEach {
@@ -119,14 +122,6 @@ object SessionManager {
             sessions.remove(it.key)
         }
         loggedUsers.remove(user.id.value)
-    }
-
-    suspend fun logoutAll(user: User) = mutex.withLock {
-        UserEvents.userForcefullyLoggedOutEvent.emit(UserForcefullyLoggedOutDTO(
-            userId = user.id.value,
-            reason = "force-logout.all",
-        ))
-        unlockedLogoutAll(user)
     }
 }
 

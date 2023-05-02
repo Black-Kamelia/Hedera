@@ -7,7 +7,6 @@ import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
@@ -29,7 +28,7 @@ object SessionManager {
             while (isActive) {
                 delay(PURGE_INTERVAL)
                 val now = System.currentTimeMillis()
-                mutex.withLock {
+                mutex.withReentrantLock {
                     sessions.entries.removeIf {
                         it.value.tokenData.accessTokenExpiration < now
                     }

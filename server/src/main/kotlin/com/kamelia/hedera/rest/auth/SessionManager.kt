@@ -50,7 +50,7 @@ object SessionManager {
 
     private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role, user.enabled)
+            UserState(user.id.value, user.username, user.email, user.role, user.enabled, user.uploadToken)
         }
         val tokenData = TokenData.from(user)
         val session = Session(userState, tokenData)
@@ -66,11 +66,18 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
+            uploadToken = user.uploadToken
         }
 
         if (!user.enabled) {
             logoutAll(user, "force-logout.accounts.disabled")
+        } else {
+            UserEvents.userUpdatedEvent(user.toRepresentationDTO())
         }
+    }
+
+    suspend fun getUserOrNull(userId: UUID): UserState? = mutex.withReentrantLock {
+        loggedUsers[userId]
     }
 
     suspend fun login(username: String, password: String): Response<TokenData, ErrorDTO> {
@@ -131,7 +138,18 @@ data class UserState(
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
-) : Principal
+    var uploadToken: String,
+) : Principal {
+
+    fun toUserRepresentationDTO() = UserRepresentationDTO(
+        uuid,
+        username,
+        email,
+        role,
+        enabled,
+        uploadToken,
+    )
+}
 
 data class Session(
     val user: UserState,

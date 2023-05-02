@@ -78,10 +78,9 @@ object UserService {
             throw InsufficientPermissionsException()
         }
 
-        val res = Users.update(toEdit, dto, updater)
-            .toRepresentationDTO()
-        UserEvents.userUpdatedEvent(res)
-        return Response.ok(res)
+        return Response.ok(Users
+            .update(toEdit, dto, updater)
+            .toRepresentationDTO())
     }
 
     suspend fun updateUserPassword(

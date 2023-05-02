@@ -3,9 +3,13 @@ package com.kamelia.hedera.rest.auth
 import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.rest.user.*
+import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -24,19 +28,16 @@ object SessionManager {
 
     fun startPruning() {
         if (pruneJob != null) return
-        pruneJob = coroutineScope.launch {
-            while (isActive) {
-                delay(PURGE_INTERVAL)
-                val now = System.currentTimeMillis()
-                mutex.withReentrantLock {
-                    sessions.entries.removeIf {
-                        it.value.tokenData.accessTokenExpiration < now
-                    }
-                    loggedUsers.entries.removeIf {
-                        !sessions.values.any { session -> session.user.uuid == it.key }
-                    }
-                    refreshTokens.entries.removeIf { it.value.refreshTokenExpiration < now }
+        pruneJob = coroutineScope.launchPeriodic(PURGE_INTERVAL) {
+            val now = System.currentTimeMillis()
+            mutex.withReentrantLock {
+                sessions.entries.removeIf {
+                    it.value.tokenData.accessTokenExpiration < now
                 }
+                loggedUsers.entries.removeIf {
+                    !sessions.values.any { session -> session.user.uuid == it.key }
+                }
+                refreshTokens.entries.removeIf { it.value.refreshTokenExpiration < now }
             }
         }
     }

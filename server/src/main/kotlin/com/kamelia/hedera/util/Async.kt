@@ -1,10 +1,11 @@
 package com.kamelia.hedera.util
 
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
+import kotlin.time.Duration
 
 private class ReentrantMutexContextElement(
     override val key: ReentrantMutexContextKey
@@ -45,5 +46,17 @@ suspend fun <T> Mutex.withReentrantLock(action: suspend () -> T): T {
     if (coroutineContext[key] != null) return action()
     return withContext(coroutineContext + ReentrantMutexContextElement(key)) {
         withLock { action() }
+    }
+}
+
+fun CoroutineScope.launchPeriodic(
+    delay: Duration,
+    immediate: Boolean = false,
+    action: suspend () -> Unit
+) = launch {
+    if (immediate) action()
+    while (isActive) {
+        delay(delay)
+        action()
     }
 }

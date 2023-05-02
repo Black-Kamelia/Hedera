@@ -274,8 +274,8 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
                 'i-tabler-arrows-sort': !slotProps.sorted,
-                'i-tabler-sort-descending': slotProps.sortOrder > 0,
-                'i-tabler-sort-ascending': slotProps.sortOrder < 0,
+                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
+                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
               }"
             />
           </template>

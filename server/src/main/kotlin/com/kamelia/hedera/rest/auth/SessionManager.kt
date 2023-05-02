@@ -22,8 +22,8 @@ object SessionManager {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var pruneJob: Job? = null
 
-    fun startPruning() = coroutineScope.launch {
-        if (pruneJob != null) return@launch
+    fun startPruning() {
+        if (pruneJob != null) return
         pruneJob = coroutineScope.launch {
             while (isActive) {
                 delay(PURGE_INTERVAL)

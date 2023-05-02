@@ -66,6 +66,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
     try {
       await axios().post('/logout')
       setTokens(null)
+      setUser(null)
       loggedOutEvent.emit()
     }
     catch (error) {

@@ -1,13 +1,19 @@
 import { AxiosError } from 'axios'
+import type { HederaUserConnectedPayload } from '~/utils/websocketEvents'
 
 export interface Tokens {
   accessToken: string
   refreshToken: string
 }
 
+export interface User extends HederaUserConnectedPayload {}
+
 export interface UseAuthComposer {
+  user: Ref<Nullable<User>>
   tokens: Ref<Nullable<Tokens>>
   isAuthenticated: ComputedRef<boolean>
+
+  setUser: (newUser: Nullable<Partial<User>>) => void
   setTokens: (newTokens: Nullable<Tokens>) => void
   login: (values: Record<string, any>) => Promise<void>
   logout: () => Promise<void>
@@ -18,9 +24,24 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const axios = useAxiosFactory()
 
+  const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
 
   const isAuthenticated = computed(() => !!tokens.value)
+
+  function setUser(newUser: Nullable<Partial<User>>) {
+    if (!newUser) {
+      user.value = null
+      return
+    }
+
+    if (!user.value) {
+      user.value = newUser as User
+      return
+    }
+
+    Object.assign(user.value, newUser)
+  }
 
   function setTokens(newTokens: Nullable<Tokens>) {
     tokens.value = newTokens
@@ -57,9 +78,11 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   }
 
   return {
+    user,
     tokens,
     isAuthenticated,
 
+    setUser,
     setTokens,
     login,
     logout,

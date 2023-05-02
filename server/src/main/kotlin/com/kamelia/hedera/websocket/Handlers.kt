@@ -26,10 +26,9 @@ private suspend fun WebSocketServerSession.onUserUpdate(currentId: UUID, user: U
 
 private const val USER_FORCEFULLY_LOGGED_OUT = "user-forcefully-logged-out"
 private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: UUID, payload: UserForcefullyLoggedOutDTO) {
-    println("Hello")
     if (payload.userId != currentId) return
-    println("Bye")
     sendEvent(USER_FORCEFULLY_LOGGED_OUT, payload)
+    forcefullyClose(USER_FORCEFULLY_LOGGED_OUT)
 }
 
 private const val INVALID_USER_ID = "invalid-user-id"

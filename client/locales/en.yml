@@ -28,6 +28,10 @@ pages:
   login:
     forgot_password: Forgot password?
     title: Log in
+    reasons:
+      expired: Your session has expired, please log in again
+      logout_all: You have been logged out of all devices
+      disabled: Your account has been disabled
   resetPassword:
       title: Reset password
       login: Back to login

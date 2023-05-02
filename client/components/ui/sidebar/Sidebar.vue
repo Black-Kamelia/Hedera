@@ -3,6 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 const { t } = useI18n()
 const { isDark, toggle } = useDark()
+const { user } = useAuth()
 
 const themeIcon = computed(() => isDark.value ? 'i-tabler-sun' : 'i-tabler-moon')
 const themeName = computed(() => isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode'))
@@ -63,7 +64,7 @@ function toggleSidebar() {
         <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
         <SidebarButton :icon="themeIcon" :label="themeName" :open="sidebar.open" @click="toggle()" />
         <div class="sep" />
-        <SidebarButton icon="i-tabler-user-circle" label="{Username goes here}" :open="sidebar.open" />
+        <SidebarButton icon="i-tabler-user-circle" :label="user?.username ?? 'User'" :open="sidebar.open" />
       </div>
     </div>
   </aside>

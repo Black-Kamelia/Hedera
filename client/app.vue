@@ -2,7 +2,7 @@
 useTheme()
 useWebsocketAutoConnect()
 
-const { setUser, setTokens } = useAuth()
+const { setTokens, setUser } = useAuth()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
@@ -14,6 +14,7 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
     case 'user-forcefully-logged-out': {
       setTokens(null)
       setUser(null)
+      navigateTo(`/login?reason=${encodeURI(payload.data.reason)}`)
       break
     }
   }

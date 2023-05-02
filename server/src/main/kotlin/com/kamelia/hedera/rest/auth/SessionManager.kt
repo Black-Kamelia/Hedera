@@ -70,7 +70,7 @@ object SessionManager {
         }
 
         if (!user.enabled) {
-            logoutAll(user, "force-logout.accounts.disabled")
+            logoutAll(user, "disabled")
         } else {
             UserEvents.userUpdatedEvent(user.toRepresentationDTO())
         }
@@ -113,8 +113,8 @@ object SessionManager {
         refreshTokens.remove(session.tokenData.refreshToken)
     }
 
-    suspend fun logoutAll(user: User, reason: String = "force-logout.all") = mutex.withReentrantLock {
-        UserEvents.userForcefullyLoggedOutEvent.emit(
+    suspend fun logoutAll(user: User, reason: String = "logout_all") = mutex.withReentrantLock {
+        UserEvents.userForcefullyLoggedOutEvent(
             UserForcefullyLoggedOutDTO(
                 userId = user.id.value,
                 reason = reason,

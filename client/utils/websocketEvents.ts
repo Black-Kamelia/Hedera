@@ -2,7 +2,7 @@ import type { EventBusKey } from '@vueuse/core'
 
 export interface HederaUnknownPayload {}
 
-export interface HederaUserUpdatedPayload {
+export interface HederaUserConnectedPayload {
   id: string
   username: string
   email: string
@@ -11,9 +11,18 @@ export interface HederaUserUpdatedPayload {
   uploadToken: string
 }
 
+export interface HederaUserUpdatedPayload extends HederaUserConnectedPayload {}
+
+export interface HederaUserForcefullyLoggedOutPayload {
+  userId: string
+  reason: string
+}
+
 export type HederaWebsocketPayload =
 | { type: 'unknown'; data: HederaUnknownPayload }
+| { type: 'user-connected'; data: HederaUserConnectedPayload }
 | { type: 'user-updated'; data: HederaUserUpdatedPayload }
+| { type: 'user-forcefully-logged-out'; data: HederaUserForcefullyLoggedOutPayload }
 
 export const WebsocketPacketReceivedEvent: EventBusKey<{
   payload: HederaWebsocketPayload

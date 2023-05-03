@@ -147,8 +147,10 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun regenerateUploadToken(user: User): User = Connection.transaction {
-        user.uploadToken = UUID.randomUUID().toString().replace("-", "")
-        user
+        user.apply {
+            uploadToken = UUID.randomUUID().toString().replace("-", "")
+            SessionManager.updateSession(uuid, this)
+        }
     }
 }
 

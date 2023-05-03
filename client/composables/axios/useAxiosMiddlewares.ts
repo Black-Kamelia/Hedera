@@ -40,8 +40,9 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
           if (error.response?.status !== 401)
             return Promise.reject(error)
 
-          const { setTokens } = useAuth()
+          const { setTokens, setUser } = useAuth()
           setTokens(null)
+          setUser(null)
           refreshTokenExpiredEvent.emit({ error })
 
           return Promise.resolve()

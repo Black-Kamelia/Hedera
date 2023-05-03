@@ -14,9 +14,3 @@ object UserEvents {
 
     val userForcefullyLoggedOutEvent = event<UserForcefullyLoggedOutDTO>()
 }
-
-@Serializable
-data class UserForcefullyLoggedOutDTO(
-    val userId: UUID,
-    val reason: String,
-)

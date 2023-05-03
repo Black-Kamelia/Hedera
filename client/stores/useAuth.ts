@@ -52,6 +52,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
       const { data: tokens } = await axios().post<Tokens>('/login', values)
       setTokens(tokens)
       loggedInEvent.emit({ tokens })
+      setUser({ username: values.username })
     }
     catch (error) {
       if (error instanceof AxiosError) {

@@ -359,13 +359,4 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
   transform: translateX(-50%) translateY(150%);
   opacity: 0;
 }
-
-tr.p-highlight .icon-preview {
-}
-
-html.dark .icon-preview {
-}
-
-html.dark tr.p-highlight .icon-preview {
-}
 </style>

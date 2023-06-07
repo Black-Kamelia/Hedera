@@ -13,18 +13,19 @@ const hovered = useElementHover(el)
     class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
   >
     <div class="absolute flex flex-center w-full h-full" :class="{ preview: !data.type.startsWith('image/') }">
-      <img
+      <PImage
         v-if="data.type.startsWith('image/')"
         class="w-6rem h-4rem object-cover"
         :src="`https://picsum.photos/1600/900?random=${data.id}`"
         :alt="data.name"
-      >
-      <i v-if="data.type === 'audio/mpeg'" class="i-tabler-file-music" />
+        preview
+      />
+      <i v-else-if="data.type === 'audio/mpeg'" class="i-tabler-file-music" />
       <i v-else class="i-tabler-file" />
     </div>
     <Transition>
       <a
-        v-show="hovered"
+        v-show="false"
         href="#"
         class="absolute flex flex-center bg-black/12.5 backdrop-blur-sm border-rounded-2 w-full h-full text-white"
       >

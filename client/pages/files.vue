@@ -21,7 +21,7 @@ const products = ref([
     type: 'image/png',
     owner: 'Slama',
     visibility: 'PUBLIC',
-    uploaded_at: '2021-09-01 12:00:00',
+    uploaded_at: '01/09/2021 12:00:00',
     quantity: 10,
   },
   {
@@ -253,6 +253,15 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
           </template>
         </PColumn>
         <PColumn field="name" sortable header="Nom">
+          <template #sorticon="slotProps">
+            <i
+              class="pointer-events-none ml-1 text-xs block" :class="{
+                'i-tabler-arrows-sort': !slotProps.sorted,
+                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
+                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
+              }"
+            />
+          </template>
           <template #body="slotProps">
             <div class="flex flex-col gap-1">
               <span>{{ slotProps.data.name }}</span>
@@ -287,16 +296,43 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
           </template>
         </PColumn>
         <PColumn field="type" sortable header="Format">
+          <template #sorticon="slotProps">
+            <i
+              class="pointer-events-none ml-1 text-xs block" :class="{
+                'i-tabler-arrows-sort': !slotProps.sorted,
+                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
+                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
+              }"
+            />
+          </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
         <PColumn field="owner" sortable header="Propriétaire">
+          <template #sorticon="slotProps">
+            <i
+              class="pointer-events-none ml-1 text-xs block" :class="{
+                'i-tabler-arrows-sort': !slotProps.sorted,
+                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
+                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
+              }"
+            />
+          </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
         <PColumn field="visibility" sortable header="Visibilité">
+          <template #sorticon="slotProps">
+            <i
+              class="pointer-events-none ml-1 text-xs block" :class="{
+                'i-tabler-arrows-sort': !slotProps.sorted,
+                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
+                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
+              }"
+            />
+          </template>
           <template #body="slotProps">
             <div v-if="slotProps.data.visibility === 'PUBLIC'" class="flex flex-row items-center gap-2">
               <i class="i-tabler-world" />
@@ -326,7 +362,16 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
             </div>
           </template>
         </PColumn>
-        <PColumn field="uploaded_at" sortable header="Mise en ligne">
+        <PColumn field="uploaded_at" sortable header="Date de création">
+          <template #sorticon="slotProps">
+            <i
+              class="pointer-events-none ml-1 text-xs block" :class="{
+                'i-tabler-arrows-sort': !slotProps.sorted,
+                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
+                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
+              }"
+            />
+          </template>
           <template #loading>
             <PSkeleton width="8rem" height="1rem" />
           </template>
@@ -334,29 +379,62 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
       </PDataTable>
     </div>
 
-    <Transition>
-      <div v-show="selecting" class="fixed bottom-8 left-50% translate-x--50% flex flex-row gap-2">
-        <PButton
-          class="delete-toast shadow-lg" label="Supprimer les fichiers sélectionnés" icon="i-tabler-trash"
-          severity="danger" rounded
-        />
-      </div>
-    </Transition>
+    <div class="actions left-0 fixed bottom-8 flex flex-row flex-center w-full gap-2">
+      <Transition>
+        <div v-show="selecting">
+          <PButton
+            v-tooltip.top="{ value: 'Télécharger', class: 'translate-y--1' }" class="shadow-lg"
+            icon="i-tabler-download" rounded
+          />
+        </div>
+      </Transition>
+      <Transition>
+        <div v-show="selecting">
+          <PButton
+            v-tooltip.top="{ value: 'Modifier la visibilité', class: 'translate-y--1' }"
+            class="shadow-lg" icon="i-tabler-eye" rounded
+          />
+        </div>
+      </Transition>
+      <Transition>
+        <div v-show="selecting">
+          <PButton
+            v-tooltip.top="{ value: 'Désélectionner', class: 'translate-y--1' }"
+            class="shadow-lg"
+            icon="i-tabler-x" rounded @click="selectedProduct.value = []"
+          />
+        </div>
+      </Transition>
+      <Transition>
+        <div v-show="selecting">
+          <PButton
+            v-tooltip.top="{ value: 'Supprimer', class: 'translate-y--1' }" class="shadow-lg"
+            icon="i-tabler-trash" severity="danger" rounded
+          />
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@for $i from 1 through 5 {
+  .actions .v-enter-active:nth-child(#{$i}n) {
+    transition-delay: #{($i - 1) * 0.03}s;
+  }
+}
+
 .v-enter-active {
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .v-leave-active {
-  transition: all 0.35s cubic-bezier(0.36, 0, 0.66, -0.56);
+  transition: all 0.35s cubic-bezier(0.5, 0, 0.75, 0);
 }
 
 .v-enter-from,
 .v-leave-to {
-  transform: translateX(-50%) translateY(150%);
+  transform: translateY(150%);
   opacity: 0;
 }
 </style>

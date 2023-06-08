@@ -3,8 +3,8 @@
     <envs>
       <env name="HEDERA_ENV" value="dev" />
       <env name="HEDERA_JWT_SECRET" value="secret" />
-      <env name="HEDERA_JWT_SECRET_REFRESH" value="secretRefresh" />
-      <env name="HEDERA_JWT_SECRET_WS_TOKEN" value="secretWSToken" />
+      <env name="HEDERA_JWT_REFRESH_SECRET" value="secretRefresh" />
+      <env name="HEDERA_JWT_WS_SECRET" value="secretWSToken" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.kamelia.hedera.ApplicationKt" />
     <module name="Hedera.server.main" />

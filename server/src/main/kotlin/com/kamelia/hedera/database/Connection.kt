@@ -1,13 +1,14 @@
 package com.kamelia.hedera.database
 
+import com.kamelia.hedera.util.Environment
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import java.sql.Connection
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
+import java.sql.Connection
 
 object Connection {
 
@@ -22,7 +23,15 @@ object Connection {
     }
 
     private fun hikari(): HikariDataSource {
-        val config = HikariConfig("/hikari.properties")
+        val config = if (Environment.isProd) {
+            HikariConfig().apply {
+                jdbcUrl = "jdbc:postgresql://${Environment.databaseHost}:${Environment.databasePort}/${Environment.databaseName}"
+                username = Environment.databaseUsername
+                password = Environment.databasePassword
+            }
+        } else {
+            HikariConfig("/hikari.properties")
+        }
         config.validate()
         return HikariDataSource(config)
     }

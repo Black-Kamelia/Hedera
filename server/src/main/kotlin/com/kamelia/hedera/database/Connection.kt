@@ -23,16 +23,15 @@ object Connection {
     }
 
     private fun hikari(): HikariDataSource {
-        val config = HikariConfig("/hikari.properties")
-
-        if (Environment.isProd) {
-            config.apply {
+        val config = if (Environment.isProd) {
+            HikariConfig().apply {
                 jdbcUrl = "jdbc:postgresql://${Environment.databaseHost}:${Environment.databasePort}/${Environment.databaseName}"
                 username = Environment.databaseUsername
                 password = Environment.databasePassword
             }
+        } else {
+            HikariConfig("/hikari.properties")
         }
-
         config.validate()
         return HikariDataSource(config)
     }

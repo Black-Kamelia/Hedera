@@ -25,7 +25,7 @@ object Environment {
     val jwtRealm get() = config.property("hedera.jwt.realm").getString()
 
     val databaseHost get() = config.property("hedera.database.host").getString()
-    val databasePort get() = config.property("hedera.database.port").getString()
+    val databasePort get() = config.property("hedera.database.port").getString().toShort()
     val databaseName get() = config.property("hedera.database.name").getString()
     val databaseUsername get() = config.property("hedera.database.username").getString()
     val databasePassword get() = config.property("hedera.database.password").getString()

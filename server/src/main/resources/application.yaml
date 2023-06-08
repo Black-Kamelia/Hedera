@@ -22,3 +22,10 @@ hedera:
     secretWSToken: $HEDERA_JWT_WS_SECRET
     expirationWSToken: "$HEDERA_JWT_WS_EXPIRATION:300000" # Default 5 minutes
     realm: hedera login-locked
+
+  database:
+    host: "$HEDERA_DATABASE_HOST:localhost"
+    port: "$HEDERA_DATABASE_PORT:5432"
+    name: "$HEDERA_DATABASE_NAME:hedera"
+    username: "$HEDERA_DATABASE_USERNAME:hedera"
+    password: "$HEDERA_DATABASE_PASSWORD:hedera"

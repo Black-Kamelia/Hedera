@@ -23,6 +23,12 @@ object Environment {
     val secretWSToken get() = config.property("hedera.jwt.secretWSToken").getString()
     val expirationWSToken get() = config.property("hedera.jwt.expirationWSToken").getString().toLong()
     val jwtRealm get() = config.property("hedera.jwt.realm").getString()
+
+    val databaseHost get() = config.property("hedera.database.host").getString()
+    val databasePort get() = config.property("hedera.database.port").getString()
+    val databaseName get() = config.property("hedera.database.name").getString()
+    val databaseUsername get() = config.property("hedera.database.username").getString()
+    val databasePassword get() = config.property("hedera.database.password").getString()
 }
 
 val ApplicationJSON = ContentType.parse("application/json")

@@ -84,6 +84,8 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'continuous-integration'
+                    branch '84-nightly-build'
+                    triggeredBy 'TimerTrigger'
                 }
             }
             steps {
@@ -92,11 +94,28 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when {
-                branch 'master'
-            }
-            steps {
-                sh 'echo "Push to Docker Hub"'
+            parallel {
+                stage('Stable') {
+                    when {
+                        branch 'master'
+                    }
+                    steps {
+                        sh 'echo "Push to Docker Hub"'
+                    }
+                }
+                stage('Nightly') {
+                    when {
+                        // allOf {
+                        //     branch 'develop'
+                        //     triggeredBy 'TimerTrigger'
+                        // }
+                        branch '84-nightly-build'
+                    }
+                    steps {
+                        sh 'chmod +x ./release/package.sh'
+                        sh './release/package.sh'
+                    }
+                }
             }
         }
     }

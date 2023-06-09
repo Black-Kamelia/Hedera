@@ -89,7 +89,7 @@ pipeline {
             //}
             steps {
                 sh 'gradle assemble'
-                sh 'ls ..'
+                sh 'ls'
                 archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
             }
         }

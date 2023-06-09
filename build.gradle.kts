@@ -17,6 +17,12 @@ tasks {
         delete(file("${project.projectDir}/server/upload"))
     }
 
+    assemble {
+        actions.clear()
+        dependsOn(":client:bundle")
+        dependsOn(":server:assemble")
+    }
+
     build {
         actions.clear()
         dependsOn(":client:bundle")

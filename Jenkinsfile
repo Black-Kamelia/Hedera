@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'gradle:8.1-jdk17'
-        }
-    }
+    agent none
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()
@@ -79,6 +75,11 @@ pipeline {
         //     }
         // }
         stage('Package') {
+            agent {
+                docker {
+                    image 'gradle:8.1-jdk17'
+                }
+            }
             //when {
             //    anyOf {
             //        branch 'master'

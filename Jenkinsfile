@@ -109,7 +109,11 @@ pipeline {
                     //        triggeredBy 'TimerTrigger'
                     //    }
                     //}
-                    agent none
+                    agent {
+                        docker {
+                            image 'docker:cli'
+                        }
+                    }
                     steps {
                         sh 'chmod +x ./release/package.sh'
                         withCredentials([string(credentialsId: 'docker-hub-token', variable: 'token')]) {

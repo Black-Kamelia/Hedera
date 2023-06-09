@@ -1,5 +1,9 @@
 pipeline {
-    agent none
+    agent {
+        docker {
+            image 'gradle:8.1-jdk17'
+        }
+    }
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()

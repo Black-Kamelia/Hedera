@@ -1,4 +1,5 @@
 pipeline {
+    agent none
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()

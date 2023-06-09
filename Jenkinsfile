@@ -102,13 +102,13 @@ pipeline {
         //     }
         // }
         stage('Deploy') {
-            agent {
-                docker {
-                    image 'docker:cli'
-                }
-            }
             parallel {
                 stage('Stable') {
+                    agent {
+                        docker {
+                            image 'docker:cli'
+                        }
+                    }
                     when {
                         branch 'master'
                     }
@@ -117,6 +117,11 @@ pipeline {
                     }
                 }
                 stage('Nightly') {
+                    agent {
+                        docker {
+                            image 'docker:cli'
+                        }
+                    }
                     //when {
                     //    allOf {
                     //        branch 'develop'

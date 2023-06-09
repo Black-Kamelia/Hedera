@@ -113,6 +113,7 @@ pipeline {
                     agent any
                     steps {
                         dir('./release') {
+                            sh 'ls -R ..'
                             sh 'chmod +x package.sh && ./package.sh'
                             sh 'ls'
                             script {

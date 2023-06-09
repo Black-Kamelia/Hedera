@@ -111,7 +111,7 @@ pipeline {
                     steps {
                         sh 'chmod +x ./release/package.sh'
                         script {
-                            docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
+                            docker.withRegistry('', 'docker-hub') {
                                 docker.build('bkamelia/hedera:nightly', '--dockerfile ./release/Dockerfile')
                                 docker.push('bkamelia/hedera:nightly')
                             }

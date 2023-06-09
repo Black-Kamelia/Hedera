@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'gradle:8.1.0-jdk17'
-            reuseNode true
+            //reuseNode true
         }
     }
     options {
@@ -79,19 +79,19 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Package') {
-            //when {
-            //    anyOf {
-            //        branch 'master'
-            //        branch 'continuous-integration'
-            //        triggeredBy 'TimerTrigger'
-            //    }
-            //}
-            steps {
-                sh 'gradle assemble'
-                archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
-            }
-        }
+        // stage('Package') {
+        //     //when {
+        //     //    anyOf {
+        //     //        branch 'master'
+        //     //        branch 'continuous-integration'
+        //     //        triggeredBy 'TimerTrigger'
+        //     //    }
+        //     //}
+        //     steps {
+        //         sh 'gradle assemble'
+        //         archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
+        //     }
+        // }
         stage('Deploy') {
             parallel {
                 stage('Stable') {

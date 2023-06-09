@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'gradle:8.1.0-jdk17'
-            //reuseNode true
+            reuseNode false
         }
     }
     options {
@@ -112,6 +112,7 @@ pipeline {
                     agent {
                         docker {
                             image 'docker:cli'
+                            reuseNode false
                         }
                     }
                     steps {

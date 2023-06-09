@@ -107,11 +107,11 @@ pipeline {
                     //}
                     agent any
                     steps {
-                        sh 'chmod +x ./release/package.sh && ./release/package.sh'
+                        sh 'cd release'
+                        sh 'chmod +x .package.sh && .package.sh'
                         script {
                             docker.withRegistry('', 'docker-hub') {
-                                docker.build('bkamelia/hedera:nightly', 'release')
-                                docker.push('bkamelia/hedera:nightly')
+                                docker.build('bkamelia/hedera:nightly').push()
                             }
                         }
                     }

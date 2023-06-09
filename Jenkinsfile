@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'gradle:8.1.0-jdk17'
-        }
-    }
+    agent none
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()
@@ -97,6 +93,7 @@ pipeline {
                     when {
                         branch 'master'
                     }
+                    agent any
                     steps {
                         sh 'echo "Push to Docker Hub"'
                     }
@@ -108,8 +105,9 @@ pipeline {
                     //        triggeredBy 'TimerTrigger'
                     //    }
                     //}
+                    agent any
                     steps {
-                        sh 'chmod +x ./release/package.sh'
+                        sh 'chmod +x ./release/package.sh && ./release/package.sh'
                         script {
                             docker.withRegistry('', 'docker-hub') {
                                 docker.build('bkamelia/hedera:nightly', '--dockerfile ./release/Dockerfile')

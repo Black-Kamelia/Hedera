@@ -79,20 +79,14 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Test') {
-            steps {
-                sh 'echo $CHANGE_BRANCH'
-            }
-        }
         stage('Package') {
-            when {
-                anyOf {
-                    branch 'master'
-                    branch 'continuous-integration'
-                    branch '84-nightly-build'
-                    triggeredBy 'TimerTrigger'
-                }
-            }
+            //when {
+            //    anyOf {
+            //        branch 'master'
+            //        branch 'continuous-integration'
+            //        triggeredBy 'TimerTrigger'
+            //    }
+            //}
             steps {
                 sh 'gradle assemble'
                 archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
@@ -109,13 +103,12 @@ pipeline {
                     }
                 }
                 stage('Nightly') {
-                    when {
-                        // allOf {
-                        //     branch 'develop'
-                        //     triggeredBy 'TimerTrigger'
-                        // }
-                        branch '84-nightly-build'
-                    }
+                    //when {
+                    //    allOf {
+                    //        branch 'develop'
+                    //        triggeredBy 'TimerTrigger'
+                    //    }
+                    //}
                     agent none
                     steps {
                         sh 'chmod +x ./release/package.sh'

@@ -4,6 +4,6 @@ WORKDIR /app
 VOLUME /app
 EXPOSE 8080
 
-COPY ./app.jar /app/app.jar
+COPY app.jar /app/app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

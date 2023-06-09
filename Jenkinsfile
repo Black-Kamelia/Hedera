@@ -109,6 +109,7 @@ pipeline {
                     steps {
                         dir('./release') {
                             sh 'chmod +x package.sh && ./package.sh'
+                            sh 'ls'
                             script {
                                 docker.withRegistry('', 'docker-hub') {
                                     docker.build('bkamelia/hedera:nightly')

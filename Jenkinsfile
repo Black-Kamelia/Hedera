@@ -1,10 +1,4 @@
 pipeline {
-    agent {
-        docker {
-            image 'gradle:8.1.0-jdk17'
-            reuseNode false
-        }
-    }
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()
@@ -14,6 +8,11 @@ pipeline {
 
     stages {
         // stage('Precondition') {
+        //     agent {
+        //         docker {
+        //             image 'gradle:8.1.0-jdk17'
+        //         }
+        //     }
         //     steps {
         //         script {
         //             def branch = env.CHANGE_BRANCH
@@ -28,6 +27,11 @@ pipeline {
         //     }
         // }
         // stage('Build and test') {
+        //     agent {
+        //         docker {
+        //             image 'gradle:8.1.0-jdk17'
+        //         }
+        //     }
         //     parallel {
         //         stage('Back') {
         //             stages {
@@ -80,6 +84,11 @@ pipeline {
         //     }
         // }
         // stage('Package') {
+        //     agent {
+        //         docker {
+        //             image 'gradle:8.1.0-jdk17'
+        //         }
+        //     }
         //     //when {
         //     //    anyOf {
         //     //        branch 'master'
@@ -93,6 +102,11 @@ pipeline {
         //     }
         // }
         stage('Deploy') {
+            agent {
+                docker {
+                    image 'docker:cli'
+                }
+            }
             parallel {
                 stage('Stable') {
                     when {
@@ -109,12 +123,6 @@ pipeline {
                     //        triggeredBy 'TimerTrigger'
                     //    }
                     //}
-                    agent {
-                        docker {
-                            image 'docker:cli'
-                            reuseNode false
-                        }
-                    }
                     steps {
                         sh 'chmod +x ./release/package.sh'
                         withCredentials([string(credentialsId: 'docker-hub-token', variable: 'token')]) {

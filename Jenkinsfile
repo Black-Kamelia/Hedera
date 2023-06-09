@@ -110,11 +110,9 @@ pipeline {
                     //}
                     steps {
                         sh 'chmod +x ./release/package.sh'
-                        withCredentials([string(credentialsId: 'docker-hub-token', variable: 'token')]) {
-                            docker.withRegistry('https://index.docker.io/v1/', $token) {
-                                docker.build('bkamelia/hedera:nightly', '--dockerfile ./release/Dockerfile')
-                                docker.push('bkamelia/hedera:nightly')
-                            }
+                        docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
+                            docker.build('bkamelia/hedera:nightly', '--dockerfile ./release/Dockerfile')
+                            docker.push('bkamelia/hedera:nightly')
                         }
                     }
                 }

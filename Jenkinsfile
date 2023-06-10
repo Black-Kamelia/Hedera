@@ -115,7 +115,7 @@ pipeline {
                             script {
                                 docker.withRegistry('', 'docker-hub') {
                                     def image = docker.build('bkamelia/hedera:nightly')
-                                    image.push('bkamelia/hedera:nightly')
+                                    image.push()
                                 }
                             }
                         }

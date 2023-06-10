@@ -33,11 +33,6 @@ pipeline {
                             }
                         }
                         stage('Test') {
-                            agent {
-                                docker {
-                                    image 'gradle:8.1.1-jdk17'
-                                }
-                            }
                             steps {
                                 sh 'gradle --parallel server:test -x client:bundle'
                             }

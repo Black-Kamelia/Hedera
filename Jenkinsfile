@@ -1,10 +1,13 @@
 pipeline {
-    agent none
+    agent any
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()
         ansiColor('xterm')
         timeout(time: 15, unit: 'MINUTES')
+    }
+    tools {
+        gradle 'gradle-8.1.1'
     }
 
     stages {
@@ -75,11 +78,6 @@ pipeline {
         //     }
         // }
         stage('Package') {
-            agent {
-                docker {
-                    image 'gradle:8.1-jdk17'
-                }
-            }
             //when {
             //    anyOf {
             //        branch 'master'
@@ -89,7 +87,6 @@ pipeline {
             //}
             steps {
                 sh 'gradle assemble'
-                sh 'ls'
                 archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
             }
         }
@@ -99,7 +96,6 @@ pipeline {
                     when {
                         branch 'master'
                     }
-                    agent any
                     steps {
                         sh 'echo "Push to Docker Hub"'
                     }
@@ -111,7 +107,6 @@ pipeline {
                     //        triggeredBy 'TimerTrigger'
                     //    }
                     //}
-                    agent any
                     steps {
                         dir('./release') {
                             sh 'ls ..'

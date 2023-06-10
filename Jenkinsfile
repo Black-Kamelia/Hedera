@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    // Nightly build every days at 3:00 AM
+    // Nightly build every days between 3:00 AM and 4:00 AM
     triggers {
-        cron('43 15 * * *')
+        cron(env.BRANCH_NAME == 'develop' ? 'H H(3-4) * * *' : '')
     }
     options {
         disableConcurrentBuilds(abortPrevious: true)
@@ -106,7 +106,7 @@ pipeline {
                 stage('Nightly') {
                     when {
                         allOf {
-                            //branch 'develop'
+                            branch 'develop'
                             triggeredBy 'TimerTrigger'
                         }
                     }

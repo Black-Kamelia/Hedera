@@ -1,10 +1,5 @@
 pipeline {
     agent any
-
-    // Nightly build every days between 3:00 AM and 4:00 AM
-    triggers {
-        cron(env.BRANCH_NAME == 'develop' ? 'H H(3-4) * * *' : '')
-    }
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()
@@ -85,7 +80,6 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'continuous-integration'
-                    triggeredBy 'TimerTrigger'
                 }
             }
             steps {
@@ -94,31 +88,16 @@ pipeline {
             }
         }
         stage('Deploy') {
-            parallel {
-                stage('Stable') {
-                    when {
-                        branch 'master'
-                    }
-                    steps {
-                        sh 'echo "Push to Docker Hub"'
-                    }
-                }
-                stage('Nightly') {
-                    when {
-                        allOf {
-                            branch 'develop'
-                            triggeredBy 'TimerTrigger'
-                        }
-                    }
-                    steps {
-                        dir('./release') {
-                            sh 'chmod +x package.sh && ./package.sh'
-                            script {
-                                docker.withRegistry('', 'docker-hub') {
-                                    def image = docker.build('bkamelia/hedera:nightly')
-                                    image.push()
-                                }
-                            }
+            when {
+                branch 'master'
+            }
+            steps {
+                dir('./release') {
+                    sh 'chmod +x package.sh && ./package.sh'
+                    script {
+                        docker.withRegistry('', 'docker-hub') {
+                            def image = docker.build('bkamelia/hedera:' + env.IMAGE_TAG)
+                            image.push()
                         }
                     }
                 }

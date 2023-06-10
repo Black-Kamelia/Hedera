@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    // Nightly build every days at 3:00 AM
+    triggers {
+        cron('43 15 * * *')
+    }
     options {
         disableConcurrentBuilds(abortPrevious: true)
         timestamps()
@@ -76,13 +81,13 @@ pipeline {
             }
         }
         stage('Package') {
-            //when {
-            //    anyOf {
-            //        branch 'master'
-            //        branch 'continuous-integration'
-            //        triggeredBy 'TimerTrigger'
-            //    }
-            //}
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'continuous-integration'
+                    triggeredBy 'TimerTrigger'
+                }
+            }
             steps {
                 sh 'gradle assemble'
                 archiveArtifacts artifacts: 'executables/Hedera-*.jar', followSymlinks: false, onlyIfSuccessful: true
@@ -99,12 +104,12 @@ pipeline {
                     }
                 }
                 stage('Nightly') {
-                    //when {
-                    //    allOf {
-                    //        branch 'develop'
-                    //        triggeredBy 'TimerTrigger'
-                    //    }
-                    //}
+                    when {
+                        allOf {
+                            //branch 'develop'
+                            triggeredBy 'TimerTrigger'
+                        }
+                    }
                     steps {
                         dir('./release') {
                             sh 'chmod +x package.sh && ./package.sh'

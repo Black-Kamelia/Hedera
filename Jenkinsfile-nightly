@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds(abortPrevious: true)
+        timestamps()
+        ansiColor('xterm')
+        timeout(time: 15, unit: 'MINUTES')
+    }
+    tools {
+        gradle 'gradle-8.1.1'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'gradle --parallel build'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                dir('./release') {
+                    sh 'chmod +x package.sh && ./package.sh'
+                    script {
+                        docker.withRegistry('', 'docker-hub') {
+                            def image = docker.build('bkamelia/hedera:nightly')
+                            image.push()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

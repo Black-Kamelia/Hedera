@@ -41,7 +41,6 @@ dependencies {
     implementation("io.ktor", "ktor-server-status-pages", ktorVersion)
     implementation("io.ktor", "ktor-serialization-kotlinx-json", ktorVersion)
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
-    implementation("io.ktor", "ktor-server-cors", ktorVersion)
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
     implementation("io.ktor", "ktor-server-websockets", ktorVersion)

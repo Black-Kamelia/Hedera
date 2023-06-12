@@ -5,13 +5,10 @@ import com.kamelia.hedera.rest.file.filesRoutes
 import com.kamelia.hedera.rest.user.userRoutes
 import com.kamelia.hedera.util.Environment.isDev
 import com.kamelia.hedera.util.Environment.isProd
-import io.ktor.server.application.Application
-import io.ktor.server.application.call
+import io.ktor.server.application.*
 import io.ktor.server.http.content.*
-import io.ktor.server.response.respondRedirect
-import io.ktor.server.routing.get
-import io.ktor.server.routing.route
-import io.ktor.server.routing.routing
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
     routing {

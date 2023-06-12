@@ -25,7 +25,6 @@ fun Application.module() {
     configureLiquibase()
     configureAuthentication()
     configureSerialization()
-    configureCORS()
     configureRouting()
     configureWebSockets()
     install(AutoHeadResponse)

@@ -16,6 +16,8 @@ import io.ktor.server.routing.routing
 fun Application.configureRouting() {
     routing {
         route("/api") {
+            configureCORS()
+
             authRoutes()
             userRoutes()
             filesRoutes()

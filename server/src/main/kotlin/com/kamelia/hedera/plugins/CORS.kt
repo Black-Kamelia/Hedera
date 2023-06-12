@@ -4,8 +4,9 @@ import com.kamelia.hedera.util.Environment.isDev
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.routing.*
 
-fun Application.configureCORS() {
+fun Route.configureCORS() {
     install(CORS) {
         if (isDev) {
             HttpMethod.DefaultMethods.forEach(::allowMethod)

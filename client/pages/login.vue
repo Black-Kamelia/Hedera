@@ -44,7 +44,6 @@ const { handleSubmit, resetField } = useForm({
 
 function hideErrorMessage() {
   message.content = null
-  message.severity = undefined
 }
 
 useEventBus(LoggedInEvent).on((event) => {

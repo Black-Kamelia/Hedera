@@ -20,7 +20,7 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
-  navigateTo('/login?expired')
+  navigateTo('/login?reason=expired')
 })
 useEventBus(LoggedOutEvent).on(() => {
   navigateTo('/login')

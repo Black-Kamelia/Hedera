@@ -5,7 +5,7 @@
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
     <changeSet author="Irwin Madet" id="20230615-1">
 
-        <loadData tableName="users" file="classpath:db/data/users.csv" separator=";" />
+        <loadData tableName="users" file="classpath:db/data/default-users.csv" separator=";" />
 
     </changeSet>
 </databaseChangeLog>

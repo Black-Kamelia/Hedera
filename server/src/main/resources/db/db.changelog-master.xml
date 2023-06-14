@@ -4,4 +4,6 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <include file="classpath:db/changelog/db.schema-init.xml" />
 
+    <include file="classpath:db/changelog/20230615-1-populate-users-table.xml" />
+
 </databaseChangeLog>

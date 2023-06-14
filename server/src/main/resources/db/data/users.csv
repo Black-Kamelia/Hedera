@@ -1,0 +1,2 @@
+id;email;username;password;role;enabled;last_invalidation;upload_token;created_by;created_at;updated_by;updated_at
+00000000-0000-0000-0000-000000000000;admin@localhost;admin;$2b$12$GmOQy8Y7SvQQbmfnuxKVe.rBQNwHxk5zKcThvReGux1UdRYO.owW6;OWNER;true;;72070db516b048b8914fd738b1047e25;00000000-0000-0000-0000-000000000000;2023-06-14 15:24:34.264844;;

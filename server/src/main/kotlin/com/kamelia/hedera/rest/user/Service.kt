@@ -73,7 +73,8 @@ object UserService {
         val updater = Users.findById(updaterID)
         if (
             updater == null ||
-            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role))
+            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) || // can't change role to higher or equal if updater is lower or equal
+            (dto.enabled != null && (toEdit.role ge updater.role)) // can't change enabled if updater is lower or equal
         ) {
             throw InsufficientPermissionsException()
         }

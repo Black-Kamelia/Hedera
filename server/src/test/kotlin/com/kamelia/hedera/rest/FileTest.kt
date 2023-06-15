@@ -308,11 +308,11 @@ class FileTest {
         init {
             testApplication {
                 superadmin = Pair(
-                    login("owner", "password").second ?: throw Exception("Login failed"),
+                    login("owner1", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000001")
                 )
                 admin = Pair(
-                    login("admin", "password").second ?: throw Exception("Login failed"),
+                    login("admin1", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000002")
                 )
                 user1 = Pair(

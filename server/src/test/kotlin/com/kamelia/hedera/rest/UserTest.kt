@@ -81,7 +81,7 @@ class UserTest {
     @Test
     fun signUpExistingUsername() = testApplication {
         val dto = UserDTO(
-            username = "admin",
+            username = "admin1",
             password = "Test0@aaa",
             email = "test@test.com"
         )
@@ -341,7 +341,7 @@ class UserTest {
     @DisplayName("Updating unknown user")
     @Test
     fun updateUnknownUser() = testApplication {
-        val (loginResponse, tokens) = login("admin", "password")
+        val (loginResponse, tokens) = login("admin1", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0000-0000-00000000000f") {
@@ -375,7 +375,7 @@ class UserTest {
     @DisplayName("Deleting unknown user")
     @Test
     fun deleteUnknownUser() = testApplication {
-        val (loginResponse, tokens) = login("admin", "password")
+        val (loginResponse, tokens) = login("admin1", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.delete("/api/users/ffffffff-ffff-ffff-ffff-ffffffffffff") {
@@ -411,11 +411,11 @@ class UserTest {
         init {
             testApplication {
                 superadmin = Pair(
-                    login("owner", "password").second ?: throw Exception("Login failed"),
+                    login("owner1", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000001")
                 )
                 admin = Pair(
-                    login("admin", "password").second ?: throw Exception("Login failed"),
+                    login("admin1", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000002")
                 )
                 user = Pair(

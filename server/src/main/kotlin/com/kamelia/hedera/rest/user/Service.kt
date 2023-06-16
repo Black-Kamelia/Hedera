@@ -7,6 +7,8 @@ import com.kamelia.hedera.util.uuid
 import java.util.*
 import kotlin.math.ceil
 
+private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
+
 object UserService {
 
     suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, ErrorDTO> {
@@ -154,17 +156,23 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
  *
  * @return Optional [Response] with [ErrorDTO] if error occurred
  */
-private suspend fun checkUsername(username: String?, toEdit: User? = null) =
-    if (username != null)
-        Users.findByUsername(username)
+private suspend fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? {
+    if (username != null) {
+        if (!USERNAME_REGEX.matches(username)) {
+            return Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
+        }
+
+        Users.findByUsername(username.lowercase())
             ?.let {
                 if (it.uuid == toEdit?.uuid) {
                     null
                 } else {
-                    Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
+                    return Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
                 }
             }
-    else null
+    }
+    return null
+}
 
 /**
  * Checks if given password is valid.

@@ -111,7 +111,7 @@ object Users : AuditableUUIDTable("users") {
 
     suspend fun create(user: UserDTO, creator: User? = null): User = Connection.transaction {
         User.new {
-            username = user.username
+            username = user.username.lowercase()
             email = user.email
             password = Hasher.hash(user.password)
             role = user.role
@@ -124,7 +124,7 @@ object Users : AuditableUUIDTable("users") {
 
     suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = Connection.transaction {
         user.apply {
-            dto.username?.let { username = it }
+            dto.username?.let { username = it.lowercase() }
             dto.email?.let { email = it }
             dto.role?.let { role = it }
             dto.enabled?.let { enabled = it }

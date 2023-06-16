@@ -70,10 +70,15 @@ object UserService {
         checkEmail(dto.email, toEdit)?.let { return it }
         checkUsername(dto.username, toEdit)?.let { return it }
 
-        val updater = Users.findById(updaterID)
+        val updater = Users.findById(updaterID) ?: throw InsufficientPermissionsException()
+
+        if ((dto.role != null || dto.enabled != null) && updater.uuid == toEdit.uuid) { // can't self update role or state
+            throw IllegalActionException()
+        }
+
         if (
-            updater == null ||
-            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role))
+            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) || // can't change role to higher or equal if updater is lower or equal
+            (dto.enabled != null && (toEdit.role ge updater.role)) // can't change enabled if updater is lower or equal
         ) {
             throw InsufficientPermissionsException()
         }

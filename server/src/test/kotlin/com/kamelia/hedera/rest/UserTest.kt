@@ -319,6 +319,47 @@ class UserTest {
         }
     }
 
+    @DisplayName("Updating own state (`enabled`)")
+    @ParameterizedTest(name = "as {0} to {1} is 403 Forbidden")
+    @MethodSource
+    fun updateOwnState(
+        user: TestUser,
+        newState: Boolean,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(enabled = newState))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Updating other's state (`enabled`)")
+    @ParameterizedTest(name = "{1}''s state as {0} to {2} is {3}")
+    @MethodSource
+    fun updateOtherState(
+        user: TestUser,
+        userId: UUID,
+        newState: Boolean,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(enabled = newState))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newState, responseDto.enabled)
+        }
+    }
+
     @DisplayName("Updating password with wrong old password")
     @Test
     fun updatePasswordWrong() = testApplication {
@@ -813,6 +854,192 @@ class UserTest {
                     Named.of("guest", guest),
                     Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000006")),
                     Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOwnState(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherState(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0001-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0001-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0001-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0001-000000000004")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0001-000000000005")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0001-000000000006")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0002-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0002-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0002-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0002-000000000004")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0002-000000000005")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0002-000000000006")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0003-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0003-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0003-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0003-000000000004")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0003-000000000005")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0003-000000000006")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0004-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0011-0004-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0004-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0011-0004-000000000004")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000005")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000006")),
+                    Named.of("disabled", false),
                     HttpStatusCode.Unauthorized
                 ),
             )

@@ -28,7 +28,7 @@ class UserTest {
     @Test
     fun signUp() = testApplication {
         val newUserDto = UserDTO(
-            username = "test",
+            username = "test.test-test_123",
             password = "Test0@aaa",
             email = "test@test.com"
         )
@@ -44,7 +44,168 @@ class UserTest {
         assertEquals(newUserDto.email, responseDto.email)
         assertEquals(UserRole.REGULAR, responseDto.role)
 
-        client.delete("/api/users/${responseDto.id}")
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with lowercase username")
+    @Test
+    fun signUpLowercaseUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "thisisatest",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with dashes")
+    @Test
+    fun signUpDashesUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this-is-a-test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with underscores")
+    @Test
+    fun signUpUnderscoresUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this_is_a_test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with dots")
+    @Test
+    fun signUpDotsUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this.is.a.test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with digits")
+    @Test
+    fun signUpDigitsUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this123",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with uppercase username")
+    @Test
+    fun signUpUppercaseUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "THISISATEST",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Signing up with username with spaces")
+    @Test
+    fun signUpSpacesUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this is a test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Signing up with username with special characters")
+    @Test
+    fun signUpSpecialCharactersUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "test\"'()[]{}/+-:;.,?!@#$%^&*|\\`~",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
     }
 
     @DisplayName("Signing up with already existing email")
@@ -90,6 +251,21 @@ class UserTest {
             setBody(dto)
         }
         assertEquals(HttpStatusCode.Forbidden, response.status)
+    }
+
+    @DisplayName("Signing up with invalid username")
+    @Test
+    fun signUpInvalidUsername() = testApplication {
+        val dto = UserDTO(
+            username = "inv@lidTEST",
+            password = "Test0@aaa",
+            email = "test@test.com"
+        )
+        val response = client().post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @DisplayName("Signing up with invalid role")
@@ -151,6 +327,19 @@ class UserTest {
             val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
             assertEquals(newUsername, responseDto.username)
         }
+    }
+
+    @DisplayName("Updating username with invalid username")
+    @Test
+    fun updateUsernameInvalid() = testApplication {
+        val tokens = login("edit_username_invalid", "password").second ?: throw Exception("Login failed")
+        val client = client()
+        val response = client.patch("/api/users/00000000-0000-0005-0001-000000000001") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(username = "newUsern@me"))
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
     }
 
     @DisplayName("Updating own email")
@@ -488,10 +677,10 @@ class UserTest {
             }
 
             return Stream.of(
-                Arguments.of(Named.of("owner", superadmin), "newSuperadmin", HttpStatusCode.OK),
-                Arguments.of(Named.of("admin", admin), "newAdmin", HttpStatusCode.OK),
-                Arguments.of(Named.of("regular user", user), "newUser", HttpStatusCode.OK),
-                Arguments.of(Named.of("guest", guest), "newGuest", HttpStatusCode.Unauthorized),
+                Arguments.of(Named.of("owner", superadmin), "new_superadmin", HttpStatusCode.OK),
+                Arguments.of(Named.of("admin", admin), "new_admin", HttpStatusCode.OK),
+                Arguments.of(Named.of("regular user", user), "new_user", HttpStatusCode.OK),
+                Arguments.of(Named.of("guest", guest), "new_guest", HttpStatusCode.Unauthorized),
             )
         }
 
@@ -501,25 +690,25 @@ class UserTest {
                 Arguments.of(
                     Named.of("owner", superadmin),
                     UUID.fromString("00000000-0000-0005-0000-000000000001"),
-                    "test5-newUsername1",
+                    "test5-new_username1",
                     HttpStatusCode.OK
                 ),
                 Arguments.of(
                     Named.of("admin", admin),
                     UUID.fromString("00000000-0000-0005-0000-000000000002"),
-                    "test5-newUsername2",
+                    "test5-new_username2",
                     HttpStatusCode.OK
                 ),
                 Arguments.of(
                     Named.of("regular user", user),
                     UUID.fromString("00000000-0000-0005-0000-000000000003"),
-                    "test5-newUsername3",
+                    "test5-new_username3",
                     HttpStatusCode.Forbidden
                 ),
                 Arguments.of(
                     Named.of("guest", guest),
                     UUID.fromString("00000000-0000-0005-0000-000000000004"),
-                    "test5-newUsername4",
+                    "test5-new_username4",
                     HttpStatusCode.Unauthorized
                 ),
             )

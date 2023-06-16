@@ -238,13 +238,13 @@ class AuthTest {
 
         val response = client().patch("/api/users/00000000-0001-0001-0000-000000000001") {
             contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(username = "newUsername"))
+            setBody(UserUpdateDTO(username = "new_username"))
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.OK, response.status)
 
         val userState = SessionManager.verify(tokens!!.accessToken) ?: fail("User state should not be null")
-        assertEquals("newUsername", userState.username)
+        assertEquals("new_username", userState.username)
     }
 
     @DisplayName("Session updates role when promoting user")

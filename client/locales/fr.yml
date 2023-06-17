@@ -51,6 +51,7 @@ forms:
   login:
     errors:
       missing_username: Nom d'utilisateur requis
+      invalid_username: Format de nom d'utilisateur invalide
       missing_password: Mot de passe requis
     fields:
       password: Mot de passe

@@ -35,8 +35,11 @@ onMounted(() => {
 })
 
 const schema = object({
-  username: string().required(t('forms.login.errors.missing_username')),
-  password: string().required(t('forms.login.errors.missing_password')),
+  username: string()
+    .required(t('forms.login.errors.missing_username'))
+    .matches(/^[a-z0-9_\-.]+$/, t('forms.login.errors.invalid_username')),
+  password: string()
+    .required(t('forms.login.errors.missing_password')),
 })
 const { handleSubmit, resetField } = useForm({
   validationSchema: schema,

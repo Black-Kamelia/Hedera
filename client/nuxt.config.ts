@@ -15,6 +15,7 @@ export default defineNuxtConfig({
       title: 'Hedera',
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
+    layoutTransition: { name: 'layout-in', mode: 'default' },
   },
   ssr: false,
   css: [

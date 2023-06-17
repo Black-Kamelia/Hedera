@@ -5,6 +5,7 @@ import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t, e } = useI18n()
 const { login } = useAuth()
+const { isDark } = useDark()
 
 const usernamePlaceholder = getRandomDeveloperName()
 const message = reactive<{
@@ -75,6 +76,8 @@ const onSubmit = handleSubmit(login)
 </script>
 
 <template>
+  <div class="background" :class="isDark ? 'dark' : 'light'" />
+
   <div class="text-center mb-10">
     <h1 class="font-600 text-5xl mb-1">
       {{ t('app_name') }}
@@ -122,3 +125,26 @@ const onSubmit = handleSubmit(login)
     <PButton :label="t('forms.submit')" class="w-full" type="submit" />
   </form>
 </template>
+
+<style scoped lang="scss">
+.background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: -1;
+
+  &.light {
+    background-image: url("assets/06-Blue_Purple_LM-4K.png");
+  }
+
+  &.dark {
+    background-image: url("assets/06-Blue_Purple_DM-4K.png");
+  }
+
+}
+</style>

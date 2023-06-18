@@ -121,74 +121,32 @@ object UserService {
     }
 }
 
-/**
- * Fetches given email to check if it is already in use and is valid.
- * If a user is provided, checks that hypothetical found user is different.
- *
- * @param email Email to lookup
- * @param toEdit Optional user to check against.
- * This parameter should represent the user that is currently logged in.
- *
- * @return Optional [Response] with [ErrorDTO] if error occurred
- */
-private fun checkEmail(email: String?, toEdit: User? = null) =
-    if (email != null)
-        Users.findByEmail(email)
-            ?.let {
-                if (it.uuid == toEdit?.uuid) {
-                    null
-                } else {
-                    Response.forbidden(Errors.Users.Email.ALREADY_EXISTS)
-                }
-            } ?: if ("@" !in email) {
-            Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
-        } else null
-    else null
-
-/**
- * Fetches given username to check if it is already in use.
- * If a user is provided, checks that hypothetical found user is different.
- *
- * @param username Username to lookup
- * @param toEdit Optional user to check against.
- * This parameter should represent the user that is currently logged in.
- *
- * @return Optional [Response] with [ErrorDTO] if error occurred
- */
-private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? {
-    if (username != null) {
-        if (!USERNAME_REGEX.matches(username)) {
-            return Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
+private fun checkEmail(email: String?, toEdit: User? = null) = when {
+    email == null -> null
+    "@" !in email -> Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
+    else -> Users.findByEmail(email)?.let {
+        if (it.uuid == toEdit?.uuid) {
+            null
+        } else {
+            Response.forbidden(Errors.Users.Email.ALREADY_EXISTS)
         }
-
-        Users.findByUsername(username.lowercase())
-            ?.let {
-                if (it.uuid == toEdit?.uuid) {
-                    null
-                } else {
-                    return Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
-                }
-            }
     }
-    return null
 }
 
-/**
- * Checks if given password is valid.
- * The requirements are:
- * - at least 8 characters long
- * - at least one digit
- * - at least one letter
- * - at least one special character
- * - at least one uppercase letter
- * - at least one lowercase letter
- *
- * @param password Password to check
- *
- * @return Optional [Response] with [ErrorDTO] if error occurred
- */
-private fun checkPassword(password: String?) =
-    if (password != null) {
-        if (password.length < 8) Response.forbidden(Errors.Users.Password.TOO_SHORT)
-        else null
-    } else null
+private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? = when {
+    username == null -> null
+    !USERNAME_REGEX.matches(username) -> Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
+    else -> Users.findByUsername(username.lowercase())?.let {
+        if (it.uuid == toEdit?.uuid) {
+            null
+        } else {
+            Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
+        }
+    }
+}
+
+private fun checkPassword(password: String?) = when {
+    password == null -> null
+    password.length < 8 -> Response.forbidden(Errors.Users.Password.TOO_SHORT)
+    else -> null
+}

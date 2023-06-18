@@ -9,12 +9,13 @@ export interface FormInputTextProps extends OnlyProps<InputTextProps> {
   label: string
   startIcon?: string
   endIcon?: string
+  transform?: (value: string) => string
 }
 
 export interface FormInputTextEmits extends InputTextEmits {}
 
+const { id, name, label, startIcon, endIcon, transform = value => value } = defineProps<FormInputTextProps>()
 defineEmits<FormInputTextEmits>()
-const { id, name, label, startIcon, endIcon } = $defineProps<FormInputTextProps>()
 const { errorMessage, value } = useField<Nullable<string>>(name)
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
@@ -28,7 +29,7 @@ defineExpose({
   <div class="mb-3">
     <span class="w-full mb-1" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" />
+      <PInputText :id="id" v-bind="$attrs" ref="el" :model-value="value" :class="{ 'p-invalid': errorMessage }" @update:model-value="(newValue: string) => value = transform(newValue)" />
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>

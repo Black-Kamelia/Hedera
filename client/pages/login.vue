@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
-import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t, e } = useI18n()
 const { login } = useAuth()
@@ -96,6 +95,7 @@ const onSubmit = handleSubmit(login)
       type="text"
       :label="t('forms.login.fields.username')"
       :placeholder="usernamePlaceholder"
+      :transform="usernameRestrict"
       start-icon="i-tabler-user"
       @input="hideErrorMessage"
     />

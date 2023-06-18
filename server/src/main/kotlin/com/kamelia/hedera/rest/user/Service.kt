@@ -21,10 +21,9 @@ object UserService {
             throw IllegalActionException()
         }
 
-        Response.ok(
-            Users.create(dto)
-                .toRepresentationDTO()
-        )
+        Response.ok(Users
+            .create(dto)
+            .toRepresentationDTO())
     }
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
@@ -35,17 +34,15 @@ object UserService {
     suspend fun getUsers(): Response<UserPageDTO, ErrorDTO> = Connection.transaction {
         val users = Users.getAll()
         val total = Users.countAll()
-        Response.ok(
-            UserPageDTO(
-                PageDTO(
-                    users.map { it.toRepresentationDTO() },
-                    0,
-                    -1,
-                    1,
-                    total
-                )
+        Response.ok(UserPageDTO(
+            PageDTO(
+                users.map { it.toRepresentationDTO() },
+                0,
+                -1,
+                1,
+                total
             )
-        )
+        ))
     }
 
     suspend fun getUsers(
@@ -54,17 +51,15 @@ object UserService {
         definition: PageDefinitionDTO
     ): Response<UserPageDTO, String> = Connection.transaction {
         val (users, total) = Users.getAll(page, pageSize, definition)
-        Response.ok(
-            UserPageDTO(
-                PageDTO(
-                    users.map { it.toRepresentationDTO() },
-                    page,
-                    pageSize,
-                    ceil(total / pageSize.toDouble()).toLong(),
-                    total
-                )
+        Response.ok(UserPageDTO(
+            PageDTO(
+                users.map { it.toRepresentationDTO() },
+                page,
+                pageSize,
+                ceil(total / pageSize.toDouble()).toLong(),
+                total
             )
-        )
+        ))
     }
 
     suspend fun updateUser(
@@ -107,10 +102,9 @@ object UserService {
             return@transaction Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
         }
 
-        Response.ok(
-            Users.updatePassword(toEdit, dto)
-                .toRepresentationDTO()
-        )
+        Response.ok(Users
+            .updatePassword(toEdit, dto)
+            .toRepresentationDTO())
     }
 
     suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
@@ -121,10 +115,9 @@ object UserService {
 
     suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
         val user = Users.findById(id) ?: return@transaction Response.notFound()
-        Response.ok(
-            Users.regenerateUploadToken(user)
-                .toRepresentationDTO()
-        )
+        Response.ok(Users
+            .regenerateUploadToken(user)
+            .toRepresentationDTO())
     }
 }
 

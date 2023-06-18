@@ -5,7 +5,7 @@
  */
 export function humanSize(bytes: number, locale: string, t: (s: string) => string) {
   const shift = bytesToBiggestUnitShift(bytes)
-  return `${(bytes / (1 << shift)).toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.${shift}`)}`
+  return `${(bytes / (1 << shift)).toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${shift}`)}`
 }
 
 /**

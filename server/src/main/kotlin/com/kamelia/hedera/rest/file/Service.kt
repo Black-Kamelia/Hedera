@@ -1,6 +1,7 @@
 package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.*
+import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.User
@@ -14,12 +15,31 @@ import kotlin.math.ceil
 
 object FileService {
 
-    suspend fun handleFile(part: PartData.FileItem, creator: User): Response<FileRepresentationDTO, String> {
+    suspend fun handleFile(
+        part: PartData.FileItem,
+        creatorToken: String
+    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+        val creator = Users.findByUploadToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
+        handleFile(part, creator)
+    }
+
+    suspend fun handleFile(
+        part: PartData.FileItem,
+        creatorId: UUID
+    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+        val creator = Users.findById(creatorId) ?: throw ExpiredOrInvalidTokenException()
+        handleFile(part, creator)
+    }
+
+    private suspend fun handleFile(
+        part: PartData.FileItem,
+        creator: User
+    ): Response<FileRepresentationDTO, String> = Connection.transaction {
         val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
-        return Response.ok(
+        Response.ok(
             Files.create(
                 code = code,
                 name = filename,
@@ -32,27 +52,30 @@ object FileService {
 
     suspend fun getFile(
         code: String,
-        user: User?,
-    ): Response<FileRepresentationDTO, String> = Files
-        .findByCode(code)
-        ?.takeUnless { file ->
-            val isPrivate = file.visibility == FileVisibility.PRIVATE
-            val notHasPermission = user?.let { file.ownerId != it.uuid }
-            isPrivate && (notHasPermission ?: true)
-        }?.let { file ->
-            Response.ok(file.toRepresentationDTO())
-        }
-        ?: Response.notFound()
+        authId: UUID?,
+    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+        val user = authId?.let { Users.findById(it) }
+        Files.findByCode(code)
+            ?.takeUnless { file ->
+                val isPrivate = file.visibility == FileVisibility.PRIVATE
+                val notHasPermission = user?.let { file.ownerId != it.uuid }
+                isPrivate && (notHasPermission ?: true)
+            }?.let { file ->
+                Response.ok(file.toRepresentationDTO())
+            }
+            ?: Response.notFound()
+    }
 
     suspend fun getFiles(
-        user: User,
+        userId: UUID,
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean = false,
-    ): Response<FilePageDTO, String> {
+    ): Response<FilePageDTO, String> = Connection.transaction {
+        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
-        return Response.ok(
+        Response.ok(
             FilePageDTO(
                 PageDTO(
                     files.map { it.toRepresentationDTO() },
@@ -69,36 +92,36 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<FileRepresentationDTO, String> {
+    ): Response<FileRepresentationDTO, String> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: return Response.notFound()
+        val file = Files.findById(fileId) ?: return@transaction Response.notFound()
 
         if (file.ownerId != user.uuid) {
             if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
                 throw IllegalActionException()
             }
-            return Response.notFound()
+            return@transaction Response.notFound()
         }
 
-        return Response.ok(Files.update(file, dto, user).toRepresentationDTO())
+        Response.ok(Files.update(file, dto, user).toRepresentationDTO())
     }
 
     suspend fun deleteFile(
         fileId: UUID,
         userId: UUID,
-    ): Response<FileRepresentationDTO, String> {
+    ): Response<FileRepresentationDTO, String> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: return Response.notFound()
+        val file = Files.findById(fileId) ?: return@transaction Response.notFound()
 
         if (file.ownerId != user.uuid && user.role eq UserRole.REGULAR) {
             if (file.visibility != FileVisibility.PRIVATE) {
                 throw InsufficientPermissionsException()
             }
-            return Response.notFound()
+            return@transaction Response.notFound()
         }
 
         FileUtils.delete(file.ownerId, file.code)
-        return Response.ok(Files.delete(fileId)?.toRepresentationDTO())
+        Response.ok(Files.delete(fileId)?.toRepresentationDTO())
     }
 
     /*

@@ -1,6 +1,7 @@
 package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.*
+import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.uuid
@@ -11,30 +12,30 @@ private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, ErrorDTO> {
-        checkEmail(dto.email)?.let { return it }
-        checkUsername(dto.username)?.let { return it }
-        checkPassword(dto.password)?.let { return it }
+    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
+        checkEmail(dto.email)?.let { return@transaction it }
+        checkUsername(dto.username)?.let { return@transaction it }
+        checkPassword(dto.password)?.let { return@transaction it }
 
         if (dto.role != UserRole.REGULAR) {
             throw IllegalActionException()
         }
 
-        return Response.ok(
+        Response.ok(
             Users.create(dto)
                 .toRepresentationDTO()
         )
     }
 
-    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, ErrorDTO> {
-        val user = Users.findById(id) ?: return Response.notFound()
-        return Response.ok(user.toRepresentationDTO())
+    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
+        val user = Users.findById(id) ?: return@transaction Response.notFound()
+        Response.ok(user.toRepresentationDTO())
     }
 
-    suspend fun getUsers(): Response<UserPageDTO, ErrorDTO> {
+    suspend fun getUsers(): Response<UserPageDTO, ErrorDTO> = Connection.transaction {
         val users = Users.getAll()
         val total = Users.countAll()
-        return Response.ok(
+        Response.ok(
             UserPageDTO(
                 PageDTO(
                     users.map { it.toRepresentationDTO() },
@@ -47,9 +48,13 @@ object UserService {
         )
     }
 
-    suspend fun getUsers(page: Long, pageSize: Int, definition: PageDefinitionDTO): Response<UserPageDTO, String> {
+    suspend fun getUsers(
+        page: Long,
+        pageSize: Int,
+        definition: PageDefinitionDTO
+    ): Response<UserPageDTO, String> = Connection.transaction {
         val (users, total) = Users.getAll(page, pageSize, definition)
-        return Response.ok(
+        Response.ok(
             UserPageDTO(
                 PageDTO(
                     users.map { it.toRepresentationDTO() },
@@ -66,11 +71,11 @@ object UserService {
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): Response<UserRepresentationDTO, ErrorDTO> {
-        val toEdit = Users.findById(id) ?: return Response.notFound()
+    ): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
+        val toEdit = Users.findById(id) ?: return@transaction Response.notFound()
 
-        checkEmail(dto.email, toEdit)?.let { return it }
-        checkUsername(dto.username, toEdit)?.let { return it }
+        checkEmail(dto.email, toEdit)?.let { return@transaction it }
+        checkUsername(dto.username, toEdit)?.let { return@transaction it }
 
         val updater = Users.findById(updaterID) ?: throw InsufficientPermissionsException()
 
@@ -85,7 +90,7 @@ object UserService {
             throw InsufficientPermissionsException()
         }
 
-        return Response.ok(Users
+        Response.ok(Users
             .update(toEdit, dto, updater)
             .toRepresentationDTO())
     }
@@ -93,29 +98,30 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-    ): Response<UserRepresentationDTO, ErrorDTO> {
-        checkPassword(dto.newPassword)?.let { return it }
+    ): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
+        checkPassword(dto.newPassword)?.let { return@transaction it }
 
-        val toEdit = Users.findById(id) ?: return Response.notFound()
+        val toEdit = Users.findById(id) ?: return@transaction Response.notFound()
 
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-            return Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
+            return@transaction Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
         }
 
-        return Response.ok(
+        Response.ok(
             Users.updatePassword(toEdit, dto)
                 .toRepresentationDTO()
         )
     }
 
-    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> =
+    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
         Users.delete(id)
             ?.let { Response.ok(it.toRepresentationDTO()) }
             ?: Response.notFound()
+    }
 
-    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> {
-        val user = Users.findById(id) ?: return Response.notFound()
-        return Response.ok(
+    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
+        val user = Users.findById(id) ?: return@transaction Response.notFound()
+        Response.ok(
             Users.regenerateUploadToken(user)
                 .toRepresentationDTO()
         )
@@ -132,7 +138,7 @@ object UserService {
  *
  * @return Optional [Response] with [ErrorDTO] if error occurred
  */
-private suspend fun checkEmail(email: String?, toEdit: User? = null) =
+private fun checkEmail(email: String?, toEdit: User? = null) =
     if (email != null)
         Users.findByEmail(email)
             ?.let {
@@ -156,7 +162,7 @@ private suspend fun checkEmail(email: String?, toEdit: User? = null) =
  *
  * @return Optional [Response] with [ErrorDTO] if error occurred
  */
-private suspend fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? {
+private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? {
     if (username != null) {
         if (!USERNAME_REGEX.matches(username)) {
             return Response.badRequest(Errors.Users.Username.INVALID_USERNAME)

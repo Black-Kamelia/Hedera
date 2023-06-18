@@ -1,16 +1,15 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.MimeTypes
 import com.kamelia.hedera.util.uuid
-import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 enum class FileVisibility {
     PRIVATE,
@@ -43,63 +42,47 @@ object Files : AuditableUUIDTable("files") {
         updatedBy
     }
 
-    suspend fun countAll(): Long = Connection.transaction {
-        File.count()
-    }
+    fun countAll(): Long = File.count()
 
-    suspend fun getAll(): List<File> = Connection.transaction {
-        File.all()
-            .toList()
-    }
+    fun getAll(): List<File> = File.all().toList()
 
-    suspend fun getAll(page: Long, pageSize: Int): List<File> = Connection.transaction {
-        File.all()
-            .limit(pageSize, page * pageSize)
-            .toList()
-    }
+    fun getAll(page: Long, pageSize: Int): List<File> = File
+        .all()
+        .limit(pageSize, page * pageSize)
+        .toList()
 
-    suspend fun findById(uuid: UUID): File? = Connection.transaction {
-        File.findById(uuid)
-    }
+    fun findById(uuid: UUID): File? = File.findById(uuid)
 
-    suspend fun findByCode(code: String): File? = Connection.transaction {
-        File.find { Files.code eq code }.firstOrNull()
-    }
+    fun findByCode(code: String): File? = File.find { Files.code eq code }.firstOrNull()
 
-    suspend fun create(
+    fun create(
         code: String,
         name: String,
         mimeType: String,
         size: Long,
         creator: User,
-    ): File = Connection.transaction {
-        File.new {
-            this.code = code
-            this.name = name
-            this.mimeType = mimeType
-            this.size = size
-            this.visibility = FileVisibility.PRIVATE
-            this.owner = creator
+    ): File = File.new {
+        this.code = code
+        this.name = name
+        this.mimeType = mimeType
+        this.size = size
+        this.visibility = FileVisibility.PRIVATE
+        this.owner = creator
 
-            onCreate(creator)
+        onCreate(creator)
+    }
+
+    fun update(file: File, dto: FileUpdateDTO, updater: User): File = file.apply {
+        dto.name?.let {
+            name = it
+            mimeType = MimeTypes.typeFromFile(it)
         }
+        dto.visibility?.let { visibility = it }
+
+        onUpdate(updater)
     }
 
-    suspend fun update(file: File, dto: FileUpdateDTO, updater: User): File = Connection.transaction {
-        file.apply {
-            dto.name?.let {
-                name = it
-                mimeType = MimeTypes.typeFromFile(it)
-            }
-            dto.visibility?.let { visibility = it }
-
-            onUpdate(updater)
-        }
-    }
-
-    suspend fun delete(uuid: UUID): File? = Connection.transaction {
-        File.findById(uuid)?.apply { delete() }
-    }
+    fun delete(uuid: UUID): File? = File.findById(uuid)?.apply { delete() }
 }
 
 class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {

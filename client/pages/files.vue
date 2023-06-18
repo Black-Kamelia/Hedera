@@ -171,6 +171,7 @@ const products = ref([
 ])
 const selectedProduct = ref()
 const selecting = computed(() => selectedProduct.value?.length > 0)
+const openFiltersDialog = ref(false)
 
 const cm = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>()
 const menuModel = ref<MenuItem[]>([
@@ -227,7 +228,7 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
         <i class="i-tabler-search" />
         <PInputText class="w-full p-inputtext-lg" placeholder="Rechercher..." />
       </span>
-      <PButton icon="i-tabler-filter" label="Filtres avancés" />
+      <PButton icon="i-tabler-filter" label="Filtres avancés" @click="openFiltersDialog = true" />
     </div>
     <div class="p-card p-0 overflow-hidden flex-grow">
       <PContextMenu ref="cm" :model="menuModel" />
@@ -414,6 +415,8 @@ function onRowContextMenu(event: DataTableRowClickEvent) {
         </div>
       </Transition>
     </div>
+
+    <FiltersDialog v-model:visible="openFiltersDialog" />
   </div>
 </template>
 

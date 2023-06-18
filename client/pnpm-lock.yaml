@@ -77,8 +77,8 @@ devDependencies:
     specifier: ^2.0.34
     version: 2.0.34(typescript@4.9.5)(vue@3.2.47)
   primevue:
-    specifier: ^3.27.0
-    version: 3.27.0(vue@3.2.47)
+    specifier: ^3.29.2
+    version: 3.29.2(vue@3.2.47)
   sass:
     specifier: ^1.62.0
     version: 1.62.0
@@ -1233,7 +1233,7 @@ packages:
     resolution: {integrity: sha512-iKFUCnPX3YssY9hhqHvBp0sRLQtRsAbkP3GBav00z+Lr0cN6aIesKOR228VY3MYO7rj94jSPHINg+mZubrIA2w==}
     dependencies:
       '@nuxt/kit': 3.4.1
-      primevue: 3.27.0(vue@3.2.47)
+      primevue: 3.29.2(vue@3.2.47)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -8165,8 +8165,8 @@ packages:
     engines: {node: ^14.13.1 || >=16.0.0}
     dev: true
 
-  /primevue@3.27.0(vue@3.2.47):
-    resolution: {integrity: sha512-oVJl8vLGNb6t5nXN41mnjR5V9Cc/eHVvmtRWiNgIC1db6OW3Qo7y2LaDEmXps/wdxX/FuJ7nuPHAZI4y8tvGyQ==}
+  /primevue@3.29.2(vue@3.2.47):
+    resolution: {integrity: sha512-zMk1w5AySLR6ipWH2fONKtDabHrvRZhZFI1OdoiBDdMhZpARmWuCXwE/ZFusUh5Te0RBEd3iVCiizjUkSRraRQ==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:

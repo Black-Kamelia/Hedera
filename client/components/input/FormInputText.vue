@@ -31,7 +31,7 @@ defineExpose({
   <div class="mb-3">
     <span class="w-full mb-1" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" v-restrict-username :class="{ 'p-invalid': errorMessage }" @input="onInput" />
+      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" @input="onInput" />
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>

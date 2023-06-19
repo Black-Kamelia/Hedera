@@ -2,23 +2,22 @@
 import type { AutoCompleteCompleteEvent, AutoCompleteProps } from 'primevue/autocomplete'
 import PAutoComplete from 'primevue/autocomplete'
 
-export interface FormInputSizeProps extends OnlyProps<AutoCompleteProps> {}
+export interface FormInputSizeProps extends OnlyProps<AutoCompleteProps> {
+  modelValue: Size
+}
 
 interface Size {
   value: number
   shift: number
 }
 
-defineProps<FormInputSizeProps>()
+const props = defineProps<FormInputSizeProps>()
 const emit = defineEmits<{
   (event: 'update:modelValue', value: Size): void
 }>()
-const { modelValue } = defineModels<{
-  modelValue: Size
-}>()
 const { t } = useI18n()
 
-const value = ref<Nullable<Size>>(modelValue.value)
+const value = ref<Nullable<Size>>(props.modelValue)
 const sizes = [
   { name: t('sizeUnits.binary.0'), shift: 0 },
   { name: t('sizeUnits.binary.10'), shift: 10 },

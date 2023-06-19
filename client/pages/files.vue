@@ -225,7 +225,7 @@ const filters = useFilesFilters()
 </script>
 
 <template>
-  <div class="absolute top-0 left-0 bg-black/50 p-3 text-white">
+  <div class="absolute top-0 left-0 bg-black/50 p-3 text-white font-mono">
     {{ filters }}
   </div>
 
@@ -235,7 +235,7 @@ const filters = useFilesFilters()
         <i class="i-tabler-search" />
         <PInputText class="w-full p-inputtext-lg" placeholder="Rechercher..." />
       </span>
-      <PButton icon="i-tabler-filter" label="Filtres avancés" @click="openFiltersDialog = true" />
+      <PButton icon="i-tabler-filter" label="Filtres avancés" outlined @click="openFiltersDialog = true" />
     </div>
     <div class="p-card p-0 overflow-hidden flex-grow">
       <PContextMenu ref="cm" :model="menuModel" />

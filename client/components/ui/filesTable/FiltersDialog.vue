@@ -1,19 +1,18 @@
 <script lang="ts" setup>
+import { useFilesFilters } from '~/stores/useFilesFilters'
+
 const { visible } = defineModels<{
   visible: boolean
 }>()
 
 const { t } = useI18n()
 
-const value = ref(null)
 const options = ref([
-  { name: t('pages.files.visibility.public'), value: 1, icon: 'i-tabler-world' },
-  { name: t('pages.files.visibility.unlisted'), value: 2, icon: 'i-tabler-link' },
-  { name: t('pages.files.visibility.protected'), value: 4, disabled: true, icon: 'i-tabler-lock' },
-  { name: t('pages.files.visibility.private'), value: 3, icon: 'i-tabler-eye-off' },
+  { name: t('pages.files.visibility.public'), value: 'PUBLIC', icon: 'i-tabler-world' },
+  { name: t('pages.files.visibility.unlisted'), value: 'UNLISTED', icon: 'i-tabler-link' },
+  { name: t('pages.files.visibility.protected'), value: 'PROTECTED', disabled: true, icon: 'i-tabler-lock' },
+  { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ])
-
-const selectedTypes = ref()
 const types = ref([
   {
     name: 'Images',
@@ -54,32 +53,27 @@ const types = ref([
   },
 ])
 
-const startingDate = ref()
-const endingDate = ref()
-const minimumSize = ref()
-const maximumSize = ref()
-const minimumViews = ref()
-const maximumViews = ref()
-
-function reset() {
-  value.value = null
-  selectedTypes.value = null
-  startingDate.value = null
-  endingDate.value = null
-  minimumSize.value = null
-  maximumSize.value = null
-  minimumViews.value = null
-  maximumViews.value = null
-}
+const {
+  visibility,
+  startingDate,
+  endingDate,
+  minimalSize,
+  maximalSize,
+  minimalViews,
+  maximalViews,
+  formats,
+  owners,
+  reset,
+} = useFilesFilters()
 </script>
 
 <template>
-  <PDialog v-model:visible="visible" modal header="Filtres avancés">
+  <PDialog v-model:visible="visible" modal header="Filtres avancés" :draggable="false">
     <div class="grid grid-cols-1 xl:grid-cols-2 grid-gap-6 justify-items-stretch">
       <div class="flex flex-col gap-2">
         <h2>Visibilité</h2>
         <PSelectButton
-          v-model="value" class="w-full" :options="options" option-label="name" multiple
+          v-model="visibility" class="w-full" :options="options" option-label="name" option-value="value" multiple
           aria-labelledby="multiple" option-disabled="disabled"
         >
           <template #option="slotProps">
@@ -108,23 +102,23 @@ function reset() {
       <div class="flex flex-col gap-2">
         <h2>Taille</h2>
         <div class="flex flex-row gap-3">
-          <FormInputSize v-model="minimumSize" class="w-full" :pt="{ input: { class: 'w-full' } }" placeholder="Taille minimale" />
-          <FormInputSize v-model="maximumSize" class="w-full" :pt="{ input: { class: 'w-full' } }" placeholder="Taille maximale" />
+          <FormInputSize v-model="minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" placeholder="Taille minimale" />
+          <FormInputSize v-model="maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" placeholder="Taille maximale" />
         </div>
       </div>
 
       <div class="flex flex-col gap-2">
         <h2>Vues</h2>
         <div class="flex flex-row gap-3">
-          <PInputNumber v-model="minimumViews" class="w-full" placeholder="Nombre minimal de vues" />
-          <PInputNumber v-model="maximumViews" class="w-full" placeholder="Nombre maximal de vues" />
+          <PInputNumber v-model="minimalViews" class="w-full" placeholder="Nombre minimal de vues" />
+          <PInputNumber v-model="maximalViews" class="w-full" placeholder="Nombre maximal de vues" />
         </div>
       </div>
 
       <div class="flex flex-col gap-2">
         <h2>Format</h2>
         <PMultiSelect
-          v-model="selectedTypes" :options="types" option-label="name" option-group-label="name" option-group-children="items" placeholder="Tous les types"
+          v-model="formats" :options="types" option-label="name" option-group-label="name" option-group-children="items" placeholder="Tous les types"
           :max-selected-labels="3" class="w-full" filter selected-items-label="{0} types sélectionnés"
         />
       </div>
@@ -132,7 +126,7 @@ function reset() {
       <div class="flex flex-col gap-2">
         <h2>Propriétaire</h2>
         <PMultiSelect
-          v-model="selectedTypes" :options="types" option-label="name" placeholder="Tout le monde"
+          v-model="owners" :options="types" option-label="name" placeholder="Tout le monde"
           :max-selected-labels="3" class="w-full" selected-items-label="{0} types sélectionnés"
         />
       </div>

@@ -136,7 +136,7 @@ private fun checkEmail(email: String?, toEdit: User? = null) = when {
 private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? = when {
     username == null -> null
     !USERNAME_REGEX.matches(username) -> Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
-    else -> Users.findByUsername(username.lowercase())?.let {
+    else -> Users.findByUsername(username)?.let {
         if (it.uuid == toEdit?.uuid) {
             null
         } else {

@@ -102,7 +102,7 @@ object Users : AuditableUUIDTable("users") {
         .firstOrNull()
 
     fun create(user: UserDTO, creator: User? = null): User = User.new {
-        username = user.username.lowercase()
+        username = user.username
         email = user.email
         password = Hasher.hash(user.password)
         role = user.role
@@ -113,7 +113,7 @@ object Users : AuditableUUIDTable("users") {
     }
 
     suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = user.apply {
-        dto.username?.let { username = it.lowercase() }
+        dto.username?.let { username = it }
         dto.email?.let { email = it }
         dto.role?.let { role = it }
         dto.enabled?.let { enabled = it }

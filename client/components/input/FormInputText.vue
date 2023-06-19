@@ -15,8 +15,10 @@ export interface FormInputTextProps extends OnlyProps<InputTextProps> {
 const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormInputTextProps>()
 const { errorMessage, value } = useField<Nullable<string>>(name)
 
-const modelValue = defineModel<string | undefined>()
-syncRef(value, modelValue)
+function onInput(payload: Event) {
+  const target = payload.target as HTMLInputElement | null
+  value.value = transformValue(target?.value ?? '')
+}
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
 defineExpose({
@@ -29,7 +31,7 @@ defineExpose({
   <div class="mb-3">
     <span class="w-full mb-1" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText :id="id" v-bind="$attrs" ref="el" :model-value="value" :class="{ 'p-invalid': errorMessage }" @update:model-value="(newValue: string) => value = transformValue(newValue)" />
+      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" v-restrict-username :class="{ 'p-invalid': errorMessage }" @input="onInput" />
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>

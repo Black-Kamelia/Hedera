@@ -13,12 +13,12 @@ defineProps<FormInputSizeProps>()
 const emit = defineEmits<{
   (event: 'update:modelValue', value: Size): void
 }>()
-defineModels<{
+const { modelValue } = defineModels<{
   modelValue: Size
 }>()
 const { t } = useI18n()
 
-const value = ref<Nullable<Size>>(null)
+const value = ref<Nullable<Size>>(modelValue.value)
 const sizes = [
   { name: t('sizeUnits.binary.0'), shift: 0 },
   { name: t('sizeUnits.binary.10'), shift: 10 },

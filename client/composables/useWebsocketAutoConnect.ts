@@ -14,7 +14,15 @@ export default function useWebsocketAutoConnect() {
     ? `${host}/ws?token=${wsToken.value}`
     : undefined)
 
-  const { open, close, status, ws } = useWebSocket(webSocketUrl, { immediate: false })
+  const { open, close, status, ws } = useWebSocket(webSocketUrl, {
+    immediate: false,
+    autoReconnect: false,
+    heartbeat: {
+      message: 'ping',
+      interval: 10000,
+      pongTimeout: 10000,
+    },
+  })
 
   async function requestWSToken() {
     const { data } = await axios().get<{ token: string }>('/ws')

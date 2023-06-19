@@ -58,6 +58,15 @@ export default defineNuxtConfig({
         include: [resolve(dirname(fileURLToPath(import.meta.url)), './locales/*.yml')],
       }),
     ],
+    vue: {
+      script: {
+        defineModel: true,
+        propsDestructure: true,
+      },
+    },
+  },
+  experimental: {
+    typedPages: true,
   },
 
   // plugin configs

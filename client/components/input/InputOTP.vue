@@ -7,11 +7,9 @@ export interface InputOTPEmits {
   (event: 'completed', digits: OTP): void
 }
 
+const { disabled = false } = defineProps<InputOTPProps>()
 const emit = defineEmits<InputOTPEmits>()
-const { disabled = false } = $defineProps<InputOTPProps>()
-const { modelValue } = defineModels<{
-  modelValue: OTP
-}>()
+const modelValue = defineModel<OTP>({ default: () => new Array(6).fill(null) })
 
 const otpInputRefs = ref<CompElement[]>([])
 
@@ -35,9 +33,9 @@ function doUpdate(digits: OTP) {
 
 function onInput(e: Event, index: number) {
   const el = e.target as HTMLInputElement
-  const value = parseInt(el.value)
+  const value = Number.parseInt(el.value)
 
-  if (isNaN(value)) {
+  if (Number.isNaN(value)) {
     e.preventDefault()
     return
   }
@@ -80,7 +78,7 @@ function onKeyDown(event: KeyboardEvent, index: number) {
   // set the current input to the key pressed if it's a number and go to the next input
   if (key >= '0' && key <= '9') {
     event.preventDefault()
-    doUpdate(OTPWith(modelValue.value, index, parseInt(key)))
+    doUpdate(OTPWith(modelValue.value, index, Number.parseInt(key)))
     if (index < OTP_LENGTH - 1)
       otpInputRefs.value[index + 1].$el?.focus()
     else

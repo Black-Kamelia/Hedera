@@ -11,7 +11,7 @@ const {
   icon,
   label,
   active,
-} = $defineProps<SidebarButtonProps>()
+} = defineProps<SidebarButtonProps>()
 
 const router = useRouter()
 

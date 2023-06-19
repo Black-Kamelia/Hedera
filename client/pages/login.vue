@@ -95,7 +95,7 @@ const onSubmit = handleSubmit(login)
       type="text"
       :label="t('forms.login.fields.username')"
       :placeholder="usernamePlaceholder"
-      :transform="usernameRestrict"
+      :transform-value="usernameRestrict"
       start-icon="i-tabler-user"
       @input="hideErrorMessage"
     />

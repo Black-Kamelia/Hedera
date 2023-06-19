@@ -2,6 +2,7 @@
 import type { DataTableRowClickEvent } from 'primevue/datatable'
 import type { MenuItem } from 'primevue/menuitem'
 import { PContextMenu } from '#components'
+import { useFilesFilters } from '~/stores/useFilesFilters'
 
 const { locale, t } = useI18n()
 
@@ -219,9 +220,15 @@ const menuModel = ref<MenuItem[]>([
 function onRowContextMenu(event: DataTableRowClickEvent) {
   cm.value?.show(event.originalEvent)
 }
+
+const filters = useFilesFilters()
 </script>
 
 <template>
+  <div class="absolute top-0 left-0 bg-black/50 p-3 text-white">
+    {{ filters }}
+  </div>
+
   <div class="h-full flex flex-col gap-4">
     <div class="flex flex-row gap-4">
       <span class="flex-grow p-input-icon-left">

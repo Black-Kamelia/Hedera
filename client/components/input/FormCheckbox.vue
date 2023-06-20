@@ -8,7 +8,7 @@ export interface FormCheckboxProps extends OnlyProps<CheckboxProps> {
   label: string
 }
 
-const { name, label } = $defineProps<FormCheckboxProps>()
+const { name, label } = defineProps<FormCheckboxProps>()
 
 const { value } = useField<boolean>(name)
 

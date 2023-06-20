@@ -8,6 +8,8 @@ import com.kamelia.hedera.util.uuid
 import java.util.*
 import kotlin.math.ceil
 
+private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
+
 object UserService {
 
     suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
@@ -19,10 +21,9 @@ object UserService {
             throw IllegalActionException()
         }
 
-        Response.ok(
-            Users.create(dto)
-                .toRepresentationDTO()
-        )
+        Response.ok(Users
+            .create(dto)
+            .toRepresentationDTO())
     }
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, ErrorDTO> = Connection.transaction {
@@ -33,17 +34,15 @@ object UserService {
     suspend fun getUsers(): Response<UserPageDTO, ErrorDTO> = Connection.transaction {
         val users = Users.getAll()
         val total = Users.countAll()
-        Response.ok(
-            UserPageDTO(
-                PageDTO(
-                    users.map { it.toRepresentationDTO() },
-                    0,
-                    -1,
-                    1,
-                    total
-                )
+        Response.ok(UserPageDTO(
+            PageDTO(
+                users.map { it.toRepresentationDTO() },
+                0,
+                -1,
+                1,
+                total
             )
-        )
+        ))
     }
 
     suspend fun getUsers(
@@ -52,17 +51,15 @@ object UserService {
         definition: PageDefinitionDTO
     ): Response<UserPageDTO, String> = Connection.transaction {
         val (users, total) = Users.getAll(page, pageSize, definition)
-        Response.ok(
-            UserPageDTO(
-                PageDTO(
-                    users.map { it.toRepresentationDTO() },
-                    page,
-                    pageSize,
-                    ceil(total / pageSize.toDouble()).toLong(),
-                    total
-                )
+        Response.ok(UserPageDTO(
+            PageDTO(
+                users.map { it.toRepresentationDTO() },
+                page,
+                pageSize,
+                ceil(total / pageSize.toDouble()).toLong(),
+                total
             )
-        )
+        ))
     }
 
     suspend fun updateUser(
@@ -105,10 +102,9 @@ object UserService {
             return@transaction Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
         }
 
-        Response.ok(
-            Users.updatePassword(toEdit, dto)
-                .toRepresentationDTO()
-        )
+        Response.ok(Users
+            .updatePassword(toEdit, dto)
+            .toRepresentationDTO())
     }
 
     suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
@@ -119,75 +115,38 @@ object UserService {
 
     suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
         val user = Users.findById(id) ?: return@transaction Response.notFound()
-        Response.ok(
-            Users.regenerateUploadToken(user)
-                .toRepresentationDTO()
-        )
+        Response.ok(Users
+            .regenerateUploadToken(user)
+            .toRepresentationDTO())
     }
 }
 
-/**
- * Fetches given email to check if it is already in use and is valid.
- * If a user is provided, checks that hypothetical found user is different.
- *
- * @param email Email to lookup
- * @param toEdit Optional user to check against.
- * This parameter should represent the user that is currently logged in.
- *
- * @return Optional [Response] with [ErrorDTO] if error occurred
- */
-private fun checkEmail(email: String?, toEdit: User? = null) =
-    if (email != null)
-        Users.findByEmail(email)
-            ?.let {
-                if (it.uuid == toEdit?.uuid) {
-                    null
-                } else {
-                    Response.forbidden(Errors.Users.Email.ALREADY_EXISTS)
-                }
-            } ?: if ("@" !in email) {
-            Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
-        } else null
-    else null
+private fun checkEmail(email: String?, toEdit: User? = null) = when {
+    email == null -> null
+    "@" !in email -> Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
+    else -> Users.findByEmail(email)?.let {
+        if (it.uuid == toEdit?.uuid) {
+            null
+        } else {
+            Response.forbidden(Errors.Users.Email.ALREADY_EXISTS)
+        }
+    }
+}
 
-/**
- * Fetches given username to check if it is already in use.
- * If a user is provided, checks that hypothetical found user is different.
- *
- * @param username Username to lookup
- * @param toEdit Optional user to check against.
- * This parameter should represent the user that is currently logged in.
- *
- * @return Optional [Response] with [ErrorDTO] if error occurred
- */
-private fun checkUsername(username: String?, toEdit: User? = null) =
-    if (username != null)
-        Users.findByUsername(username)
-            ?.let {
-                if (it.uuid == toEdit?.uuid) {
-                    null
-                } else {
-                    Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
-                }
-            }
-    else null
+private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, ErrorDTO>? = when {
+    username == null -> null
+    !USERNAME_REGEX.matches(username) -> Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
+    else -> Users.findByUsername(username)?.let {
+        if (it.uuid == toEdit?.uuid) {
+            null
+        } else {
+            Response.forbidden(Errors.Users.Username.ALREADY_EXISTS)
+        }
+    }
+}
 
-/**
- * Checks if given password is valid.
- * The requirements are:
- * - at least 8 characters long
- * - at least one digit
- * - at least one letter
- * - at least one special character
- * - at least one uppercase letter
- * - at least one lowercase letter
- *
- * @param password Password to check
- *
- * @return Optional [Response] with [ErrorDTO] if error occurred
- */
-private fun checkPassword(password: String?) =
-    if (password != null) {
-        if (password.length < 8) Response.forbidden(Errors.Users.Password.TOO_SHORT)
-        else null
-    } else null
+private fun checkPassword(password: String?) = when {
+    password == null -> null
+    password.length < 8 -> Response.forbidden(Errors.Users.Password.TOO_SHORT)
+    else -> null
+}

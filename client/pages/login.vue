@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
-import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t, e } = useI18n()
 const { login } = useAuth()
@@ -35,8 +34,11 @@ onMounted(() => {
 })
 
 const schema = object({
-  username: string().required(t('forms.login.errors.missing_username')),
-  password: string().required(t('forms.login.errors.missing_password')),
+  username: string()
+    .required(t('forms.login.errors.missing_username'))
+    .matches(/^[a-z0-9_\-.]+$/, t('forms.login.errors.invalid_username')),
+  password: string()
+    .required(t('forms.login.errors.missing_password')),
 })
 const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
@@ -93,6 +95,7 @@ const onSubmit = handleSubmit(login)
       type="text"
       :label="t('forms.login.fields.username')"
       :placeholder="usernamePlaceholder"
+      :transform-value="usernameRestrict"
       start-icon="i-tabler-user"
       @input="hideErrorMessage"
     />

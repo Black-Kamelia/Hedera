@@ -4,6 +4,12 @@
   color-scheme: dark;
 }
 
+html, body {
+  overflow: hidden;
+  height: 100dvh;
+  width: 100dvw;
+}
+
 /* primevue additions */
 body {
   color: var(--text-color);

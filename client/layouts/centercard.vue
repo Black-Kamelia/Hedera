@@ -25,11 +25,11 @@ const { isDark } = useDark()
   z-index: -1;
 
   &.light {
-    background-image: url("assets/06-Blue_Purple_LM-4K.png");
+    background-image: url("img/06-Blue_Purple_LM-4K.png");
   }
 
   &.dark {
-    background-image: url("assets/06-Blue_Purple_DM-4K.png");
+    background-image: url("img/06-Blue_Purple_DM-4K.png");
   }
 }
 </style>

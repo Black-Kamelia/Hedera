@@ -1,11 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap'); /* Reset */
 
-html {
-  scrollbar-gutter: stable;
-}
-
 .dark {
   color-scheme: dark;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100dvh;
+  width: 100dvw;
 }
 
 /* primevue additions */

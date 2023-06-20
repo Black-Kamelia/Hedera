@@ -15,9 +15,6 @@ sizeUnits:
     30: GiB
     40: TiB
     50: PiB
-    60: EiB
-    70: ZiB
-    80: YiB
   decimal:
     0: bytes
     3: KB
@@ -25,9 +22,6 @@ sizeUnits:
     9: GB
     12: TB
     15: PB
-    18: EB
-    21: ZB
-    24: YB
 unlimited-quota: Unlimited quota
 
 sidebar:

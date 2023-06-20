@@ -3,7 +3,7 @@ import type { AutoCompleteCompleteEvent, AutoCompleteProps } from 'primevue/auto
 import PAutoComplete from 'primevue/autocomplete'
 
 export interface FormInputSizeProps extends OnlyProps<AutoCompleteProps> {
-  modelValue: Size
+  modelValue: Size | null
 }
 
 interface Size {
@@ -25,9 +25,6 @@ const sizes = [
   { name: t('sizeUnits.binary.30'), shift: 30 },
   { name: t('sizeUnits.binary.40'), shift: 40 },
   { name: t('sizeUnits.binary.50'), shift: 50 },
-  { name: t('sizeUnits.binary.60'), shift: 60 },
-  { name: t('sizeUnits.binary.70'), shift: 70 },
-  { name: t('sizeUnits.binary.80'), shift: 80 },
 ]
 const suggestions = ref<Size[]>([])
 

@@ -15,9 +15,6 @@ sizeUnits:
     30: Gio
     40: Tio
     50: Pio
-    60: Eio
-    70: Zio
-    80: Yio
   decimal:
     0: octets
     3: Ko
@@ -25,9 +22,6 @@ sizeUnits:
     9: Go
     12: To
     15: Po
-    18: Eo
-    21: Zo
-    24: Yo
 unlimited-quota: Quota illimité
 
 sidebar:

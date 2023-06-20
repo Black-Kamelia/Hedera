@@ -225,8 +225,9 @@ const filters = useFilesFilters()
 </script>
 
 <template>
-  <div class="absolute top-0 left-0 bg-black/50 p-3 text-white font-mono">
+  <div class="absolute bottom-0 right-0 w-50% m-6 bg-black/50 p-3 text-white z-10 rounded-lg font-mono">
     {{ filters }}
+    {{ filters.startingDate.value }}
   </div>
 
   <div class="h-full flex flex-col gap-4">

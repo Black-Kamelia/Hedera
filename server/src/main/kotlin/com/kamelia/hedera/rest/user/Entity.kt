@@ -3,7 +3,6 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
-import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
@@ -57,98 +56,84 @@ object Users : AuditableUUIDTable("users") {
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
 
-    suspend fun countAll(): Long = Connection.transaction {
-        User.count()
-    }
+    fun countAll(): Long = User.count()
 
-    suspend fun getAll(): List<User> = Connection.transaction {
-        User.all().toList()
-    }
+    fun getAll(): List<User> = User.all().toList()
 
-    suspend fun getAll(page: Long, pageSize: Int, definition: PageDefinitionDTO): Pair<List<User>, Long> =
-        Connection.transaction {
-            Users.selectAll()
-                .applyFilters(definition.filters) {
-                    when (it.field) {
-                        username.name -> username.filter(it)
-                        email.name -> email.filter(it)
-                        role.name -> role.filter(it)
-                        enabled.name -> enabled.filter(it)
-                        else -> throw UnknownFilterFieldException(it.field)
-                    }
-                }.applySort(definition.sorter) {
-                    when (it) {
-                        username.name -> username
-                        email.name -> email
-                        role.name -> role
-                        enabled.name -> enabled
-                        else -> throw UnknownFilterFieldException(it)
-                    }
-                }.let {
-                    val rows = User.wrapRows(it)
-                    rows.limit(pageSize, page * pageSize).toList() to rows.count()
-                }
+    fun getAll(
+        page: Long,
+        pageSize: Int,
+        definition: PageDefinitionDTO
+    ): Pair<List<User>, Long> = Users
+        .selectAll()
+        .applyFilters(definition.filters) {
+            when (it.field) {
+                username.name -> username.filter(it)
+                email.name -> email.filter(it)
+                role.name -> role.filter(it)
+                enabled.name -> enabled.filter(it)
+                else -> throw UnknownFilterFieldException(it.field)
+            }
+        }.applySort(definition.sorter) {
+            when (it) {
+                username.name -> username
+                email.name -> email
+                role.name -> role
+                enabled.name -> enabled
+                else -> throw UnknownFilterFieldException(it)
+            }
+        }.let {
+            val rows = User.wrapRows(it)
+            rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
 
-    suspend fun findById(uuid: UUID): User? = Connection.transaction {
-        User.findById(uuid)
+    fun findById(uuid: UUID): User? = User.findById(uuid)
+
+    fun findByUsername(username: String): User? = User
+        .find { Users.username eq username }
+        .firstOrNull()
+
+    fun findByEmail(email: String): User? = User
+        .find { Users.email eq email }
+        .firstOrNull()
+
+    fun findByUploadToken(uploadToken: String): User? = User
+        .find { Users.uploadToken eq uploadToken }
+        .firstOrNull()
+
+    fun create(user: UserDTO, creator: User? = null): User = User.new {
+        username = user.username
+        email = user.email
+        password = Hasher.hash(user.password)
+        role = user.role
+        enabled = false
+        uploadToken = UUID.randomUUID().toString().replace("-", "")
+
+        onCreate(creator ?: this)
     }
 
-    suspend fun findByUsername(username: String): User? = Connection.transaction {
-        User.find { Users.username eq username }
-            .firstOrNull()
+    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = user.apply {
+        dto.username?.let { username = it }
+        dto.email?.let { email = it }
+        dto.role?.let { role = it }
+        dto.enabled?.let { enabled = it }
+
+        SessionManager.updateSession(uuid, this)
+        onUpdate(updater)
     }
 
-    suspend fun findByEmail(email: String): User? = Connection.transaction {
-        User.find { Users.email eq email }
-            .firstOrNull()
+    fun updatePassword(user: User, dto: UserPasswordUpdateDTO): User = user.apply {
+        password = Hasher.hash(dto.newPassword)
+        onUpdate(user)
     }
 
-    suspend fun findByUploadToken(uploadToken: String): User? = Connection.transaction {
-        User.find { Users.uploadToken eq uploadToken }
-            .firstOrNull()
-    }
+    fun delete(id: UUID): User? = User
+        .findById(id)
+        ?.apply { delete() }
 
-    suspend fun create(user: UserDTO, creator: User? = null): User = Connection.transaction {
-        User.new {
-            username = user.username
-            email = user.email
-            password = Hasher.hash(user.password)
-            role = user.role
-            enabled = false
-            uploadToken = UUID.randomUUID().toString().replace("-", "")
-
-            onCreate(creator ?: this)
-        }
-    }
-
-    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = Connection.transaction {
-        user.apply {
-            dto.username?.let { username = it }
-            dto.email?.let { email = it }
-            dto.role?.let { role = it }
-            dto.enabled?.let { enabled = it }
-
-            SessionManager.updateSession(uuid, this)
-            onUpdate(updater)
-        }
-    }
-
-    suspend fun updatePassword(user: User, dto: UserPasswordUpdateDTO): User = Connection.transaction {
-        user.apply {
-            password = Hasher.hash(dto.newPassword)
-            onUpdate(user)
-        }
-    }
-
-    suspend fun delete(id: UUID): User? = Connection.transaction {
-        User.findById(id)
-            ?.apply { delete() }
-    }
-
-    suspend fun regenerateUploadToken(user: User): User = Connection.transaction {
-        user.uploadToken = UUID.randomUUID().toString().replace("-", "")
-        user
+    suspend fun regenerateUploadToken(user: User): User = user.apply {
+        uploadToken = UUID.randomUUID().toString().replace("-", "")
+        SessionManager.updateSession(uuid, this)
     }
 }
 
@@ -164,43 +149,37 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
 
     private val files by File referrersOn Files.owner
 
-    suspend fun countFiles(): Long = Connection.transaction {
-        files.count()
-    }
+    fun countFiles(): Long = files.count()
 
-    suspend fun getFiles(): List<File> = Connection.transaction {
-        files.toList()
-    }
+    fun getFiles(): List<File> = files.toList()
 
-    suspend fun getFiles(
+    fun getFiles(
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean
-    ): Pair<List<File>, Long> =
-        Connection.transaction {
-            Files.selectAll()
-                .andWhere { Files.owner eq uuid }
-                .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }
-                .applyFilters(definition.filters) {
-                    when (it.field) {
-                        Files.name.name -> Files.name.filter(it)
-                        Files.mimeType.name -> Files.mimeType.filter(it)
-                        Files.size.name -> Files.size.filter(it)
-                        Files.visibility.name -> Files.visibility.filter(it)
-                        else -> throw UnknownFilterFieldException(it.field)
-                    }
-                }.applySort(definition.sorter) {
-                    when (it) {
-                        Files.name.name -> Files.name
-                        Files.mimeType.name -> Files.mimeType
-                        Files.size.name -> Files.size
-                        Files.visibility.name -> Files.visibility
-                        else -> throw UnknownSortFieldException(it)
-                    }
-                }.let {
-                    val rows = File.wrapRows(it)
-                    rows.limit(pageSize, page * pageSize).toList() to rows.count()
-                }
+    ): Pair<List<File>, Long> = Files
+        .selectAll()
+        .andWhere { Files.owner eq uuid }
+        .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }
+        .applyFilters(definition.filters) {
+            when (it.field) {
+                Files.name.name -> Files.name.filter(it)
+                Files.mimeType.name -> Files.mimeType.filter(it)
+                Files.size.name -> Files.size.filter(it)
+                Files.visibility.name -> Files.visibility.filter(it)
+                else -> throw UnknownFilterFieldException(it.field)
+            }
+        }.applySort(definition.sorter) {
+            when (it) {
+                Files.name.name -> Files.name
+                Files.mimeType.name -> Files.mimeType
+                Files.size.name -> Files.size
+                Files.visibility.name -> Files.visibility
+                else -> throw UnknownSortFieldException(it)
+            }
+        }.let {
+            val rows = File.wrapRows(it)
+            rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
 }

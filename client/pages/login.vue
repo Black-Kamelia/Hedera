@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
-import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t, e } = useI18n()
 const { login } = useAuth()
 
 const usernamePlaceholder = getRandomDeveloperName()
-const message = ref<Nullable<string>>(null)
-const messageSeverity = ref<'success' | 'info' | 'warn' | 'error' | undefined>('error')
+const message = reactive<{
+  content: string | null
+  severity: 'success' | 'info' | 'warn' | 'error' | undefined
+}>({
+  content: null,
+  severity: undefined,
+})
 
 const usernameField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
@@ -21,22 +25,27 @@ definePageMeta({
 const { currentRoute } = useRouter()
 
 onMounted(() => {
-  if (Object.keys(currentRoute.value.query).includes('expired')) {
-    message.value = t('errors.tokens.expired_or_invalid')
-    messageSeverity.value = 'warn'
+  const query = currentRoute.value.query
+  const params = Object.keys(query)
+  if (params.includes('reason')) {
+    message.content = t(`pages.login.reasons.${query.reason}`)
+    message.severity = 'warn'
   }
 })
 
 const schema = object({
-  username: string().required(t('forms.login.errors.missing_username')),
-  password: string().required(t('forms.login.errors.missing_password')),
+  username: string()
+    .required(t('forms.login.errors.missing_username'))
+    .matches(/^[a-z0-9_\-.]+$/, t('forms.login.errors.invalid_username')),
+  password: string()
+    .required(t('forms.login.errors.missing_password')),
 })
 const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
 })
 
 function hideErrorMessage() {
-  message.value = null
+  message.content = null
 }
 
 useEventBus(LoggedInEvent).on((event) => {
@@ -52,8 +61,8 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.value = e(event.error)
-    messageSeverity.value = 'error'
+    message.content = e(event.error)
+    message.severity = 'error'
   }
   else {
     navigateTo('/files')
@@ -73,8 +82,8 @@ const onSubmit = handleSubmit(login)
     </h2>
   </div>
 
-  <PMessage v-show="message" :severity="messageSeverity" icon="i-tabler-alert-circle-filled" :closable="false">
-    {{ message }}
+  <PMessage v-show="message.content" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
+    {{ message.content }}
   </PMessage>
 
   <form v-focus-trap @submit="onSubmit">
@@ -86,6 +95,7 @@ const onSubmit = handleSubmit(login)
       type="text"
       :label="t('forms.login.fields.username')"
       :placeholder="usernamePlaceholder"
+      :transform-value="usernameRestrict"
       start-icon="i-tabler-user"
       @input="hideErrorMessage"
     />

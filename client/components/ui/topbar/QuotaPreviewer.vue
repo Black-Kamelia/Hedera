@@ -5,7 +5,7 @@ export interface QuotaPreviewerProps {
   unlimited?: boolean
 }
 
-const { quota, max, unlimited = false } = $defineProps<QuotaPreviewerProps>()
+const { quota, max, unlimited = false } = defineProps<QuotaPreviewerProps>()
 const { locale, t } = useI18n()
 
 const quotaFormat = computed(() => humanSize(quota, locale.value, t))

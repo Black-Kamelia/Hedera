@@ -1,15 +1,12 @@
 pipeline {
-    agent {
-        docker {
-            image 'gradle:8.1.0-jdk17'
-            reuseNode true
-        }
-    }
+    agent any
     options {
-        disableConcurrentBuilds(abortPrevious: true)
         timestamps()
         ansiColor('xterm')
         timeout(time: 15, unit: 'MINUTES')
+    }
+    tools {
+        gradle 'gradle-8.1.1'
     }
 
     stages {
@@ -23,8 +20,6 @@ pipeline {
                         error 'Only develop branch can be merged into master'
                     }
                 }
-                echo 'Warming up Gradle'
-                sh 'gradle --parallel -q'
             }
         }
         stage('Build and test') {
@@ -96,7 +91,15 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'echo "Push to Docker Hub"'
+                dir('./release') {
+                    sh 'chmod +x package.sh && ./package.sh'
+                    script {
+                        docker.withRegistry('', 'docker-hub') {
+                            def image = docker.build('bkamelia/hedera:' + env.IMAGE_TAG)
+                            image.push()
+                        }
+                    }
+                }
             }
         }
     }

@@ -34,7 +34,7 @@ fun Application.configureAuthentication() {
 private fun AuthenticationConfig.configureJWT(
     name: String,
     secret: String,
-    block: (ApplicationCall, JWTCredential) -> Principal,
+    block: suspend (ApplicationCall, JWTCredential) -> Principal,
 ) = jwt(name) {
     realm = Environment.jwtRealm
 

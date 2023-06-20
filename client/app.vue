@@ -2,21 +2,25 @@
 useTheme()
 useWebsocketAutoConnect()
 
+const { setTokens, setUser } = useAuth()
+
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
-    case 'unknown':
-      console.log('Unknown packet received', payload) // eslint-disable-line no-console
-      break
+    case 'user-connected':
     case 'user-updated': {
-      // type-safe access to payload.data
-      const { username, email } = payload.data
-      console.log('User updated', username, email) // eslint-disable-line no-console
+      setUser(payload.data)
+      break
+    }
+    case 'user-forcefully-logged-out': {
+      setTokens(null)
+      setUser(null)
+      navigateTo(`/login?reason=${encodeURI(payload.data.reason)}`)
       break
     }
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
-  navigateTo('/login?expired')
+  navigateTo('/login?reason=expired')
 })
 useEventBus(LoggedOutEvent).on(() => {
   navigateTo('/login')

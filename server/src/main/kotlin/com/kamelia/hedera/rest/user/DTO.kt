@@ -75,3 +75,9 @@ data class UserRepresentationDTO(
 data class UserPageDTO(
     val page: PageDTO<UserRepresentationDTO>,
 ) : DTO
+
+@Serializable
+data class UserForcefullyLoggedOutDTO(
+    val userId: UUID,
+    val reason: String,
+)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
-import type { InputTextEmits, InputTextProps } from 'primevue/inputtext'
+import type { InputTextProps } from 'primevue/inputtext'
 import PInputText from 'primevue/inputtext'
 
 export interface FormInputTextProps extends OnlyProps<InputTextProps> {
@@ -9,13 +9,16 @@ export interface FormInputTextProps extends OnlyProps<InputTextProps> {
   label: string
   startIcon?: string
   endIcon?: string
+  transformValue?: (value: string) => string
 }
 
-export interface FormInputTextEmits extends InputTextEmits {}
-
-defineEmits<FormInputTextEmits>()
-const { id, name, label, startIcon, endIcon } = $defineProps<FormInputTextProps>()
+const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormInputTextProps>()
 const { errorMessage, value } = useField<Nullable<string>>(name)
+
+function onInput(payload: Event) {
+  const target = payload.target as HTMLInputElement | null
+  value.value = transformValue(target?.value ?? '')
+}
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
 defineExpose({
@@ -28,7 +31,7 @@ defineExpose({
   <div class="mb-3">
     <span class="w-full mb-1" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" />
+      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" @input="onInput" />
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>

@@ -28,7 +28,7 @@ class UserTest {
     @Test
     fun signUp() = testApplication {
         val newUserDto = UserDTO(
-            username = "test",
+            username = "test.test-test_123",
             password = "Test0@aaa",
             email = "test@test.com"
         )
@@ -44,7 +44,168 @@ class UserTest {
         assertEquals(newUserDto.email, responseDto.email)
         assertEquals(UserRole.REGULAR, responseDto.role)
 
-        client.delete("/api/users/${responseDto.id}")
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with lowercase username")
+    @Test
+    fun signUpLowercaseUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "thisisatest",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with dashes")
+    @Test
+    fun signUpDashesUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this-is-a-test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with underscores")
+    @Test
+    fun signUpUnderscoresUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this_is_a_test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with dots")
+    @Test
+    fun signUpDotsUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this.is.a.test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with username with digits")
+    @Test
+    fun signUpDigitsUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this123",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+        val deleteResponse = client.delete("/api/users/${responseDto.id}") {
+            superadmin.first?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, deleteResponse.status)
+    }
+
+    @DisplayName("Signing up with uppercase username")
+    @Test
+    fun signUpUppercaseUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "THISISATEST",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Signing up with username with spaces")
+    @Test
+    fun signUpSpacesUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "this is a test",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Signing up with username with special characters")
+    @Test
+    fun signUpSpecialCharactersUsername() = testApplication {
+        val newUserDto = UserDTO(
+            username = "test\"'()[]{}/+-:;.,?!@#$%^&*|\\`~",
+            password = "password",
+            email = "test@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
     }
 
     @DisplayName("Signing up with already existing email")
@@ -81,7 +242,7 @@ class UserTest {
     @Test
     fun signUpExistingUsername() = testApplication {
         val dto = UserDTO(
-            username = "admin",
+            username = "admin1",
             password = "Test0@aaa",
             email = "test@test.com"
         )
@@ -90,6 +251,21 @@ class UserTest {
             setBody(dto)
         }
         assertEquals(HttpStatusCode.Forbidden, response.status)
+    }
+
+    @DisplayName("Signing up with invalid username")
+    @Test
+    fun signUpInvalidUsername() = testApplication {
+        val dto = UserDTO(
+            username = "inv@lidTEST",
+            password = "Test0@aaa",
+            email = "test@test.com"
+        )
+        val response = client().post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(dto)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
     }
 
     @DisplayName("Signing up with invalid role")
@@ -151,6 +327,19 @@ class UserTest {
             val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
             assertEquals(newUsername, responseDto.username)
         }
+    }
+
+    @DisplayName("Updating username with invalid username")
+    @Test
+    fun updateUsernameInvalid() = testApplication {
+        val tokens = login("edit_username_invalid", "password").second ?: throw Exception("Login failed")
+        val client = client()
+        val response = client.patch("/api/users/00000000-0000-0005-0001-000000000001") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(username = "newUsern@me"))
+            bearerAuth(tokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
     }
 
     @DisplayName("Updating own email")
@@ -319,6 +508,47 @@ class UserTest {
         }
     }
 
+    @DisplayName("Updating own state (`enabled`)")
+    @ParameterizedTest(name = "Updating own state as {0} to {1} is 403 Forbidden")
+    @MethodSource
+    fun updateOwnState(
+        user: TestUser,
+        newState: Boolean,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(enabled = newState))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Updating other's state (`enabled`)")
+    @ParameterizedTest(name = "Updating {1}''s state as {0} to {2} is {3}")
+    @MethodSource
+    fun updateOtherState(
+        user: TestUser,
+        userId: UUID,
+        newState: Boolean,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(enabled = newState))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(newState, responseDto.enabled)
+        }
+    }
+
     @DisplayName("Updating password with wrong old password")
     @Test
     fun updatePasswordWrong() = testApplication {
@@ -341,7 +571,7 @@ class UserTest {
     @DisplayName("Updating unknown user")
     @Test
     fun updateUnknownUser() = testApplication {
-        val (loginResponse, tokens) = login("admin", "password")
+        val (loginResponse, tokens) = login("admin1", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0000-0000-00000000000f") {
@@ -375,7 +605,7 @@ class UserTest {
     @DisplayName("Deleting unknown user")
     @Test
     fun deleteUnknownUser() = testApplication {
-        val (loginResponse, tokens) = login("admin", "password")
+        val (loginResponse, tokens) = login("admin1", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
         val client = client()
         val response = client.delete("/api/users/ffffffff-ffff-ffff-ffff-ffffffffffff") {
@@ -411,11 +641,11 @@ class UserTest {
         init {
             testApplication {
                 superadmin = Pair(
-                    login("owner", "password").second ?: throw Exception("Login failed"),
+                    login("owner1", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000001")
                 )
                 admin = Pair(
-                    login("admin", "password").second ?: throw Exception("Login failed"),
+                    login("admin1", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000002")
                 )
                 user = Pair(
@@ -447,10 +677,10 @@ class UserTest {
             }
 
             return Stream.of(
-                Arguments.of(Named.of("owner", superadmin), "newSuperadmin", HttpStatusCode.OK),
-                Arguments.of(Named.of("admin", admin), "newAdmin", HttpStatusCode.OK),
-                Arguments.of(Named.of("regular user", user), "newUser", HttpStatusCode.OK),
-                Arguments.of(Named.of("guest", guest), "newGuest", HttpStatusCode.Unauthorized),
+                Arguments.of(Named.of("owner", superadmin), "new_superadmin", HttpStatusCode.OK),
+                Arguments.of(Named.of("admin", admin), "new_admin", HttpStatusCode.OK),
+                Arguments.of(Named.of("regular user", user), "new_user", HttpStatusCode.OK),
+                Arguments.of(Named.of("guest", guest), "new_guest", HttpStatusCode.Unauthorized),
             )
         }
 
@@ -460,25 +690,25 @@ class UserTest {
                 Arguments.of(
                     Named.of("owner", superadmin),
                     UUID.fromString("00000000-0000-0005-0000-000000000001"),
-                    "test5-newUsername1",
+                    "test5-new_username1",
                     HttpStatusCode.OK
                 ),
                 Arguments.of(
                     Named.of("admin", admin),
                     UUID.fromString("00000000-0000-0005-0000-000000000002"),
-                    "test5-newUsername2",
+                    "test5-new_username2",
                     HttpStatusCode.OK
                 ),
                 Arguments.of(
                     Named.of("regular user", user),
                     UUID.fromString("00000000-0000-0005-0000-000000000003"),
-                    "test5-newUsername3",
+                    "test5-new_username3",
                     HttpStatusCode.Forbidden
                 ),
                 Arguments.of(
                     Named.of("guest", guest),
                     UUID.fromString("00000000-0000-0005-0000-000000000004"),
-                    "test5-newUsername4",
+                    "test5-new_username4",
                     HttpStatusCode.Unauthorized
                 ),
             )
@@ -813,6 +1043,192 @@ class UserTest {
                     Named.of("guest", guest),
                     Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000006")),
                     Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOwnState(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherState(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0001-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0001-000000000001")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0001-000000000002")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0001-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0001-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0001-000000000003")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0002-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0002-000000000001")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0002-000000000002")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0002-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0002-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0002-000000000003")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0003-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0003-000000000001")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0003-000000000002")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0003-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0003-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0003-000000000003")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0004-000000000001")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0013-0004-000000000001")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0004-000000000002")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0013-0004-000000000002")),
+                    Named.of("disabled", false),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0004-000000000003")),
+                    Named.of("enabled", true),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0013-0004-000000000003")),
+                    Named.of("disabled", false),
                     HttpStatusCode.Unauthorized
                 ),
             )

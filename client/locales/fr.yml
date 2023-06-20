@@ -39,6 +39,10 @@ pages:
   login:
     forgot_password: Mot de passe oublié ?
     title: Connexion
+    reasons:
+      expired: Votre session a expiré, veuillez vous reconnecter
+      logout_all: Vous avez été déconnecté de tous les appareils
+      disabled: Votre compte a été désactivé
   resetPassword:
     title: Réinitialiser le mot de passe
     login: Retour à la connexion
@@ -64,6 +68,7 @@ forms:
   login:
     errors:
       missing_username: Nom d'utilisateur requis
+      invalid_username: Format de nom d'utilisateur invalide
       missing_password: Mot de passe requis
     fields:
       password: Mot de passe

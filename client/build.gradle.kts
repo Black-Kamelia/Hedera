@@ -37,8 +37,8 @@ tasks {
     dependsOn(lint)
     ignoreExitValue.set(false)
 
-    inputs.dir(file("${rootProject.projectDir}/client/public/icons/files"))
-    outputs.dir(file("${rootProject.projectDir}/client/public/icons"))
+    inputs.dir(file("${rootProject.projectDir}/client/public/assets/icons/files"))
+    outputs.dir(file("${rootProject.projectDir}/client/public/assets/icons"))
 
     pnpmCommand.set(listOf("icons"))
   }

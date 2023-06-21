@@ -16,6 +16,8 @@ export interface FilesFilters {
   formats: Ref<string[]>
   owners: Ref<string[]>
   reset: () => void
+  activeFilters: Ref<number>
+  isEmpty: Ref<boolean>
 }
 
 export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): FilesFilters => {
@@ -28,6 +30,22 @@ export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): F
   const maximalViews = ref<number | null>(null)
   const formats = ref<string[]>([])
   const owners = ref<string[]>([])
+
+  const activeFilters = computed(() => {
+    return (
+      (visibility.value.length > 0 ? 1 : 0)
+      + (startingDate.value !== null ? 1 : 0)
+      + (endingDate.value !== null ? 1 : 0)
+      + (minimalSize.value !== null ? 1 : 0)
+      + (maximalSize.value !== null ? 1 : 0)
+      + (minimalViews.value !== null ? 1 : 0)
+      + (maximalViews.value !== null ? 1 : 0)
+      + (formats.value.length > 0 ? 1 : 0)
+      + (owners.value.length > 0 ? 1 : 0)
+    )
+  })
+
+  const isEmpty = computed(() => activeFilters.value === 0)
 
   function reset() {
     visibility.value = []
@@ -52,6 +70,8 @@ export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): F
     formats,
     owners,
     reset,
+    activeFilters,
+    isEmpty,
   }
 }, {
   persist: {

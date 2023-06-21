@@ -236,7 +236,10 @@ const filters = useFilesFilters()
         <i class="i-tabler-search" />
         <PInputText class="w-full p-inputtext-lg" placeholder="Rechercher..." />
       </span>
-      <PButton icon="i-tabler-filter" label="Filtres avancés" outlined @click="openFiltersDialog = true" />
+      <PButton
+        icon="i-tabler-filter" label="Filtres avancés" :outlined="filters.isEmpty.value"
+        :badge="filters.isEmpty.value ? undefined : String(filters.activeFilters.value)" @click="openFiltersDialog = true"
+      />
     </div>
     <div class="p-card p-0 overflow-hidden flex-grow">
       <PContextMenu ref="cm" :model="menuModel" />

@@ -5,7 +5,7 @@ const {
   runSVGO,
 } = require('@iconify/tools')
 
-const iconSetPath = './public/icons/'
+const iconSetPath = './public/static/icons/'
 const iconsPath = `${iconSetPath}files/`
 const outputPath = `${iconSetPath}hedera.json`
 
@@ -25,7 +25,7 @@ async function exportIcons() {
     }
 
     try {
-      await cleanupSVG(svg)
+      cleanupSVG(svg)
       runSVGO(svg)
     }
     catch (err) {
@@ -39,7 +39,7 @@ async function exportIcons() {
 
   const exported = iconSet.export()
   console.log('Loaded icon set: ', exported)
-  fs.writeFileSync(outputPath, JSON.stringify(exported, null, 2) + '\n')
+  fs.writeFileSync(outputPath, `${JSON.stringify(exported, null, 2)}\n`)
 }
 
 exportIcons()

@@ -5,7 +5,7 @@ const {
   runSVGO,
 } = require('@iconify/tools')
 
-const iconSetPath = './public/static/icons/'
+const iconSetPath = './public/assets/icons/'
 const iconsPath = `${iconSetPath}files/`
 const outputPath = `${iconSetPath}hedera.json`
 

@@ -48,6 +48,30 @@ pages:
       unlisted: Non répertorié
       protected: Protégé
       unknown: Inconnu
+    table:
+      preview: Aperçu
+      name: Nom
+      size: Taille
+      format: Format
+      owner: Propriétaire
+      visibility: Visibilité
+      creation_date: Date de création
+      views: Vues
+    advanced_filters: Filtres avancés
+    filters:
+      minimum_size: Taille minimale
+      maximum_size: Taille maximale
+      minimal_views: Nombre minimal de vues
+      maximal_views: Nombre maximal de vues
+      start_date: Date de début
+      end_date: Date de fin
+      formats: '{0} formats sélectionnés'
+      all_formats: Tous les formats
+      owners: '{0} propriétaires sélectionnés'
+      all_owners: Tous le monde
+      reset: Réinitialiser
+      apply: Appliquer les filtres
+    search_by_name: Rechercher par nom...
   favorites:
     title: Favoris
   upload:

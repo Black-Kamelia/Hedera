@@ -68,10 +68,10 @@ const {
 </script>
 
 <template>
-  <PDialog v-model:visible="visible" modal header="Filtres avancés" :draggable="false">
+  <PDialog v-model:visible="visible" modal :header="t('pages.files.advanced_filters')" :draggable="false">
     <div class="grid grid-cols-1 xl:grid-cols-2 grid-gap-6 justify-items-stretch">
       <div class="flex flex-col gap-2">
-        <h2>Visibilité</h2>
+        <h2>{{ t('pages.files.table.visibility') }}</h2>
         <PSelectButton
           v-model="visibility" class="w-full" :options="options" option-label="name" option-value="value" multiple
           aria-labelledby="multiple" option-disabled="disabled"
@@ -86,55 +86,55 @@ const {
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>Date de création</h2>
+        <h2>{{ t('pages.files.table.creation_date') }}</h2>
         <div class="flex flex-row gap-3">
           <PCalendar
-            v-model="startingDate" class="w-full" placeholder="Date de début" show-button-bar show-time
+            v-model="startingDate" class="w-full" :placeholder="t('pages.files.filters.start_date')" show-button-bar show-time
             hour-format="24"
           />
           <PCalendar
-            v-model="endingDate" class="w-full" placeholder="Date de fin" show-button-bar show-time
+            v-model="endingDate" class="w-full" :placeholder="t('pages.files.filters.end_date')" show-button-bar show-time
             hour-format="24"
           />
         </div>
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>Taille</h2>
+        <h2>{{ t('pages.files.table.size') }}</h2>
         <div class="flex flex-row gap-3">
-          <FormInputSize v-model="minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" placeholder="Taille minimale" />
-          <FormInputSize v-model="maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" placeholder="Taille maximale" />
+          <FormInputSize v-model="minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
+          <FormInputSize v-model="maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
         </div>
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>Vues</h2>
+        <h2>{{ t('pages.files.table.views') }}</h2>
         <div class="flex flex-row gap-3">
-          <PInputNumber v-model="minimalViews" class="w-full" placeholder="Nombre minimal de vues" />
-          <PInputNumber v-model="maximalViews" class="w-full" placeholder="Nombre maximal de vues" />
+          <PInputNumber v-model="minimalViews" class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
+          <PInputNumber v-model="maximalViews" class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
         </div>
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>Format</h2>
+        <h2>{{ t('pages.files.table.format') }}</h2>
         <PMultiSelect
-          v-model="formats" :options="types" option-label="name" option-group-label="name" option-group-children="items" placeholder="Tous les types"
-          :max-selected-labels="3" class="w-full" filter selected-items-label="{0} types sélectionnés"
+          v-model="formats" :options="types" option-label="name" option-group-label="name" option-group-children="items" :placeholder="t('pages.files.filters.all_formats')"
+          :max-selected-labels="3" class="w-full" filter :selected-items-label="t('pages.files.filters.formats')"
         />
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>Propriétaire</h2>
+        <h2>{{ t('pages.files.table.owner') }}</h2>
         <PMultiSelect
-          v-model="owners" :options="types" option-label="name" placeholder="Tout le monde"
-          :max-selected-labels="3" class="w-full" selected-items-label="{0} types sélectionnés"
+          v-model="owners" :options="types" option-label="name" :placeholder="t('pages.files.filters.all_owners')"
+          :max-selected-labels="3" class="w-full" :selected-items-label="t('pages.files.filters.owners')"
         />
       </div>
     </div>
 
     <template #footer>
-      <PButton label="Réinitialiser" icon="i-tabler-arrow-back-up" text @click="reset" />
-      <PButton label="Appliquer les filtres" icon="i-tabler-check" autofocus @click="visible = false" />
+      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="reset" />
+      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="visible = false" />
     </template>
   </PDialog>
 </template>

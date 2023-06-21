@@ -234,10 +234,10 @@ const filters = useFilesFilters()
     <div class="flex flex-row gap-4">
       <span class="flex-grow p-input-icon-left">
         <i class="i-tabler-search" />
-        <PInputText class="w-full p-inputtext-lg" placeholder="Rechercher..." />
+        <PInputText class="w-full p-inputtext-lg" :placeholder="t('pages.files.search_by_name')" />
       </span>
       <PButton
-        icon="i-tabler-filter" label="Filtres avancés" :outlined="filters.isEmpty.value"
+        icon="i-tabler-filter" :label="t('pages.files.advanced_filters')" :outlined="filters.isEmpty.value"
         :badge="filters.isEmpty.value ? undefined : String(filters.activeFilters.value)" @click="openFiltersDialog = true"
       />
     </div>
@@ -256,7 +256,8 @@ const filters = useFilesFilters()
         @row-contextmenu="onRowContextMenu"
       >
         <PColumn selection-mode="multiple" />
-        <PColumn field="code" header="Aperçu" :sortable="false">
+
+        <PColumn field="code" :header="t('pages.files.table.preview')" :sortable="false">
           <template #body="slotProps">
             <MediaPreview :data="slotProps.data" />
           </template>
@@ -264,7 +265,8 @@ const filters = useFilesFilters()
             <PSkeleton width="6rem" height="4rem" />
           </template>
         </PColumn>
-        <PColumn field="name" sortable header="Nom">
+
+        <PColumn field="name" sortable :header="t('pages.files.table.name')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -290,7 +292,8 @@ const filters = useFilesFilters()
             </div>
           </template>
         </PColumn>
-        <PColumn field="size" sortable header="Taille">
+
+        <PColumn field="size" sortable :header="t('pages.files.table.size')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -307,7 +310,8 @@ const filters = useFilesFilters()
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
-        <PColumn field="type" sortable header="Format">
+
+        <PColumn field="type" sortable :header="t('pages.files.table.format')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -321,7 +325,8 @@ const filters = useFilesFilters()
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
-        <PColumn field="owner" sortable header="Propriétaire">
+
+        <PColumn field="owner" sortable :header="t('pages.files.table.owner')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -335,7 +340,8 @@ const filters = useFilesFilters()
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
-        <PColumn field="visibility" sortable header="Visibilité">
+
+        <PColumn field="visibility" sortable :header="t('pages.files.table.visibility')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -374,7 +380,8 @@ const filters = useFilesFilters()
             </div>
           </template>
         </PColumn>
-        <PColumn field="uploaded_at" sortable header="Date de création">
+
+        <PColumn field="uploaded_at" sortable :header="t('pages.files.table.creation_date')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{

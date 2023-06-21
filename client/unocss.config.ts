@@ -28,7 +28,7 @@ export default defineConfig({
       },
       collections: {
         tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default),
-        hedera: () => import('./public/icons/hedera.json').then(i => i.default),
+        hedera: () => import('./public/assets/icons/hedera.json').then(i => i.default),
       },
     }),
     presetTypography(),

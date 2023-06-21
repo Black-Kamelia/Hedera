@@ -8,6 +8,10 @@ export function humanSize(bytes: number, locale: string, t: (s: string) => strin
   return `${(bytes / (1 << shift)).toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${shift}`)}`
 }
 
+export function humanSize2(size: FileSize, locale: string, t: (s: string) => string) {
+  return `${size.value.toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${size.shift}`)}`
+}
+
 /**
  * Returns the biggest unit that can be used to represent the given number of bytes.
  * The returned value is a multiple of 10, so that it can be used to shift the bytes value.

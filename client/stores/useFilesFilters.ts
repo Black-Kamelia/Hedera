@@ -1,16 +1,11 @@
 import type { Ref } from 'vue'
 
-interface Size {
-  value: number
-  shift: 0 | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80
-}
-
 export interface FilesFilters {
   visibility: Ref<string[]>
   startingDate: Ref<number | null>
   endingDate: Ref<number | null>
-  minimalSize: Ref<Size | null>
-  maximalSize: Ref<Size | null>
+  minimalSize: Ref<FileSize | null>
+  maximalSize: Ref<FileSize | null>
   minimalViews: Ref<number | null>
   maximalViews: Ref<number | null>
   formats: Ref<string[]>
@@ -24,8 +19,8 @@ export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): F
   const visibility = ref<string[]>([])
   const startingDate = ref<number | null>(null)
   const endingDate = ref<number | null>(null)
-  const minimalSize = ref<Size | null>(null)
-  const maximalSize = ref<Size | null>(null)
+  const minimalSize = ref<FileSize | null>(null)
+  const maximalSize = ref<FileSize | null>(null)
   const minimalViews = ref<number | null>(null)
   const maximalViews = ref<number | null>(null)
   const formats = ref<string[]>([])

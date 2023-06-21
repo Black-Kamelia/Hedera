@@ -20,6 +20,11 @@ declare global {
 declare global {
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
+
+  interface FileSize {
+    value: number
+    shift: 0 | 10 | 20 | 30 | 40 | 50
+  }
 }
 // END SECTION: Others
 

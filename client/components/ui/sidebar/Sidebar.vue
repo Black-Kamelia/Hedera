@@ -12,13 +12,16 @@ const sidebar = toReactive(useStorage('sidebar', { open: true }))
 const sidebarRef = ref<HTMLElement | null>(null)
 
 const isSidebarHovered = useElementHover(sidebarRef)
+
 function toggleSidebar() {
   sidebar.open = !sidebar.open
 }
 </script>
 
 <template>
-  <aside ref="sidebarRef" class="sidebar flex flex-col p-0 h-full" :class="{ expanded: sidebar.open }">
+  <aside
+    ref="sidebarRef" class="sidebar flex flex-col p-0 h-full" :class="{ expanded: sidebar.open, dark: isDark }"
+  >
     <div class="header flex flex-row items-center">
       <div class="flex-grow overflow-hidden">
         <Transition>
@@ -77,12 +80,16 @@ function toggleSidebar() {
   height: 100%;
   transition: min-width 0.3s ease, width 0.3s ease;
   overflow: hidden;
-  background-color: var(--primary-color);
+  background-color: var(--primary-500);
   color: var(--primary-color-text);
 
   &.expanded {
     width: 19em;
     min-width: 19em;
+  }
+
+  .p-button {
+    background-color: transparent;
   }
 
   > .header {
@@ -91,8 +98,6 @@ function toggleSidebar() {
     background-color: var(--primary-600);
 
     .p-button {
-      background-color: var(--primary-600);
-
       &:hover {
         background-color: var(--primary-500);
       }
@@ -113,7 +118,8 @@ function toggleSidebar() {
     }
 
     .p-button.active {
-      background-color: var(--primary-700);
+      background-color: var(--primary-color-text);
+      color: var(--primary-500);
     }
   }
 
@@ -130,6 +136,49 @@ function toggleSidebar() {
     border: none;
     outline: none;
     box-shadow: none;
+  }
+
+  &.dark {
+    background-color: var(--primary-800);
+
+    *, *:hover, *:active, {
+      color: var(--text-color);
+    }
+
+    > .header {
+      background-color: var(--primary-900);
+
+      .p-button {
+        &:hover {
+          background-color: var(--primary-800);
+        }
+
+        &:active {
+          background-color: var(--primary-700);
+        }
+      }
+    }
+
+    > .items {
+      .p-button:hover {
+        background-color: var(--primary-700);
+      }
+
+      .p-button:active {
+        background-color: var(--primary-600);
+      }
+
+      .p-button.active {
+        background-color: var(--text-color);
+        color: var(--primary-800);
+      }
+    }
+
+    .sep {
+      margin: .5rem 0;
+      border-top: 1px solid var(--primary-700);
+      border-left: 1px solid var(--primary-700);
+    }
   }
 }
 

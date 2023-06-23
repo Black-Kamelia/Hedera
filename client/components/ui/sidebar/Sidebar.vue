@@ -62,6 +62,10 @@ function toggleSidebar() {
           icon="i-tabler-settings" :label="t('pages.configuration.title')" :open="sidebar.open"
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
+        <SidebarButton
+          icon="i-tabler-tool" label="Debug" :open="sidebar.open"
+          :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
+        />
       </div>
       <div class="flex flex-col p-4 gap-2">
         <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />

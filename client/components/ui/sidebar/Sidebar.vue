@@ -145,7 +145,7 @@ function toggleSidebar() {
   &.dark {
     background-color: var(--primary-800);
 
-    *, *:hover, *:active, {
+    *, *:hover, *:active {
       color: var(--text-color);
     }
 

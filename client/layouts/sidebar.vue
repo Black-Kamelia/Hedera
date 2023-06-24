@@ -8,7 +8,7 @@ const sidebarWidth = computed(() => sidebar.open ? '19em' : '5em')
 <template>
   <div class="flex flex-row overflow-auto" h-screen w-screen>
     <Sidebar />
-    <div class="flex-grow flex flex-col content" :style="`max-width: calc(100% - ${sidebarWidth})`">
+    <div class="flex-grow flex flex-col content">
       <Topbar />
       <div class="py-4 px-8 w-full h-full overflow-auto">
         <slot />
@@ -20,5 +20,6 @@ const sidebarWidth = computed(() => sidebar.open ? '19em' : '5em')
 <style>
 .content {
   transition: max-width 0.3s ease, width 0.3s ease;
+  max-width: calc(100% - v-bind(sidebarWidth));
 }
 </style>

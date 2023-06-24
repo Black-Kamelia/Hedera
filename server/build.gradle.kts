@@ -102,8 +102,8 @@ tasks {
         environment = mapOf(
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
-            "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
-            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
+            "HEDERA_JWT_REFRESH_SECRET" to "secretRefresh",
+            "HEDERA_JWT_WS_SECRET" to "secretWSToken",
         )
         classpath = sourceSets["main"].runtimeClasspath
         mainClass.set("com.kamelia.hedera.ApplicationKt")
@@ -115,8 +115,8 @@ tasks {
         environment = mapOf(
             "HEDERA_ENV" to "dev",
             "HEDERA_JWT_SECRET" to "secret",
-            "HEDERA_JWT_SECRET_REFRESH" to "secretRefresh",
-            "HEDERA_JWT_SECRET_WS_TOKEN" to "secretWSToken",
+            "HEDERA_JWT_REFRESH_SECRET" to "secretRefresh",
+            "HEDERA_JWT_WS_SECRET" to "secretWSToken",
         )
         finalizedBy(koverVerify)
     }

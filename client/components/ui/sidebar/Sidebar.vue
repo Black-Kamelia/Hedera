@@ -12,6 +12,7 @@ const sidebar = toReactive(useStorage('sidebar', { open: true }))
 const sidebarRef = ref<HTMLElement | null>(null)
 
 const isSidebarHovered = useElementHover(sidebarRef)
+const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role === 'OWNER')
 
 function toggleSidebar() {
   sidebar.open = !sidebar.open
@@ -59,11 +60,11 @@ function toggleSidebar() {
           :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
         />
         <SidebarButton
-          icon="i-tabler-settings" :label="t('pages.configuration.title')" :open="sidebar.open"
+          v-if="isAdmin" icon="i-tabler-settings" :label="t('pages.configuration.title')" :open="sidebar.open"
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
         <SidebarButton
-          icon="i-tabler-tool" label="Debug" :open="sidebar.open"
+          v-if="isAdmin" icon="i-tabler-tool" label="Debug" :open="sidebar.open"
           :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
         />
       </div>

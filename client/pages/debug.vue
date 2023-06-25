@@ -2,6 +2,7 @@
 usePageName('Debug')
 definePageMeta({
   layout: 'sidebar',
+  middleware: ['auth'],
 })
 
 const menus = [
@@ -26,6 +27,12 @@ const menus = [
     path: '/debug/components',
   },
 ]
+
+const { currentRoute } = useRouter()
+onMounted(() => {
+  if (currentRoute.value.path === '/debug')
+    navigateTo('/debug/stores', { replace: true })
+})
 </script>
 
 <template>

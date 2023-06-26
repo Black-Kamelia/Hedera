@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="w-full h-full overflow-scroll">
+  <div class="w-full h-full overflow-auto">
     <div class="p-5 w-100%" style="background-color: var(--red-500);">
       <h1 class="text-4xl font-bold text-white">
         W-100%

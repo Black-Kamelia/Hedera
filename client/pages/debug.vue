@@ -29,10 +29,13 @@ const menus = [
 ]
 
 const { currentRoute } = useRouter()
-onMounted(() => {
+function redirect() {
   if (currentRoute.value.path === '/debug')
     navigateTo('/debug/stores', { replace: true })
-})
+}
+
+onMounted(redirect)
+onUpdated(redirect)
 </script>
 
 <template>

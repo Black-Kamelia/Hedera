@@ -15,7 +15,7 @@ const { currentRoute } = useRouter()
 </script>
 
 <template>
-  <div class="flex gap-3">
+  <div class="flex gap-3 self-start">
     <PButton
       v-for="item in items" :key="item.path" :label="item.label" :icon="item.icon"
       :text="!routeMatch(currentRoute.fullPath, item)" @click="navigateTo(item.path)"

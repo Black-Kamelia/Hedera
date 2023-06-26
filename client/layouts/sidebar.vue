@@ -8,7 +8,7 @@ const sidebarWidth = computed(() => sidebar.open ? '19em' : '5em')
 <template>
   <div class="flex flex-row overflow-auto" h-screen w-screen>
     <Sidebar />
-    <div class="flex-grow flex flex-col content">
+    <div class="flex-grow flex flex-col content ground">
       <Topbar />
       <div class="py-4 px-8 w-full h-full overflow-auto">
         <slot />

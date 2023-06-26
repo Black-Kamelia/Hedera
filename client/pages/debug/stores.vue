@@ -9,7 +9,7 @@ const sidebar = toReactive(useStorage('sidebar', { open: true }))
 
 <template>
   <div class="flex flex-col gap-3">
-    <div class="grid grid-cols-2 gap-6">
+    <div class="p-card p-5 grid grid-cols-2 gap-6">
       <div class="flex flex-col gap-6">
         <PPanel class="max-w-100% w-100%" header="Authentication" toggleable>
           <pre class="overflow-y-auto">{{ auth }}</pre>
@@ -21,12 +21,12 @@ const sidebar = toReactive(useStorage('sidebar', { open: true }))
       </div>
 
       <div class="flex flex-col gap-6">
-        <PPanel class="max-w-100% w-100%" header="Filters" toggleable>
-          <pre class="overflow-y-auto">{{ filters }}</pre>
-        </PPanel>
-
         <PPanel class="max-w-100% w-100%" header="Sidebar" toggleable>
           <pre class="overflow-y-auto">{{ sidebar }}</pre>
+        </PPanel>
+
+        <PPanel class="max-w-100% w-100%" header="Filters" toggleable>
+          <pre class="overflow-y-auto">{{ filters }}</pre>
         </PPanel>
       </div>
     </div>

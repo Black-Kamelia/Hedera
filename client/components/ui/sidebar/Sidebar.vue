@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useStorage } from '@vueuse/core'
+import useDebug from '~/composables/useDebug'
 
 const { t } = useI18n()
 const { isDark, toggle } = useDark()
@@ -13,6 +14,7 @@ const sidebarRef = ref<HTMLElement | null>(null)
 
 const isSidebarHovered = useElementHover(sidebarRef)
 const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role === 'OWNER')
+const { isDebugEnabled } = useDebug()
 
 function toggleSidebar() {
   sidebar.open = !sidebar.open
@@ -64,7 +66,7 @@ function toggleSidebar() {
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
         <SidebarButton
-          v-if="isAdmin" icon="i-tabler-tool" label="Debug" :open="sidebar.open"
+          v-if="isDebugEnabled" icon="i-tabler-tool" label="Debug" :open="sidebar.open"
           :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
         />
       </div>

@@ -82,8 +82,8 @@ function toggleSidebar() {
 
 <style scoped lang="scss">
 .sidebar {
-  width: 5em;
-  min-width: 5em;
+  width: var(--sidebar-width-collapsed);
+  min-width: var(--sidebar-width-collapsed);
   height: 100%;
   transition: min-width 0.3s ease, width 0.3s ease;
   overflow: hidden;
@@ -91,8 +91,8 @@ function toggleSidebar() {
   color: var(--primary-color-text);
 
   &.expanded {
-    width: 19em;
-    min-width: 19em;
+    width: var(--sidebar-width-open);
+    min-width: var(--sidebar-width-open);
   }
 
   .p-button {

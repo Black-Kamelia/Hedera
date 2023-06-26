@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// const { isDark } = useDark()
 useTheme()
 useWebsocketAutoConnect()
 
@@ -28,6 +29,10 @@ useEventBus(LoggedOutEvent).on(() => {
 </script>
 
 <template>
+  <!--
+  <DarkTheme v-if="!isDark" />
+  <LightTheme v-else />
+  -->
   <div font="text" class="p-input-filled">
     <PToast close-icon="i-tabler-x" error-icon="i-tabler-alert-circle-filled" />
     <NuxtLoadingIndicator />
@@ -44,6 +49,9 @@ useEventBus(LoggedOutEvent).on(() => {
   --scaleBack: scale(0.95);
   --scaleFront: scale(1.1);
   --scaleFrontParallax: scale(1.2);
+
+  --sidebar-width-open: 19em;
+  --sidebar-width-collapsed: 5em;
 }
 
 .layout-in-enter-active,
@@ -111,5 +119,62 @@ useEventBus(LoggedOutEvent).on(() => {
   transform: var(--scaleBack);
   z-index: 0;
   //filter: blur(5px);
+}
+
+/* Main theme */
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap');
+
+.dark {
+  color-scheme: dark;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100dvh;
+  width: 100dvw;
+}
+
+/* primevue additions */
+body {
+  color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Red Hat Display', sans-serif;
+}
+
+.p-input-icon-left > i,
+.p-input-icon-right > i {
+  margin-top: -12px !important;
+}
+
+.p-input-icon-left > .p-inputtext {
+  padding-left: calc(1.25rem + 24px);
+}
+
+.p-input-icon-right > .p-inputtext {
+  padding-right: calc(1.25rem + 24px);
+}
+
+.p-toast .p-toast-message .p-toast-message-content {
+  border-width: 0 !important;
+}
+
+.p-toast .p-toast-message,
+.p-message {
+  border: 0 none !important;
+}
+
+.p-toast-message-icon {
+  height: 1em !important;
+}
+
+input:focus::placeholder {
+  color: transparent;
+}
+
+.large-icon {
+  width: 2em;
+  height: 2em;
 }
 </style>

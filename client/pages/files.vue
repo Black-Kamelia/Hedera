@@ -116,11 +116,6 @@ const filters = useFilesFilters()
 </script>
 
 <template>
-  <div class="absolute bottom-0 right-0 w-50% m-6 bg-black/50 p-3 text-white z-10 rounded-lg font-mono">
-    {{ filters }}
-    {{ filters.startingDate.value }}
-  </div>
-
   <div class="h-full flex flex-col gap-4">
     <div class="flex flex-row gap-4">
       <span class="flex-grow p-input-icon-left">

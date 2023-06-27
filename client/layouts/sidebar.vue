@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
-
-const sidebar = toReactive(useStorage('sidebar', { open: true }))
+const sidebar = toReactive(useLocalStorage('sidebar', { open: true }))
 </script>
 
 <template>

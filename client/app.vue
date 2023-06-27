@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// const { isDark } = useDark()
 useTheme()
 useWebsocketAutoConnect()
 
@@ -29,10 +28,6 @@ useEventBus(LoggedOutEvent).on(() => {
 </script>
 
 <template>
-  <!--
-  <DarkTheme v-if="!isDark" />
-  <LightTheme v-else />
-  -->
   <div font="text" class="p-input-filled">
     <PToast close-icon="i-tabler-x" error-icon="i-tabler-alert-circle-filled" />
     <NuxtLoadingIndicator />

@@ -13,6 +13,7 @@ definePageMeta({
 })
 
 const products = ref([
+  /*
   {
     id: 1,
     code: 'A121',
@@ -60,6 +61,7 @@ const products = ref([
     visibility: 'PRIVATE',
     uploaded_at: '2021-09-01 12:00:00',
   },
+   */
 ])
 const selectedProduct = ref()
 const selecting = computed(() => selectedProduct.value?.length > 0)
@@ -130,6 +132,7 @@ const filters = useFilesFilters()
     <div class="p-card p-0 overflow-hidden flex-grow">
       <PContextMenu ref="cm" :model="menuModel" />
       <PDataTable
+        v-if="products && products.length > 0"
         v-model:selection="selectedProduct"
         :value="products"
         data-key="id"
@@ -282,6 +285,16 @@ const filters = useFilesFilters()
           </template>
         </PColumn>
       </PDataTable>
+      <div v-else class="h-full w-full flex flex-col justify-center items-center">
+        <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+        <h1 class="text-2xl">
+          Looks pretty empty in here
+        </h1>
+        <p class="pb-10">
+          You have not uploaded any file yet.
+        </p>
+        <PButton rounded label="Upload a file" />
+      </div>
     </div>
 
     <div class="actions left-0 fixed bottom-8 flex flex-row flex-center w-full gap-2">

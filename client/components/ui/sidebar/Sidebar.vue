@@ -105,22 +105,22 @@ function toggleSidebar() {
 
     .p-button {
       &:hover {
-        background-color: var(--primary-500);
+        background-color: rgba(29, 30, 39, 0.1);
       }
 
       &:active {
-        background-color: var(--primary-700);
+        background-color: rgba(29, 30, 39, 0.2);
       }
     }
   }
 
   > .items {
     .p-button:hover {
-      background-color: var(--primary-400);
+      background-color: rgba(29, 30, 39, 0.1);
     }
 
     .p-button:active {
-      background-color: var(--primary-600);
+      background-color: rgba(29, 30, 39, 0.2);
     }
 
     .p-button.active {
@@ -156,22 +156,22 @@ function toggleSidebar() {
 
       .p-button {
         &:hover {
-          background-color: var(--primary-800);
+          background-color: rgba(232, 233, 233, 0.05);
         }
 
         &:active {
-          background-color: var(--primary-700);
+          background-color: rgba(232, 233, 233, 0.15);
         }
       }
     }
 
     > .items {
       .p-button:hover {
-        background-color: var(--primary-700);
+        background-color: rgba(232, 233, 233, 0.05);
       }
 
       .p-button:active {
-        background-color: var(--primary-600);
+        background-color: rgba(232, 233, 233, 0.15);
       }
 
       .p-button.active {

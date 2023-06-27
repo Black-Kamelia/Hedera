@@ -1,3 +1,6 @@
+<script setup lang="ts">
+</script>
+
 <template>
   <div class="grid grid-cols-1 gap-3">
     <div class="p-card p-5 flex flex-col gap-3">
@@ -14,6 +17,24 @@
         <PButton size="small" label="Help" severity="help" />
       </div>
       <div class="flex gap-2">
+        <PButton outlined size="small" label="Primary" />
+        <PButton outlined size="small" label="Secondary" severity="secondary" />
+        <PButton outlined size="small" label="Success" severity="success" />
+        <PButton outlined size="small" label="Warning" severity="warning" />
+        <PButton outlined size="small" label="Danger" severity="danger" />
+        <PButton outlined size="small" label="Info" severity="info" />
+        <PButton outlined size="small" label="Help" severity="help" />
+      </div>
+      <div class="flex gap-2">
+        <PButton text size="small" label="Primary" />
+        <PButton text size="small" label="Secondary" severity="secondary" />
+        <PButton text size="small" label="Success" severity="success" />
+        <PButton text size="small" label="Warning" severity="warning" />
+        <PButton text size="small" label="Danger" severity="danger" />
+        <PButton text size="small" label="Info" severity="info" />
+        <PButton text size="small" label="Help" severity="help" />
+      </div>
+      <div class="flex gap-2">
         <PSplitButton size="small" label="Primary" icon="pi pi-plus" :model="[]" />
         <PSplitButton size="small" label="Secondary" icon="pi pi-plus" severity="secondary" :model="[]" />
         <PSplitButton size="small" label="Success" icon="pi pi-plus" severity="success" :model="[]" />
@@ -21,6 +42,19 @@
         <PSplitButton size="small" label="Danger" icon="pi pi-plus" severity="danger" :model="[]" />
         <PSplitButton size="small" label="Info" icon="pi pi-plus" severity="info" :model="[]" />
         <PSplitButton size="small" label="Help" icon="pi pi-plus" severity="help" :model="[]" />
+      </div>
+    </div>
+
+    <div class="p-card p-5 flex flex-col gap-3">
+      <h2 class="text-2xl">
+        Labels
+      </h2>
+      <div class="flex gap-2">
+        <PBadge size="small" value="Primary" />
+        <PBadge size="small" value="Success" severity="success" />
+        <PBadge size="small" value="Warning" severity="warning" />
+        <PBadge size="small" value="Danger" severity="danger" />
+        <PBadge size="small" value="Info" severity="info" />
       </div>
     </div>
 

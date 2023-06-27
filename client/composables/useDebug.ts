@@ -1,9 +1,11 @@
 export default function useDebug() {
-  const isDebugEnabled = useLocalStorage<boolean | undefined>('debug', undefined, { writeDefaults: false })
+  const isDebugEnabled = useLocalStorage<boolean>('debug', false, { writeDefaults: false })
 
   function close() {
     isDebugEnabled.value = false
-    isDebugEnabled.value = undefined
+    setTimeout(() => {
+      localStorage.removeItem('debug')
+    }, 50)
   }
 
   return {

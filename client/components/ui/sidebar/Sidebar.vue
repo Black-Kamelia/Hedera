@@ -68,7 +68,7 @@ function toggleSidebar() {
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
         <SidebarButton
-          v-if="isDebugEnabled" icon="i-tabler-tool" label="Debug" :open="sidebar.open"
+          v-if="isDebugEnabled" icon="i-tabler-tool" :label="t('pages.debug.title')" :open="sidebar.open"
           :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
         />
       </div>

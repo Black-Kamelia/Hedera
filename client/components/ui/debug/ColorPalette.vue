@@ -3,7 +3,7 @@ export interface ColorPaletteProps {
   color: string
 }
 
-const { color } = definePropsRefs<ColorPaletteProps>()
+const { color } = defineProps<ColorPaletteProps>()
 const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]
 </script>
 

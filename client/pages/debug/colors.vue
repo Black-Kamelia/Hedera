@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-import ColorPalette from '~/components/ui/debug/ColorPalette.vue'
-</script>
-
 <template>
   <div class="p-card p-5 grid grid-cols-7 gap-3">
     <ColorPalette color="pink" />

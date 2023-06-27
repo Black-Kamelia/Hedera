@@ -1,10 +1,8 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
-
 const auth = useAuth()
 const dark = useDark()
 const filters = 'Empty.'
-const sidebar = toReactive(useStorage('sidebar', { open: true }))
+const sidebar = useLocalStorage('sidebar', { open: true })
 </script>
 
 <template>

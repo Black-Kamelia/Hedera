@@ -31,28 +31,22 @@ const menus = [
 const { currentRoute } = useRouter()
 const { isDebugEnabled, close } = useDebug()
 
-function closeDebug() {
-  navigateTo('/files', { replace: true })
-  close()
-}
+function redirect([isDebugEnabled, currentRoute]: [boolean | undefined, { path: string }]) {
+  if (!isDebugEnabled)
+    navigateTo('/files', { replace: true })
 
-function redirect() {
-  if (!isDebugEnabled.value)
-    navigateTo('/', { replace: true })
-
-  if (currentRoute.value.path === '/debug')
+  if (currentRoute.path === '/debug')
     navigateTo('/debug/stores', { replace: true })
 }
 
-onMounted(redirect)
-onUpdated(redirect)
+watch([isDebugEnabled, currentRoute], redirect, { immediate: true })
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
     <div class="flex justify-between">
       <TabNavigation :items="menus" :route-match="(path, item) => path.endsWith(item.path)" />
-      <PButton icon="i-tabler-x" label="Close debug" rounded severity="danger" @click="closeDebug" />
+      <PButton icon="i-tabler-x" label="Close debug" rounded severity="danger" @click="close" />
     </div>
 
     <div class="block">

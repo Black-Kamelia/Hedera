@@ -2,7 +2,6 @@
 import { useStorage } from '@vueuse/core'
 
 const sidebar = toReactive(useStorage('sidebar', { open: true }))
-const sidebarWidth = computed(() => sidebar.open ? '19em' : '5em')
 </script>
 
 <template>

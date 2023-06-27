@@ -23,7 +23,9 @@ function toggleSidebar() {
 
 <template>
   <aside
-    ref="sidebarRef" class="sidebar flex flex-col p-0 h-full" :class="{ expanded: sidebar.open, dark: isDark }"
+    ref="sidebarRef"
+    class="sidebar flex flex-col p-0 h-full"
+    :class="{ expanded: sidebar.open, dark: isDark }"
   >
     <div class="header flex flex-row items-center">
       <div class="flex-grow overflow-hidden">

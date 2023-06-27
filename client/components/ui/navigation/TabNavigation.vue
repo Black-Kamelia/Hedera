@@ -10,7 +10,7 @@ export interface TabNavigationProps {
   routeMatch: (path: string, item: NavigationItem) => boolean
 }
 
-const { items, routeMatch } = definePropsRefs<TabNavigationProps>()
+const { items, routeMatch } = defineProps<TabNavigationProps>()
 const { currentRoute } = useRouter()
 </script>
 

@@ -1,6 +1,3 @@
-<script lang="ts" setup>
-</script>
-
 <template>
   <div class="p-card p-5">
     <div class="w-full h-full overflow-auto">

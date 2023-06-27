@@ -1,11 +1,11 @@
 export default function useTheme() {
-  const { isDark } = $(useDark())
+  const { isDark } = useDark()
 
   const head = computed(() => ({
     link: [
       {
         rel: 'stylesheet',
-        href: isDark ? darkTheme : lightTheme,
+        href: isDark.value ? darkTheme : lightTheme,
       },
     ],
   }))

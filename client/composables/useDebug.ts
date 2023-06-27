@@ -1,13 +1,13 @@
 export default function useDebug() {
-  const isDebugEnabled = useLocalStorage<boolean>('debug', false, { writeDefaults: false })
+  const isDebugEnabled = useLocalStorage<boolean | undefined>('debug', undefined, { writeDefaults: false })
 
   function close() {
-    // isDebugEnabled.value = false
-    localStorage.removeItem('debug')
+    isDebugEnabled.value = false
+    isDebugEnabled.value = undefined
   }
 
   return {
-    isDebugEnabled,
+    isDebugEnabled: readonly(isDebugEnabled),
     close,
   }
 }

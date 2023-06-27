@@ -50,11 +50,11 @@
         Labels
       </h2>
       <div class="flex gap-2">
-        <PBadge size="small" value="Primary" />
-        <PBadge size="small" value="Success" severity="success" />
-        <PBadge size="small" value="Warning" severity="warning" />
-        <PBadge size="small" value="Danger" severity="danger" />
-        <PBadge size="small" value="Info" severity="info" />
+        <PBadge value="Primary" />
+        <PBadge value="Success" severity="success" />
+        <PBadge value="Warning" severity="warning" />
+        <PBadge value="Danger" severity="danger" />
+        <PBadge value="Info" severity="info" />
       </div>
     </div>
 

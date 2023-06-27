@@ -7,7 +7,7 @@ const { visible } = defineModels<{
 
 const { t } = useI18n()
 
-const options = ref([
+const visibilityOptions = ref([
   { name: t('pages.files.visibility.public'), value: 'PUBLIC', icon: 'i-tabler-world' },
   { name: t('pages.files.visibility.unlisted'), value: 'UNLISTED', icon: 'i-tabler-link' },
   { name: t('pages.files.visibility.protected'), value: 'PROTECTED', disabled: true, icon: 'i-tabler-lock' },
@@ -53,18 +53,57 @@ const types = ref([
   },
 ])
 
-const {
-  visibility,
-  startingDate,
-  endingDate,
-  minimalSize,
-  maximalSize,
-  minimalViews,
-  maximalViews,
-  formats,
-  owners,
-  reset,
-} = useFilesFilters()
+const filters = useFilesFilters()
+
+const visibility = ref<Array<string>>(filters.visibility.value)
+const startingDate = ref<number | null>(filters.startingDate.value)
+const endingDate = ref<number | null>(filters.endingDate.value)
+const minimalSize = ref<FileSize | null>(filters.minimalSize.value)
+const maximalSize = ref<FileSize | null>(filters.maximalSize.value)
+const minimalViews = ref<number | null>(filters.minimalViews.value)
+const maximalViews = ref<number | null>(filters.maximalViews.value)
+const formats = ref<Array<string>>(filters.formats.value)
+const owners = ref<Array<string>>(filters.owners.value)
+
+function applyAndClose() {
+  filters.visibility.value = visibility.value
+  filters.startingDate.value = startingDate.value
+  filters.endingDate.value = endingDate.value
+  filters.minimalSize.value = minimalSize.value
+  filters.maximalSize.value = maximalSize.value
+  filters.minimalViews.value = minimalViews.value
+  filters.maximalViews.value = maximalViews.value
+  filters.formats.value = formats.value
+  filters.owners.value = owners.value
+
+  visible.value = false
+}
+
+function reset() {
+  visibility.value = []
+  startingDate.value = null
+  endingDate.value = null
+  minimalSize.value = null
+  maximalSize.value = null
+  minimalViews.value = null
+  maximalViews.value = null
+  formats.value = []
+  owners.value = []
+}
+
+watch(visible, () => {
+  if (visible.value) {
+    visibility.value = filters.visibility.value
+    startingDate.value = filters.startingDate.value
+    endingDate.value = filters.endingDate.value
+    minimalSize.value = filters.minimalSize.value
+    maximalSize.value = filters.maximalSize.value
+    minimalViews.value = filters.minimalViews.value
+    maximalViews.value = filters.maximalViews.value
+    formats.value = filters.formats.value
+    owners.value = filters.owners.value
+  }
+})
 </script>
 
 <template>
@@ -73,7 +112,7 @@ const {
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.visibility') }}</h2>
         <PSelectButton
-          v-model="visibility" class="w-full" :options="options" option-label="name" option-value="value" multiple
+          v-model="visibility" class="w-full" :options="visibilityOptions" option-label="name" option-value="value" multiple
           aria-labelledby="multiple" option-disabled="disabled"
         >
           <template #option="slotProps">
@@ -133,8 +172,8 @@ const {
     </div>
 
     <template #footer>
-      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="reset" />
-      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="visible = false" />
+      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="reset()" />
+      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="applyAndClose()" />
     </template>
   </PDialog>
 </template>

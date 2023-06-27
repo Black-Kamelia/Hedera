@@ -5914,9 +5914,6 @@
   color: #fff;
   background: rgba(255, 255, 255, 0.3);
 }
-.p-button .p-button-label {
-  font-weight: 700;
-}
 .p-carousel .p-carousel-indicators .p-carousel-indicator.p-highlight button {
   background-color: var(--primary-500);
 }

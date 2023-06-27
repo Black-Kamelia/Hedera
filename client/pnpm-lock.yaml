@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 devDependencies:
   '@antfu/eslint-config':
     specifier: ^0.39.5
@@ -68,6 +64,9 @@ devDependencies:
   class-variance-authority:
     specifier: ^0.6.0
     version: 0.6.0(typescript@4.9.5)
+  clean-css:
+    specifier: ^5.3.2
+    version: 5.3.2
   eslint:
     specifier: ^8.43.0
     version: 8.43.0
@@ -3969,6 +3968,13 @@ packages:
     dependencies:
       clsx: 1.2.1
       typescript: 4.9.5
+    dev: true
+
+  /clean-css@5.3.2:
+    resolution: {integrity: sha512-JVJbM+f3d3Q704rF4bqQ5UUyTtuJ0JRKNbTKVEeujCCBoMdkEi+V+e8oktO9qGQNSvHrFTM6JZRXrUvGR1czww==}
+    engines: {node: '>= 10.0'}
+    dependencies:
+      source-map: 0.6.1
     dev: true
 
   /clean-regexp@1.0.0:
@@ -10509,3 +10515,7 @@ packages:
       compress-commons: 4.1.1
       readable-stream: 3.6.0
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

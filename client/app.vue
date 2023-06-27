@@ -117,8 +117,6 @@ useEventBus(LoggedOutEvent).on(() => {
 }
 
 /* Main theme */
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&display=swap');
-
 .dark {
   color-scheme: dark;
 }
@@ -132,6 +130,10 @@ html, body {
 /* primevue additions */
 body {
   color: var(--text-color);
+}
+
+pre {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 h1, h2, h3, h4, h5, h6 {

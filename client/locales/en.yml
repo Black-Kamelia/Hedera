@@ -80,6 +80,8 @@ pages:
     title: Analytics
   configuration:
     title: Configuration
+  debug:
+    title: Debug
 
 forms:
   submit: Submit

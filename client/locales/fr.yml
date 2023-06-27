@@ -80,6 +80,8 @@ pages:
     title: Statistiques
   configuration:
     title: Configuration
+  debug:
+    title: Débogage
 
 forms:
   submit: Valider

@@ -13,7 +13,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Hedera',
-      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      ],
     },
     layoutTransition: { name: 'layout-in', mode: 'default' },
   },

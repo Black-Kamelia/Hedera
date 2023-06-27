@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import { useStorage } from '@vueuse/core'
-import useDebug from '~/composables/useDebug'
-
 const { t } = useI18n()
 const { isDark, toggle } = useDark()
 const { user } = useAuth()
@@ -9,7 +6,7 @@ const { user } = useAuth()
 const themeIcon = computed(() => isDark.value ? 'i-tabler-sun' : 'i-tabler-moon')
 const themeName = computed(() => isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode'))
 
-const sidebar = toReactive(useStorage('sidebar', { open: true }))
+const sidebar = toReactive(useLocalStorage('sidebar', { open: true }))
 const sidebarRef = ref<HTMLElement | null>(null)
 
 const isSidebarHovered = useElementHover(sidebarRef)

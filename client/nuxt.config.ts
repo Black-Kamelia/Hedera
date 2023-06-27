@@ -15,8 +15,6 @@ export default defineNuxtConfig({
       title: 'Hedera',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'preload', as: 'image', href: '/assets/img/06-Blue_Purple_LM-4K.png' },
-        { rel: 'preload', as: 'image', href: '/assets/img/06-Blue_Purple_DM-4K.png' },
       ],
     },
     layoutTransition: { name: 'layout-in', mode: 'default' },

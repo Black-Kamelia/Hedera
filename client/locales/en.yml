@@ -42,6 +42,7 @@ pages:
     login: Back to login
   files:
     title: Files
+    link_copied: The link has been copied to clipboard
     visibility:
       public: Public
       private: Private
@@ -71,6 +72,12 @@ pages:
       all_owners: Everyone
       reset: Reset
       apply: Apply filters
+    rename:
+      title: Rename a file
+      success: The file has been renamed
+      error: The file could not be renamed
+      cancel: Cancel
+      submit: Rename
     search_by_name: Search by name...
   favorites:
     title: Favorites
@@ -108,6 +115,10 @@ errors:
     account_disabled: Your account is disabled
   tokens:
     expired_or_invalid: Your session has expired, please log in again
+  parsing:
+    invalid_uuid: Invalid unique identifier
+  files:
+    not_found: This file does not exist
 
 theme:
   dark: Dark

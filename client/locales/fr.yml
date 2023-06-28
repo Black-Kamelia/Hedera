@@ -42,6 +42,7 @@ pages:
     login: Retour à la connexion
   files:
     title: Fichiers
+    link_copied: Le lien a été copié dans le presse-papier
     visibility:
       public: Public
       private: Privé
@@ -71,6 +72,12 @@ pages:
       all_owners: Tous le monde
       reset: Réinitialiser
       apply: Appliquer les filtres
+    rename:
+      title: Renommer un fichier
+      success: Le fichier a été renommé
+      error: Le fichier n'a pas pu être renommé
+      cancel: Annuler
+      submit: Renommer
     search_by_name: Rechercher par nom...
   favorites:
     title: Favoris
@@ -108,6 +115,10 @@ errors:
     account_disabled: Votre compte est désactivé
   tokens:
     expired_or_invalid: Votre session a expiré, veuillez vous reconnecter
+  parsing:
+    invalid_uuid: Identifiant unique invalide
+  files:
+    not_found: Ce fichier n'existe pas
 
 theme:
   dark: Sombre

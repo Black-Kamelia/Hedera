@@ -3,8 +3,10 @@ package com.kamelia.hedera.rest.file
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.util.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.filesRoutes() = route("/files") {
@@ -20,6 +22,29 @@ fun Route.filesRoutes() = route("/files") {
     authenticate(AuthJwt, optional = true) {
         getFile()
     }
+}
+
+
+
+fun Route.rawFileRoute() = get("/{code}") {
+    val authedId = authenticatedUser?.uuid
+    val code = call.getParam("code")
+
+    FileService.getFile(code, authedId).ifSuccessOrElse(
+        onSuccess = { (data) ->
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.ownerId, code)
+            if (file != null) {
+                call.respondFileInline(file, ContentType.parse(data.mimeType))
+            } else {
+                // TODO notify orphaned file
+                call.proxyRedirect("/")
+            }
+        },
+        onError = {
+            call.proxyRedirect("/")
+        },
+    )
 }
 
 private fun Route.uploadFile() = post("/upload") {

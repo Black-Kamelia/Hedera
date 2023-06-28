@@ -17,7 +17,7 @@ const message = reactive<{
 const usernameField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
 
-usePageName(t('pages.login.title'))
+usePageName(() => t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],

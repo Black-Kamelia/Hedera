@@ -5,7 +5,7 @@ import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
 
-usePageName(t('pages.resetPassword.title'))
+usePageName(() => t('pages.resetPassword.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],

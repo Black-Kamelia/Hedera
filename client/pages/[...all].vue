@@ -3,7 +3,7 @@ const { isAuthenticated } = useAuth()
 
 watch(isAuthenticated, (val) => {
   setPageLayout(val ? 'sidebar' : 'centercard')
-  usePageName('404')
+  usePageName(() => '404')
 }, { immediate: true })
 
 // definePageMeta({ layout })

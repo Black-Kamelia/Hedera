@@ -8,7 +8,7 @@ const { locale, t, d } = useI18n()
 const toast = useToast()
 const axios = useAxiosFactory()
 
-usePageName(t('pages.files.title'))
+usePageName(() => t('pages.files.title'))
 definePageMeta({
   layout: 'sidebar',
   middleware: ['auth'],

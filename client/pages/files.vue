@@ -2,9 +2,11 @@
 import type { DataTableRowClickEvent } from 'primevue/datatable'
 import type { MenuItem } from 'primevue/menuitem'
 import { PContextMenu } from '#components'
-import { useFilesFilters } from '~/stores/useFilesFilters'
+import RenameDialog from '~/components/ui/filesTable/RenameDialog.vue'
 
-const { locale, t } = useI18n()
+const { locale, t, d } = useI18n()
+const toast = useToast()
+const axios = useAxiosFactory()
 
 usePageName(t('pages.files.title'))
 definePageMeta({
@@ -12,70 +14,100 @@ definePageMeta({
   middleware: ['auth'],
 })
 
-const products = ref([
-  /*
-  {
-    id: 1,
-    code: 'A121',
-    name: 'chrome_E5Hg6FCBkL.png',
-    views: 123,
-    size: { value: 76.345, shift: 10 },
-    type: 'image/png',
-    owner: 'Slama',
-    visibility: 'PUBLIC',
-    uploaded_at: '01/09/2021 12:00:00',
-    quantity: 10,
-  },
-  {
-    id: 2,
-    code: 'A121',
-    name: 'chrome_LvUWJOAjPk.mp3',
-    views: 123,
-    size: { value: 5.653, shift: 20 },
-    type: 'audio/mpeg',
-    owner: 'Slama',
-    visibility: 'UNLISTED',
-    uploaded_at: '2021-09-01 12:00:00',
-    quantity: 10,
-  },
-  {
-    id: 3,
-    code: 'A121',
-    name: 'chrome_NdoSonM48z.png',
-    views: 123,
-    size: { value: 12.645, shift: 10 },
-    type: 'image/png',
-    owner: 'Slama',
-    visibility: 'PROTECTED',
-    uploaded_at: '2021-09-01 12:00:00',
-    quantity: 10,
-  },
-  {
-    id: 4,
-    code: 'A121',
-    name: 'chrome_uaf5sdrhrj.png',
-    views: 123,
-    size: { value: 45.235, shift: 50 },
-    type: 'image/png',
-    owner: 'Slama',
-    visibility: 'PRIVATE',
-    uploaded_at: '2021-09-01 12:00:00',
-  },
-   */
-])
-const selectedProduct = ref()
-const selecting = computed(() => selectedProduct.value?.length > 0)
-const openFiltersDialog = ref(false)
+const files = ref<Nullable<Array<FileRepresentationDTO>>>([])
+const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
+const selectedRows = ref<Array<FileRepresentationDTO>>([])
 
-const cm = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>()
-const menuModel = ref<MenuItem[]>([
+function deleteLocalFile(id: string) {
+  files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
+}
+
+function renameFile(name: string) {
+  // TODO: handle error
+  if (!selectedRow.value)
+    return
+
+  const id = selectedRow.value!.id
+  axios().patch(`/files/${id}`, { name })
+    .then((response) => {
+      const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
+      if (file)
+        Object.assign(file, response.data)
+    })
+    .then(() => toast.add({
+      group: 'main',
+      severity: 'success',
+      summary: t('pages.files.rename.success'),
+      life: 3000,
+    }))
+    .then(() => selectedRow.value = null)
+    .catch(error => toast.add({
+      group: 'main',
+      severity: 'error',
+      summary: t('pages.files.rename.error'),
+      detail: {
+        text: t(error.response.data.key),
+      },
+      life: 3000,
+    }))
+}
+
+function updateFileVisibility(visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE') {
+  if (!selectedRow.value)
+    return
+
+  const id = selectedRow.value!.id
+  const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
+  if (file)
+    file.visibility = visibility
+}
+
+const { data, isFinished } = useAPI<PageableDTO>('/files/paged')
+watch(isFinished, () => {
+  if (isFinished.value)
+    files.value = data.value?.page.items
+})
+
+const selecting = computed(() => selectedRows.value.length > 0)
+const openFiltersDialog = ref(false)
+const openRenameDialog = ref(false)
+
+const cm = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>(null)
+
+const { copy, copied, isSupported } = useClipboard()
+watch(copied, (val) => {
+  if (val) {
+    toast.add({
+      group: 'main',
+      severity: 'info',
+      summary: t('pages.files.link_copied'),
+      detail: {
+        icon: 'i-tabler-clipboard-check',
+      },
+      life: 3000,
+      closable: false,
+    })
+  }
+})
+
+const menuModel: MenuItem[] = [
   {
     label: 'Ouvrir',
     icon: 'i-tabler-external-link',
+    command() {
+      if (!selectedRow.value)
+        return
+      window.open(`/${selectedRow.value!.code}`)
+    },
   },
   {
     label: 'Renommer',
     icon: 'i-tabler-pencil',
+    command() {
+      if (!selectedRow.value)
+        return
+      openRenameDialog.value = true
+    },
   },
   {
     label: 'Changer la visibilité',
@@ -84,31 +116,59 @@ const menuModel = ref<MenuItem[]>([
       {
         label: 'Public',
         icon: 'i-tabler-world',
+        command() {
+          updateFileVisibility('PUBLIC')
+        },
       },
       {
         label: 'Non répertorié',
         icon: 'i-tabler-link',
+        command() {
+          updateFileVisibility('UNLISTED')
+        },
       },
       {
         label: 'Privé',
         icon: 'i-tabler-eye-off',
+        command() {
+          updateFileVisibility('PRIVATE')
+        },
       },
     ],
   },
   {
     label: 'Copier le lien',
     icon: 'i-tabler-link',
+    disabled: !isSupported.value,
+    command() {
+      if (!selectedRow.value)
+        return
+      copy(`${location.origin}/${selectedRow.value!.code}`)
+    },
   },
   {
     label: 'Télécharger',
     icon: 'i-tabler-download',
+    command() {
+      if (!selectedRow.value)
+        return
+      useAPI(`/files/${selectedRow.value!.code}`, { responseType: 'blob' })
+        .then(response => downloadBlob(response.data.value, selectedRow.value!.name))
+    },
   },
   { separator: true },
   {
     label: 'Supprimer',
     icon: 'i-tabler-trash',
+    command() {
+      if (!selectedRow.value)
+        return
+      useAPI(`/files/${selectedRow.value!.id}`, { method: 'DELETE' })
+        .then(() => deleteLocalFile(selectedRow.value!.id))
+        .then(() => selectedRow.value = null)
+    },
   },
-])
+]
 
 function onRowContextMenu(event: DataTableRowClickEvent) {
   cm.value?.show(event.originalEvent)
@@ -118,6 +178,35 @@ const filters = useFilesFilters()
 </script>
 
 <template>
+  <PToast
+    position="bottom-right"
+    group="main"
+    :pt="{
+      buttonContainer: { class: 'display-none' },
+      container: { class: 'inline-block' },
+      message: { class: 'flex flex-col items-end' },
+    }"
+    @click="toast.removeGroup('main')"
+  >
+    <template #message="{ message: { detail, severity, summary } }">
+      <div class="flex gap-2 pr-1" :class="{ 'items-center': !detail?.text }">
+        <i v-if="detail?.icon" :class="detail!.icon" />
+        <i v-else-if="severity === 'success'" class="i-tabler-circle-check-filled" />
+        <i v-else-if="severity === 'info'" class="i-tabler-info-circle-filled" />
+        <i v-else-if="severity === 'warn'" class="i-tabler-alert-triangle-filled" />
+        <i v-else-if="severity === 'error'" class="i-tabler-alert-circle-filled" />
+        <div class="flex flex-col gap-1">
+          <span class="font-bold">
+            {{ summary }}
+          </span>
+          <span v-if="detail?.text" class="text-sm">
+            {{ detail!.text }}
+          </span>
+        </div>
+      </div>
+    </template>
+  </PToast>
+
   <div class="h-full flex flex-col gap-4">
     <div class="flex flex-row gap-4">
       <span class="flex-grow p-input-icon-left">
@@ -126,15 +215,17 @@ const filters = useFilesFilters()
       </span>
       <PButton
         icon="i-tabler-filter" :label="t('pages.files.advanced_filters')" :outlined="filters.isEmpty.value"
-        :badge="filters.isEmpty.value ? undefined : String(filters.activeFilters.value)" @click="openFiltersDialog = true"
+        :badge="filters.isEmpty.value ? undefined : String(filters.activeFilters.value)"
+        @click="openFiltersDialog = true"
       />
     </div>
     <div class="p-card p-0 overflow-hidden flex-grow">
       <PContextMenu ref="cm" :model="menuModel" />
       <PDataTable
-        v-if="products && products.length > 0"
-        v-model:selection="selectedProduct"
-        :value="products"
+        v-if="files && files.length > 0"
+        v-model:selection="selectedRows"
+        v-model:contextMenuSelection="selectedRow"
+        :value="files"
         data-key="id"
         scrollable
         scroll-height="100%"
@@ -170,7 +261,7 @@ const filters = useFilesFilters()
               <span>{{ slotProps.data.name }}</span>
               <div class="flex flex-row items-center gap-1">
                 <i class="i-tabler-eye text-xs" />
-                <span class="text-xs">{{ slotProps.data.views }}</span>
+                <span class="text-xs">{{ 0 }}</span>
               </div>
             </div>
           </template>
@@ -193,14 +284,15 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            {{ humanSize2(slotProps.data.size, locale, t) }}
+            {{ humanSize(slotProps.data.size, locale, t) }}
+            <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
 
-        <PColumn field="type" sortable :header="t('pages.files.table.format')">
+        <PColumn field="mimeType" sortable :header="t('pages.files.table.format')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -215,7 +307,7 @@ const filters = useFilesFilters()
           </template>
         </PColumn>
 
-        <PColumn field="owner" sortable :header="t('pages.files.table.owner')">
+        <PColumn field="owner.username" sortable :header="t('pages.files.table.owner')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -270,7 +362,7 @@ const filters = useFilesFilters()
           </template>
         </PColumn>
 
-        <PColumn field="uploaded_at" sortable :header="t('pages.files.table.creation_date')">
+        <PColumn field="creationDate" sortable :header="t('pages.files.table.creation_date')">
           <template #sorticon="slotProps">
             <i
               class="pointer-events-none ml-1 text-xs block" :class="{
@@ -279,6 +371,11 @@ const filters = useFilesFilters()
                 'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
               }"
             />
+          </template>
+          <template #body="slotProps">
+            <i18n-d tag="p" :value="new Date()" format="long" />
+            {{ d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' }) }}
+            <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
             <PSkeleton width="8rem" height="1rem" />
@@ -319,7 +416,7 @@ const filters = useFilesFilters()
           <PButton
             v-tooltip.top="{ value: 'Désélectionner', class: 'translate-y--1' }"
             class="shadow-lg"
-            icon="i-tabler-x" rounded @click="selectedProduct.value = []"
+            icon="i-tabler-x" rounded
           />
         </div>
       </Transition>
@@ -334,6 +431,10 @@ const filters = useFilesFilters()
     </div>
 
     <FiltersDialog v-model:visible="openFiltersDialog" />
+    <RenameDialog
+      v-if="selectedRow" v-model:visible="openRenameDialog" :name="selectedRow.name"
+      @completed="renameFile"
+    />
   </div>
 </template>
 

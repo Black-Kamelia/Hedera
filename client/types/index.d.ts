@@ -29,4 +29,37 @@ declare global {
 // END SECTION: Others
 
 
+// BEGIN SECTION: DTO
+declare global {
+  interface PageDTO<E> {
+    items: Array<E>,
+    page: number,
+    pageSize: number,
+    totalPages: number,
+    totalItems: number,
+  }
+
+  interface PageableDTO {
+    page: PageDTO<FileRepresentationDTO>
+  }
+
+  interface FileOwnerDTO {
+    id: string
+    username: string
+  }
+
+  interface FileRepresentationDTO {
+    id: string,
+    code: string,
+    name: string,
+    mimeType: string,
+    size: FileSize,
+    visibility: string,
+    owner: FileOwnerDTO,
+    creationDate: string,
+  }
+}
+// END SECTION: DTO
+
+
 export {}

@@ -26,5 +26,5 @@ export default function useI18n(fallback = 'en') {
     return i18n.t(key)
   }
 
-  return { locale, t: i18n.t, e }
+  return { locale, t: i18n.t, d: i18n.d, e }
 }

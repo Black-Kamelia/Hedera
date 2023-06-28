@@ -12,24 +12,23 @@ const hovered = useElementHover(el)
     ref="el"
     class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
   >
-    <div class="absolute flex flex-center w-full h-full" :class="{ preview: !data.type.startsWith('image/') }">
-      <PImage
-        v-if="data.type.startsWith('image/')"
+    <div class="absolute flex flex-center w-full h-full" :class="{ preview: !data.mimeType.startsWith('image/') }">
+      <img
+        v-if="data.mimeType.startsWith('image/')"
         class="w-6rem h-4rem object-cover"
-        :src="`https://picsum.photos/1600/900?random=${data.id}`"
+        :src="`http://localhost:8080/${data.code}`"
         :alt="data.name"
-        preview
-      />
-      <i v-else-if="data.type === 'audio/mpeg'" class="i-tabler-file-music" />
+      >
+      <i v-else-if="data.mimeType === 'audio/mpeg'" class="i-tabler-file-music" />
       <i v-else class="i-tabler-file" />
     </div>
     <Transition>
       <a
-        v-show="false"
+        v-show="hovered"
         href="#"
-        class="absolute flex flex-center bg-black/12.5 backdrop-blur-sm border-rounded-2 w-full h-full text-white"
+        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-sm border-rounded-2 w-full h-full text-white cursor-pointer"
       >
-        <i class="text-base i-tabler-external-link" />
+        <i class="text-base i-tabler-eye" />
       </a>
     </Transition>
   </div>

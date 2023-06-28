@@ -57,6 +57,8 @@ class Response<out S, out E> private constructor(
         fun unauthorized(error: String) = unauthorized(ErrorDTO.of(error))
         fun forbidden(error: ErrorDTO) = error(HttpStatusCode.Forbidden, error)
         fun forbidden(error: String) = forbidden(ErrorDTO.of(error))
+        fun notFound(error: ErrorDTO) = error(HttpStatusCode.NotFound, error)
+        fun notFound(error: String) = notFound(ErrorDTO.of(error))
         fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }

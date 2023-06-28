@@ -29,6 +29,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) = w
     is IllegalActionException,
     is InsufficientPermissionsException -> forbiddenMessage(call, cause)
 
+    is FileNotFoundException -> notFound(call, cause)
+
     else -> unhandledError(call, cause)
 }
 
@@ -45,6 +47,11 @@ private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable)
 private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.forbidden(cause.error))
     else -> call.respondNoSuccess(Response.forbidden(cause.message ?: cause.javaClass.name))
+}
+
+private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.notFound(cause.error))
+    else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {

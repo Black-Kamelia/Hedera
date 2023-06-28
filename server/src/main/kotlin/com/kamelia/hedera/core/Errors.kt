@@ -18,6 +18,14 @@ object Errors {
 
     }
 
+    object Files {
+
+        private const val PREFIX = "${Errors.PREFIX}.files"
+
+        const val NOT_FOUND = "$PREFIX.not_found"
+
+    }
+
     object Filters {
 
         private const val PREFIX = "${Errors.PREFIX}.filters"

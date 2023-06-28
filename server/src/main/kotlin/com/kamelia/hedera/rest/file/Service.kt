@@ -94,13 +94,13 @@ object FileService {
         dto: FileUpdateDTO,
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: return@transaction Response.notFound()
+        val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
         if (file.ownerId != user.uuid) {
             if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
                 throw IllegalActionException()
             }
-            return@transaction Response.notFound()
+            throw FileNotFoundException()
         }
 
         Response.ok(Files.update(file, dto, user).toRepresentationDTO())
@@ -111,13 +111,13 @@ object FileService {
         userId: UUID,
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: return@transaction Response.notFound()
+        val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
         if (file.ownerId != user.uuid && user.role eq UserRole.REGULAR) {
             if (file.visibility != FileVisibility.PRIVATE) {
                 throw InsufficientPermissionsException()
             }
-            return@transaction Response.notFound()
+            throw FileNotFoundException()
         }
 
         FileUtils.delete(file.ownerId, file.code)

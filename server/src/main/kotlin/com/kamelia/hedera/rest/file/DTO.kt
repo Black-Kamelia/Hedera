@@ -6,9 +6,9 @@ import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.util.UUIDSerializer
 import com.kamelia.hedera.util.uuid
-import java.util.UUID
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import java.util.*
 
 fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
     uuid,
@@ -17,7 +17,8 @@ fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
     mimeType,
     size,
     visibility.toString(),
-    ownerId
+    FileOwnerDTO(owner.uuid, owner.username),
+    createdAt.toString(),
 )
 
 /**
@@ -44,8 +45,15 @@ data class FileRepresentationDTO(
     val mimeType: String,
     val size: Long,
     val visibility: String,
-    val ownerId: UUID,
+    val owner: FileOwnerDTO,
+    val creationDate: String,
 ) : DTO
+
+@Serializable
+data class FileOwnerDTO(
+    val id: UUID,
+    val username: String,
+)
 
 @Serializable
 data class FilePageDTO(

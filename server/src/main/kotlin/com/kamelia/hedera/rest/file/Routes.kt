@@ -6,7 +6,6 @@ import com.kamelia.hedera.util.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.filesRoutes() = route("/files") {
@@ -33,7 +32,7 @@ fun Route.rawFileRoute() = get("/{code}") {
     FileService.getFile(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.ownerId, code)
+            val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
@@ -74,7 +73,7 @@ private fun Route.getFile() = get("/{code}") {
     FileService.getFile(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.ownerId, code)
+            val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFile(file, data.name, data.mimeType)
             } else {

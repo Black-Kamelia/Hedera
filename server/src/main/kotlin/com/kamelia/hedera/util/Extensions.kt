@@ -7,22 +7,18 @@ import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.UserRole
-import io.ktor.http.ContentDisposition
-import io.ktor.http.HttpHeaders
+import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
-import io.ktor.server.request.contentType
-import io.ktor.server.request.receive
-import io.ktor.server.request.receiveMultipart
-import io.ktor.server.response.header
-import io.ktor.server.response.respondFile
-import io.ktor.util.pipeline.PipelineContext
-import java.io.File
-import java.util.UUID
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.http.content.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.util.pipeline.*
 import org.jetbrains.exposed.dao.UUIDEntity
+import java.io.File
+import java.util.*
 
 suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) {
     response.header(
@@ -33,6 +29,26 @@ suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) 
     )
     response.header("Mime-Type", type)
     respondFile(file)
+}
+
+suspend fun ApplicationCall.respondFileInline(file: File, type: ContentType) {
+    response.header(HttpHeaders.ContentDisposition, ContentDisposition.Inline.toString())
+    val message = LocalFileContent(file, type)
+    respond(message)
+}
+
+suspend fun ApplicationCall.proxyRedirect(path: String) {
+    val cp = object : RequestConnectionPoint by this.request.local {
+        override val uri: String = path
+    }
+    val req = object : ApplicationRequest by this.request {
+        override val local: RequestConnectionPoint = cp
+    }
+    val call = object : ApplicationCall by this {
+        override val request: ApplicationRequest = req
+    }
+
+    this.application.execute(call)
 }
 
 fun ApplicationCall.getParamOrNull(name: String): String? = parameters[name]

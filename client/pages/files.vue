@@ -316,14 +316,17 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            <div class="flex flex-col gap-1">
-              <Transition name="fade" mode="out-in">
-                <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
-              </Transition>
-              <div class="flex flex-row items-center gap-1">
-                <i class="i-tabler-eye text-xs" />
-                <span class="text-xs">{{ 0 }}</span>
+            <div class="flex flex-row gap-1 items-center justify-between">
+              <div class="flex flex-col gap-1">
+                <Transition name="fade" mode="out-in">
+                  <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
+                </Transition>
+                <div class="flex flex-row items-center gap-1">
+                  <i class="i-tabler-eye text-xs" />
+                  <span class="text-xs">{{ 0 }}</span>
+                </div>
               </div>
+              <PButton icon="i-tabler-star" severity="warning" rounded text />
             </div>
           </template>
           <template #loading>
@@ -345,11 +348,7 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            <Transition name="fade" mode="out-in">
-              <span :key="humanSize(slotProps.data.size, locale, t)">
-                {{ humanSize(slotProps.data.size, locale, t) }}
-              </span>
-            </Transition>
+            {{ humanSize(slotProps.data.size, locale, t) }}
             <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
@@ -357,6 +356,7 @@ const filters = useFilesFilters()
           </template>
         </PColumn>
 
+        <!--
         <PColumn field="mimeType" sortable :header="t('pages.files.table.format')">
           <template #sorticon="slotProps">
             <i
@@ -371,12 +371,12 @@ const filters = useFilesFilters()
             <Transition name="fade" mode="out-in">
               <span :key="slotProps.data.mimeType">{{ slotProps.data.mimeType }}</span>
             </Transition>
-            <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />
           </template>
         </PColumn>
+        -->
 
         <PColumn field="owner.username" sortable :header="t('pages.files.table.owner')">
           <template #sorticon="slotProps">

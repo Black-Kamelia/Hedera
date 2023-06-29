@@ -499,17 +499,7 @@ const filters = useFilesFilters()
       :name="selectedRow.name"
       @completed="renameFile"
     />
-    <PConfirmDialog
-      :pt="{
-        rejectButton: {
-          root: {
-            class: {
-              'bg-red-500': true,
-            },
-          },
-        },
-      }"
-    />
+    <PConfirmDialog :pt="{ rejectButton: { icon: { class: 'display-none' } } }" />
   </div>
 </template>
 

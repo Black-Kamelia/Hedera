@@ -58,6 +58,14 @@ pages:
       visibility: Visibilité
       creation_date: Date de création
       views: Vues
+    contextMenu:
+      open: Ouvrir
+      rename: Renommer
+      changeVisibility: Modifier la visibilité
+      copyLink: Copier le lien
+      download: Télécharger
+      delete: Supprimer
+      unselect: Désélectionner
     advanced_filters: Filtres avancés
     filters:
       minimum_size: Taille minimale
@@ -79,11 +87,11 @@ pages:
       cancel: Annuler
       submit: Renommer
     changeVisibility:
-      title: Changer la visibilité d'un fichier
-      success: La visibilité a été changée
-      error: La visibilité n'a pas pu être changée
+      title: Modifier la visibilité d'un fichier
+      success: La visibilité a été modifiée
+      error: La visibilité n'a pas pu être modifiée
       cancel: Annuler
-      submit: Changer
+      submit: Modifier
     delete:
       title: Supprimer un fichier
       success: Le fichier a été supprimé

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { DataTableRowClickEvent } from 'primevue/datatable'
-import type { MenuItem } from 'primevue/menuitem'
 
 import { useConfirm } from 'primevue/useconfirm'
 import { PContextMenu } from '#components'
@@ -142,9 +141,9 @@ watch(copied, (val) => {
   }
 })
 
-const menuModel: MenuItem[] = [
+const menuModel = computed(() => [
   {
-    label: 'Ouvrir',
+    label: t('pages.files.contextMenu.open'),
     icon: 'i-tabler-external-link',
     command() {
       if (!selectedRow.value)
@@ -153,7 +152,7 @@ const menuModel: MenuItem[] = [
     },
   },
   {
-    label: 'Renommer',
+    label: t('pages.files.contextMenu.rename'),
     icon: 'i-tabler-pencil',
     command() {
       if (!selectedRow.value)
@@ -162,25 +161,33 @@ const menuModel: MenuItem[] = [
     },
   },
   {
-    label: 'Changer la visibilité',
+    label: t('pages.files.contextMenu.changeVisibility'),
     icon: 'i-tabler-eye',
     items: [
       {
-        label: 'Public',
+        label: t('pages.files.visibility.public'),
         icon: 'i-tabler-world',
         command() {
           updateFileVisibility('PUBLIC')
         },
       },
       {
-        label: 'Non répertorié',
+        label: t('pages.files.visibility.unlisted'),
         icon: 'i-tabler-link',
         command() {
           updateFileVisibility('UNLISTED')
         },
       },
       {
-        label: 'Privé',
+        label: t('pages.files.visibility.protected'),
+        icon: 'i-tabler-lock',
+        disabled: true,
+        command() {
+          updateFileVisibility('PROTECTED')
+        },
+      },
+      {
+        label: t('pages.files.visibility.private'),
         icon: 'i-tabler-eye-off',
         command() {
           updateFileVisibility('PRIVATE')
@@ -189,7 +196,7 @@ const menuModel: MenuItem[] = [
     ],
   },
   {
-    label: 'Copier le lien',
+    label: t('pages.files.contextMenu.copyLink'),
     icon: 'i-tabler-link',
     disabled: !isSupported.value,
     command() {
@@ -199,7 +206,7 @@ const menuModel: MenuItem[] = [
     },
   },
   {
-    label: 'Télécharger',
+    label: t('pages.files.contextMenu.download'),
     icon: 'i-tabler-download',
     command() {
       if (!selectedRow.value)
@@ -210,11 +217,11 @@ const menuModel: MenuItem[] = [
   },
   { separator: true },
   {
-    label: 'Supprimer',
+    label: t('pages.files.contextMenu.delete'),
     icon: 'i-tabler-trash',
     command() { confirmDelete() },
   },
-]
+])
 
 function onRowContextMenu(event: DataTableRowClickEvent) {
   cm.value?.show(event.originalEvent)
@@ -459,7 +466,7 @@ const filters = useFilesFilters()
       <Transition>
         <div v-show="selecting">
           <PButton
-            v-tooltip.top="{ value: 'Télécharger', class: 'translate-y--1' }" class="shadow-lg"
+            v-tooltip.top="{ value: t('pages.files.contextMenu.download'), class: 'translate-y--1' }" class="shadow-lg"
             icon="i-tabler-download" rounded
           />
         </div>
@@ -467,7 +474,7 @@ const filters = useFilesFilters()
       <Transition>
         <div v-show="selecting">
           <PButton
-            v-tooltip.top="{ value: 'Modifier la visibilité', class: 'translate-y--1' }"
+            v-tooltip.top="{ value: t('pages.files.contextMenu.changeVisibility'), class: 'translate-y--1' }"
             class="shadow-lg" icon="i-tabler-eye" rounded
           />
         </div>
@@ -475,7 +482,7 @@ const filters = useFilesFilters()
       <Transition>
         <div v-show="selecting">
           <PButton
-            v-tooltip.top="{ value: 'Désélectionner', class: 'translate-y--1' }"
+            v-tooltip.top="{ value: t('pages.files.contextMenu.unselect'), class: 'translate-y--1' }"
             class="shadow-lg"
             icon="i-tabler-x" rounded
           />
@@ -484,7 +491,7 @@ const filters = useFilesFilters()
       <Transition>
         <div v-show="selecting">
           <PButton
-            v-tooltip.top="{ value: 'Supprimer', class: 'translate-y--1' }" class="shadow-lg"
+            v-tooltip.top="{ value: t('pages.files.contextMenu.delete'), class: 'translate-y--1' }" class="shadow-lg"
             icon="i-tabler-trash" severity="danger" rounded
           />
         </div>

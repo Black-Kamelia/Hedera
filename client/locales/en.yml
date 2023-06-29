@@ -58,6 +58,14 @@ pages:
       visibility: Visibility
       creation_date: Creation date
       views: Views
+    contextMenu:
+      open: Open
+      rename: Rename
+      changeVisibility: Change visibility
+      copyLink: Copy link
+      download: Download
+      delete: Delete
+      unselect: Unselect
     advanced_filters: Advanced filters
     filters:
       minimum_size: Minimum size

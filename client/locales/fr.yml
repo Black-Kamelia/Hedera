@@ -129,6 +129,22 @@ forms:
     fields:
       email: Adresse e-mail
 
+actions:
+  files:
+    delete:
+      success:
+        title: Fichier supprimé
+        message: Le fichier “{name}” a été supprimé
+    update:
+      visibility:
+        success:
+          title: Visibilité modifiée
+          message: Le fichier “{name}” est désormais {newVisibility}
+      name:
+        success:
+          title: Fichier renommé
+          message: Le fichier “{oldName}” a été renommé en “{newName}”
+
 errors:
   unknown: Une erreur inattendue est survenue
   auth:

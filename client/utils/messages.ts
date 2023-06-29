@@ -1,14 +1,20 @@
 import type { AxiosError } from 'axios'
 
-export interface MessageDTO {
+export interface MessageKeyDTO {
   key: string
-  template?: Map<string, string>
+  parameters?: Map<string, string>
 }
 
-export function getDTOFromError(error?: AxiosError): MessageDTO {
+export interface MessageDTO {
+  title?: MessageKeyDTO
+  message: MessageKeyDTO
+  payload?: any
+}
+
+export function getDTOFromError(error?: AxiosError): MessageKeyDTO {
   const data = error?.response?.data
   if (data)
-    return data as MessageDTO
+    return data as MessageKeyDTO
 
   return { key: 'errors.unknown' }
 }

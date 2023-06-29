@@ -15,6 +15,8 @@ fun Route.filesRoutes() = route("/files") {
         uploadFile()
         getPagedFiles()
         editFile()
+        editFileVisibility()
+        editFileName()
         deleteFile()
     }
 
@@ -102,6 +104,20 @@ private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(FileService.updateFile(fileId, userId, body))
+}
+
+private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
+    val fileId = call.getUUID("uuid")
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+
+    call.respond(FileService.updateFileVisibility(fileId, userId, body))
+}
+
+private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
+    val fileId = call.getUUID("uuid")
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+
+    call.respond(FileService.updateFileName(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {

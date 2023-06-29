@@ -12,7 +12,7 @@ private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, MessageDTO> = Connection.transaction {
+    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         checkEmail(dto.email)?.let { return@transaction it }
         checkUsername(dto.username)?.let { return@transaction it }
         checkPassword(dto.password)?.let { return@transaction it }
@@ -26,12 +26,12 @@ object UserService {
             .toRepresentationDTO())
     }
 
-    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageDTO> = Connection.transaction {
+    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         val user = Users.findById(id) ?: return@transaction Response.notFound()
         Response.ok(user.toRepresentationDTO())
     }
 
-    suspend fun getUsers(): Response<UserPageDTO, MessageDTO> = Connection.transaction {
+    suspend fun getUsers(): Response<UserPageDTO, MessageKeyDTO> = Connection.transaction {
         val users = Users.getAll()
         val total = Users.countAll()
         Response.ok(UserPageDTO(
@@ -66,7 +66,7 @@ object UserService {
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): Response<UserRepresentationDTO, MessageDTO> = Connection.transaction {
+    ): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         val toEdit = Users.findById(id) ?: return@transaction Response.notFound()
 
         checkEmail(dto.email, toEdit)?.let { return@transaction it }
@@ -93,7 +93,7 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-    ): Response<UserRepresentationDTO, MessageDTO> = Connection.transaction {
+    ): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         checkPassword(dto.newPassword)?.let { return@transaction it }
 
         val toEdit = Users.findById(id) ?: return@transaction Response.notFound()
@@ -133,7 +133,7 @@ private fun checkEmail(email: String?, toEdit: User? = null) = when {
     }
 }
 
-private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, MessageDTO>? = when {
+private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {
     username == null -> null
     !USERNAME_REGEX.matches(username) -> Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
     else -> Users.findByUsername(username)?.let {

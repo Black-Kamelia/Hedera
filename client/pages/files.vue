@@ -28,31 +28,33 @@ function confirmDelete() {
     acceptLabel: t('pages.files.delete.submit'),
     rejectLabel: t('pages.files.delete.cancel'),
     acceptClass: 'p-button-danger',
-    accept: deleteLocalFile,
+    accept: deleteFile,
   })
 }
 
-function deleteLocalFile() {
+function deleteFile() {
   if (!selectedRow.value)
     return
 
   const id = selectedRow.value!.id
   axios().delete(`/files/${id}`)
-    .then(() => {
+    .then((response) => {
       files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
+      return response
     })
-    .then(() => toast.add({
+    .then(response => toast.add({
       severity: 'success',
-      summary: t('pages.files.delete.success'),
-      life: 3000,
+      summary: m(response.data.title),
+      detail: { text: m(response.data.message) },
+      life: 5000,
     }))
-    .then(() => selectedRow.value = null)
     .catch(error => toast.add({
       severity: 'error',
       summary: t('pages.files.delete.error'),
       detail: { text: m(error) },
-      life: 3000,
+      life: 5000,
     }))
+    .finally(() => selectedRow.value = null)
   // files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
 }
 
@@ -61,25 +63,30 @@ function renameFile(name: string) {
   if (!selectedRow.value)
     return
 
+  if (name === selectedRow.value!.name)
+    return
+
   const id = selectedRow.value!.id
-  axios().patch(`/files/${id}`, { name })
+  axios().put(`/files/${id}/name`, { name })
     .then((response) => {
       const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
       if (file)
-        Object.assign(file, response.data)
+        Object.assign(file, response.data.payload)
+      return response
     })
-    .then(() => toast.add({
+    .then(response => toast.add({
       severity: 'success',
-      summary: t('pages.files.rename.success'),
-      life: 3000,
+      summary: m(response.data.title),
+      detail: { text: m(response.data.message) },
+      life: 5000,
     }))
-    .then(() => selectedRow.value = null)
     .catch(error => toast.add({
       severity: 'error',
       summary: t('pages.files.rename.error'),
       detail: { text: m(error) },
-      life: 3000,
+      life: 5000,
     }))
+    .finally(() => selectedRow.value = null)
 }
 
 function updateFileVisibility(visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE') {
@@ -88,24 +95,26 @@ function updateFileVisibility(visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 
     return
 
   const id = selectedRow.value!.id
-  axios().patch(`/files/${id}`, { visibility })
+  axios().put(`/files/${id}/visibility`, { visibility })
     .then((response) => {
       const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
       if (file)
-        Object.assign(file, response.data)
+        Object.assign(file, response.data.payload)
+      return response
     })
-    .then(() => toast.add({
+    .then(response => toast.add({
       severity: 'success',
-      summary: t('pages.files.changeVisibility.success'),
-      life: 3000,
+      summary: m(response.data.title),
+      detail: { text: m(response.data.message) },
+      life: 5000,
     }))
-    .then(() => selectedRow.value = null)
     .catch(error => toast.add({
       severity: 'error',
       summary: t('pages.files.changeVisibility.error'),
       detail: { text: m(error) },
-      life: 3000,
+      life: 5000,
     }))
+    .finally(() => selectedRow.value = null)
 }
 
 const { data, isFinished } = useAPI<PageableDTO>('/files/paged')
@@ -129,7 +138,7 @@ watch(copied, (val) => {
       detail: {
         icon: 'i-tabler-clipboard-check',
       },
-      life: 3000,
+      life: 5000,
       closable: false,
     })
   }
@@ -213,7 +222,9 @@ const menuModel = computed(() => [
   {
     label: t('pages.files.contextMenu.delete'),
     icon: 'i-tabler-trash',
-    command() { confirmDelete() },
+    command() {
+      confirmDelete()
+    },
   },
 ])
 
@@ -232,7 +243,7 @@ const filters = useFilesFilters()
       container: { class: 'inline-block' },
       message: { class: 'flex flex-col items-end' },
     }"
-    @click="toast.removeGroup('main')"
+    @click="toast.removeAllGroups()"
   >
     <template #message="{ message: { detail, severity, summary } }">
       <div class="flex gap-2 pr-1" :class="{ 'items-center': !detail?.text }">
@@ -283,7 +294,7 @@ const filters = useFilesFilters()
       >
         <PColumn selection-mode="multiple" />
 
-        <PColumn field="code" :header="t('pages.files.table.preview')" :sortable="false">
+        <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
           <template #body="slotProps">
             <Transition name="fade" mode="out-in">
               <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />

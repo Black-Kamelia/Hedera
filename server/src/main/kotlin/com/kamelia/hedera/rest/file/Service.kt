@@ -106,10 +106,71 @@ object FileService {
         Response.ok(Files.update(file, dto, user).toRepresentationDTO())
     }
 
+    suspend fun updateFileVisibility(
+        fileId: UUID,
+        userId: UUID,
+        dto: FileUpdateDTO,
+    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+        val file = Files.findById(fileId) ?: throw FileNotFoundException()
+
+        if (file.ownerId != user.uuid) {
+            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
+                throw IllegalActionException()
+            }
+            throw FileNotFoundException()
+        }
+
+        val oldVisibility = file.visibility
+        val payload = Files.update(file, FileUpdateDTO(visibility = dto.visibility), user).toRepresentationDTO()
+        Response.ok(
+            MessageDTO(
+                title = MessageKeyDTO.of(Actions.Files.Update.Visibility.Success.TITLE),
+                message = MessageKeyDTO.of(
+                    Actions.Files.Update.Visibility.Success.MESSAGE,
+                    "name" to file.name,
+                    "oldVisibility" to oldVisibility.toMessageKey(),
+                    "newVisibility" to payload.visibility.toMessageKey()
+                ),
+                payload = payload
+            )
+        )
+    }
+
+    suspend fun updateFileName(
+        fileId: UUID,
+        userId: UUID,
+        dto: FileUpdateDTO,
+    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+        val file = Files.findById(fileId) ?: throw FileNotFoundException()
+
+        if (file.ownerId != user.uuid) {
+            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
+                throw IllegalActionException()
+            }
+            throw FileNotFoundException()
+        }
+
+        val oldName = file.name
+        val payload = Files.update(file, FileUpdateDTO(name = dto.name), user).toRepresentationDTO()
+        Response.ok(
+            MessageDTO(
+                title = MessageKeyDTO.of(Actions.Files.Update.Name.Success.TITLE),
+                message = MessageKeyDTO.of(
+                    Actions.Files.Update.Name.Success.MESSAGE,
+                    "oldName" to oldName,
+                    "newName" to payload.name,
+                ),
+                payload = payload
+            )
+        )
+    }
+
     suspend fun deleteFile(
         fileId: UUID,
         userId: UUID,
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
@@ -121,7 +182,13 @@ object FileService {
         }
 
         FileUtils.delete(file.ownerId, file.code)
-        Response.ok(Files.delete(fileId)?.toRepresentationDTO())
+        Response.ok(
+            MessageDTO(
+                title = MessageKeyDTO.of(Actions.Files.Delete.Success.TITLE),
+                message = MessageKeyDTO.of(Actions.Files.Delete.Success.MESSAGE, "name" to file.name),
+                payload = Files.delete(fileId)?.toRepresentationDTO()
+            )
+        )
     }
 
     /*

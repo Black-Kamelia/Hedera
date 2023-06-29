@@ -78,6 +78,19 @@ pages:
       error: Le fichier n'a pas pu être renommé
       cancel: Annuler
       submit: Renommer
+    changeVisibility:
+      title: Changer la visibilité d'un fichier
+      success: La visibilité a été changée
+      error: La visibilité n'a pas pu être changée
+      cancel: Annuler
+      submit: Changer
+    delete:
+      title: Supprimer un fichier
+      success: Le fichier a été supprimé
+      error: Le fichier n'a pas pu être supprimé
+      warning: Êtes-vous sûr(e) de vouloir supprimer ce fichier ? Cette action est irréversible.
+      cancel: Annuler
+      submit: Supprimer
     search_by_name: Rechercher par nom...
   favorites:
     title: Favoris

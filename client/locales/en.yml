@@ -78,6 +78,12 @@ pages:
       error: The file could not be renamed
       cancel: Cancel
       submit: Rename
+    changeVisibility:
+      title: Change the visibility of a file
+      success: The visibility has been changed
+      error: The visibility could not be changed
+      cancel: Cancel
+      submit: Change
     search_by_name: Search by name...
   favorites:
     title: Favorites

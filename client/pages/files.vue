@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import type { DataTableRowClickEvent } from 'primevue/datatable'
 import type { MenuItem } from 'primevue/menuitem'
+
+import { useConfirm } from 'primevue/useconfirm'
 import { PContextMenu } from '#components'
 import RenameDialog from '~/components/ui/filesTable/RenameDialog.vue'
 
 const { locale, t, d } = useI18n()
 const toast = useToast()
+const confirm = useConfirm()
 const axios = useAxiosFactory()
 
 usePageName(() => t('pages.files.title'))
@@ -18,8 +21,42 @@ const files = ref<Nullable<Array<FileRepresentationDTO>>>([])
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 
-function deleteLocalFile(id: string) {
-  files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
+function confirmDelete() {
+  return confirm.require({
+    message: t('pages.files.delete.warning'),
+    header: t('pages.files.delete.title'),
+    acceptIcon: 'i-tabler-trash',
+    acceptLabel: t('pages.files.delete.submit'),
+    rejectLabel: t('pages.files.delete.cancel'),
+    acceptClass: 'p-button-danger',
+    accept: deleteLocalFile,
+  })
+}
+
+function deleteLocalFile() {
+  if (!selectedRow.value)
+    return
+
+  const id = selectedRow.value!.id
+  axios().delete(`/files/${id}`)
+    .then(() => {
+      files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
+    })
+    .then(() => toast.add({
+      severity: 'success',
+      summary: t('pages.files.delete.success'),
+      life: 3000,
+    }))
+    .then(() => selectedRow.value = null)
+    .catch(error => toast.add({
+      severity: 'error',
+      summary: t('pages.files.delete.error'),
+      detail: {
+        text: t(error.response.data.key),
+      },
+      life: 3000,
+    }))
+  // files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
 }
 
 function renameFile(name: string) {
@@ -35,14 +72,12 @@ function renameFile(name: string) {
         Object.assign(file, response.data)
     })
     .then(() => toast.add({
-      group: 'main',
       severity: 'success',
       summary: t('pages.files.rename.success'),
       life: 3000,
     }))
     .then(() => selectedRow.value = null)
     .catch(error => toast.add({
-      group: 'main',
       severity: 'error',
       summary: t('pages.files.rename.error'),
       detail: {
@@ -53,13 +88,31 @@ function renameFile(name: string) {
 }
 
 function updateFileVisibility(visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE') {
+  // TODO: handle error
   if (!selectedRow.value)
     return
 
   const id = selectedRow.value!.id
-  const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
-  if (file)
-    file.visibility = visibility
+  axios().patch(`/files/${id}`, { visibility })
+    .then((response) => {
+      const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
+      if (file)
+        Object.assign(file, response.data)
+    })
+    .then(() => toast.add({
+      severity: 'success',
+      summary: t('pages.files.changeVisibility.success'),
+      life: 3000,
+    }))
+    .then(() => selectedRow.value = null)
+    .catch(error => toast.add({
+      severity: 'error',
+      summary: t('pages.files.changeVisibility.error'),
+      detail: {
+        text: t(error.response.data.key),
+      },
+      life: 3000,
+    }))
 }
 
 const { data, isFinished } = useAPI<PageableDTO>('/files/paged')
@@ -78,7 +131,6 @@ const { copy, copied, isSupported } = useClipboard()
 watch(copied, (val) => {
   if (val) {
     toast.add({
-      group: 'main',
       severity: 'info',
       summary: t('pages.files.link_copied'),
       detail: {
@@ -160,13 +212,7 @@ const menuModel: MenuItem[] = [
   {
     label: 'Supprimer',
     icon: 'i-tabler-trash',
-    command() {
-      if (!selectedRow.value)
-        return
-      useAPI(`/files/${selectedRow.value!.id}`, { method: 'DELETE' })
-        .then(() => deleteLocalFile(selectedRow.value!.id))
-        .then(() => selectedRow.value = null)
-    },
+    command() { confirmDelete() },
   },
 ]
 
@@ -180,7 +226,6 @@ const filters = useFilesFilters()
 <template>
   <PToast
     position="bottom-right"
-    group="main"
     :pt="{
       buttonContainer: { class: 'display-none' },
       container: { class: 'inline-block' },
@@ -239,7 +284,9 @@ const filters = useFilesFilters()
 
         <PColumn field="code" :header="t('pages.files.table.preview')" :sortable="false">
           <template #body="slotProps">
-            <MediaPreview :data="slotProps.data" />
+            <Transition name="fade" mode="out-in">
+              <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
+            </Transition>
           </template>
           <template #loading>
             <PSkeleton width="6rem" height="4rem" />
@@ -258,7 +305,9 @@ const filters = useFilesFilters()
           </template>
           <template #body="slotProps">
             <div class="flex flex-col gap-1">
-              <span>{{ slotProps.data.name }}</span>
+              <Transition name="fade" mode="out-in">
+                <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
+              </Transition>
               <div class="flex flex-row items-center gap-1">
                 <i class="i-tabler-eye text-xs" />
                 <span class="text-xs">{{ 0 }}</span>
@@ -284,7 +333,11 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            {{ humanSize(slotProps.data.size, locale, t) }}
+            <Transition name="fade" mode="out-in">
+              <span :key="humanSize(slotProps.data.size, locale, t)">
+                {{ humanSize(slotProps.data.size, locale, t) }}
+              </span>
+            </Transition>
             <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
@@ -301,6 +354,12 @@ const filters = useFilesFilters()
                 'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
               }"
             />
+          </template>
+          <template #body="slotProps">
+            <Transition name="fade" mode="out-in">
+              <span :key="slotProps.data.mimeType">{{ slotProps.data.mimeType }}</span>
+            </Transition>
+            <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />
@@ -333,26 +392,28 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            <div v-if="slotProps.data.visibility === 'PUBLIC'" class="flex flex-row items-center gap-2">
-              <i class="i-tabler-world" />
-              <span>{{ t('pages.files.visibility.public') }}</span>
-            </div>
-            <div v-else-if="slotProps.data.visibility === 'UNLISTED'" class="flex flex-row items-center gap-2">
-              <i class="i-tabler-link" />
-              <span>{{ t('pages.files.visibility.unlisted') }}</span>
-            </div>
-            <div v-else-if="slotProps.data.visibility === 'PROTECTED'" class="flex flex-row items-center gap-2">
-              <i class="i-tabler-lock" />
-              <span>{{ t('pages.files.visibility.protected') }}</span>
-            </div>
-            <div v-else-if="slotProps.data.visibility === 'PRIVATE'" class="flex flex-row items-center gap-2">
-              <i class="i-tabler-eye-off" />
-              <span>{{ t('pages.files.visibility.private') }}</span>
-            </div>
-            <div v-else class="flex flex-row items-center gap-2">
-              <i class="i-tabler-help-triangle-filled" />
-              <span>{{ t('pages.files.visibility.unknown') }}</span>
-            </div>
+            <Transition name="fade" mode="out-in">
+              <div v-if="slotProps.data.visibility === 'PUBLIC'" class="flex flex-row items-center gap-2">
+                <i class="i-tabler-world" />
+                <span>{{ t('pages.files.visibility.public') }}</span>
+              </div>
+              <div v-else-if="slotProps.data.visibility === 'UNLISTED'" class="flex flex-row items-center gap-2">
+                <i class="i-tabler-link" />
+                <span>{{ t('pages.files.visibility.unlisted') }}</span>
+              </div>
+              <div v-else-if="slotProps.data.visibility === 'PROTECTED'" class="flex flex-row items-center gap-2">
+                <i class="i-tabler-lock" />
+                <span>{{ t('pages.files.visibility.protected') }}</span>
+              </div>
+              <div v-else-if="slotProps.data.visibility === 'PRIVATE'" class="flex flex-row items-center gap-2">
+                <i class="i-tabler-eye-off" />
+                <span>{{ t('pages.files.visibility.private') }}</span>
+              </div>
+              <div v-else class="flex flex-row items-center gap-2">
+                <i class="i-tabler-help-triangle-filled" />
+                <span>{{ t('pages.files.visibility.unknown') }}</span>
+              </div>
+            </Transition>
           </template>
           <template #loading>
             <div class="flex flex-row items-center gap-2">
@@ -432,8 +493,21 @@ const filters = useFilesFilters()
 
     <FiltersDialog v-model:visible="openFiltersDialog" />
     <RenameDialog
-      v-if="selectedRow" v-model:visible="openRenameDialog" :name="selectedRow.name"
+      v-if="selectedRow"
+      v-model:visible="openRenameDialog"
+      :name="selectedRow.name"
       @completed="renameFile"
+    />
+    <PConfirmDialog
+      :pt="{
+        rejectButton: {
+          root: {
+            class: {
+              'bg-red-500': true,
+            },
+          },
+        },
+      }"
     />
   </div>
 </template>
@@ -456,6 +530,16 @@ const filters = useFilesFilters()
 .v-enter-from,
 .v-leave-to {
   transform: translateY(150%);
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

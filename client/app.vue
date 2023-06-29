@@ -29,7 +29,6 @@ useEventBus(LoggedOutEvent).on(() => {
 
 <template>
   <div font="text" class="p-input-filled">
-    <PToast close-icon="i-tabler-x" error-icon="i-tabler-alert-circle-filled" />
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />

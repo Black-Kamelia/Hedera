@@ -3,7 +3,7 @@ import type { DataTableRowClickEvent } from 'primevue/datatable'
 
 import { useConfirm } from 'primevue/useconfirm'
 import { PContextMenu } from '#components'
-import RenameDialog from '~/components/ui/filesTable/RenameDialog.vue'
+import ActionButtons from '~/components/ui/filesTable/ActionButtons.vue'
 
 const { locale, t, d, m } = useI18n()
 const toast = useToast()
@@ -236,35 +236,8 @@ const filters = useFilesFilters()
 </script>
 
 <template>
-  <PToast
-    position="bottom-right"
-    :pt="{
-      buttonContainer: { class: 'display-none' },
-      container: { class: 'inline-block' },
-      message: { class: 'flex flex-col items-end' },
-    }"
-    @click="toast.removeAllGroups()"
-  >
-    <template #message="{ message: { detail, severity, summary } }">
-      <div class="flex gap-2 pr-1" :class="{ 'items-center': !detail?.text }">
-        <i v-if="detail?.icon" :class="detail!.icon" />
-        <i v-else-if="severity === 'success'" class="i-tabler-circle-check-filled" />
-        <i v-else-if="severity === 'info'" class="i-tabler-info-circle-filled" />
-        <i v-else-if="severity === 'warn'" class="i-tabler-alert-triangle-filled" />
-        <i v-else-if="severity === 'error'" class="i-tabler-alert-circle-filled" />
-        <div class="flex flex-col gap-1">
-          <span class="font-bold">
-            {{ summary }}
-          </span>
-          <span v-if="detail?.text" class="text-sm">
-            {{ detail!.text }}
-          </span>
-        </div>
-      </div>
-    </template>
-  </PToast>
-
   <div class="h-full flex flex-col gap-4">
+    <!-- Search bar and filters -->
     <div class="flex flex-row gap-4">
       <span class="flex-grow p-input-icon-left">
         <i class="i-tabler-search" />
@@ -276,6 +249,8 @@ const filters = useFilesFilters()
         @click="openFiltersDialog = true"
       />
     </div>
+
+    <!-- Main table -->
     <div class="p-card p-0 overflow-hidden flex-grow">
       <PContextMenu ref="cm" :model="menuModel" />
       <PDataTable
@@ -321,12 +296,14 @@ const filters = useFilesFilters()
                 <Transition name="fade" mode="out-in">
                   <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
                 </Transition>
-                <div class="flex flex-row items-center gap-1">
+                <!-- For future use -->
+                <!-- <div class="flex flex-row items-center gap-1">
                   <i class="i-tabler-eye text-xs" />
                   <span class="text-xs">{{ 0 }}</span>
-                </div>
+                </div> -->
               </div>
-              <PButton icon="i-tabler-star" severity="warning" rounded text />
+              <!-- For future use -->
+              <!-- <PButton icon="i-tabler-star" severity="warning" rounded text /> -->
             </div>
           </template>
           <template #loading>
@@ -404,26 +381,7 @@ const filters = useFilesFilters()
           </template>
           <template #body="slotProps">
             <Transition name="fade" mode="out-in">
-              <div v-if="slotProps.data.visibility === 'PUBLIC'" class="flex flex-row items-center gap-2">
-                <i class="i-tabler-world" />
-                <span>{{ t('pages.files.visibility.public') }}</span>
-              </div>
-              <div v-else-if="slotProps.data.visibility === 'UNLISTED'" class="flex flex-row items-center gap-2">
-                <i class="i-tabler-link" />
-                <span>{{ t('pages.files.visibility.unlisted') }}</span>
-              </div>
-              <div v-else-if="slotProps.data.visibility === 'PROTECTED'" class="flex flex-row items-center gap-2">
-                <i class="i-tabler-lock" />
-                <span>{{ t('pages.files.visibility.protected') }}</span>
-              </div>
-              <div v-else-if="slotProps.data.visibility === 'PRIVATE'" class="flex flex-row items-center gap-2">
-                <i class="i-tabler-eye-off" />
-                <span>{{ t('pages.files.visibility.private') }}</span>
-              </div>
-              <div v-else class="flex flex-row items-center gap-2">
-                <i class="i-tabler-help-triangle-filled" />
-                <span>{{ t('pages.files.visibility.unknown') }}</span>
-              </div>
+              <VisibilityDisplayer :key="slotProps.data.visibility" :visibility="slotProps.data.visibility" />
             </Transition>
           </template>
           <template #loading>
@@ -445,15 +403,14 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            <i18n-d tag="p" :value="new Date()" format="long" />
             {{ d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' }) }}
-            <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
           </template>
           <template #loading>
             <PSkeleton width="8rem" height="1rem" />
           </template>
         </PColumn>
       </PDataTable>
+
       <div v-else class="h-full w-full flex flex-col justify-center items-center">
         <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
         <h1 class="text-2xl">
@@ -466,42 +423,16 @@ const filters = useFilesFilters()
       </div>
     </div>
 
-    <div class="actions left-0 fixed bottom-8 flex flex-row flex-center w-full gap-2">
-      <Transition>
-        <div v-show="selecting">
-          <PButton
-            v-tooltip.top="{ value: t('pages.files.contextMenu.download'), class: 'translate-y--1' }" class="shadow-lg"
-            icon="i-tabler-download" rounded
-          />
-        </div>
-      </Transition>
-      <Transition>
-        <div v-show="selecting">
-          <PButton
-            v-tooltip.top="{ value: t('pages.files.contextMenu.changeVisibility'), class: 'translate-y--1' }"
-            class="shadow-lg" icon="i-tabler-eye" rounded
-          />
-        </div>
-      </Transition>
-      <Transition>
-        <div v-show="selecting">
-          <PButton
-            v-tooltip.top="{ value: t('pages.files.contextMenu.unselect'), class: 'translate-y--1' }"
-            class="shadow-lg"
-            icon="i-tabler-x" rounded
-          />
-        </div>
-      </Transition>
-      <Transition>
-        <div v-show="selecting">
-          <PButton
-            v-tooltip.top="{ value: t('pages.files.contextMenu.delete'), class: 'translate-y--1' }" class="shadow-lg"
-            icon="i-tabler-trash" severity="danger" rounded
-          />
-        </div>
-      </Transition>
-    </div>
+    <!-- Action buttons -->
+    <ActionButtons
+      :selecting="selecting"
+      @download="console.log('Download')"
+      @change-visibility="console.log('Change visibility')"
+      @unselect="console.log('Unselect')"
+      @delete="console.log('Delete')"
+    />
 
+    <!-- Dialogs -->
     <FiltersDialog v-model:visible="openFiltersDialog" />
     <RenameDialog
       v-if="selectedRow"
@@ -513,27 +444,7 @@ const filters = useFilesFilters()
   </div>
 </template>
 
-<style scoped lang="scss">
-@for $i from 1 through 5 {
-  .actions .v-enter-active:nth-child(#{$i}n) {
-    transition-delay: #{($i - 1) * 0.03}s;
-  }
-}
-
-.v-enter-active {
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.v-leave-active {
-  transition: all 0.35s cubic-bezier(0.5, 0, 0.75, 0);
-}
-
-.v-enter-from,
-.v-leave-to {
-  transform: translateY(150%);
-  opacity: 0;
-}
-
+<style scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

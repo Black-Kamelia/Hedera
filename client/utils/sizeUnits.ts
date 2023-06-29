@@ -8,7 +8,13 @@ export function humanSize(bytes: number, locale: string, t: (s: string) => strin
   return `${(bytes / (1 << shift)).toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${shift}`)}`
 }
 
-export function humanSize2(size: FileSize, locale: string, t: (s: string) => string) {
+/**
+ * Returns a human-readable string representing the given file size structure.
+ * @param size The structure containing the number to display and the shift of the unit.
+ * @param locale The locale to use for the number formatting.
+ * @param t The translation function.
+ */
+export function humanSizeStructure(size: FileSize, locale: string, t: (s: string) => string) {
   return `${size.value.toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${size.shift}`)}`
 }
 

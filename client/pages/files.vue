@@ -348,8 +348,7 @@ const filters = useFilesFilters()
             />
           </template>
           <template #body="slotProps">
-            {{ humanSize(slotProps.data.size, locale, t) }}
-            <!-- {{ humanSize2(slotProps.data.size, locale, t) }} -->
+            {{ humanSizeStructure(slotProps.data.size, locale, t) }}
           </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />

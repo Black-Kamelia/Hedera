@@ -2,8 +2,8 @@ package com.kamelia.hedera.rest
 
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.ErrorDTO
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
 import com.kamelia.hedera.loginBlocking
@@ -38,7 +38,7 @@ class AuthTest {
         val (response, _) = login("user1", "wrongPassword")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
 
-        val error = Json.decodeFromString(ErrorDTO.serializer(), response.bodyAsText())
+        val error = Json.decodeFromString(MessageDTO.serializer(), response.bodyAsText())
         assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.key)
     }
 
@@ -48,7 +48,7 @@ class AuthTest {
         val (response, _) = login("userDisabled", "password")
         assertEquals(HttpStatusCode.Forbidden, response.status)
 
-        val error = Json.decodeFromString(ErrorDTO.serializer(), response.bodyAsText())
+        val error = Json.decodeFromString(MessageDTO.serializer(), response.bodyAsText())
         assertEquals(Errors.Auth.ACCOUNT_DISABLED, error.key)
     }
 

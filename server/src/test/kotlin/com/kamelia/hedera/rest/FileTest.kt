@@ -3,8 +3,8 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.ErrorDTO
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -19,7 +19,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -118,7 +117,7 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        val error = Json.decodeFromString<MessageDTO>(response.bodyAsText())
         assertEquals(error.key, Errors.Headers.MISSING_HEADER)
         assertEquals(error.template!!["header"], "content-type")
     }
@@ -134,7 +133,7 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        val error = Json.decodeFromString<MessageDTO>(response.bodyAsText())
         assertContains(error.key, Errors.Uploads.MISSING_FILE)
     }
 
@@ -151,7 +150,7 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        val error = Json.decodeFromString<MessageDTO>(response.bodyAsText())
         assertContains(error.key, Errors.Uploads.EMPTY_FILE_NAME)
     }
 

@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
 
-const { t, e } = useI18n()
+const { t, m } = useI18n()
 const { login } = useAuth()
 
 const usernamePlaceholder = getRandomDeveloperName()
@@ -65,7 +65,7 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.content = e(event.error)
+    message.content = m(event.error)
     message.severity = 'error'
   }
   else {

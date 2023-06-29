@@ -6,13 +6,13 @@ import io.ktor.server.response.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ErrorDTO(
+data class MessageDTO(
     val key: String,
     val template: Map<String, String>? = null,
 ) {
     companion object {
-        fun of(key: String, template: Map<String, String>? = null) = ErrorDTO(key, template)
-        fun of(key: String, vararg template: Pair<String, String>) = ErrorDTO(key, mapOf(*template))
+        fun of(key: String, template: Map<String, String>? = null) = MessageDTO(key, template)
+        fun of(key: String, vararg template: Pair<String, String>) = MessageDTO(key, mapOf(*template))
     }
 }
 
@@ -51,14 +51,14 @@ class Response<out S, out E> private constructor(
         fun ok() = success<Nothing>(HttpStatusCode.OK)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
-        fun badRequest(error: ErrorDTO) = error(HttpStatusCode.BadRequest, error)
-        fun badRequest(error: String) = badRequest(ErrorDTO.of(error))
-        fun unauthorized(error: ErrorDTO) = error(HttpStatusCode.Unauthorized, error)
-        fun unauthorized(error: String) = unauthorized(ErrorDTO.of(error))
-        fun forbidden(error: ErrorDTO) = error(HttpStatusCode.Forbidden, error)
-        fun forbidden(error: String) = forbidden(ErrorDTO.of(error))
-        fun notFound(error: ErrorDTO) = error(HttpStatusCode.NotFound, error)
-        fun notFound(error: String) = notFound(ErrorDTO.of(error))
+        fun badRequest(error: MessageDTO) = error(HttpStatusCode.BadRequest, error)
+        fun badRequest(error: String) = badRequest(MessageDTO.of(error))
+        fun unauthorized(error: MessageDTO) = error(HttpStatusCode.Unauthorized, error)
+        fun unauthorized(error: String) = unauthorized(MessageDTO.of(error))
+        fun forbidden(error: MessageDTO) = error(HttpStatusCode.Forbidden, error)
+        fun forbidden(error: String) = forbidden(MessageDTO.of(error))
+        fun notFound(error: MessageDTO) = error(HttpStatusCode.NotFound, error)
+        fun notFound(error: String) = notFound(MessageDTO.of(error))
         fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }

@@ -5,7 +5,7 @@ import { useConfirm } from 'primevue/useconfirm'
 import { PContextMenu } from '#components'
 import RenameDialog from '~/components/ui/filesTable/RenameDialog.vue'
 
-const { locale, t, d } = useI18n()
+const { locale, t, d, m } = useI18n()
 const toast = useToast()
 const confirm = useConfirm()
 const axios = useAxiosFactory()
@@ -50,9 +50,7 @@ function deleteLocalFile() {
     .catch(error => toast.add({
       severity: 'error',
       summary: t('pages.files.delete.error'),
-      detail: {
-        text: t(error.response.data.key),
-      },
+      detail: { text: m(error) },
       life: 3000,
     }))
   // files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
@@ -79,9 +77,7 @@ function renameFile(name: string) {
     .catch(error => toast.add({
       severity: 'error',
       summary: t('pages.files.rename.error'),
-      detail: {
-        text: t(error.response.data.key),
-      },
+      detail: { text: m(error) },
       life: 3000,
     }))
 }
@@ -107,9 +103,7 @@ function updateFileVisibility(visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 
     .catch(error => toast.add({
       severity: 'error',
       summary: t('pages.files.changeVisibility.error'),
-      detail: {
-        text: t(error.response.data.key),
-      },
+      detail: { text: m(error) },
       life: 3000,
     }))
 }

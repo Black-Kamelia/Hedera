@@ -1,15 +1,34 @@
 <script lang="ts" setup>
 import type { DataTableRowContextMenuEvent } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
-
-const { files } = defineProps<{
-  files: FileRepresentationDTO[]
-}>()
+import type { FilesTableContext } from '~/composables/fileTable/useFilesTable'
 
 const { locale, t, d } = useI18n()
 
-const selectedRow = defineModel<Nullable<FileRepresentationDTO>>('selectedRow')
-const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows')
+const files = defineModel<FileRepresentationDTO[]>('files', { required: true })
+const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
+const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
+const selectedRowId = computed(() => selectedRow.value?.id)
+
+function updateSelectedRow(newRow: FileRepresentationDTO) {
+  const file = files.value.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
+  if (file && newRow)
+    Object.assign(file, newRow)
+}
+function removeSelectedRow() {
+  files.value = files.value.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)
+}
+function unselectRow() {
+  selectedRow.value = null
+}
+
+provide<FilesTableContext>(fileTableKey, {
+  selectedRow,
+  selectedRowId,
+  updateSelectedRow,
+  removeSelectedRow,
+  unselectRow,
+})
 
 const contextMenu = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>(null)
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
@@ -18,17 +37,8 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 </script>
 
 <template>
-  <FilesTableContextMenu
-    v-model:ref="contextMenu"
-    @open-file="console.log('open-file')"
-    @rename-file="console.log('rename-file')"
-    @change-visibility="console.log('change-visibility')"
-    @copy-link="console.log('copy-link')"
-    @download-file="console.log('download-file')"
-    @delete-file="console.log('delete-file')"
-  />
+  <FilesTableContextMenu v-model:ref="contextMenu" />
   <PDataTable
-    v-if="files && files.length > 0"
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
     :value="files"
@@ -37,8 +47,8 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
     scroll-height="100%"
     sort-mode="multiple"
     removable-sort
-    class="h-full"
     context-menu
+    class="h-full"
     @row-contextmenu="onRowContextMenu"
   >
     <PColumn selection-mode="multiple" />
@@ -168,3 +178,15 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
     </PColumn>
   </PDataTable>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

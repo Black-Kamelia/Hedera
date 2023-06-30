@@ -1,28 +1,18 @@
-import type { AxiosResponse } from 'axios'
 import type { MessageDTO } from '~/utils/messages'
 
-export default function useDeleteFile(onSuccess?: (response: AxiosResponse) => void) {
-  const { t, m } = useI18n()
-  const toast = useToast()
+export default function useDeleteFile() {
   const axios = useAxiosFactory()
-
-  return function deleteFile(fileId: string) {
+  const call = useFeedbackCall((fileId: string) => {
     return axios().delete<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`)
-      .then((response) => {
-        toast.add({
-          severity: 'success',
-          summary: m(response.data.title),
-          detail: { text: m(response.data.message) },
-          life: 5000,
-        })
-        return response
-      })
-      .then(onSuccess)
-      .catch(error => toast.add({
-        severity: 'error',
-        summary: t('pages.files.delete.error'),
-        detail: { text: m(error) },
-        life: 5000,
-      }))
+  })
+  const { selectedRowId, unselectRow, removeSelectedRow } = useFilesTable()
+
+  return function changeFileVisibility() {
+    if (!selectedRowId.value)
+      return
+
+    call(selectedRowId.value)
+      .then(removeSelectedRow) // TODO : check if succeeded (callback?)
+      .finally(unselectRow)
   }
 }

@@ -1,28 +1,18 @@
-import type { AxiosResponse } from 'axios'
 import type { MessageDTO } from '~/utils/messages'
 
-export default function useChangeFileVisibility(onSuccess?: (response: AxiosResponse) => void) {
-  const { t, m } = useI18n()
-  const toast = useToast()
+export default function useChangeFileVisibility() {
   const axios = useAxiosFactory()
-
-  return function changeFileVisibility(fileId: string, visibility: string) {
+  const call = useFeedbackCall((fileId: string, visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE') => {
     return axios().put<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/visibility`, { visibility })
-      .then((response) => {
-        toast.add({
-          severity: 'success',
-          summary: m(response.data.title),
-          detail: { text: m(response.data.message) },
-          life: 5000,
-        })
-        return response
-      })
-      .then(onSuccess)
-      .catch(error => toast.add({
-        severity: 'error',
-        summary: t('pages.files.changeVisibility.error'),
-        detail: { text: m(error) },
-        life: 5000,
-      }))
+  })
+  const { selectedRowId, updateSelectedRow, unselectRow } = useFilesTable()
+
+  return function changeFileVisibility(newName: string) {
+    if (!selectedRowId.value)
+      return
+
+    call(selectedRowId.value, newName)
+      .then(response => updateSelectedRow(response?.data.payload))
+      .finally(unselectRow)
   }
 }

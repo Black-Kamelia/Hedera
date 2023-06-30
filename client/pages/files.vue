@@ -5,10 +5,9 @@ import { useConfirm } from 'primevue/useconfirm'
 import { PContextMenu } from '#components'
 import ActionButtons from '~/components/ui/filesTable/ActionButtons.vue'
 
-const { locale, t, d, m } = useI18n()
+const { locale, t, d } = useI18n()
 const toast = useToast()
 const confirm = useConfirm()
-const axios = useAxiosFactory()
 
 usePageName(() => t('pages.files.title'))
 definePageMeta({
@@ -20,6 +19,31 @@ const files = ref<Nullable<Array<FileRepresentationDTO>>>([])
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 
+const selectedRowId = computed(() => selectedRow.value?.id)
+
+const _renameFile = useRenameFile((response) => {
+  const file = files.value?.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
+  if (file)
+    Object.assign(file, response.data.payload)
+})
+function renameFile(name: string) {
+  if (!selectedRowId.value)
+    return
+
+  _renameFile(selectedRowId.value, name)
+    .finally(() => selectedRow.value = null)
+}
+
+const _deleteFile = useDeleteFile(() => {
+  files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)
+})
+function deleteFile() {
+  if (!selectedRowId.value)
+    return
+
+  _deleteFile(selectedRowId.value)
+    .finally(() => selectedRow.value = null)
+}
 function confirmDelete() {
   return confirm.require({
     message: t('pages.files.delete.warning'),
@@ -32,88 +56,16 @@ function confirmDelete() {
   })
 }
 
-function deleteFile() {
-  if (!selectedRow.value)
-    return
-
-  const id = selectedRow.value!.id
-  axios().delete(`/files/${id}`)
-    .then((response) => {
-      files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
-      return response
-    })
-    .then(response => toast.add({
-      severity: 'success',
-      summary: m(response.data.title),
-      detail: { text: m(response.data.message) },
-      life: 5000,
-    }))
-    .catch(error => toast.add({
-      severity: 'error',
-      summary: t('pages.files.delete.error'),
-      detail: { text: m(error) },
-      life: 5000,
-    }))
-    .finally(() => selectedRow.value = null)
-  // files.value = files.value?.filter((f: FileRepresentationDTO) => f.id !== id)
-}
-
-function renameFile(name: string) {
-  // TODO: handle error
-  if (!selectedRow.value)
-    return
-
-  if (name === selectedRow.value!.name)
-    return
-
-  const id = selectedRow.value!.id
-  axios().put(`/files/${id}/name`, { name })
-    .then((response) => {
-      const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
-      if (file)
-        Object.assign(file, response.data.payload)
-      return response
-    })
-    .then(response => toast.add({
-      severity: 'success',
-      summary: m(response.data.title),
-      detail: { text: m(response.data.message) },
-      life: 5000,
-    }))
-    .catch(error => toast.add({
-      severity: 'error',
-      summary: t('pages.files.rename.error'),
-      detail: { text: m(error) },
-      life: 5000,
-    }))
-    .finally(() => selectedRow.value = null)
-}
-
+const _changeFileVisibility = useChangeFileVisibility((response) => {
+  const file = files.value?.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
+  if (file)
+    Object.assign(file, response.data.payload)
+})
 function updateFileVisibility(visibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE') {
-  // TODO: handle error
-  if (!selectedRow.value)
+  if (!selectedRowId.value)
     return
 
-  const id = selectedRow.value!.id
-  axios().put(`/files/${id}/visibility`, { visibility })
-    .then((response) => {
-      const file = files.value?.find((f: FileRepresentationDTO) => f.id === id)
-      if (file)
-        Object.assign(file, response.data.payload)
-      return response
-    })
-    .then(response => toast.add({
-      severity: 'success',
-      summary: m(response.data.title),
-      detail: { text: m(response.data.message) },
-      life: 5000,
-    }))
-    .catch(error => toast.add({
-      severity: 'error',
-      summary: t('pages.files.changeVisibility.error'),
-      detail: { text: m(error) },
-      life: 5000,
-    }))
+  _changeFileVisibility(selectedRowId.value, visibility)
     .finally(() => selectedRow.value = null)
 }
 
@@ -332,7 +284,6 @@ const filters = useFilesFilters()
           </template>
         </PColumn>
 
-        <!--
         <PColumn field="mimeType" sortable :header="t('pages.files.table.format')">
           <template #sorticon="slotProps">
             <i
@@ -347,22 +298,6 @@ const filters = useFilesFilters()
             <Transition name="fade" mode="out-in">
               <span :key="slotProps.data.mimeType">{{ slotProps.data.mimeType }}</span>
             </Transition>
-          </template>
-          <template #loading>
-            <PSkeleton width="5rem" height="1rem" />
-          </template>
-        </PColumn>
-        -->
-
-        <PColumn field="owner.username" sortable :header="t('pages.files.table.owner')">
-          <template #sorticon="slotProps">
-            <i
-              class="pointer-events-none ml-1 text-xs block" :class="{
-                'i-tabler-arrows-sort': !slotProps.sorted,
-                'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
-                'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
-              }"
-            />
           </template>
           <template #loading>
             <PSkeleton width="5rem" height="1rem" />

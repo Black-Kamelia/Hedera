@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { useFilesFilters } from '~/stores/useFilesFilters'
 
-const { visible } = defineModels<{
-  visible: boolean
-}>()
+const visible = defineModel<boolean>('visible')
 
 const { t } = useI18n()
 
@@ -141,8 +139,8 @@ watch(visible, () => {
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.size') }}</h2>
         <div class="flex flex-row gap-3">
-          <FormInputSize v-model="minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
-          <FormInputSize v-model="maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
+          <FileSizeInput v-model="minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
+          <FileSizeInput v-model="maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
         </div>
       </div>
 

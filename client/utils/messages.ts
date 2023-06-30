@@ -5,10 +5,10 @@ export interface MessageKeyDTO {
   parameters?: Map<string, string>
 }
 
-export interface MessageDTO {
+export interface MessageDTO<T> {
   title?: MessageKeyDTO
   message: MessageKeyDTO
-  payload?: any
+  payload?: T
 }
 
 export function getDTOFromError(error?: AxiosError): MessageKeyDTO {

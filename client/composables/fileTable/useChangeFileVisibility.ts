@@ -1,4 +1,5 @@
 import type { AxiosResponse } from 'axios'
+import type { MessageDTO } from '~/utils/messages'
 
 export default function useChangeFileVisibility(onSuccess?: (response: AxiosResponse) => void) {
   const { t, m } = useI18n()
@@ -6,7 +7,7 @@ export default function useChangeFileVisibility(onSuccess?: (response: AxiosResp
   const axios = useAxiosFactory()
 
   return function changeFileVisibility(fileId: string, visibility: string) {
-    return axios().put(`/files/${fileId}/visibility`, { visibility })
+    return axios().put<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/visibility`, { visibility })
       .then((response) => {
         toast.add({
           severity: 'success',

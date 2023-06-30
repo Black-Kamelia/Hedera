@@ -1,4 +1,5 @@
 import type { AxiosResponse } from 'axios'
+import type { MessageDTO } from '~/utils/messages'
 
 export default function useRenameFile(onSuccess?: (response: AxiosResponse) => void) {
   const { t, m } = useI18n()
@@ -6,7 +7,7 @@ export default function useRenameFile(onSuccess?: (response: AxiosResponse) => v
   const axios = useAxiosFactory()
 
   return function renameFile(fileId: string, newName: string) {
-    return axios().put(`/files/${fileId}/name`, { name: newName })
+    return axios().put<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/name`, { name: newName })
       .then((response) => {
         toast.add({
           severity: 'success',

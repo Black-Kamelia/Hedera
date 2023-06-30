@@ -1,4 +1,5 @@
-import type { AxiosResponse } from 'axios/index'
+import type { AxiosResponse } from 'axios'
+import type { MessageDTO } from '~/utils/messages'
 
 export default function useDeleteFile(onSuccess?: (response: AxiosResponse) => void) {
   const { t, m } = useI18n()
@@ -6,7 +7,7 @@ export default function useDeleteFile(onSuccess?: (response: AxiosResponse) => v
   const axios = useAxiosFactory()
 
   return function deleteFile(fileId: string) {
-    return axios().delete(`/files/${fileId}`)
+    return axios().delete<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`)
       .then((response) => {
         toast.add({
           severity: 'success',

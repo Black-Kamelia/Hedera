@@ -14,13 +14,6 @@ const copyFileLink = useCopyFileLink()
 const downloadFile = useDownloadFile()
 const deleteFile = useDeleteFile()
 
-const openRenameDialog = ref(false)
-function rename() {
-  // TODO: redo using dynamic dialogs
-  openRenameDialog.value = true
-}
-
-// const cm = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>(null)
 const menuModel = computed(() => [
   {
     label: t('pages.files.contextMenu.open'),
@@ -34,7 +27,7 @@ const menuModel = computed(() => [
   {
     label: t('pages.files.contextMenu.rename'),
     icon: 'i-tabler-pencil',
-    command: rename,
+    command: renameFile,
   },
   {
     label: t('pages.files.contextMenu.changeVisibility'),
@@ -96,11 +89,6 @@ const menuModel = computed(() => [
 <template>
   <PContextMenu ref="cm" :model="menuModel" />
 
-  <RenameDialog
-    v-if="selectedRow"
-    v-model:visible="openRenameDialog"
-    :name="selectedRow.name"
-    @completed="renameFile"
-  />
+  <PDynamicDialog />
   <PConfirmDialog :pt="{ rejectButton: { icon: { class: 'display-none' } } }" />
 </template>

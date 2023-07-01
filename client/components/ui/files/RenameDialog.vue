@@ -1,32 +1,24 @@
 <script lang="ts" setup>
-const { name: originalName } = defineProps<{
-  name: string
-}>()
-const emit = defineEmits<{
-  (event: 'completed', name: string): void
-}>()
-const visible = defineModel<boolean>('visible')
-const { t } = useI18n()
+import type { DynamicDialogInstance } from 'primevue/dynamicdialogoptions'
+import type { ComputedRef } from 'vue'
+import PInputText from 'primevue/inputtext'
 
-const name = ref(originalName)
-watch(visible, (val) => {
-  if (val)
-    name.value = originalName
-}, { immediate: true })
+const dialog = inject<ComputedRef<DynamicDialogInstance>>('dialogRef')
+const input = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>(null)
+
+const store = useRenameFileDialog()
+const { name } = storeToRefs(store)
+
+onMounted(() => {
+  name.value = dialog?.value.data?.name
+  input.value?.$el.focus()
+})
 
 function submit() {
-  visible.value = false
-  emit('completed', name.value)
+  dialog?.value.close({ newName: name.value })
 }
 </script>
 
 <template>
-  <PDialog v-model:visible="visible" class="min-w-30em" modal :header="t('pages.files.rename.title')" :draggable="false">
-    <PInputText v-model="name" class="w-full mt-0.5" autofocus @keydown.enter="submit()" />
-
-    <template #footer>
-      <PButton :label="t('pages.files.rename.cancel')" text @click="visible = false" />
-      <PButton :label="t('pages.files.rename.submit')" icon="i-tabler-check" @click="submit()" />
-    </template>
-  </PDialog>
+  <PInputText ref="input" v-model="name" class="w-full mt-0.5" autofocus @keydown.enter="submit()" />
 </template>

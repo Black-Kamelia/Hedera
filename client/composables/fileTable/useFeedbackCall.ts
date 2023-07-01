@@ -1,10 +1,10 @@
 import type { AxiosResponse } from 'axios'
 
-export default function useFeedbackCall(requestFactory: (...args: any[]) => Promise<AxiosResponse>) {
+export default function useFeedbackCall<F extends (...args: Parameters<F>) => Promise<AxiosResponse>>(requestFactory: F) {
   const { t, m } = useI18n()
   const toast = useToast()
 
-  return function call(...args: any[]) {
+  return function call(...args: Parameters<F>) {
     return requestFactory(...args)
       .then((response) => {
         toast.add({

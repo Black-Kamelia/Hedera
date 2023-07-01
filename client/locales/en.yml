@@ -147,6 +147,7 @@ actions:
 
 errors:
   unknown: An unknown error has occurred
+  network: Network is unreachable
   auth:
     invalid_credentials: Username or password is incorrect
     account_disabled: Your account is disabled

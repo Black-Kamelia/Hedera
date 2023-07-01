@@ -15,11 +15,22 @@ export default function useFeedbackCall(requestFactory: (...args: any[]) => Prom
         })
         return response
       })
-      .catch(error => toast.add({
-        severity: 'error',
-        summary: t('error'),
-        detail: { text: m(error) },
-        life: 5000,
-      }))
+      .catch((error) => {
+        if (!error.response) {
+          toast.add({
+            severity: 'error',
+            summary: t('errors.unknown'),
+            detail: { text: t('errors.network') },
+            life: 5000,
+          })
+          return
+        }
+        toast.add({
+          severity: 'error',
+          summary: t('error'), // TODO: get error title from backend
+          detail: { text: m(error) },
+          life: 5000,
+        })
+      })
   }
 }

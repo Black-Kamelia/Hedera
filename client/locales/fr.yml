@@ -147,6 +147,7 @@ actions:
 
 errors:
   unknown: Une erreur inattendue est survenue
+  network: Connexion au serveur impossible
   auth:
     invalid_credentials: Nom d'utilisateur ou mot de passe incorrect
     account_disabled: Votre compte est désactivé

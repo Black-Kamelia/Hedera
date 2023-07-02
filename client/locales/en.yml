@@ -7,8 +7,8 @@ global:
 main:
   title: Welcome to Hedera
 
-sizeUnits:
-  incorrect-format: Incorrect size format
+size_units:
+  incorrect_format: Incorrect size format
   binary:
     0: bytes
     10: KiB
@@ -23,7 +23,7 @@ sizeUnits:
     9: GB
     12: TB
     15: PB
-unlimited-quota: Unlimited quota
+unlimited_quota: Unlimited quota
 
 sidebar:
   docs: Documentation
@@ -38,12 +38,12 @@ pages:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
-  resetPassword:
+  reset_password:
     title: Reset password
     login: Back to login
   files:
     title: Files
-    link_copied: The link has been copied to clipboard
+    link_copied: The link has been copied to the clipboard
     visibility:
       public: Public
       private: Private
@@ -59,11 +59,11 @@ pages:
       visibility: Visibility
       creation_date: Creation date
       views: Views
-    contextMenu:
+    context_menu:
       open: Open
       rename: Rename
-      changeVisibility: Change visibility
-      copyLink: Copy link
+      change_visibility: Change visibility
+      copy_link: Copy link
       download: Download
       delete: Delete
       unselect: Unselect
@@ -87,7 +87,7 @@ pages:
       error: The file could not be renamed
       cancel: Cancel
       submit: Rename
-    changeVisibility:
+    change_visibility:
       title: Change the visibility of a file
       success: The visibility has been changed
       error: The visibility could not be changed
@@ -123,7 +123,7 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
-  resetPassword:
+  reset_password:
     errors:
       missing_email: Email is required
       invalid_email: Invalid email address format

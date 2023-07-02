@@ -5,7 +5,7 @@
  */
 export function humanSize(bytes: number, locale: string, t: (s: string) => string) {
   const shift = bytesToBiggestUnitShift(bytes)
-  return `${(bytes / (1 << shift)).toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${shift}`)}`
+  return `${(bytes / (1 << shift)).toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`size_units.binary.${shift}`)}`
 }
 
 /**
@@ -15,7 +15,7 @@ export function humanSize(bytes: number, locale: string, t: (s: string) => strin
  * @param t The translation function.
  */
 export function humanSizeStructure(size: FileSize, locale: string, t: (s: string) => string) {
-  return `${size.value.toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`sizeUnits.binary.${size.shift}`)}`
+  return `${size.value.toLocaleString(locale, { minimumFractionDigits: 2 })} ${t(`size_units.binary.${size.shift}`)}`
 }
 
 /**

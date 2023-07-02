@@ -5,7 +5,7 @@ import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
 
-usePageName(() => t('pages.resetPassword.title'))
+usePageName(() => t('pages.reset_password.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
@@ -13,8 +13,8 @@ definePageMeta({
 
 const schema = object({
   email: string()
-    .email(t('forms.resetPassword.errors.invalid_email'))
-    .required(t('forms.resetPassword.errors.missing_email')),
+    .email(t('forms.reset_password.errors.invalid_email'))
+    .required(t('forms.reset_password.errors.missing_email')),
 })
 const { handleSubmit } = useForm({
   validationSchema: schema,
@@ -38,7 +38,7 @@ const onSubmit = handleSubmit((_) => {
       {{ t('app_name') }}
     </h1>
     <h2 class="font-600 text-3xl mb-3">
-      {{ t('pages.resetPassword.title') }}
+      {{ t('pages.reset_password.title') }}
     </h2>
   </div>
 
@@ -48,7 +48,7 @@ const onSubmit = handleSubmit((_) => {
       class="w-full"
       name="email"
       type="email"
-      :label="t('forms.resetPassword.fields.email')"
+      :label="t('forms.reset_password.fields.email')"
       :placeholder="`${usernamePlaceholder}@example.com`"
       start-icon="i-tabler-mail"
       @input="hideErrorMessage"
@@ -56,7 +56,7 @@ const onSubmit = handleSubmit((_) => {
 
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-        {{ t('pages.resetPassword.login') }}
+        {{ t('pages.reset_password.login') }}
       </NuxtLink>
     </div>
 

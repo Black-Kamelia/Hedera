@@ -18,7 +18,7 @@ const { t } = useI18n()
     <Transition>
       <div v-show="selecting">
         <PButton
-          v-tooltip.top="{ value: t('pages.files.contextMenu.download'), class: 'translate-y--1' }"
+          v-tooltip.top="{ value: t('pages.files.context_menu.download'), class: 'translate-y--1' }"
           class="shadow-lg" icon="i-tabler-download" rounded @click="emit('download')"
         />
       </div>
@@ -26,7 +26,7 @@ const { t } = useI18n()
     <Transition>
       <div v-show="selecting">
         <PButton
-          v-tooltip.top="{ value: t('pages.files.contextMenu.changeVisibility'), class: 'translate-y--1' }"
+          v-tooltip.top="{ value: t('pages.files.context_menu.changevisibility'), class: 'translate-y--1' }"
           class="shadow-lg" icon="i-tabler-eye" rounded @click="emit('changeVisibility')"
         />
       </div>
@@ -34,7 +34,7 @@ const { t } = useI18n()
     <Transition>
       <div v-show="selecting">
         <PButton
-          v-tooltip.top="{ value: t('pages.files.contextMenu.unselect'), class: 'translate-y--1' }"
+          v-tooltip.top="{ value: t('pages.files.context_menu.unselect'), class: 'translate-y--1' }"
           class="shadow-lg" icon="i-tabler-x" rounded @click="emit('unselect')"
         />
       </div>
@@ -42,7 +42,7 @@ const { t } = useI18n()
     <Transition>
       <div v-show="selecting">
         <PButton
-          v-tooltip.top="{ value: t('pages.files.contextMenu.delete'), class: 'translate-y--1' }"
+          v-tooltip.top="{ value: t('pages.files.context_menu.delete'), class: 'translate-y--1' }"
           class="shadow-lg" icon="i-tabler-trash" severity="danger" rounded @click="emit('delete')"
         />
       </div>

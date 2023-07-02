@@ -16,7 +16,7 @@ const deleteFile = useDeleteFile()
 
 const menuModel = computed(() => [
   {
-    label: t('pages.files.contextMenu.open'),
+    label: t('pages.files.context_menu.open'),
     icon: 'i-tabler-external-link',
     command() {
       if (!selectedRow.value)
@@ -25,12 +25,12 @@ const menuModel = computed(() => [
     },
   },
   {
-    label: t('pages.files.contextMenu.rename'),
+    label: t('pages.files.context_menu.rename'),
     icon: 'i-tabler-pencil',
     command: renameFile,
   },
   {
-    label: t('pages.files.contextMenu.changeVisibility'),
+    label: t('pages.files.context_menu.changevisibility'),
     icon: 'i-tabler-eye',
     items: [
       {
@@ -57,19 +57,19 @@ const menuModel = computed(() => [
     ],
   },
   {
-    label: t('pages.files.contextMenu.copyLink'),
+    label: t('pages.files.context_menu.copylink'),
     icon: 'i-tabler-link',
     disabled: !isSupported.value,
     command: copyFileLink,
   },
   {
-    label: t('pages.files.contextMenu.download'),
+    label: t('pages.files.context_menu.download'),
     icon: 'i-tabler-download',
     command: downloadFile,
   },
   { separator: true },
   {
-    label: t('pages.files.contextMenu.delete'),
+    label: t('pages.files.context_menu.delete'),
     icon: 'i-tabler-trash',
     command() {
       confirm.require({

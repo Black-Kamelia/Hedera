@@ -26,7 +26,7 @@ const { t } = useI18n()
     <Transition>
       <div v-show="selecting">
         <PButton
-          v-tooltip.top="{ value: t('pages.files.context_menu.changevisibility'), class: 'translate-y--1' }"
+          v-tooltip.top="{ value: t('pages.files.context_menu.change_visibility'), class: 'translate-y--1' }"
           class="shadow-lg" icon="i-tabler-eye" rounded @click="emit('changeVisibility')"
         />
       </div>

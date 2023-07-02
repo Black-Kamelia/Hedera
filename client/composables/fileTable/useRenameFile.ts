@@ -4,6 +4,7 @@ import { RenameDialog, RenameDialogFooter } from '#components'
 
 export const useRenameFileDialog = defineStore('renameFileDialog', {
   state: () => ({ name: '' }),
+  persist: false,
 })
 
 export function useRenameFile() {

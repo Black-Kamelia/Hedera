@@ -1,24 +1,11 @@
 <script lang="ts" setup>
-import type { AutoCompleteCompleteEvent, AutoCompleteProps } from 'primevue/autocomplete'
+import type { AutoCompleteCompleteEvent } from 'primevue/autocomplete'
 import PAutoComplete from 'primevue/autocomplete'
 
-export interface FormInputSizeProps extends OnlyProps<AutoCompleteProps> {
-  modelValue: Size | null
-}
-
-interface Size {
-  value: number
-  shift: number
-}
-
-const props = defineProps<FormInputSizeProps>()
-const emit = defineEmits<{
-  (event: 'update:modelValue', value: Size): void
-}>()
+const model = defineModel<Nullable<FileSize>>()
 const { t } = useI18n()
 
-const value = ref<Nullable<Size>>(props.modelValue)
-const sizes = [
+const sizes: { name: string; shift: 0 | 10 | 20 | 30 | 40 | 50 }[] = [
   { name: t('sizeUnits.binary.0'), shift: 0 },
   { name: t('sizeUnits.binary.10'), shift: 10 },
   { name: t('sizeUnits.binary.20'), shift: 20 },
@@ -26,7 +13,7 @@ const sizes = [
   { name: t('sizeUnits.binary.40'), shift: 40 },
   { name: t('sizeUnits.binary.50'), shift: 50 },
 ]
-const suggestions = ref<Size[]>([])
+const suggestions = ref<FileSize[]>([])
 
 function searchSize(event: AutoCompleteCompleteEvent) {
   if (event.query.match(/^ *[0-9]+\.[0-9]+ *$/)) {
@@ -58,12 +45,17 @@ defineExpose({
 <template>
   <PAutoComplete
     ref="el"
-    v-model="value"
+    v-model="model"
     :suggestions="suggestions"
-    :option-label="(item: Size) => `${item.value} ${t(`sizeUnits.binary.${item.shift}`)}`"
+    :option-label="(item: FileSize) => `${item.value} ${t(`sizeUnits.binary.${item.shift}`)}`"
     force-selection
     @complete="searchSize"
-    @item-select="emit('update:modelValue', $event.value)"
-    @change="!value ? emit('update:modelValue', { value: 0, shift: 0 }) : null"
-  />
+    @item-select="model = $event.value"
+  >
+    <template #empty>
+      <p class="py-3 px-5 text-[--text-color-secondary]">
+        {{ t('sizeUnits.incorrect-format') }}
+      </p>
+    </template>
+  </PAutoComplete>
 </template>

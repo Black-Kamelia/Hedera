@@ -8,6 +8,7 @@ main:
   title: Bienvenue sur Hedera
 
 sizeUnits:
+  incorrect-format: Format de taille incorrect
   binary:
     0: octets
     10: Kio

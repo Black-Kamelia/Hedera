@@ -8,6 +8,7 @@ main:
   title: Welcome to Hedera
 
 sizeUnits:
+  incorrect-format: Incorrect size format
   binary:
     0: bytes
     10: KiB

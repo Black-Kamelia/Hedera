@@ -77,8 +77,8 @@ const menuModel = computed(() => [
         header: t('pages.files.delete.title'),
         acceptIcon: 'i-tabler-trash',
         acceptLabel: t('pages.files.delete.submit'),
-        rejectLabel: t('pages.files.delete.cancel'),
         acceptClass: 'p-button-danger',
+        rejectLabel: t('pages.files.delete.cancel'),
         accept: deleteFile,
       })
     },

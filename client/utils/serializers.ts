@@ -1,17 +1,13 @@
 function isISODate(value: string) {
-  const data = new Date(value)
-  return data.toISOString() === value
+  const date = Date.parse(value)
+  return !Number.isNaN(date) && new Date(date).toISOString() === value
 }
 
 export const jsonDateSerializer = {
   serialize: JSON.stringify,
   deserialize(value: string) {
-    return JSON.parse(value, (key, value) => {
-      if (typeof value === 'string') {
-        if (isISODate(value))
-          return new Date(value)
-      }
-      return value
-    })
+    return JSON.parse(value, (_, value) => typeof value === 'string' && isISODate(value)
+      ? new Date(value)
+      : value)
   },
 }

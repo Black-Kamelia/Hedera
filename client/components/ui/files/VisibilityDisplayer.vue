@@ -12,7 +12,7 @@ const mapper = computed(() => ({
   PROTECTED: { icon: 'i-tabler-lock', text: t('pages.files.visibility.protected') },
   PRIVATE: { icon: 'i-tabler-eye-off', text: t('pages.files.visibility.private') },
   UNKNOWN: { icon: 'i-tabler-help-triangle-filled', text: t('pages.files.visibility.unknown') },
-})
+}))
 </script>
 
 <template>

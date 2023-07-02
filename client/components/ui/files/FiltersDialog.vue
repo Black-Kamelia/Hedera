@@ -54,8 +54,8 @@ const types = ref([
 const filters = useFilesFilters()
 
 const visibility = ref<Array<string>>(filters.visibility.value)
-const startingDate = ref<number | null>(filters.startingDate.value)
-const endingDate = ref<number | null>(filters.endingDate.value)
+const startingDate = ref<Date | null>(filters.startingDate.value)
+const endingDate = ref<Date | null>(filters.endingDate.value)
 const minimalSize = ref<FileSize | null>(filters.minimalSize.value)
 const maximalSize = ref<FileSize | null>(filters.maximalSize.value)
 const minimalViews = ref<number | null>(filters.minimalViews.value)

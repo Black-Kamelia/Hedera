@@ -2,8 +2,8 @@ import type { Ref } from 'vue'
 
 export interface FilesFilters {
   visibility: Ref<string[]>
-  startingDate: Ref<number | null>
-  endingDate: Ref<number | null>
+  startingDate: Ref<Date | null>
+  endingDate: Ref<Date | null>
   minimalSize: Ref<FileSize | null>
   maximalSize: Ref<FileSize | null>
   minimalViews: Ref<number | null>
@@ -17,8 +17,8 @@ export interface FilesFilters {
 
 export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): FilesFilters => {
   const visibility = ref<string[]>([])
-  const startingDate = ref<number | null>(null)
-  const endingDate = ref<number | null>(null)
+  const startingDate = ref<Date | null>(null)
+  const endingDate = ref<Date | null>(null)
   const minimalSize = ref<FileSize | null>(null)
   const maximalSize = ref<FileSize | null>(null)
   const minimalViews = ref<number | null>(null)
@@ -71,5 +71,6 @@ export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): F
 }, {
   persist: {
     storage: persistedState.localStorage,
+    serializer: jsonDateSerializer,
   },
 }))

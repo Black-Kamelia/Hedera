@@ -29,7 +29,8 @@ provide(FileTableKey, {
   unselectRow,
 })
 
-const contextMenu = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>(null)
+const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)
+provide(FileTableContextMenuKey, contextMenu)
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
@@ -39,7 +40,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 </script>
 
 <template>
-  <FilesTableContextMenu v-model:context-menu-ref="contextMenu" />
+  <FilesTableContextMenu />
   <PDataTable
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"

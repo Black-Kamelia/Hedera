@@ -9,7 +9,7 @@ export interface FilesTableContext {
 }
 
 export function useFilesTable() {
-  const context = inject<FilesTableContext>(FileTableKey)
+  const context = inject(FileTableKey)
 
   if (!context)
     throw new Error('useFilesTable() is called outside of FilesTable hierarchy')

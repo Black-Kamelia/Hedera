@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
-import type { FilesTableContext } from '~/composables/fileTable/useFilesTable'
 
 const { locale, t, d } = useI18n()
 
@@ -22,7 +21,7 @@ function unselectRow() {
   selectedRow.value = null
 }
 
-provide<FilesTableContext>(FileTableKey, {
+provide(FileTableKey, {
   selectedRow,
   selectedRowId,
   updateSelectedRow,

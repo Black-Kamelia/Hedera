@@ -16,8 +16,7 @@ fun Application.configureExceptionAdvisors() {
 
 private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
     if (Environment.isDev) {
-        println("Exception caught: ${cause.javaClass.name}")
-        cause.printStackTrace()
+        call.application.environment.log.info("Exception caught: ${cause.javaClass.name}", cause)
     }
 
     when (cause) {

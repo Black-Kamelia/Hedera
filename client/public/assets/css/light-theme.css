@@ -854,6 +854,43 @@ hr {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
+.h-radiocard {
+  background: var(--surface-overlay);
+  border: 2px solid var(--surface-d);
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  border-radius: 8px;
+  padding: 1.25em;
+  cursor: pointer;
+}
+
+.h-radiocard * {
+  color: var(--text-color-secondary);
+  transition: color 0.2s;
+}
+
+.h-radiocard.checked {
+  border: 2px solid var(--primary-500);
+}
+
+.h-radiocard.checked * {
+  color: var(--text-color);
+}
+
+.h-radiocard:not(.p-disabled):hover {
+  border-color: var(--primary-500);
+}
+
+.h-radiocard:not(.p-disabled):hover .p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight) {
+  border-color: var(--primary-500);
+}
+
+.h-radiocard:not(.p-disabled).p-focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: var(--focus-ring);
+  border-color: var(--primary-500);
+}
+
 .p-dropdown {
   background: #fff;
   border: 1px solid #d3dbe3;

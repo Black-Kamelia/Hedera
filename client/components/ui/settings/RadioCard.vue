@@ -7,10 +7,19 @@ const { title, subtitle, radioName, value } = defineProps<{
 }>()
 
 const model = defineModel<any>()
+const focus = ref(false)
 </script>
 
 <template>
-  <div class="p-5 rounded-lg border-1 border-[var(--surface-border)] hover:border-[var(--primary-500)] bg-[--surface-c] cursor-pointer" @click="model = value">
+  <div
+    class="h-radiocard"
+    :class="{ 'checked': model === value, 'p-focus': focus }"
+    @click="model = value"
+    @focus="focus = true"
+    @focusin="focus = true"
+    @focusout="focus = false"
+    @blur="focus = false"
+  >
     <div class="flex flex-col items-stretch text-[var(--text-color)]">
       <div class="flex flex-row justify-between items-center gap-8">
         <div class="flex flex-col items-start">

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { DynamicDialogInstance } from 'primevue/dynamicdialogoptions'
-import type { ComputedRef } from 'vue/dist/vue'
+import type { ComputedRef } from 'vue'
 
 const { t } = useI18n()
 const dialog = inject<ComputedRef<DynamicDialogInstance>>('dialogRef')

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DataTableRowContextMenuEvent } from 'primevue/datatable'
+import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 import type { FilesTableContext } from '~/composables/fileTable/useFilesTable'
 
@@ -34,6 +34,9 @@ const contextMenu = ref<Nullable<CompElement<InstanceType<typeof PContextMenu>>>
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
+  window.open(`/${event.data.code}`)
+}
 </script>
 
 <template>
@@ -50,6 +53,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
     context-menu
     class="h-full"
     @row-contextmenu="onRowContextMenu"
+    @row-dblclick="onRowDoubleClick"
   >
     <PColumn selection-mode="multiple" />
 

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const { data } = definePropsRefs<{
+const { data } = defineProps<{
   data: FileRepresentationDTO
 }>()
 
 const el = ref()
 const hovered = useElementHover(el)
 
-const { thumbnail, isLoading, isError } = useThumbnail(data.value.code)
+const { thumbnail, isLoading, isError } = useThumbnail(data.code)
 </script>
 
 <template>

@@ -32,7 +32,7 @@ export default function useRenameFile() {
         header: t('pages.files.rename.title'),
         modal: true,
         draggable: false,
-        contentClass: 'min-w-30em',
+        contentStyle: { 'min-width': '30em' },
       },
       data: {
         name: selectedRow.value?.name,

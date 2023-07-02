@@ -15,7 +15,7 @@ export function useRenameFile() {
   const { selectedRow, selectedRowId, updateSelectedRow, unselectRow } = useFilesTable()
   const dialog = useDialog()
 
-  const onClose = (options?: DynamicDialogOptions) => {
+  function onClose(options?: DynamicDialogOptions) {
     if (!options?.data)
       return
     const newName = options?.data.newName as string

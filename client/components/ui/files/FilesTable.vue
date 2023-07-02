@@ -55,7 +55,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
-    <PColumn selection-mode="multiple" />
+    <PColumn style="width: 3.375em;" selection-mode="multiple" />
 
     <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">

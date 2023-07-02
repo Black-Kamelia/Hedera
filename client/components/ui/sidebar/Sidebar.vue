@@ -73,7 +73,10 @@ function toggleSidebar() {
         <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
         <SidebarButton :icon="themeIcon" :label="themeName" :open="sidebar.open" @click="toggle()" />
         <div class="sep" />
-        <SidebarButton icon="i-tabler-user-circle" :label="user?.username ?? ''" :open="sidebar.open" />
+        <SidebarButton
+          icon="i-tabler-user-circle" :label="user?.username ?? ''" :open="sidebar.open"
+          :active="route => route.startsWith('/profile')" @click="navigateTo('/profile')"
+        />
       </div>
     </div>
   </aside>

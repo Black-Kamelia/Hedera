@@ -47,6 +47,8 @@ pages:
     title: Configuration
   debug:
     title: Debug
+  profile:
+    title: '{username}''s profile'
 
 forms:
   submit: Submit

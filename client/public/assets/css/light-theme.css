@@ -855,7 +855,7 @@ hr {
 }
 
 .h-radiocard {
-  background: var(--surface-overlay);
+  background: var(--surface-c);
   border: 2px solid var(--surface-d);
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
   border-radius: 8px;
@@ -869,6 +869,7 @@ hr {
 }
 
 .h-radiocard.checked {
+  background: var(--surface-overlay);
   border: 2px solid var(--primary-500);
 }
 

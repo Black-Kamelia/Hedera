@@ -133,15 +133,13 @@ export function reactiveFilters(filters: ReturnType<typeof useFilesFilters>) {
 }
 
 export function loadFilters(localFilters: FileFilters, filters: ReturnType<typeof useFilesFilters>) {
-  filters.updateFilters({
-    visibility: localFilters.visibility,
-    startingDate: localFilters.startingDate,
-    endingDate: localFilters.endingDate,
-    minimalSize: localFilters.minimalSize,
-    maximalSize: localFilters.maximalSize,
-    minimalViews: localFilters.minimalViews,
-    maximalViews: localFilters.maximalViews,
-    formats: localFilters.formats,
-    owners: localFilters.owners,
-  })
+  localFilters.visibility = filters.visibility
+  localFilters.startingDate = filters.startingDate
+  localFilters.endingDate = filters.endingDate
+  localFilters.minimalSize = filters.minimalSize
+  localFilters.maximalSize = filters.maximalSize
+  localFilters.minimalViews = filters.minimalViews
+  localFilters.maximalViews = filters.maximalViews
+  localFilters.formats = filters.formats
+  localFilters.owners = filters.owners
 }

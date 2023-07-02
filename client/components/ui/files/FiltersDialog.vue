@@ -52,7 +52,7 @@ const types = [
 ]
 
 const filters = useFilesFilters()
-let localFilters = reactiveFilters(filters)
+const localFilters = reactiveFilters(filters)
 
 function applyAndClose() {
   filters.updateFilters(localFilters)
@@ -61,7 +61,6 @@ function applyAndClose() {
 
 function resetAndClose() {
   filters.reset()
-  localFilters = reactiveFilters(filters)
   visible.value = false
 }
 

@@ -6,7 +6,7 @@ export const useRenameFileDialog = defineStore('renameFileDialog', {
   state: () => ({ name: '' }),
 })
 
-export default function useRenameFile() {
+export function useRenameFile() {
   const axios = useAxiosFactory()
   const { t } = useI18n()
   const call = useFeedbackCall((fileId: string, newName: string) => {
@@ -18,7 +18,7 @@ export default function useRenameFile() {
   const onClose = (options?: DynamicDialogOptions) => {
     if (!options?.data)
       return
-    const { newName } = options?.data as { newName: string }
+    const newName = options?.data.newName as string
     if (!selectedRowId.value)
       return
     call(selectedRowId.value, newName)

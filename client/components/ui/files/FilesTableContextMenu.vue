@@ -30,7 +30,7 @@ const menuModel = computed(() => [
     command: renameFile,
   },
   {
-    label: t('pages.files.context_menu.changevisibility'),
+    label: t('pages.files.context_menu.change_visibility'),
     icon: 'i-tabler-eye',
     items: [
       {
@@ -57,7 +57,7 @@ const menuModel = computed(() => [
     ],
   },
   {
-    label: t('pages.files.context_menu.copylink'),
+    label: t('pages.files.context_menu.copy_link'),
     icon: 'i-tabler-link',
     disabled: !isSupported.value,
     command: copyFileLink,

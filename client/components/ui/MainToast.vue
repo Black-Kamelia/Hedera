@@ -1,5 +1,17 @@
 <script lang="ts" setup>
 const toast = useToast()
+
+function getIcon(severity: string, detail?: { icon: string }) {
+  if (detail?.icon)
+    return detail.icon
+  if (severity === 'success')
+    return 'i-tabler-circle-check-filled'
+  if (severity === 'info')
+    return 'i-tabler-info-circle-filled'
+  if (severity === 'warn')
+    return 'i-tabler-alert-triangle-filled'
+  return 'i-tabler-alert-circle-filled'
+}
 </script>
 
 <template>
@@ -14,11 +26,7 @@ const toast = useToast()
   >
     <template #message="{ message: { detail, severity, summary } }">
       <div class="flex gap-2 pr-1" :class="{ 'items-center': !detail?.text }">
-        <i v-if="detail?.icon" :class="detail!.icon" />
-        <i v-else-if="severity === 'success'" class="i-tabler-circle-check-filled" />
-        <i v-else-if="severity === 'info'" class="i-tabler-info-circle-filled" />
-        <i v-else-if="severity === 'warn'" class="i-tabler-alert-triangle-filled" />
-        <i v-else-if="severity === 'error'" class="i-tabler-alert-circle-filled" />
+        <i :class="getIcon(severity, detail)" />
         <div class="flex flex-col gap-1">
           <span class="font-bold">
             {{ summary }}

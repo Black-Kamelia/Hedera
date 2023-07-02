@@ -16,9 +16,8 @@ object Actions {
 
                 private const val PREFIX = "${Update.PREFIX}.visibility"
 
-                const val SUCCESS = "$PREFIX.success"
                 object Success {
-                    private const val PREFIX = SUCCESS
+                    private const val PREFIX = "${Visibility.PREFIX}.success"
                     const val TITLE = "$PREFIX.title"
                     const val MESSAGE = "$PREFIX.message"
                 }
@@ -29,9 +28,8 @@ object Actions {
 
                 private const val PREFIX = "${Update.PREFIX}.name"
 
-                const val SUCCESS = "$PREFIX.success"
                 object Success {
-                    private const val PREFIX = SUCCESS
+                    private const val PREFIX = "${Name.PREFIX}.success"
                     const val TITLE = "$PREFIX.title"
                     const val MESSAGE = "$PREFIX.message"
                 }

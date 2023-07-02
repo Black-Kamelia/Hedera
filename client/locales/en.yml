@@ -101,6 +101,10 @@ pages:
       cancel: Cancel
       submit: Delete
     search_by_name: Search by name...
+    empty:
+      title: Looks pretty empty in here
+      description: You have not uploaded any files yet.
+      upload_button: Upload a file
   favorites:
     title: Favorites
   upload:

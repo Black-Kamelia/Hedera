@@ -101,6 +101,10 @@ pages:
       cancel: Annuler
       submit: Supprimer
     search_by_name: Rechercher par nom...
+    empty:
+      title: Ça semble vide par ici
+      description: Vous n'avez pas encore envoyé de fichiers.
+      upload_button: Envoyer un fichier
   favorites:
     title: Favoris
   upload:

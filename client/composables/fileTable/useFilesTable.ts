@@ -8,8 +8,8 @@ export interface FilesTableContext {
   unselectRow: () => void
 }
 
-export default function useFilesTable() {
-  const context = inject<FilesTableContext>(fileTableKey)!
+export function useFilesTable() {
+  const context = inject<FilesTableContext>(fileTableKey)
 
   if (!context)
     throw new Error('useFilesTable() is called outside of FilesTable hierarchy')

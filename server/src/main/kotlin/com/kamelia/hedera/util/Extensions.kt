@@ -6,7 +6,6 @@ import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.rest.file.FileSizeDTO
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -176,13 +175,3 @@ private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy
 fun String.Companion.random(size: Int) = (1..size)
     .map { CHARSET.random() }
     .joinToString("")
-
-fun Long.toSizeDTO(): FileSizeDTO {
-    var size = this.toDouble()
-    var shift = 0
-    do {
-        size /= 1024
-        shift += 10
-    } while (size > 1024)
-    return FileSizeDTO(String.format("%.2f", size), shift)
-}

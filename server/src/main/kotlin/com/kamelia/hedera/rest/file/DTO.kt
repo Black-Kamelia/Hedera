@@ -5,7 +5,6 @@ package com.kamelia.hedera.rest.file
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.util.UUIDSerializer
-import com.kamelia.hedera.util.toSizeDTO
 import com.kamelia.hedera.util.uuid
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -66,3 +65,13 @@ data class FileOwnerDTO(
 data class FilePageDTO(
     val page: PageDTO<FileRepresentationDTO>,
 ) : DTO
+
+fun Long.toSizeDTO(): FileSizeDTO {
+    var size = toDouble()
+    var shift = 0
+    do {
+        size /= 1024
+        shift += 10
+    } while (size > 1024)
+    return FileSizeDTO(String.format("%.2f", size), shift)
+}

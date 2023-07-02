@@ -891,6 +891,13 @@ hr {
   border-color: var(--primary-500);
 }
 
+.h-radiocard:not(.p-disabled).p-focus .p-radiobutton .p-radiobutton-box:not(.p-disabled) {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 1px var(--primary-600);
+  border-color: var(--primary-500);
+}
+
 .p-dropdown {
   background: #1d1e27;
   border: 1px solid #2e303d;

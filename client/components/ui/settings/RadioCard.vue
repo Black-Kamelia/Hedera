@@ -14,6 +14,7 @@ const focus = ref(false)
   <div
     class="h-radiocard"
     :class="{ 'checked': model === value, 'p-focus': focus }"
+    tabindex="-1"
     @click="model = value"
     @focus="focus = true"
     @focusin="focus = true"

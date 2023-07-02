@@ -22,7 +22,7 @@ function unselectRow() {
   selectedRow.value = null
 }
 
-provide<FilesTableContext>(fileTableKey, {
+provide<FilesTableContext>(FileTableKey, {
   selectedRow,
   selectedRowId,
   updateSelectedRow,

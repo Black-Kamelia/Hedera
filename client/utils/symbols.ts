@@ -1,1 +1,1 @@
-export const fileTableKey = Symbol('fileTable')
+export const FileTableKey = Symbol('fileTable')

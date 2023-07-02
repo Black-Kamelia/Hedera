@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import TopbarSeparator from '~/components/ui/topbar/TopbarSeparator.vue'
-
 const { logout } = useAuth()
 
 const pageName = usePageName()

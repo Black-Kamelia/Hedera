@@ -6,7 +6,31 @@ const { data } = defineProps<{
 const el = ref()
 const hovered = useElementHover(el)
 
-const { thumbnail, isLoading, isError } = useThumbnail(data.code)
+const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
+
+const icon = computed(() => {
+  if (data.mimeType.startsWith('image/')) {
+    if (isError)
+      return 'i-tabler-photo-exclamation'
+    if (!isLoading && !thumbnail)
+      return 'i-tabler-photo-x'
+
+    return 'i-tabler-photo'
+  }
+  if (data.mimeType.startsWith('audio/'))
+    return 'i-tabler-music'
+  if (data.mimeType.startsWith('video/'))
+    return 'i-tabler-video'
+  if (data.mimeType.startsWith('text/'))
+    return 'i-tabler-file-text'
+  if (data.mimeType === 'application/zip')
+    return 'i-tabler-file-zip'
+  if (data.mimeType === 'application/pdf')
+    return 'i-tabler-file-text'
+  if (data.mimeType === 'application/unknown')
+    return 'i-tabler-file-unknown'
+  return 'i-tabler-file'
+})
 </script>
 
 <template>
@@ -16,11 +40,11 @@ const { thumbnail, isLoading, isError } = useThumbnail(data.code)
   >
     <div
       class="absolute flex flex-center w-full h-full" :class="{
-        preview: !data.mimeType.startsWith('image/') || (!isLoading && !thumbnail),
+        preview: !isLoading && !thumbnail,
         error: !isLoading && isError,
       }"
     >
-      <div v-if="data.mimeType.startsWith('image/') && (isLoading || thumbnail)" class="h-full w-full">
+      <div v-if="isLoading || thumbnail" class="h-full w-full">
         <PSkeleton v-if="isLoading" width="6rem" height="4rem" />
         <img
           v-if="!isLoading && thumbnail"
@@ -29,15 +53,7 @@ const { thumbnail, isLoading, isError } = useThumbnail(data.code)
           :alt="data.name"
         >
       </div>
-      <i v-else-if="data.mimeType.startsWith('image/') && !isLoading && !thumbnail && !isError" class="i-tabler-photo-x" />
-      <i v-else-if="data.mimeType.startsWith('image/') && !isLoading && isError" class="i-tabler-photo-exclamation" />
-      <i v-else-if="data.mimeType.startsWith('audio/')" class="i-tabler-music" />
-      <i v-else-if="data.mimeType.startsWith('video/')" class="i-tabler-video" />
-      <i v-else-if="data.mimeType.startsWith('text/')" class="i-tabler-file-text" />
-      <i v-else-if="data.mimeType === 'application/zip'" class="i-tabler-file-zip" />
-      <i v-else-if="data.mimeType === 'application/pdf'" class="i-tabler-file-text" />
-      <i v-else-if="data.mimeType === 'application/unknown'" class="i-tabler-file-unknown" />
-      <i v-else class="i-tabler-file" />
+      <i v-else :class="icon" />
     </div>
     <Transition>
       <a

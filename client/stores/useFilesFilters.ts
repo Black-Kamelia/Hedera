@@ -1,6 +1,18 @@
 import type { Ref } from 'vue'
 
-export interface FilesFilters {
+export interface FileFilters {
+  visibility: string[]
+  startingDate: Date | null
+  endingDate: Date | null
+  minimalSize: FileSize | null
+  maximalSize: FileSize | null
+  minimalViews: number | null
+  maximalViews: number | null
+  formats: string[]
+  owners: string[]
+}
+
+export interface FilesFiltersStore {
   visibility: Ref<string[]>
   startingDate: Ref<Date | null>
   endingDate: Ref<Date | null>
@@ -12,9 +24,11 @@ export interface FilesFilters {
   owners: Ref<string[]>
   activeFilters: Ref<number>
   isEmpty: Ref<boolean>
+  updateFilters: (filters: Partial<FileFilters>) => void
+  reset: () => void
 }
 
-export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): FilesFilters => {
+export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore => {
   const visibility = ref<string[]>([])
   const startingDate = ref<Date | null>(null)
   const endingDate = ref<Date | null>(null)
@@ -41,6 +55,47 @@ export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): F
 
   const isEmpty = computed(() => activeFilters.value === 0)
 
+  function updateFilters(filters: Partial<FileFilters>) {
+    if (filters.visibility !== undefined)
+      visibility.value = filters.visibility
+
+    if (filters.startingDate !== undefined)
+      startingDate.value = filters.startingDate
+
+    if (filters.endingDate !== undefined)
+      endingDate.value = filters.endingDate
+
+    if (filters.minimalSize !== undefined)
+      minimalSize.value = filters.minimalSize
+
+    if (filters.maximalSize !== undefined)
+      maximalSize.value = filters.maximalSize
+
+    if (filters.minimalViews !== undefined)
+      minimalViews.value = filters.minimalViews
+
+    if (filters.maximalViews !== undefined)
+      maximalViews.value = filters.maximalViews
+
+    if (filters.formats !== undefined)
+      formats.value = filters.formats
+
+    if (filters.owners !== undefined)
+      owners.value = filters.owners
+  }
+
+  function reset() {
+    visibility.value = []
+    startingDate.value = null
+    endingDate.value = null
+    minimalSize.value = null
+    maximalSize.value = null
+    minimalViews.value = null
+    maximalViews.value = null
+    formats.value = []
+    owners.value = []
+  }
+
   return {
     visibility,
     startingDate,
@@ -53,10 +108,40 @@ export const useFilesFilters = s<FilesFilters>(defineStore('filesFilters', (): F
     owners,
     activeFilters,
     isEmpty,
+    updateFilters,
+    reset,
   }
 }, {
   persist: {
     storage: persistedState.localStorage,
     serializer: jsonDateSerializer,
   },
-}))
+})
+
+export function reactiveFilters(filters: ReturnType<typeof useFilesFilters>) {
+  return reactive({
+    visibility: filters.visibility,
+    startingDate: filters.startingDate,
+    endingDate: filters.endingDate,
+    minimalSize: filters.minimalSize,
+    maximalSize: filters.maximalSize,
+    minimalViews: filters.minimalViews,
+    maximalViews: filters.maximalViews,
+    formats: filters.formats,
+    owners: filters.owners,
+  })
+}
+
+export function loadFilters(localFilters: FileFilters, filters: ReturnType<typeof useFilesFilters>) {
+  filters.updateFilters({
+    visibility: localFilters.visibility,
+    startingDate: localFilters.startingDate,
+    endingDate: localFilters.endingDate,
+    minimalSize: localFilters.minimalSize,
+    maximalSize: localFilters.maximalSize,
+    minimalViews: localFilters.minimalViews,
+    maximalViews: localFilters.maximalViews,
+    formats: localFilters.formats,
+    owners: localFilters.owners,
+  })
+}

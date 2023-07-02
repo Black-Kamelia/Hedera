@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { loadFilters, reactiveFilters } from '~/stores/useFilesFilters'
+
 const visible = defineModel<boolean>('visible')
 
 const { t } = useI18n()
@@ -50,56 +52,22 @@ const types = [
 ]
 
 const filters = useFilesFilters()
-
-const localFilters = reactive({
-  visibility: filters.visibility.value,
-  startingDate: filters.startingDate.value,
-  endingDate: filters.endingDate.value,
-  minimalSize: filters.minimalSize.value,
-  maximalSize: filters.maximalSize.value,
-  minimalViews: filters.minimalViews.value,
-  maximalViews: filters.maximalViews.value,
-  formats: filters.formats.value,
-  owners: filters.owners.value,
-  reset() {
-    this.visibility = []
-    this.startingDate = null
-    this.endingDate = null
-    this.minimalSize = null
-    this.maximalSize = null
-    this.minimalViews = null
-    this.maximalViews = null
-    this.formats = []
-    this.owners = []
-  },
-})
+let localFilters = reactiveFilters(filters)
 
 function applyAndClose() {
-  filters.visibility.value = localFilters.visibility
-  filters.startingDate.value = localFilters.startingDate
-  filters.endingDate.value = localFilters.endingDate
-  filters.minimalSize.value = localFilters.minimalSize
-  filters.maximalSize.value = localFilters.maximalSize
-  filters.minimalViews.value = localFilters.minimalViews
-  filters.maximalViews.value = localFilters.maximalViews
-  filters.formats.value = localFilters.formats
-  filters.owners.value = localFilters.owners
-
+  filters.updateFilters(localFilters)
   visible.value = false
 }
 
-watch(visible, () => {
-  if (visible.value) {
-    localFilters.visibility = filters.visibility.value
-    localFilters.startingDate = filters.startingDate.value
-    localFilters.endingDate = filters.endingDate.value
-    localFilters.minimalSize = filters.minimalSize.value
-    localFilters.maximalSize = filters.maximalSize.value
-    localFilters.minimalViews = filters.minimalViews.value
-    localFilters.maximalViews = filters.maximalViews.value
-    localFilters.formats = filters.formats.value
-    localFilters.owners = filters.owners.value
-  }
+function resetAndClose() {
+  filters.reset()
+  localFilters = reactiveFilters(filters)
+  visible.value = false
+}
+
+watch(visible, (visible) => {
+  if (visible)
+    loadFilters(localFilters, filters)
 })
 </script>
 
@@ -169,8 +137,8 @@ watch(visible, () => {
     </div>
 
     <template #footer>
-      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="localFilters.reset()" />
-      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="applyAndClose()" />
+      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="resetAndClose" />
+      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="applyAndClose" />
     </template>
   </PDialog>
 </template>

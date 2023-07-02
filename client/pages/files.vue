@@ -28,8 +28,8 @@ watch(isFinished, (isFinished) => {
       <PButton
         icon="i-tabler-filter"
         :label="t('pages.files.advanced_filters')"
-        :outlined="filters.isEmpty.value"
-        :badge="filters.isEmpty.value ? undefined : String(filters.activeFilters.value)"
+        :outlined="filters.isEmpty"
+        :badge="filters.isEmpty ? undefined : String(filters.activeFilters)"
         @click="openFiltersDialog = true"
       />
     </div>

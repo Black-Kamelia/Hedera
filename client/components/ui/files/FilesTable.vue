@@ -37,7 +37,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 </script>
 
 <template>
-  <FilesTableContextMenu v-model:ref="contextMenu" />
+  <FilesTableContextMenu v-model:context-menu-ref="contextMenu" />
   <PDataTable
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"

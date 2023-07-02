@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PContextMenu } from '#components'
 
-const cm = defineModel<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>('ref')
+const cm = defineModel<Nullable<CompElement<InstanceType<typeof PContextMenu>>>>('contextMenuRef')
 
 const { t } = useI18n()
 const { isSupported } = useClipboard()

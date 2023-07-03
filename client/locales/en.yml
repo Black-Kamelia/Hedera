@@ -7,17 +7,23 @@ global:
 main:
   title: Welcome to Hedera
 
-sizeUnits:
-  0: bytes
-  10: KiB
-  20: MiB
-  30: GiB
-  40: TiB
-  50: PiB
-  60: EiB
-  70: ZiB
-  80: YiB
-unlimited-quota: Unlimited quota
+size_units:
+  incorrect_format: Incorrect size format
+  binary:
+    0: bytes
+    10: KiB
+    20: MiB
+    30: GiB
+    40: TiB
+    50: PiB
+  decimal:
+    0: bytes
+    3: KB
+    6: MB
+    9: GB
+    12: TB
+    15: PB
+unlimited_quota: Unlimited quota
 
 sidebar:
   docs: Documentation
@@ -32,11 +38,73 @@ pages:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
-  resetPassword:
-      title: Reset password
-      login: Back to login
+  reset_password:
+    title: Reset password
+    login: Back to login
   files:
     title: Files
+    link_copied: The link has been copied to the clipboard
+    visibility:
+      public: Public
+      private: Private
+      unlisted: Unlisted
+      protected: Protected
+      unknown: Unknown
+    table:
+      preview: Preview
+      name: Name
+      size: Size
+      format: Format
+      owner: Owner
+      visibility: Visibility
+      creation_date: Creation date
+      views: Views
+    context_menu:
+      open: Open
+      rename: Rename
+      change_visibility: Change visibility
+      copy_link: Copy link
+      download: Download
+      delete: Delete
+      unselect: Unselect
+    advanced_filters: Advanced filters
+    filters:
+      minimum_size: Minimum size
+      maximum_size: Maximum size
+      minimal_views: Minimum views
+      maximal_views: Maximum views
+      start_date: Start date
+      end_date: End date
+      formats: '{0} selected formats'
+      all_formats: All formats
+      owners: '{0} selected owners'
+      all_owners: Everyone
+      reset: Reset
+      apply: Apply filters
+    rename:
+      title: Rename a file
+      success: The file has been renamed
+      error: The file could not be renamed
+      cancel: Cancel
+      submit: Rename
+    change_visibility:
+      title: Change the visibility of a file
+      success: The visibility has been changed
+      error: The visibility could not be changed
+      cancel: Cancel
+      submit: Change
+    delete:
+      title: Delete a file
+      success: The file has been deleted
+      error: The file could not be deleted
+      warning: Are you sure you want to delete this file? This action is irreversible.
+      cancel: Cancel
+      submit: Delete
+    search_by_name: Search by name...
+    empty:
+      title: Looks pretty empty in here
+      description: You have not uploaded any files yet.
+      upload_button: Upload a file
   favorites:
     title: Favorites
   upload:
@@ -59,20 +127,41 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
-  resetPassword:
+  reset_password:
     errors:
       missing_email: Email is required
       invalid_email: Invalid email address format
     fields:
       email: Email address
 
+actions:
+  files:
+    delete:
+      success:
+        title: Successfully deleted
+        message: The file “{name}” has been deleted
+    update:
+      visibility:
+        success:
+          title: Visibility changed
+          message: The file “{name}” is now {newVisibility}
+      name:
+        success:
+          title: Successfully renamed
+          message: The file “{oldName}” has been renamed to “{newName}”
+
 errors:
   unknown: An unknown error has occurred
+  network: Network is unreachable
   auth:
     invalid_credentials: Username or password is incorrect
     account_disabled: Your account is disabled
   tokens:
     expired_or_invalid: Your session has expired, please log in again
+  parsing:
+    invalid_uuid: Invalid unique identifier
+  files:
+    not_found: This file does not exist
 
 theme:
   dark: Dark

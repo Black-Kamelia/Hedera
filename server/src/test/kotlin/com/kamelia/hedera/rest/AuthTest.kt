@@ -2,8 +2,8 @@ package com.kamelia.hedera.rest
 
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.ErrorDTO
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
 import com.kamelia.hedera.loginBlocking
@@ -38,7 +38,7 @@ class AuthTest {
         val (response, _) = login("user1", "wrongPassword")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
 
-        val error = Json.decodeFromString(ErrorDTO.serializer(), response.bodyAsText())
+        val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
         assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.key)
     }
 
@@ -48,13 +48,13 @@ class AuthTest {
         val (response, _) = login("userDisabled", "password")
         assertEquals(HttpStatusCode.Forbidden, response.status)
 
-        val error = Json.decodeFromString(ErrorDTO.serializer(), response.bodyAsText())
+        val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
         assertEquals(Errors.Auth.ACCOUNT_DISABLED, error.key)
     }
 
     @DisplayName("Performing protected request with valid access token")
     @Test
-    fun useValidAccessToken() = authTestApplication {
+    fun useValidAccessToken() = testApplication {
         val (loginResponse, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
 
@@ -108,7 +108,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session gives different tokens")
     @Test
-    fun refreshSessionGivesDifferentToken() = authTestApplication {
+    fun refreshSessionGivesDifferentToken() = testApplication {
         val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, loginResponse.status)
@@ -125,7 +125,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session gives working new tokens")
     @Test
-    fun refreshSessionGivesWorkingTokens() = authTestApplication {
+    fun refreshSessionGivesWorkingTokens() = testApplication {
         val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, loginResponse.status)
@@ -143,7 +143,7 @@ class AuthTest {
 
     @DisplayName("Logging out invalidates access token")
     @Test
-    fun logOutInvalidateAccessToken() = authTestApplication {
+    fun logOutInvalidateAccessToken() = testApplication {
         val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, loginResponse.status)
@@ -166,7 +166,7 @@ class AuthTest {
 
     @DisplayName("Logging out invalidates refresh token")
     @Test
-    fun logOutInvalidateRefreshToken() = authTestApplication {
+    fun logOutInvalidateRefreshToken() = testApplication {
         val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, loginResponse.status)
@@ -184,7 +184,7 @@ class AuthTest {
 
     @DisplayName("Logging out all invalidates every access token")
     @Test
-    fun logOutAllInvalidatesEveryAccessToken() = authTestApplication {
+    fun logOutAllInvalidatesEveryAccessToken() = testApplication {
         val (_, tokens1) = loginBlocking("user1", "password")
         check(tokens1 != null) { "Tokens should not be null" }
         val (_, tokens2) = loginBlocking("user1", "password")
@@ -208,7 +208,7 @@ class AuthTest {
 
     @DisplayName("Logging out all invalidates every refresh token")
     @Test
-    fun logOutAllInvalidatesEveryRefreshToken() = authTestApplication {
+    fun logOutAllInvalidatesEveryRefreshToken() = testApplication {
         val (_, tokens1) = loginBlocking("user1", "password")
         check(tokens1 != null) { "Tokens should not be null" }
         val (_, tokens2) = loginBlocking("user1", "password")
@@ -232,7 +232,7 @@ class AuthTest {
 
     @DisplayName("Session updates accordingly to user")
     @Test
-    fun sessionUpdatesAccordinglyToUser() = authTestApplication {
+    fun sessionUpdatesAccordinglyToUser() = testApplication {
         val (loginResponse, tokens) = login("auth_update_user", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
 
@@ -249,7 +249,7 @@ class AuthTest {
 
     @DisplayName("Session updates role when promoting user")
     @Test
-    fun sessionUpdatesRoleAtPromotion() = authTestApplication {
+    fun sessionUpdatesRoleAtPromotion() = testApplication {
         val (ownerLoginResponse, ownerTokens) = login("test-auth-2-owner", "password")
         assertEquals(HttpStatusCode.OK, ownerLoginResponse.status)
         val (userLoginResponse, userTokens) = login("test-auth-2-user", "password")
@@ -275,7 +275,7 @@ class AuthTest {
 
     @DisplayName("Session updates role when demoting user")
     @Test
-    fun sessionUpdatesRoleAtDemotion() = authTestApplication {
+    fun sessionUpdatesRoleAtDemotion() = testApplication {
         val (ownerLoginResponse, ownerTokens) = login("test-auth-3-owner", "password")
         assertEquals(HttpStatusCode.OK, ownerLoginResponse.status)
         val (adminLoginResponse, adminTokens) = login("test-auth-3-admin", "password")
@@ -301,7 +301,7 @@ class AuthTest {
 
     @DisplayName("Disabling a user logs them out")
     @Test
-    fun disablingUserLogsThemOut() = authTestApplication {
+    fun disablingUserLogsThemOut() = testApplication {
         val (ownerLoginResponse, ownerTokens) = loginBlocking("test-auth-4-owner", "password")
         assertEquals(HttpStatusCode.OK, ownerLoginResponse.status)
         val (userLoginResponse, userTokens) = loginBlocking("test-auth-4-regular", "password")

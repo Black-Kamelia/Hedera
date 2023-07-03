@@ -4,7 +4,6 @@ import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.Users
-import com.kamelia.hedera.util.MimeTypes
 import com.kamelia.hedera.util.uuid
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -26,6 +25,8 @@ enum class FileVisibility {
             null
         }
     }
+
+    fun toMessageKey() = "pages.files.visibility.${name.lowercase()}"
 }
 
 object Files : AuditableUUIDTable("files") {
@@ -75,7 +76,8 @@ object Files : AuditableUUIDTable("files") {
     fun update(file: File, dto: FileUpdateDTO, updater: User): File = file.apply {
         dto.name?.let {
             name = it
-            mimeType = MimeTypes.typeFromFile(it)
+            // TODO: Mime Type update is under discussion
+            // mimeType = MimeTypes.typeFromFile(it)
         }
         dto.visibility?.let { visibility = it }
 

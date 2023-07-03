@@ -61,11 +61,11 @@ function toggleSidebar() {
           :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
         />
         <SidebarButton
-          v-if="isAdmin" icon="i-tabler-settings" :label="t('pages.configuration.title')" :open="sidebar.open"
+          v-if="isAdmin" icon="i-tabler-tool" :label="t('pages.configuration.title')" :open="sidebar.open"
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
         <SidebarButton
-          v-if="isDebugEnabled" icon="i-tabler-tool" :label="t('pages.debug.title')" :open="sidebar.open"
+          v-if="isDebugEnabled" icon="i-tabler-traffic-cone" :label="t('pages.debug.title')" :open="sidebar.open"
           :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
         />
       </div>

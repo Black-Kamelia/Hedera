@@ -1,63 +1,44 @@
 <script setup lang="ts">
-import HorizontalActionPanel from '~/components/ui/settings/HorizontalActionPanel.vue'
-import FileSizeScale from '~/components/pages/profile/settings/FileSizeScale.vue'
+const fileSizeScale = ref('BINARY')
+const defaultFileVisibility = ref('UNLISTED')
+const autoDeleteOldestFiles = ref(false)
+const enableAnimations = ref(true)
+const preferredTheme = ref('DARK')
+const preferredLocale = ref('en')
+const preferredDateTimeFormat = ref()
 
-const selectedCity = ref({ icon: 'i-tabler-link', name: 'Unlisted', value: 'UNLISTED' })
-const cities = ref([
-  { icon: 'i-tabler-world', name: 'Public', value: 'PUBLIC' },
-  { icon: 'i-tabler-link', name: 'Unlisted', value: 'UNLISTED' },
-  { icon: 'i-tabler-eye-off', name: 'Private', value: 'PRIVATE' },
-])
-
-const test = ref('BINARY')
+const animations = useLocalStorage('animations', true)
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
-    <FileSizeScale v-model="test" />
-
     <h1 class="text-2xl">
-      File uploading
+      Envoi de fichiers
     </h1>
+    <DefaultFileVisibility v-model="defaultFileVisibility" />
+    <AutoDeleteOldestFiles v-model="autoDeleteOldestFiles" />
 
-    <HorizontalActionPanel
-      header="Default files visibility"
-      description="Choose a visibility to apply to every file you upload. You can change the visibility of each individual file at any time."
-    >
-      <PDropdown v-model="selectedCity" :options="cities" option-label="name" placeholder="Select a City" class="w-full md:w-14rem">
-        <template #value="slotProps">
-          <div v-if="slotProps.value" class="flex align-items-center">
-            <i :class="`${slotProps.value.icon} mr-2`" />
-            <div>{{ slotProps.value.name }}</div>
-          </div>
-          <span v-else>
-            {{ slotProps.placeholder }}
-          </span>
-        </template>
-        <template #option="slotProps">
-          <div class="flex align-items-center">
-            <i :class="`${slotProps.option.icon} mr-2`" />
-            <div>{{ slotProps.option.name }}</div>
-          </div>
-        </template>
-      </PDropdown>
-    </HorizontalActionPanel>
-
-    <HorizontalActionPanel
-      header="Automatically delete oldest files"
-      description="When you are about to exceed your quota, Hedera will delete some of your oldest files to free some space. Please note that if you try to upload a file that is larger than your quota, it will be rejected without deleting any files."
-    >
-      <PInputSwitch />
-    </HorizontalActionPanel>
     <h1 class="text-2xl mt-6">
-      Display and animations
+      Affichage et animations
     </h1>
+    <FileSizeScale v-model="fileSizeScale" />
+    <EnableAnimations v-model="animations" />
+    <PreferredTheme v-model="preferredTheme" />
+    <PreferredDateTimeFormat v-model="preferredDateTimeFormat" />
+    <PreferredLocale v-model="preferredLocale" />
 
-    <HorizontalActionPanel
-      header="Enabling animations and transitions"
-      description="Hedera uses animations and transitions to make the user experience more enjoyable. If you are experiencing performance issues, you can disable them here."
-    >
-      <PInputSwitch />
-    </HorizontalActionPanel>
+    <div class="flex items-center justify-center flex-col mt-8 p-4 color-[--text-color-secondary]">
+      <div class="logo w-20em h-4em" />
+      <p>Version 0.0.1</p>
+      <small><a href="https://black-kamelia.com/">Black-Kamelia</a> • <a href="https://git.black-kamelia.com/Hedera">GitHub</a></small>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.logo {
+  background-color: var(--text-color-secondary);
+  -webkit-mask: url(/assets/img/Hedera.svg) no-repeat center;
+  mask: url(/assets/img/Hedera.svg) no-repeat center;
+}
+</style>

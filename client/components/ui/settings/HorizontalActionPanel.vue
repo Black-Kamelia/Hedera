@@ -11,9 +11,12 @@ const { header, description } = defineProps<{
       {{ header }}
     </h2>
     <div class="flex items-start flex-col gap-4 md:flex-row md:gap-12">
-      <p class="flex-grow p-text-secondary">
-        {{ description }}
-      </p>
+      <div class="flex items-start flex-grow flex-col gap-2">
+        <p class="flex-grow p-text-secondary">
+          {{ description }}
+        </p>
+        <slot name="cta" />
+      </div>
       <div>
         <slot />
       </div>

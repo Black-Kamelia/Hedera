@@ -121,11 +121,11 @@ pages:
       file_size_scale:
         binary:
           title: Binary scale
-          description: Units are based on powers of 2
+          description: Units are powers of 2
           summary: 1 KiB = 1024 bytes
         decimal:
           title: Decimal scale
-          description: Units are based on powers of 10
+          description: Units are powers of 10
           summary: 1 KB = 1000 bytes
 
 forms:

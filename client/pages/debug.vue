@@ -43,7 +43,7 @@ watch([isDebugEnabled, currentRoute], redirect, { immediate: true })
 </script>
 
 <template>
-  <div class="flex flex-col gap-3">
+  <div class="py-4 px-8 flex flex-col gap-3">
     <div class="flex justify-between">
       <TabNavigation :items="menus" :route-match="(path, item) => path.endsWith(item.path)" />
       <PButton icon="i-tabler-x" label="Close debug" rounded severity="danger" @click="close" />

@@ -7,7 +7,7 @@ const sidebar = useLocalStorage('sidebar', { open: true })
     <Sidebar />
     <div class="flex-grow flex flex-col content ground" :class="{ open: sidebar.open, closed: !sidebar.open }">
       <Topbar />
-      <div class="py-4 px-8 w-full h-full overflow-auto">
+      <div class="w-full h-full overflow-auto">
         <slot />
       </div>
     </div>

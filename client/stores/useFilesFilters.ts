@@ -143,3 +143,15 @@ export function loadFilters(localFilters: FileFilters, filters: ReturnType<typeo
   localFilters.formats = filters.formats
   localFilters.owners = filters.owners
 }
+
+export function resetFilters(localFilters: FileFilters) {
+  localFilters.visibility = []
+  localFilters.startingDate = null
+  localFilters.endingDate = null
+  localFilters.minimalSize = null
+  localFilters.maximalSize = null
+  localFilters.minimalViews = null
+  localFilters.maximalViews = null
+  localFilters.formats = []
+  localFilters.owners = []
+}

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { loadFilters, reactiveFilters } from '~/stores/useFilesFilters'
+import { loadFilters, reactiveFilters, resetFilters } from '~/stores/useFilesFilters'
 
 const visible = defineModel<boolean>('visible')
 
@@ -59,9 +59,8 @@ function applyAndClose() {
   visible.value = false
 }
 
-function resetAndClose() {
-  filters.reset()
-  visible.value = false
+function reset() {
+  resetFilters(localFilters)
 }
 
 watch(visible, (visible) => {
@@ -136,7 +135,7 @@ watch(visible, (visible) => {
     </div>
 
     <template #footer>
-      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="resetAndClose" />
+      <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="reset" />
       <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="applyAndClose" />
     </template>
   </PDialog>

@@ -49,6 +49,24 @@
   color-scheme: dark;
 }
 
+.no-animation,
+.no-animation *,
+.no-animation *:before,
+.no-animation *:after {
+  transition: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition-duration: 0s !important;
+  -webkit-transition-duration: 0s !important;
+  -moz-transition-duration: 0s !important;
+  -o-transition-duration: 0s !important;
+  animation: none !important;
+  -moz-animation: none !important;
+  -webkit-animation: none !important;
+  -o-animation: none !important;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -865,6 +883,7 @@ hr {
 }
 
 .h-radiocard * {
+  user-select: none;
   color: var(--text-color-secondary);
   transition: color 0.2s;
 }

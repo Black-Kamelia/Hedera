@@ -30,7 +30,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "test.test-test_123",
             password = "Test0@aaa",
-            email = "test@test.com"
+            email = "test.signup@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -56,7 +56,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "thisisatest",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.lower@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -78,7 +78,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "this-is-a-test",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.dashes@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -100,7 +100,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "this_is_a_test",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.under@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -122,7 +122,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "this.is.a.test",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.dots@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -144,7 +144,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "this123",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.digits@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -166,7 +166,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "THISISATEST",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.upper@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -182,7 +182,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "this is a test",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.spaces@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -198,7 +198,7 @@ class UserTest {
         val newUserDto = UserDTO(
             username = "test\"'()[]{}/+-:;.,?!@#$%^&*|\\`~",
             password = "password",
-            email = "test@test.com"
+            email = "test.signup.special@test.com"
         )
         val client = client()
         val response = client.post("/api/users/signup") {
@@ -244,7 +244,7 @@ class UserTest {
         val dto = UserDTO(
             username = "admin1",
             password = "Test0@aaa",
-            email = "test@test.com"
+            email = "test.username.exists@test.com"
         )
         val response = client().post("/api/users/signup") {
             contentType(ContentType.Application.Json)
@@ -259,7 +259,7 @@ class UserTest {
         val dto = UserDTO(
             username = "inv@lidTEST",
             password = "Test0@aaa",
-            email = "test@test.com"
+            email = "test.username.invalid@test.com"
         )
         val response = client().post("/api/users/signup") {
             contentType(ContentType.Application.Json)
@@ -274,7 +274,7 @@ class UserTest {
         val dto = UserDTO(
             username = "test",
             password = "Test0@aaa",
-            email = "test@test.com",
+            email = "test.role.invalid@test.com",
             role = UserRole.ADMIN
         )
         val response = client().post("/api/users/signup") {

@@ -47,6 +47,20 @@ pages:
     title: Configuration
   debug:
     title: Débogage
+  profile:
+    title: Profil de {username}
+    settings:
+      file_size_scale:
+        title: Échelle de taille de fichier
+        description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci va affecter la façon dont les quotas peuvent être interprétés.
+        binary:
+          title: Échelle binaire
+          description: Les unités sont basées sur des puissances de 2
+          summary: 1 Kio = 1024 octets
+        decimal:
+          title: Échelle décimale
+          description: Les unités sont basées sur des puissances de 10
+          summary: 1 Ko = 1000 octets
 
 forms:
   submit: Valider

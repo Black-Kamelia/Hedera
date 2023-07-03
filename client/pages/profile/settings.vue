@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import HorizontalActionPanel from '~/components/ui/settings/HorizontalActionPanel.vue'
-import RadioCard from '~/components/ui/settings/RadioCard.vue'
+import FileSizeScale from '~/components/pages/profile/settings/FileSizeScale.vue'
 
 const selectedCity = ref({ icon: 'i-tabler-link', name: 'Unlisted', value: 'UNLISTED' })
 const cities = ref([
@@ -9,40 +9,13 @@ const cities = ref([
   { icon: 'i-tabler-eye-off', name: 'Private', value: 'PRIVATE' },
 ])
 
-const test = ref('binary')
+const test = ref('BINARY')
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
-    <VerticalActionPanel
-      header="Files size representation"
-      description="Choose to display file sizes in decimal or binary scale. This will affect the way quotas can be interpreted."
-    >
-      <div class="flex flex-row gap-3 justify-center">
-        <RadioCard
-          v-model="test"
-          title="Binary scale"
-          subtitle="Unit are based on powers of 2"
-          radio-name="size-scale"
-          value="binary"
-        >
-          <p class="mt-3 text-lg text-center">
-            1 KiB = 1 024 bytes
-          </p>
-        </RadioCard>
-        <RadioCard
-          v-model="test"
-          title="Decimal scale"
-          subtitle="Unit are based on powers of 10"
-          radio-name="size-scale"
-          value="decimal"
-        >
-          <p class="mt-3 text-lg text-center">
-            1 KB = 1 000 bytes
-          </p>
-        </radiocard>
-      </div>
-    </VerticalActionPanel>
+    <FileSizeScale v-model="test" />
+
     <h1 class="text-2xl">
       File uploading
     </h1>

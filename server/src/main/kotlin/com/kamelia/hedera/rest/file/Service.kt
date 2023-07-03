@@ -39,7 +39,7 @@ object FileService {
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
-        Response.ok(
+        Response.created(
             Files.create(
                 code = code,
                 name = filename,

@@ -57,6 +57,7 @@ class Response<out S, out E> private constructor(
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun ok() = success<Nothing>(HttpStatusCode.OK)
+        fun <S> created(value: S) = success(HttpStatusCode.Created, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
         fun badRequest(error: MessageKeyDTO) = error(HttpStatusCode.BadRequest, error)

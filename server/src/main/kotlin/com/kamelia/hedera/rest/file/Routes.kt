@@ -2,6 +2,7 @@ package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.AuthJwt
+import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,7 +14,7 @@ fun Route.filesRoutes() = route("/files") {
 
     authenticate(AuthJwt) {
         uploadFile()
-        getPagedFiles()
+        searchFiles()
         editFile()
         editFileVisibility()
         editFileName()
@@ -89,14 +90,13 @@ private fun Route.getFile() = get("/{code}") {
     )
 }
 
-private fun Route.getPagedFiles() = get("/paged/{uuid?}") {
+private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->
     val uuid = call.getUUIDOrNull("uuid")
     val jwtId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val (page, pageSize) = call.getPageParameters()
-    val definition = call.receivePageDefinition()
 
-    call.respond(FileService.getFiles(userId, page, pageSize, definition, asOwner = uuid == null))
+    call.respond(FileService.getFiles(userId, page, pageSize, body, asOwner = uuid == null))
 }
 
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->

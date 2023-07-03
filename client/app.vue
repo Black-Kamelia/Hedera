@@ -25,10 +25,12 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 useEventBus(LoggedOutEvent).on(() => {
   navigateTo('/login')
 })
+
+const animation = useLocalStorage('animations', true)
 </script>
 
 <template>
-  <div font="text" class="p-input-filled">
+  <div font="text" class="p-input-filled" :class="{ 'no-animation': !animation }">
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />

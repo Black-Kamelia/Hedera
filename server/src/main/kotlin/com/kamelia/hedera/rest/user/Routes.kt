@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.respond
 import com.kamelia.hedera.plugins.AuthJwt
+import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -15,7 +16,7 @@ fun Route.userRoutes() = route("/users") {
     authenticate(AuthJwt) {
         getUserById()
         getAllUsers()
-        getPagedUsers()
+        searchUsers()
         updateUser()
         updateUserPassword()
         deleteUser()
@@ -40,12 +41,11 @@ private fun Route.getAllUsers() = get("/all") {
     call.respond(UserService.getUsers())
 }
 
-private fun Route.getPagedUsers() = get("/paged") {
+private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->
     adminRestrict()
     val (page, pageSize) = call.getPageParameters()
-    val definition = call.receivePageDefinition()
 
-    call.respond(UserService.getUsers(page, pageSize, definition))
+    call.respond(UserService.getUsers(page, pageSize, body))
 }
 
 private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->

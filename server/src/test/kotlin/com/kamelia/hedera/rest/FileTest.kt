@@ -225,7 +225,7 @@ class FileTest {
     fun filesFiltering1() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.get("/api/files/paged") {
+        val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(
                 PageDefinitionDTO(
@@ -263,7 +263,7 @@ class FileTest {
     fun filesFiltering2() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.get("/api/files/paged") {
+        val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(
                 PageDefinitionDTO(

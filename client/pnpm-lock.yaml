@@ -14,8 +14,8 @@ devDependencies:
     specifier: ^0.11.0
     version: 0.11.0(vue-i18n@9.2.2)
   '@notkamui/nuxt-primevue':
-    specifier: ^0.4.1
-    version: 0.4.1(primevue@3.29.2)
+    specifier: ^0.5.0
+    version: 0.5.0(primevue@3.29.2)
   '@nuxt/devtools':
     specifier: ^0.6.1
     version: 0.6.1(nuxt@3.5.3)(vite@4.3.9)
@@ -1246,8 +1246,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@notkamui/nuxt-primevue@0.4.1(primevue@3.29.2):
-    resolution: {integrity: sha512-GQHJKYuu55ScNNwFW0/87sv7oYD+vFnBJrrQP16YeeLj8jyJa1s3v2GgnNIbSVwSYtvJVea5SMqK8/gIafU1SA==}
+  /@notkamui/nuxt-primevue@0.5.0(primevue@3.29.2):
+    resolution: {integrity: sha512-MeuEkm5zP68i52LFlx3fgUKTV1oQJcqlcoQHkCJoKD2lF/O6YgyQzfAs5o9faSX3m57f2hiiTCOcXBx9EHzfRA==}
     peerDependencies:
       primevue: ^3.0.0
     dependencies:

@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.file
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.util.*
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
@@ -14,12 +15,37 @@ fun Route.filesRoutes() = route("/files") {
         uploadFile()
         getPagedFiles()
         editFile()
+        editFileVisibility()
+        editFileName()
         deleteFile()
     }
 
     authenticate(AuthJwt, optional = true) {
         getFile()
     }
+}
+
+
+
+fun Route.rawFileRoute() = get("/{code}") {
+    val authedId = authenticatedUser?.uuid
+    val code = call.getParam("code")
+
+    FileService.getFile(code, authedId).ifSuccessOrElse(
+        onSuccess = { (data) ->
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.owner.id, code)
+            if (file != null) {
+                call.respondFileInline(file, ContentType.parse(data.mimeType))
+            } else {
+                // TODO notify orphaned file
+                call.proxyRedirect("/")
+            }
+        },
+        onError = {
+            call.proxyRedirect("/")
+        },
+    )
 }
 
 private fun Route.uploadFile() = post("/upload") {
@@ -49,7 +75,7 @@ private fun Route.getFile() = get("/{code}") {
     FileService.getFile(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.ownerId, code)
+            val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
@@ -78,6 +104,20 @@ private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(FileService.updateFile(fileId, userId, body))
+}
+
+private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
+    val fileId = call.getUUID("uuid")
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+
+    call.respond(FileService.updateFileVisibility(fileId, userId, body))
+}
+
+private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
+    val fileId = call.getUUID("uuid")
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+
+    call.respond(FileService.updateFileName(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {

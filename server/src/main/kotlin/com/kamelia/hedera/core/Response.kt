@@ -1,20 +1,28 @@
 package com.kamelia.hedera.core
 
+import com.kamelia.hedera.rest.core.DTO
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ErrorDTO(
+data class MessageKeyDTO(
     val key: String,
-    val template: Map<String, String>? = null,
-) {
+    val parameters: Map<String, String>? = null,
+) : DTO {
     companion object {
-        fun of(key: String, template: Map<String, String>? = null) = ErrorDTO(key, template)
-        fun of(key: String, vararg template: Pair<String, String>) = ErrorDTO(key, mapOf(*template))
+        fun of(key: String, template: Map<String, String>? = null) = MessageKeyDTO(key, template)
+        fun of(key: String, vararg template: Pair<String, String>) = MessageKeyDTO(key, mapOf(*template))
     }
 }
+
+@Serializable
+data class MessageDTO<T : DTO>(
+    val title: MessageKeyDTO? = null,
+    val message: MessageKeyDTO,
+    val payload: T? = null,
+) : DTO
 
 class Response<out S, out E> private constructor(
     val status: HttpStatusCode,
@@ -51,12 +59,17 @@ class Response<out S, out E> private constructor(
         fun ok() = success<Nothing>(HttpStatusCode.OK)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
-        fun badRequest(error: ErrorDTO) = error(HttpStatusCode.BadRequest, error)
-        fun badRequest(error: String) = badRequest(ErrorDTO.of(error))
-        fun unauthorized(error: ErrorDTO) = error(HttpStatusCode.Unauthorized, error)
-        fun unauthorized(error: String) = unauthorized(ErrorDTO.of(error))
-        fun forbidden(error: ErrorDTO) = error(HttpStatusCode.Forbidden, error)
-        fun forbidden(error: String) = forbidden(ErrorDTO.of(error))
+        fun badRequest(error: MessageKeyDTO) = error(HttpStatusCode.BadRequest, error)
+        fun badRequest(error: String) = badRequest(MessageKeyDTO.of(error))
+
+        fun unauthorized(error: MessageKeyDTO) = error(HttpStatusCode.Unauthorized, error)
+        fun unauthorized(error: String) = unauthorized(MessageKeyDTO.of(error))
+
+        fun forbidden(error: MessageKeyDTO) = error(HttpStatusCode.Forbidden, error)
+        fun forbidden(error: String) = forbidden(MessageKeyDTO.of(error))
+
+        fun notFound(error: MessageKeyDTO) = error(HttpStatusCode.NotFound, error)
+        fun notFound(error: String) = notFound(MessageKeyDTO.of(error))
         fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
     }
 }

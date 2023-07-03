@@ -100,7 +100,7 @@ defineExpose({
 
 <template>
   <div v-focus-trap class="flex items-center flex-row gap-5">
-    <InputText
+    <PInputText
       v-for="n in OTP_LENGTH" :key="n - 1"
       ref="otpInputRefs"
       :value="modelValue[n - 1]"

@@ -22,6 +22,9 @@ const eslint = new ESLint({
 
 async function main() {
   const results = await eslint.lintFiles('.')
+  if (results.some((result) => result.errorCount > 0 || result.warningCount > 0)) {
+    process.exitCode = 1
+  }
   await ESLint.outputFixes(results)
   const formatter = await eslint.loadFormatter('stylish')
   const resultText = formatter.format(results)

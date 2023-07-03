@@ -1,6 +1,7 @@
 package com.kamelia.hedera.plugins
 
 import com.kamelia.hedera.core.*
+import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
@@ -13,23 +14,31 @@ fun Application.configureExceptionAdvisors() {
 }
 
 
-private suspend fun handleException(call: ApplicationCall, cause: Throwable) = when (cause) {
-    is MissingParameterException,
-    is MissingHeaderException,
-    is SerializationException,
-    is IllegalArgumentException,
-    is InvalidUUIDException,
-    is MultipartParseException,
-    is IllegalFilterException,
-    is UnknownFilterFieldException -> badRequestMessage(call, cause)
+private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
+    if (Environment.isDev) {
+        call.application.environment.log.info("Exception caught: ${cause.javaClass.name}", cause)
+    }
 
-    is MissingTokenException,
-    is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
+    when (cause) {
+        is MissingParameterException,
+        is MissingHeaderException,
+        is SerializationException,
+        is IllegalArgumentException,
+        is InvalidUUIDException,
+        is MultipartParseException,
+        is IllegalFilterException,
+        is UnknownFilterFieldException -> badRequestMessage(call, cause)
 
-    is IllegalActionException,
-    is InsufficientPermissionsException -> forbiddenMessage(call, cause)
+        is MissingTokenException,
+        is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
-    else -> unhandledError(call, cause)
+        is IllegalActionException,
+        is InsufficientPermissionsException -> forbiddenMessage(call, cause)
+
+        is FileNotFoundException -> notFound(call, cause)
+
+        else -> unhandledError(call, cause)
+    }
 }
 
 private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
@@ -47,7 +56,12 @@ private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = 
     else -> call.respondNoSuccess(Response.forbidden(cause.message ?: cause.javaClass.name))
 }
 
+private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.notFound(cause.error))
+    else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
+}
+
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, ErrorDTO.of(Errors.UNKNOWN)))
+    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO.of(Errors.UNKNOWN)))
     call.application.log.error("Unexpected error", cause)
 }

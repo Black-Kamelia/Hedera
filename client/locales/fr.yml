@@ -7,17 +7,23 @@ global:
 main:
   title: Bienvenue sur Hedera
 
-sizeUnits:
-  0: octets
-  10: Kio
-  20: Mio
-  30: Gio
-  40: Tio
-  50: Pio
-  60: Eio
-  70: Zio
-  80: Yio
-unlimited-quota: Quota illimité
+size_units:
+  incorrect_format: Format de taille incorrect
+  binary:
+    0: octets
+    10: Kio
+    20: Mio
+    30: Gio
+    40: Tio
+    50: Pio
+  decimal:
+    0: octets
+    3: Ko
+    6: Mo
+    9: Go
+    12: To
+    15: Po
+unlimited_quota: Quota illimité
 
 sidebar:
   docs: Documentation
@@ -32,11 +38,73 @@ pages:
       expired: Votre session a expiré, veuillez vous reconnecter
       logout_all: Vous avez été déconnecté de tous les appareils
       disabled: Votre compte a été désactivé
-  resetPassword:
+  reset_password:
     title: Réinitialiser le mot de passe
     login: Retour à la connexion
   files:
     title: Fichiers
+    link_copied: Le lien a été copié dans le presse-papier
+    visibility:
+      public: Public
+      private: Privé
+      unlisted: Non répertorié
+      protected: Protégé
+      unknown: Inconnu
+    table:
+      preview: Aperçu
+      name: Nom
+      size: Taille
+      format: Format
+      owner: Propriétaire
+      visibility: Visibilité
+      creation_date: Date de création
+      views: Vues
+    context_menu:
+      open: Ouvrir
+      rename: Renommer
+      change_visibility: Modifier la visibilité
+      copy_link: Copier le lien
+      download: Télécharger
+      delete: Supprimer
+      unselect: Désélectionner
+    advanced_filters: Filtres avancés
+    filters:
+      minimum_size: Taille minimale
+      maximum_size: Taille maximale
+      minimal_views: Nombre minimal de vues
+      maximal_views: Nombre maximal de vues
+      start_date: Date de début
+      end_date: Date de fin
+      formats: '{0} formats sélectionnés'
+      all_formats: Tous les formats
+      owners: '{0} propriétaires sélectionnés'
+      all_owners: Tous le monde
+      reset: Réinitialiser
+      apply: Appliquer les filtres
+    rename:
+      title: Renommer un fichier
+      success: Le fichier a été renommé
+      error: Le fichier n'a pas pu être renommé
+      cancel: Annuler
+      submit: Renommer
+    change_visibility:
+      title: Modifier la visibilité d'un fichier
+      success: La visibilité a été modifiée
+      error: La visibilité n'a pas pu être modifiée
+      cancel: Annuler
+      submit: Modifier
+    delete:
+      title: Supprimer un fichier
+      success: Le fichier a été supprimé
+      error: Le fichier n'a pas pu être supprimé
+      warning: Êtes-vous sûr(e) de vouloir supprimer ce fichier ? Cette action est irréversible.
+      cancel: Annuler
+      submit: Supprimer
+    search_by_name: Rechercher par nom...
+    empty:
+      title: Ça semble vide par ici
+      description: Vous n'avez pas encore envoyé de fichiers.
+      upload_button: Envoyer un fichier
   favorites:
     title: Favoris
   upload:
@@ -59,20 +127,41 @@ forms:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d'utilisateur
-  resetPassword:
+  reset_password:
     errors:
       missing_email: Adresse e-mail requise
       invalid_email: Format d'adresse e-mail invalide
     fields:
       email: Adresse e-mail
 
+actions:
+  files:
+    delete:
+      success:
+        title: Fichier supprimé
+        message: Le fichier “{name}” a été supprimé
+    update:
+      visibility:
+        success:
+          title: Visibilité modifiée
+          message: Le fichier “{name}” est désormais {newVisibility}
+      name:
+        success:
+          title: Fichier renommé
+          message: Le fichier “{oldName}” a été renommé en “{newName}”
+
 errors:
   unknown: Une erreur inattendue est survenue
+  network: Connexion au serveur impossible
   auth:
     invalid_credentials: Nom d'utilisateur ou mot de passe incorrect
     account_disabled: Votre compte est désactivé
   tokens:
     expired_or_invalid: Votre session a expiré, veuillez vous reconnecter
+  parsing:
+    invalid_uuid: Identifiant unique invalide
+  files:
+    not_found: Ce fichier n'existe pas
 
 theme:
   dark: Sombre

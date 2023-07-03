@@ -16,7 +16,7 @@ const maxFormat = computed(() => humanSize(max, locale.value, t))
   <div class="flex-center flex-col gap-1.5 h-full quota">
     <PProgressBar class="max-h-2 w-full" :value="unlimited ? 100 : quota / max * 100" :show-value="false" />
     <span v-if="!unlimited" class="text-xs mb--1">{{ quotaFormat }} / {{ maxFormat }}</span>
-    <span v-else class="text-xs mb--1">{{ t('unlimited-quota') }}</span>
+    <span v-else class="text-xs mb--1">{{ t('unlimited_quota') }}</span>
   </div>
 </template>
 

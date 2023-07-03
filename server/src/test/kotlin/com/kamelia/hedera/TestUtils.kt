@@ -46,7 +46,7 @@ suspend fun ApplicationTestBuilder.login(
         contentType(ContentType.Application.Json)
         setBody(dto)
     }
-    val body = if (response.status == HttpStatusCode.OK) {
+    val body = if (response.status == HttpStatusCode.Created) {
         Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
     } else {
         System.err.println(response.bodyAsText())
@@ -66,7 +66,7 @@ suspend fun ApplicationTestBuilder.loginBlocking(
             setBody(dto)
         }
     }
-    val body = if (response.status == HttpStatusCode.OK) {
+    val body = if (response.status == HttpStatusCode.Created) {
         Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
     } else {
         System.err.println(response.bodyAsText())

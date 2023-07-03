@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const sidebar = toReactive(useLocalStorage('sidebar', { open: true }))
+const sidebar = useLocalStorage('sidebar', { open: true })
 </script>
 
 <template>
@@ -11,6 +11,8 @@ const sidebar = toReactive(useLocalStorage('sidebar', { open: true }))
         <slot />
       </div>
     </div>
+
+    <MainToast />
   </div>
 </template>
 

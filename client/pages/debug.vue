@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-usePageName('Debug')
+usePageName(() => 'Debug')
 definePageMeta({
   layout: 'sidebar',
   middleware: ['auth'],

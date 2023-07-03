@@ -3,8 +3,8 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.ErrorDTO
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -19,7 +19,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -80,7 +79,7 @@ class FileTest {
         assertEquals(statusCode, response.status)
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(userId, responseDto.ownerId)
+            assertEquals(userId, responseDto.owner.id)
             assertEquals("text/plain", responseDto.mimeType)
         }
     }
@@ -102,7 +101,7 @@ class FileTest {
         assertEquals(statusCode, response.status)
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(userId, responseDto.ownerId)
+            assertEquals(userId, responseDto.owner.id)
             assertEquals("text/plain", responseDto.mimeType)
         }
     }
@@ -118,9 +117,9 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
         assertEquals(error.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.template!!["header"], "content-type")
+        assertEquals(error.parameters!!["header"], "content-type")
     }
 
     @DisplayName("Uploading a file with no file")
@@ -134,7 +133,7 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
         assertContains(error.key, Errors.Uploads.MISSING_FILE)
     }
 
@@ -151,7 +150,7 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<ErrorDTO>(response.bodyAsText())
+        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
         assertContains(error.key, Errors.Uploads.EMPTY_FILE_NAME)
     }
 
@@ -226,7 +225,7 @@ class FileTest {
     fun filesFiltering1() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.get("/api/files/paged") {
+        val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(
                 PageDefinitionDTO(
@@ -264,7 +263,7 @@ class FileTest {
     fun filesFiltering2() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.get("/api/files/paged") {
+        val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(
                 PageDefinitionDTO(
@@ -328,9 +327,9 @@ class FileTest {
 
         @JvmStatic
         fun uploadFile(): Stream<Arguments> = Stream.of(
-            Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.OK),
-            Arguments.of(Named.of("admin", admin), HttpStatusCode.OK),
-            Arguments.of(Named.of("regular user", user1), HttpStatusCode.OK),
+            Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.Created),
+            Arguments.of(Named.of("admin", admin), HttpStatusCode.Created),
+            Arguments.of(Named.of("regular user", user1), HttpStatusCode.Created),
             Arguments.of(Named.of("guest", guest), HttpStatusCode.Unauthorized),
         )
 
@@ -339,17 +338,17 @@ class FileTest {
             Arguments.of(
                 "0f2577e20ca8466b89724d2cfb56e2db",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
-                HttpStatusCode.OK
+                HttpStatusCode.Created
             ),
             Arguments.of(
                 "a9b42b75a4774e41b6391e7724c05f77",
                 Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
-                HttpStatusCode.OK
+                HttpStatusCode.Created
             ),
             Arguments.of(
                 "8da63c40d5534a50b69e44f4b6789712",
                 Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
-                HttpStatusCode.OK
+                HttpStatusCode.Created
             ),
             Arguments.of(
                 "00000000000000000000000000000000",

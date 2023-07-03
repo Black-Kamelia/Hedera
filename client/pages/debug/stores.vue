@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const auth = useAuth()
 const dark = useDark()
-const filters = 'Empty.'
+const filters = useFilesFilters()
 const sidebar = useLocalStorage('sidebar', { open: true })
 </script>
 

@@ -29,7 +29,6 @@ useEventBus(LoggedOutEvent).on(() => {
 
 <template>
   <div font="text" class="p-input-filled">
-    <PToast close-icon="i-tabler-x" error-icon="i-tabler-alert-circle-filled" />
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />
@@ -157,6 +156,11 @@ h1, h2, h3, h4, h5, h6 {
   border-width: 0 !important;
 }
 
+.p-toast {
+  width: auto !important;
+  max-width: 30em;
+}
+
 .p-toast .p-toast-message,
 .p-message {
   border: 0 none !important;
@@ -168,6 +172,22 @@ h1, h2, h3, h4, h5, h6 {
 
 input:focus::placeholder {
   color: transparent;
+}
+
+.p-card:has(.p-datatable) {
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+}
+
+.p-contextmenu {
+  min-width: 15rem;
+  max-width: 30rem;
+  width: auto;
+  padding: .5rem 0;
+}
+
+.p-contextmenu .p-menuitem-separator {
+  margin: .5rem 0;
 }
 
 .large-icon {

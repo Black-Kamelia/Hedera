@@ -8,6 +8,7 @@
   --text-color: #043d75;
   --text-color-secondary: #708da9;
   --primary-color: #7d68df;
+  --primary-color-transparent: rgba(125, 104, 223, .125);
   --primary-color-text: #ffffff;
   --font-family: Red Hat Text, sans-serif;
   --surface-0: #ffffff;

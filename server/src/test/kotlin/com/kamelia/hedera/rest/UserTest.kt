@@ -37,7 +37,7 @@ class UserTest {
             contentType(ContentType.Application.Json)
             setBody(newUserDto)
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         assertEquals(newUserDto.username, responseDto.username)
@@ -63,7 +63,7 @@ class UserTest {
             contentType(ContentType.Application.Json)
             setBody(newUserDto)
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         val deleteResponse = client.delete("/api/users/${responseDto.id}") {
@@ -85,7 +85,7 @@ class UserTest {
             contentType(ContentType.Application.Json)
             setBody(newUserDto)
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         val deleteResponse = client.delete("/api/users/${responseDto.id}") {
@@ -107,7 +107,7 @@ class UserTest {
             contentType(ContentType.Application.Json)
             setBody(newUserDto)
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         val deleteResponse = client.delete("/api/users/${responseDto.id}") {
@@ -129,7 +129,7 @@ class UserTest {
             contentType(ContentType.Application.Json)
             setBody(newUserDto)
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         val deleteResponse = client.delete("/api/users/${responseDto.id}") {
@@ -151,7 +151,7 @@ class UserTest {
             contentType(ContentType.Application.Json)
             setBody(newUserDto)
         }
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         val deleteResponse = client.delete("/api/users/${responseDto.id}") {
@@ -553,7 +553,7 @@ class UserTest {
     @Test
     fun updatePasswordWrong() = testApplication {
         val (loginResponse, tokens) = login("edit_wrong_password", "password")
-        assertEquals(HttpStatusCode.OK, loginResponse.status)
+        assertEquals(HttpStatusCode.Created, loginResponse.status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0012-0000-000000000001/password") {
             contentType(ContentType.Application.Json)
@@ -572,7 +572,7 @@ class UserTest {
     @Test
     fun updateUnknownUser() = testApplication {
         val (loginResponse, tokens) = login("admin1", "password")
-        assertEquals(HttpStatusCode.OK, loginResponse.status)
+        assertEquals(HttpStatusCode.Created, loginResponse.status)
         val client = client()
         val response = client.patch("/api/users/00000000-0000-0000-0000-00000000000f") {
             contentType(ContentType.Application.Json)
@@ -606,7 +606,7 @@ class UserTest {
     @Test
     fun deleteUnknownUser() = testApplication {
         val (loginResponse, tokens) = login("admin1", "password")
-        assertEquals(HttpStatusCode.OK, loginResponse.status)
+        assertEquals(HttpStatusCode.Created, loginResponse.status)
         val client = client()
         val response = client.delete("/api/users/ffffffff-ffff-ffff-ffff-ffffffffffff") {
             bearerAuth(tokens!!.accessToken)
@@ -625,7 +625,7 @@ class UserTest {
             bearerAuth(tokens.accessToken)
         }
 
-        assertEquals(HttpStatusCode.OK, response.status, response.bodyAsText())
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
         assertNotEquals("0123456789abdcef0123456789abdcef", responseDto.uploadToken)

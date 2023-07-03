@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { loadFilters, reactiveFilters, resetFilters } from '~/stores/useFilesFilters'
-
 const visible = defineModel<boolean>('visible')
 
 const { t } = useI18n()

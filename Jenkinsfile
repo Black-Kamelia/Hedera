@@ -59,6 +59,11 @@ pipeline {
                                     archiveArtifacts artifacts: 'client/eslint-report.html', followSymlinks: false, onlyIfSuccessful: false
                                 }
                             }
+                            post {
+                                always {
+                                    archiveArtifacts artifacts: 'client/eslint-report.html', followSymlinks: false, onlyIfSuccessful: false
+                                }
+                            }
                         }
                         stage('Build') {
                             steps {

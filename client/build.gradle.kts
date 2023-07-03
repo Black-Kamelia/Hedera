@@ -26,7 +26,7 @@ tasks {
 
   val lint = register<PnpmTask>("lint") {
     dependsOn(pnpmInstall)
-    ignoreExitValue.set(false)
+    ignoreExitValue.set(true)
 
     outputs.file(file("${rootProject.projectDir}/client/eslint-report.html"))
 

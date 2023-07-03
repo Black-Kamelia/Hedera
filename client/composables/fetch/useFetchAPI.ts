@@ -1,8 +1,4 @@
-import type { UseFetchOptions } from 'nuxt/app'
-
-export type UseFetchAPIOptions<T> = UseFetchOptions<T> & {
-  ignoreAPIBaseURL?: boolean
-}
+import type { UseFetchAPIOptions } from './types'
 
 export function useFetchAPI<T = any>(
   url: string,

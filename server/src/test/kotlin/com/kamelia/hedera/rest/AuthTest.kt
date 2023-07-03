@@ -54,7 +54,7 @@ class AuthTest {
 
     @DisplayName("Performing protected request with valid access token")
     @Test
-    fun useValidAccessToken() = authTestApplication {
+    fun useValidAccessToken() = testApplication {
         val (loginResponse, tokens) = login("user1", "password")
         assertEquals(HttpStatusCode.OK, loginResponse.status)
 
@@ -108,7 +108,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session gives different tokens")
     @Test
-    fun refreshSessionGivesDifferentToken() = authTestApplication {
+    fun refreshSessionGivesDifferentToken() = testApplication {
         val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, loginResponse.status)
@@ -125,7 +125,7 @@ class AuthTest {
 
     @DisplayName("Refreshing session gives working new tokens")
     @Test
-    fun refreshSessionGivesWorkingTokens() = authTestApplication {
+    fun refreshSessionGivesWorkingTokens() = testApplication {
         val (loginResponse, tokens) = loginBlocking("user1", "password")
         check(tokens != null) { "Tokens should not be null" }
         assertEquals(HttpStatusCode.OK, loginResponse.status)

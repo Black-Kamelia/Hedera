@@ -32,8 +32,12 @@ object UserSettingsTable : IdTable<UUID>("users_settings") {
     }
 
     fun update(settings: UserSettings, dto: UserSettingsUpdateDTO): UserSettings = settings.apply {
-        dto.locale?.let { preferredLocale = it }
+        dto.defaultFileVisibility?.let { defaultFileVisibility = it }
         dto.autoRemoveFiles?.let { autoRemoveFiles = it }
+        dto.filesSizeScale?.let { filesSizeScale = it }
+        dto.preferredDateStyle?.let { preferredDateStyle = it }
+        dto.preferredTimeStyle?.let { preferredTimeStyle = it }
+        dto.preferredLocale?.let { preferredLocale = it }
     }
 }
 

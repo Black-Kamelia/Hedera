@@ -24,8 +24,12 @@ fun UserSettings.toRepresentationDTO() = UserSettingsRepresentationDTO(
  */
 @Serializable
 data class UserSettingsUpdateDTO(
-    val locale: Locale? = null,
+    val defaultFileVisibility: FileVisibility? = null,
     val autoRemoveFiles: Boolean? = null,
+    val filesSizeScale: FilesSizeScale? = null,
+    val preferredDateStyle: DateStyle? = null,
+    val preferredTimeStyle: TimeStyle? = null,
+    val preferredLocale: Locale? = null,
 ) : DTO
 
 /**

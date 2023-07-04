@@ -7,10 +7,13 @@ const { header, description } = defineProps<{
 
 <template>
   <div class="p-card p-7">
-    <h2 class="text-lg font-bold mb-2">
-      {{ header }}
-    </h2>
-    <div class="flex items-start flex-col gap-4 md:flex-row md:gap-12">
+    <div class="flex flex-row items-center flex-wrap">
+      <h2 class="text-lg font-bold mr-3">
+        {{ header }}
+      </h2>
+      <slot name="header-ornement" />
+    </div>
+    <div class="flex items-start flex-col gap-4 md:flex-row md:gap-12 mt-2">
       <div class="flex items-start flex-grow flex-col gap-2">
         <p class="flex-grow p-text-secondary">
           {{ description }}

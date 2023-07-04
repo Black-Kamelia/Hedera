@@ -13,6 +13,8 @@ import com.kamelia.hedera.rest.core.pageable.filter
 import com.kamelia.hedera.rest.file.File
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.Files
+import com.kamelia.hedera.rest.setting.UserSettings
+import com.kamelia.hedera.rest.setting.UserSettingsTable
 import com.kamelia.hedera.util.uuid
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -110,6 +112,8 @@ object Users : AuditableUUIDTable("users") {
         uploadToken = UUID.randomUUID().toString().replace("-", "")
 
         onCreate(creator ?: this)
+    }.also {
+        UserSettingsTable.createDefaultSettings(it)
     }
 
     suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = user.apply {
@@ -148,6 +152,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var uploadToken by Users.uploadToken
 
     private val files by File referrersOn Files.owner
+    private val settings by UserSettings referrersOn UserSettingsTable.user
 
     fun countFiles(): Long = files.count()
 
@@ -182,4 +187,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
             val rows = File.wrapRows(it)
             rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
+
+    fun getSettings(): UserSettings = settings.first()
+
 }

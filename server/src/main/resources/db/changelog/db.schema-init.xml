@@ -123,9 +123,6 @@
             <column name="files_size_scale" type="VARCHAR(16)" defaultValue="BINARY">
                 <constraints nullable="false"/>
             </column>
-            <column name="enable_animations" type="BOOLEAN" defaultValue="true">
-                <constraints nullable="false"/>
-            </column>
             <column name="preferred_date_style" type="VARCHAR(16)" defaultValue="SHORT">
                 <constraints nullable="false"/>
             </column>

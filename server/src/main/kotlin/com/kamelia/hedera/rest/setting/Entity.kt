@@ -20,8 +20,6 @@ object UserSettingsTable : IdTable<UUID>("users_settings") {
         .clientDefault { false }
     val filesSizeScale = enumerationByName<FilesSizeScale>("files_size_scale", 16)
         .clientDefault { FilesSizeScale.BINARY }
-    val enableAnimations = bool("enable_animations")
-        .clientDefault { true }
     val preferredDateStyle = enumerationByName<DateStyle>("preferred_date_style", 16)
         .clientDefault { DateStyle.SHORT }
     val preferredTimeStyle = enumerationByName<TimeStyle>("preferred_time_style", 16)
@@ -46,7 +44,6 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
     var defaultFileVisibility by UserSettingsTable.defaultFileVisibility
     var autoRemoveFiles by UserSettingsTable.autoRemoveFiles
     var filesSizeScale by UserSettingsTable.filesSizeScale
-    var enableAnimations by UserSettingsTable.enableAnimations
     var preferredDateStyle by UserSettingsTable.preferredDateStyle
     var preferredTimeStyle by UserSettingsTable.preferredTimeStyle
     var preferredLocale by UserSettingsTable.preferredLocale

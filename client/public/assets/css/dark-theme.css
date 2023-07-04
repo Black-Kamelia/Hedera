@@ -6467,10 +6467,10 @@ hr {
 }
 
 .p-inline-message.p-inline-message-info {
-  background: #e9e9ff;
+  background: #696cff40;
   border: solid #696cff;
-  border-width: 1px;
-  color: #696cff;
+  border-width: 0px;
+  color: #e9e9ff;
 }
 
 .p-inline-message.p-inline-message-info .p-inline-message-icon {
@@ -6489,10 +6489,10 @@ hr {
 }
 
 .p-inline-message.p-inline-message-warn {
-  background: #fff2e2;
-  border: solid #cc8925;
-  border-width: 1px;
-  color: #cc8925;
+  background: #cc892540;
+  border: solid #cc892540;
+  border-width: 0px;
+  color: #fff2e2;
 }
 
 .p-inline-message.p-inline-message-warn .p-inline-message-icon {

@@ -7,6 +7,11 @@ export function $fetchAPI<T = unknown>(url: string, options: FetchAPIOptions = {
 
   return $fetch<T>(url, {
     ...actualOptions,
-    ...createFetchInterceptors(),
+    ...createFetchInterceptors(
+      options.onRequest,
+      options.onResponse,
+      options.onRequestError,
+      options.onResponseError,
+    ),
   })
 }

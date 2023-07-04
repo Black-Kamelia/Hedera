@@ -24,9 +24,6 @@
             <column name="enabled" type="BOOLEAN" >
                 <constraints nullable="false" />
             </column>
-            <column name="last_invalidation" type="TIMESTAMP" >
-                <constraints nullable="true" />
-            </column>
             <column name="upload_token" type="VARCHAR(32)" >
                 <constraints nullable="true" unique="true" />
             </column>
@@ -115,18 +112,36 @@
 
         <createTable tableName="users_settings">
             <column name="user_id" type="UUID">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true" unique="true" nullable="false" />
             </column>
-            <column name="locale" type="VARCHAR(5)">
+            <column name="default_file_visibility" type="VARCHAR(16)" defaultValue="UNLISTED">
                 <constraints nullable="false" />
             </column>
-            <column name="auto_remove_files" type="BOOLEAN">
+            <column name="auto_remove_files" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false" />
             </column>
-            <column name="disk_quota" type="BIGINT">
+            <column name="files_size_scale" type="VARCHAR(16)" defaultValue="BINARY">
+                <constraints nullable="false" />
+            </column>
+            <column name="enable_animations" type="BOOLEAN" defaultValue="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="preferred_date_style" type="VARCHAR(16)" defaultValue="SHORT">
+                <constraints nullable="false" />
+            </column>
+            <column name="preferred_time_style" type="VARCHAR(16)" defaultValue="MEDIUM">
+                <constraints nullable="false" />
+            </column>
+            <column name="preferred_locale" type="VARCHAR(5)" defaultValue="en_US">
                 <constraints nullable="false" />
             </column>
         </createTable>
+
+        <addForeignKeyConstraint baseTableName="users_settings"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_users_settings__user_id__id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
 
     </changeSet>
 </databaseChangeLog>

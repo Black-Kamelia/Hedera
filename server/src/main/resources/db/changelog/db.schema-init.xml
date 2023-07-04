@@ -7,38 +7,38 @@
 
         <createTable tableName="users">
             <column name="id" type="UUID">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="email" type="VARCHAR(255)">
-                <constraints unique="true" nullable="false" />
+                <constraints unique="true" nullable="false"/>
             </column>
             <column name="username" type="VARCHAR(128)">
-                <constraints unique="true" nullable="false" />
+                <constraints unique="true" nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(255)" >
-                <constraints nullable="false" />
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
             </column>
-            <column name="role" type="VARCHAR(32)" >
-                <constraints nullable="false" />
+            <column name="role" type="VARCHAR(32)">
+                <constraints nullable="false"/>
             </column>
-            <column name="enabled" type="BOOLEAN" >
-                <constraints nullable="false" />
+            <column name="enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
             </column>
-            <column name="upload_token" type="VARCHAR(32)" >
-                <constraints nullable="true" unique="true" />
+            <column name="upload_token" type="VARCHAR(32)">
+                <constraints nullable="true" unique="true"/>
             </column>
 
-            <column name="created_by" type="UUID" >
-                <constraints nullable="false" />
+            <column name="created_by" type="UUID">
+                <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP" >
-                <constraints nullable="false" />
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
             </column>
             <column name="updated_by" type="UUID">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
             <column name="updated_at" type="TIMESTAMP">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
         </createTable>
 
@@ -46,49 +46,49 @@
                                  baseColumnNames="created_by"
                                  constraintName="fk_users__created_by__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="users"
                                  baseColumnNames="updated_by"
                                  constraintName="fk_users__updated_by__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id" />
-        
-        
+                                 referencedColumnNames="id"/>
+
+
         <createTable tableName="files">
             <column name="id" type="UUID">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="code" type="VARCHAR(10)">
-                <constraints unique="true" nullable="false" />
+                <constraints unique="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="mime_type" type="VARCHAR(64)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="size" type="BIGINT">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="visibility" type="VARCHAR(16)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="owner" type="UUID">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
 
-            <column name="created_by" type="UUID" >
-                <constraints nullable="false" />
+            <column name="created_by" type="UUID">
+                <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP" >
-                <constraints nullable="false" />
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
             </column>
             <column name="updated_by" type="UUID">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
             <column name="updated_at" type="TIMESTAMP">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
         </createTable>
 
@@ -96,44 +96,44 @@
                                  baseColumnNames="owner"
                                  constraintName="fk_files__owner__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="files"
                                  baseColumnNames="created_by"
                                  constraintName="fk_files__created_by__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="files"
                                  baseColumnNames="updated_by"
                                  constraintName="fk_files__updated_by__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="id"/>
 
         <createTable tableName="users_settings">
             <column name="user_id" type="UUID">
-                <constraints primaryKey="true" unique="true" nullable="false" />
+                <constraints primaryKey="true" unique="true" nullable="false"/>
             </column>
             <column name="default_file_visibility" type="VARCHAR(16)" defaultValue="UNLISTED">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="auto_remove_files" type="BOOLEAN" defaultValue="false">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="files_size_scale" type="VARCHAR(16)" defaultValue="BINARY">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="enable_animations" type="BOOLEAN" defaultValue="true">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="preferred_date_style" type="VARCHAR(16)" defaultValue="SHORT">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="preferred_time_style" type="VARCHAR(16)" defaultValue="MEDIUM">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="preferred_locale" type="VARCHAR(5)" defaultValue="en_US">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </createTable>
 
@@ -141,7 +141,8 @@
                                  baseColumnNames="user_id"
                                  constraintName="fk_users_settings__user_id__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
 
     </changeSet>
 </databaseChangeLog>

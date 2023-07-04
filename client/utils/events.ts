@@ -20,5 +20,5 @@ export const AccessTokenExpiredEvent: EventBusKey<{
 }> = Symbol('access-token-expired')
 
 export const RefreshTokenExpiredEvent: EventBusKey<{
-  error: AxiosError
+  error: Error
 }> = Symbol('refresh-token-expired')

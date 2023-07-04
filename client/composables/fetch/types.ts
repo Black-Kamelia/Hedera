@@ -9,10 +9,10 @@ export type UseFetchAPIOptions<T> = UseFetchOptions<T> & {
   ignoreAPIBaseURL?: boolean
 }
 
-export type OnRequestInterceptorFunction<T = any> = FetchAPIOptions['onRequest'] & UseFetchAPIOptions<T>['onRequest']
-export type OnResponseInterceptorFunction<T = any> = FetchAPIOptions['onResponse'] & UseFetchAPIOptions<T>['onResponse']
-export type OnRequestErrorInterceptorFunction<T = any> = FetchAPIOptions['onRequestError'] & UseFetchAPIOptions<T>['onRequestError']
-export type OnResponseErrorInterceptorFunction<T = any> = FetchAPIOptions['onResponseError'] & UseFetchAPIOptions<T>['onResponseError']
+export type OnRequestInterceptorFunction<T = any> = NonNullable<FetchAPIOptions['onRequest'] & UseFetchAPIOptions<T>['onRequest']>
+export type OnResponseInterceptorFunction<T = any> = NonNullable<FetchAPIOptions['onResponse'] & UseFetchAPIOptions<T>['onResponse']>
+export type OnRequestErrorInterceptorFunction<T = any> = NonNullable<FetchAPIOptions['onRequestError'] & UseFetchAPIOptions<T>['onRequestError']>
+export type OnResponseErrorInterceptorFunction<T = any> = NonNullable<FetchAPIOptions['onResponseError'] & UseFetchAPIOptions<T>['onResponseError']>
 
 export type InterceptorType = 'onRequest' | 'onResponse' | 'onRequestError' | 'onResponseError'
 
@@ -27,16 +27,17 @@ export type InterceptorRoute = string | string[] | RegExp | ((url: string) => bo
 
 export interface Interceptor<I extends InterceptorType, T = any> {
   route?: InterceptorRoute
+  withBaseURL?: boolean
   negateRoute?: boolean
   fn: InterceptorFunction<I, T>
 }
 
-export function defineInterceptor<I extends InterceptorType, T = any>(interceptor: Interceptor<I, T>) {
-  return interceptor
+export function defineInterceptors<I extends InterceptorType>(interceptors: Interceptor<I>[]) {
+  return interceptors
 }
 
 export function checkRoute(url: string, route?: InterceptorRoute): boolean {
-  if (!route)
+  if (route === undefined)
     return true
 
   if (typeof route === 'string')
@@ -52,4 +53,33 @@ export function checkRoute(url: string, route?: InterceptorRoute): boolean {
     return route(url)
 
   return false
+}
+
+export interface FetchInterceptors {
+  onRequest: OnRequestErrorInterceptorFunction
+  onResponse: OnResponseInterceptorFunction
+  onRequestError: OnRequestErrorInterceptorFunction
+  onResponseError: OnResponseErrorInterceptorFunction
+}
+
+function tryForInterceptors<I extends InterceptorType>(
+  interceptors: Interceptor<I>[],
+) {
+  return function (context: any) {
+    const url = context.request.toString()
+    for (const { route, withBaseURL = false, negateRoute = false, fn } of interceptors) {
+      const trimmedURL = withBaseURL ? url : url.replace(context.options.baseURL ?? '', '')
+      if (checkRoute(trimmedURL, route) !== negateRoute)
+        fn(context)
+    }
+  }
+}
+
+export function createFetchInterceptors(): FetchInterceptors {
+  return {
+    onRequest: tryForInterceptors(onRequestInterceptors),
+    onResponse: tryForInterceptors(onResponseInterceptors),
+    onRequestError: tryForInterceptors(onRequestErrorInterceptors),
+    onResponseError: tryForInterceptors(onResponseErrorInterceptors),
+  }
 }

@@ -8,7 +8,7 @@ const { t } = useI18n()
     :header="t('pages.profile.settings.file_size_scale.title')"
     :description="t('pages.profile.settings.file_size_scale.description')"
   >
-    <div class="flex flex-row gap-3 justify-center">
+    <div class="flex flex-col gap-2 sm:flex-row sm:gap-3 sm:justify-center">
       <RadioCard
         v-model="model"
         value="BINARY"

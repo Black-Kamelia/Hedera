@@ -11,7 +11,7 @@ const files = ref<Array<FileRepresentationDTO>>([])
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 const selecting = computed(() => selectedRows.value.length > 0)
 
-const { data, isFinished, isLoading } = useAPI<PageableDTO>('/files/paged')
+const { data, isFinished, isLoading } = useAPI<PageableDTO>('/files/search', { method: 'post', data: {} })
 watch(isFinished, (isFinished) => {
   if (isFinished && data.value?.page.items)
     files.value = data.value?.page.items

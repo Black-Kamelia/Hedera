@@ -875,8 +875,8 @@ hr {
 
 .h-radiocard {
   background: var(--surface-c);
-  border: 2px solid var(--surface-d);
-  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  outline: 1px solid var(--surface-d);
+  transition: background-color 0.2s, border-color 0.2s, outline-color 0.2s, outline-width 0.2s, box-shadow 0.2s;
   border-radius: 8px;
   padding: 1.25em;
   cursor: pointer;
@@ -890,7 +890,7 @@ hr {
 
 .h-radiocard.checked {
   background: var(--ground);
-  border: 2px solid var(--primary-500);
+  outline: 2px solid var(--primary-500);
 }
 
 .h-radiocard.checked * {
@@ -898,7 +898,7 @@ hr {
 }
 
 .h-radiocard:not(.p-disabled):hover {
-  border-color: var(--primary-500);
+  outline-color: var(--primary-500);
 }
 
 .h-radiocard:not(.p-disabled):hover .p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight) {
@@ -906,10 +906,8 @@ hr {
 }
 
 .h-radiocard:not(.p-disabled).p-focus {
-  outline: 0 none;
-  outline-offset: 0;
-  box-shadow: 0 0 0 1px var(--primary-600);
-  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-600);
+  outline: 2px solid var(--primary-500);
 }
 
 .h-radiocard:not(.p-disabled).p-focus .p-radiobutton .p-radiobutton-box:not(.p-disabled) {

@@ -1,12 +1,13 @@
 import type { UseFetchOptions } from 'nuxt/app'
 
-type FetchOptions = Parameters<typeof $fetch>[1]
-export type FetchAPIOptions = FetchOptions & {
+type _FetchOptions = Parameters<typeof $fetch>[1]
+export type FetchAPIOptions = _FetchOptions & {
   ignoreAPIBaseURL?: boolean
+  skipAuthRefresh?: boolean
 }
-
 export type UseFetchAPIOptions<T> = UseFetchOptions<T> & {
   ignoreAPIBaseURL?: boolean
+  skipAuthRefresh?: boolean
 }
 
 export type OnRequestInterceptorFunction<T = any> = FetchAPIOptions['onRequest'] & NonNullable<UseFetchAPIOptions<T>['onRequest']>

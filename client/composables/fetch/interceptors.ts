@@ -1,6 +1,10 @@
+import type { Tokens } from '~/stores/useAuth'
+
+const skipRefreshRoutes = ['/refresh', '/login', '/users/signup', '/upload/token']
+
 export const onRequestInterceptors = defineInterceptors<'onRequest'>([
   {
-    route: ['/refresh', '/login', '/users/signup', '/upload/token'],
+    route: skipRefreshRoutes,
     negateRoute: true,
     fn({ options }) {
       const { tokens } = storeToRefs(useAuth())
@@ -44,6 +48,24 @@ export const onResponseErrorInterceptors = defineInterceptors<'onResponseError'>
       setTokens(null)
       setUser(null)
       useEventBus(RefreshTokenExpiredEvent).emit({ error: response._data })
+    },
+  },
+
+  {
+    route: skipRefreshRoutes,
+    negateRoute: true,
+    async fn({ request, response, options }) {
+      if (response?.status !== 401)
+        return
+
+      useEventBus(AccessTokenExpiredEvent).emit({ error: response._data })
+
+      const tokens = await $fetch<Tokens>('/refresh', { method: 'post' })
+      const { setTokens } = useAuth()
+      setTokens(tokens)
+
+      // retry request
+      await $fetch(request.toString(), response)
     },
   },
 ])

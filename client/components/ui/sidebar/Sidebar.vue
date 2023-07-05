@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const { t } = useI18n()
 const { isDark, toggle } = useDark()
-const { user } = useAuth()
+const { user } = storeToRefs(useAuth())
 
 const themeIcon = computed(() => isDark.value ? 'i-tabler-sun' : 'i-tabler-moon')
 const themeName = computed(() => isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode'))

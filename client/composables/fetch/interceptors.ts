@@ -3,12 +3,11 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
     route: ['/refresh', '/login', '/users/signup', '/upload/token'],
     negateRoute: true,
     fn({ options }) {
-      const auth = useAuth()
-      const tokens = auth.tokens.value
-      if (tokens) {
+      const { tokens } = storeToRefs(useAuth())
+      if (tokens.value) {
         options.headers = {
           ...options.headers,
-          'Authorization': `Bearer ${tokens.accessToken}`,
+          'Authorization': `Bearer ${tokens.value.accessToken}`,
           'Access-Control-Allow-Origin': '*',
         }
       }
@@ -18,12 +17,11 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
   {
     route: '/refresh',
     fn({ options }) {
-      const auth = useAuth()
-      const tokens = auth.tokens.value
-      if (tokens) {
+      const { tokens } = storeToRefs(useAuth())
+      if (tokens.value) {
         options.headers = {
           ...options.headers,
-          'Authorization': `Bearer ${tokens.refreshToken}`,
+          'Authorization': `Bearer ${tokens.value.refreshToken}`,
           'Access-Control-Allow-Origin': '*',
         }
       }
@@ -42,9 +40,9 @@ export const onResponseErrorInterceptors = defineInterceptors<'onResponseError'>
       if (!error || response?.status !== 401)
         return Promise.reject(error)
 
-      const auth = useAuth()
-      auth.setTokens(null)
-      auth.setUser(null)
+      const { setTokens, setUser } = useAuth()
+      setTokens(null)
+      setUser(null)
       useEventBus(RefreshTokenExpiredEvent).emit({ error })
 
       return Promise.resolve()

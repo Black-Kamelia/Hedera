@@ -11,7 +11,7 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
         route: skipRefreshRoutes,
         negateRoute: true,
         onFulfilled: (config) => {
-          const { tokens } = useAuth()
+          const { tokens } = storeToRefs(useAuth())
           if (tokens.value) {
             config.headers.Authorization = `Bearer ${tokens.value.accessToken}`
             config.headers['Access-Control-Allow-Origin'] = '*'
@@ -23,7 +23,7 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
       {
         route: '/refresh',
         onFulfilled: (config) => {
-          const { tokens } = useAuth()
+          const { tokens } = storeToRefs(useAuth())
           if (tokens.value) {
             config.headers.Authorization = `Bearer ${tokens.value.refreshToken}`
             config.headers['Access-Control-Allow-Origin'] = '*'

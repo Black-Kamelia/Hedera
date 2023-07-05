@@ -7,7 +7,7 @@ export default function useWebsocketAutoConnect() {
   const host = appConfig.public.websocketUrl || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
 
   const axios = useAxiosFactory()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = storeToRefs(useAuth())
 
   const wsToken = ref<Nullable<string>>(null)
   const webSocketUrl = computed(() => (isAuthenticated.value && wsToken.value)

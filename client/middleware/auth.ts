@@ -1,7 +1,7 @@
 const ANONYMOUS_ROUTES = ['/login', '/register', '/reset-password']
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = storeToRefs(useAuth())
 
   if (ANONYMOUS_ROUTES.includes(to.path)) {
     if (isAuthenticated.value) {

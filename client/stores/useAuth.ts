@@ -19,7 +19,7 @@ export interface UseAuthComposer {
   logout: () => Promise<void>
 }
 
-export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthComposer => {
+export const useAuth = defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const axios = useAxiosFactory()
@@ -93,4 +93,4 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   persist: {
     storage: persistedState.localStorage,
   },
-}))
+})

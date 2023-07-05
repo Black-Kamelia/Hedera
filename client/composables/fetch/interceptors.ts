@@ -6,9 +6,9 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
       const { tokens } = storeToRefs(useAuth())
       if (tokens.value) {
         options.headers = {
-          ...options.headers,
           'Authorization': `Bearer ${tokens.value.accessToken}`,
           'Access-Control-Allow-Origin': '*',
+          ...options.headers,
         }
       }
     },
@@ -20,9 +20,9 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
       const { tokens } = storeToRefs(useAuth())
       if (tokens.value) {
         options.headers = {
-          ...options.headers,
           'Authorization': `Bearer ${tokens.value.refreshToken}`,
           'Access-Control-Allow-Origin': '*',
+          ...options.headers,
         }
       }
     },
@@ -36,16 +36,14 @@ export const onRequestErrorInterceptors = defineInterceptors<'onRequestError'>([
 export const onResponseErrorInterceptors = defineInterceptors<'onResponseError'>([
   {
     route: '/refresh',
-    fn({ error, response }) {
-      if (!error || response?.status !== 401)
-        return Promise.reject(error)
+    fn({ response }) {
+      if (response?.status !== 401)
+        return
 
       const { setTokens, setUser } = useAuth()
       setTokens(null)
       setUser(null)
-      useEventBus(RefreshTokenExpiredEvent).emit({ error })
-
-      return Promise.resolve()
+      useEventBus(RefreshTokenExpiredEvent).emit({ error: response._data })
     },
   },
 ])

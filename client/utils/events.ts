@@ -1,5 +1,6 @@
 import type { EventBusKey } from '@vueuse/core'
 import type { AxiosError } from 'axios'
+import type { MessageKeyDTO } from './messages'
 import type { Tokens } from '~/stores/useAuth'
 
 export const LoggedInEvent: EventBusKey<{
@@ -20,5 +21,5 @@ export const AccessTokenExpiredEvent: EventBusKey<{
 }> = Symbol('access-token-expired')
 
 export const RefreshTokenExpiredEvent: EventBusKey<{
-  error: Error
+  error?: MessageKeyDTO
 }> = Symbol('refresh-token-expired')

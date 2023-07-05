@@ -43,7 +43,7 @@ export function useAxiosMiddlewares(): ComputedRef<AxiosMiddlewares> {
           const { setTokens, setUser } = useAuth()
           setTokens(null)
           setUser(null)
-          refreshTokenExpiredEvent.emit({ error })
+          refreshTokenExpiredEvent.emit({ error: getDTOFromError(error) })
 
           return Promise.resolve()
         },

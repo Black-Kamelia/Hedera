@@ -1,8 +1,8 @@
-import type { FetchAPIOptions, OnResponseErrorInterceptorFunction } from './types'
+import type { FetchAPIOptions, Interceptor, OnResponseErrorInterceptorFunction } from './types'
 
 interface AuthRefreshCache {
   refreshCall?: Promise<any>
-  requestQueueInterceptorId?: number
+  requestQueueInterceptor?: Interceptor<'onRequest'>
 }
 
 function shouldInterceptError(options: FetchAPIOptions, errorResponse: FetchResponseError) {
@@ -31,6 +31,30 @@ function createRefreshCall(
   return cache.refreshCall
 }
 
+function createRequestQueueInterceptor(
+  cache: AuthRefreshCache,
+  options: FetchAPIOptions,
+): Interceptor<'onRequest'> {
+  if (!cache.refreshCall)
+    throw new Error('Assertion Error: refreshCall must be set')
+
+  if (!cache.requestQueueInterceptor) {
+    cache.requestQueueInterceptor = {
+      route: skipRefreshRoutes,
+      fn({ request, options }) {
+
+      },
+    } satisfies Interceptor<'onRequest'>
+  }
+
+  return cache.requestQueueInterceptor
+}
+
+function unsetCache(cache: AuthRefreshCache) {
+  cache.refreshCall = undefined
+  cache.requestQueueInterceptor = undefined
+}
+
 type FetchResponseError = Parameters<OnResponseErrorInterceptorFunction>[0]['response']
 export function createAuthRefreshInterceptorFunction(refreshAuthCall: (error: FetchResponseError) => Promise<any>): OnResponseErrorInterceptorFunction {
   if (typeof refreshAuthCall !== 'function')
@@ -49,6 +73,6 @@ export function createAuthRefreshInterceptorFunction(refreshAuthCall: (error: Fe
     return refreshing
       .catch(refreshError => Promise.reject(refreshError))
       .then(() => { /* TODO: resend request */ })
-      .finally(() => { /* TODO: unset cache */ })
+      .finally(() => unsetCache(cache))
   }
 }

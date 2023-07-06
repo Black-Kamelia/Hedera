@@ -8,6 +8,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import java.util.*
+import java.util.stream.Stream
+import kotlin.test.assertFalse
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -17,9 +20,6 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.*
-import java.util.stream.Stream
-import kotlin.test.assertNotEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserTest {
@@ -628,7 +628,8 @@ class UserTest {
         assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
 
         val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-        assertNotEquals("0123456789abdcef0123456789abdcef", responseDto.uploadToken)
+        //assertNotEquals("0123456789abdcef0123456789abdcef", responseDto.uploadToken)
+        assertFalse { true }
     }
 
     companion object {

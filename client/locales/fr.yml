@@ -117,7 +117,17 @@ pages:
     title: Débogage
   profile:
     title: Profil de {username}
+    menu:
+      details: Informations
+      security: Sécurité
+      sessions: Sessions
+      tokens: Jetons personnels
+      settings: Paramètres
     settings:
+      headers:
+        files_upload: Envoi de fichiers
+        display_and_animations: Affichage et animations
+      local_setting: Pour ce navigateur uniquement
       file_size_scale:
         title: Échelle de taille de fichier
         description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci va affecter la façon dont les quotas peuvent être interprétés.

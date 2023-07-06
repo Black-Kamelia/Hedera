@@ -18,15 +18,8 @@ function getOption(value: string) {
   <HorizontalActionPanel
     :header="t('pages.profile.settings.preferred_theme.title')"
     :description="t('pages.profile.settings.preferred_theme.description')"
+    local-setting
   >
-    <template #header-ornement>
-      <PInlineMessage class="px-2 py-1" severity="warn">
-        <template #icon>
-          <i class="i-tabler-alert-circle mr-2 w-1em h-1em" />
-        </template>
-        Pour ce navigateur uniquement
-      </PInlineMessage>
-    </template>
     <PDropdown
       v-model="model"
       :options="options"
@@ -52,13 +45,3 @@ function getOption(value: string) {
     </PDropdown>
   </HorizontalActionPanel>
 </template>
-
-<style scoped>
-.p-inline-message {
-  padding: 0.25rem 0.5rem;
-}
-
-.p-inline-message-text {
-  font-size: 14px;
-}
-</style>

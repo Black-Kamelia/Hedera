@@ -10,22 +10,27 @@ definePageMeta({
 
 const menus = [
   {
-    label: 'Informations',
+    label: t('pages.profile.menu.details'),
     icon: 'i-tabler-user-circle',
     path: '/profile/details',
   },
   {
-    label: 'Sécurité',
+    label: t('pages.profile.menu.security'),
     icon: 'i-tabler-shield',
     path: '/profile/security',
   },
+  // {
+  //   label: t('pages.profile.menu.sessions'),
+  //   icon: 'i-tabler-devices',
+  //   path: '/profile/sessions',
+  // },
+  // {
+  //   label: t('pages.profile.menu.tokens'),
+  //   icon: 'i-tabler-key',
+  //   path: '/profile/tokens',
+  // },
   {
-    label: 'Jetons personnels',
-    icon: 'i-tabler-key',
-    path: '/profile/tokens',
-  },
-  {
-    label: 'Paramètres',
+    label: t('pages.profile.menu.settings'),
     icon: 'i-tabler-settings',
     path: '/profile/settings',
   },
@@ -35,7 +40,7 @@ const menus = [
 <template>
   <div class="flex flex-col">
     <div class="flex flex-col sticky top-0 bg-[var(--ground)] z-100">
-      <div class="t flex overflow-y-auto self-center py-4 px-8 w-full xl:w-70%">
+      <div class="adaptive-width flex overflow-y-auto self-center py-4 px-8 w-full xl:w-70%">
         <TabNavigation :items="menus" :route-match="(path, item) => path.endsWith(item.path)" />
       </div>
       <hr>
@@ -47,7 +52,7 @@ const menus = [
 </template>
 
 <style scoped>
-.t {
+.adaptive-width {
   transition: width 0.3s ease, padding 0.3s ease, align-self 0.3s ease;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const settings = useUserSettings()
 const axios = useAxiosFactory()
+const { t } = useI18n()
 
 const fileSizeScale = computed(() => settings.filesSizeScale)
 const defaultFileVisibility = computed(() => settings.defaultFileVisibility)
@@ -27,13 +28,13 @@ provide(UserSettingsKey, { patchSettings })
 <template>
   <div class="flex flex-col gap-3">
     <h1 class="text-2xl">
-      Envoi de fichiers
+      {{ t('pages.profile.settings.headers.files_upload') }}
     </h1>
     <DefaultFileVisibility :value="defaultFileVisibility" />
     <AutoDeleteOldestFiles :value="autoRemoveFiles" />
 
     <h1 class="text-2xl mt-6">
-      Affichage et animations
+      {{ t('pages.profile.settings.headers.display_and_animations') }}
     </h1>
     <FileSizeScale :value="fileSizeScale" />
     <EnableAnimations v-model="animations" />

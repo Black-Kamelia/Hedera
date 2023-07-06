@@ -7,6 +7,7 @@ const { t } = useI18n()
   <HorizontalActionPanel
     :header="t('pages.profile.settings.enable_animations.title')"
     :description="t('pages.profile.settings.enable_animations.description')"
+    local-setting
   >
     <template #header-ornement>
       <PInlineMessage class="px-2 py-1" severity="warn">

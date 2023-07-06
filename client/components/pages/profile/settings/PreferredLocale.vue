@@ -32,14 +32,14 @@ function getOption(value: string) {
       option-value="value"
       class="w-full md:w-14rem"
       :class="{ 'p-invalid': isError }"
-      @update:model-value="(value: 'en' | 'fr') => {
-        patchSetting(value)
-        locale = value
+      @update:model-value="(newValue: 'en' | 'fr') => {
+        patchSetting(newValue)
+        locale = newValue
       }"
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">
-          <img :src="getOption(value).flag" class="w-5">
+          <img :src="getOption(value).flag" class="w-5" alt="Flag icon">
           <div>{{ getOption(value).name }}</div>
         </div>
         <span v-else>
@@ -48,7 +48,7 @@ function getOption(value: string) {
       </template>
       <template #option="slotProps">
         <div class="flex items-center gap-2">
-          <img :src="slotProps.option.flag" class="w-5">
+          <img :src="slotProps.option.flag" class="w-5" alt="Flag icon">
           <div>{{ slotProps.option.name }}</div>
         </div>
       </template>

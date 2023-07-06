@@ -6,6 +6,10 @@ const { title, subtitle, radioName, value } = defineProps<{
   value: string
 }>()
 
+const emit = defineEmits<{
+  (event: 'change', newValue: typeof value): void
+}>()
+
 const model = defineModel<any>()
 const focus = ref(false)
 </script>
@@ -15,7 +19,10 @@ const focus = ref(false)
     class="h-radiocard"
     :class="{ 'checked': model === value, 'p-focus': focus }"
     tabindex="-1"
-    @click="model = value"
+    @click="() => {
+      model = value
+      emit('change', value)
+    }"
     @focus="focus = true"
     @focusin="focus = true"
     @focusout="focus = false"

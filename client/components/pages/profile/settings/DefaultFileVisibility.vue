@@ -6,11 +6,7 @@ const { value: initialValue } = defineProps<{
 const model = ref(initialValue)
 
 const { t } = useI18n()
-const { patchSettings } = useSettingsPage()
-
-watch(model, (value) => {
-  patchSettings({ defaultFileVisibility: value })
-})
+const { patchSetting, isError } = useSetting(model, value => ({ defaultFileVisibility: value }))
 
 const options = computed(() => [
   { icon: 'i-tabler-world', name: t('pages.files.visibility.public'), value: 'PUBLIC' },
@@ -27,6 +23,7 @@ function getOption(value: string) {
   <HorizontalActionPanel
     :header="t('pages.profile.settings.default_files_visibility.title')"
     :description="t('pages.profile.settings.default_files_visibility.description')"
+    :error="isError"
   >
     <PDropdown
       v-model="model"
@@ -34,6 +31,8 @@ function getOption(value: string) {
       option-label="name"
       option-value="value"
       class="w-full md:w-14rem"
+      :class="{ 'p-invalid': isError }"
+      @update:model-value="patchSetting"
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">

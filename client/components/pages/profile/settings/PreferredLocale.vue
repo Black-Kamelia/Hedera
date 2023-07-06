@@ -6,12 +6,8 @@ const { value: initialValue } = defineProps<{
 const model = ref(initialValue)
 
 const { t } = useI18n()
-const { patchSettings } = useSettingsPage()
+const { patchSetting, isError } = useSetting(model, value => ({ preferredLocale: value }))
 const locale = useLocale()
-
-watch(model, (value) => {
-  patchSettings({ preferredLocale: value })
-})
 
 const options = computed(() => [
   { name: t('locale.en'), flag: '/assets/img/flags/en_US.svg', value: 'en' },
@@ -27,6 +23,7 @@ function getOption(value: string) {
   <HorizontalActionPanel
     :header="t('pages.profile.settings.preferred_locale.title')"
     :description="t('pages.profile.settings.preferred_locale.description')"
+    :error="isError"
   >
     <PDropdown
       v-model="model"
@@ -34,7 +31,11 @@ function getOption(value: string) {
       option-label="name"
       option-value="value"
       class="w-full md:w-14rem"
-      @update:model-value="(value: string) => locale = value"
+      :class="{ 'p-invalid': isError }"
+      @update:model-value="(value: 'en' | 'fr') => {
+        patchSetting(value)
+        locale = value
+      }"
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">

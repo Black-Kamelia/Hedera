@@ -10,15 +10,11 @@ const { value: initialValue } = defineProps<{
 const model = ref(initialValue)
 
 const { t, d } = useI18n()
-const { patchSettings } = useSettingsPage()
+const { patchSetting, isError } = useSetting(model, value => ({
+  preferredDateStyle: value.dateStyle.toUpperCase(),
+  preferredTimeStyle: value.timeStyle.toUpperCase(),
+} as Partial<UserSettings>))
 const now = useNow()
-
-watch(model, (value: Values) => {
-  patchSettings({
-    preferredDateStyle: value.dateStyle.toUpperCase(),
-    preferredTimeStyle: value.timeStyle.toUpperCase(),
-  } as Partial<UserSettings>)
-})
 
 const options = computed(() => [
   { dateStyle: 'short', timeStyle: 'short' },
@@ -44,12 +40,15 @@ const options = computed(() => [
   <HorizontalActionPanel
     :header="t('pages.profile.settings.preferred_date_time_format.title')"
     :description="t('pages.profile.settings.preferred_date_time_format.description')"
+    :error="isError"
   >
     <PDropdown
       v-model="model"
       :options="options"
       option-label="name"
       class="w-full md:w-14rem"
+      :class="{ 'p-invalid': isError }"
+      @update:model-value="patchSetting"
     >
       <template #value="{ value }">
         <div v-if="value" class="flex align-items-center">

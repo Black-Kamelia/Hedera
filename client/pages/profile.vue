@@ -8,7 +8,7 @@ definePageMeta({
   middleware: ['auth'],
 })
 
-const menus = [
+const menus = computed(() => [
   {
     label: t('pages.profile.menu.details'),
     icon: 'i-tabler-user-circle',
@@ -34,7 +34,7 @@ const menus = [
     icon: 'i-tabler-settings',
     path: '/profile/settings',
   },
-]
+])
 </script>
 
 <template>

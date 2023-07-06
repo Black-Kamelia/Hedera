@@ -897,6 +897,10 @@ hr {
   color: var(--text-color);
 }
 
+.h-radiocard:not(.p-disabled).p-invalid {
+  outline-color: var(--red-400);
+}
+
 .h-radiocard:not(.p-disabled):hover {
   outline-color: var(--primary-500);
 }
@@ -1753,6 +1757,7 @@ hr {
   color: #fff;
 }
 
+.h-radiocard.p-invalid .p-radiobutton > .p-radiobutton-box,
 .p-radiobutton.p-invalid > .p-radiobutton-box {
   border-color: var(--red-400);
 }

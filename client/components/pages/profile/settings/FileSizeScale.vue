@@ -17,6 +17,7 @@ const { patchSetting, isError } = useSetting(model, value => ({ filesSizeScale: 
     <div class="flex flex-col gap-2 sm:flex-row sm:gap-3 sm:justify-center">
       <RadioCard
         v-model="model"
+        :class="{ 'p-invalid': isError }"
         value="BINARY"
         :title="t('pages.profile.settings.file_size_scale.binary.title')"
         :subtitle="t('pages.profile.settings.file_size_scale.binary.description')"
@@ -29,6 +30,7 @@ const { patchSetting, isError } = useSetting(model, value => ({ filesSizeScale: 
       </RadioCard>
       <RadioCard
         v-model="model"
+        :class="{ 'p-invalid': isError }"
         value="DECIMAL"
         :title="t('pages.profile.settings.file_size_scale.decimal.title')"
         :subtitle="t('pages.profile.settings.file_size_scale.decimal.description')"

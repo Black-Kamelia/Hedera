@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const settings = useUserSettings()
 const axios = useAxiosFactory()
-const { t } = useI18n()
+const { t, m } = useI18n()
+const toast = useToast()
 
 const fileSizeScale = computed(() => settings.filesSizeScale)
 const defaultFileVisibility = computed(() => settings.defaultFileVisibility)
@@ -18,8 +19,28 @@ const animations = useLocalStorage('animations', true)
 
 function patchSettings(newSettings: Partial<UserSettings>) {
   return axios().patch<UserSettings>('/users/settings', newSettings)
-    .then(response => settings.updateSettings(response.data))
-    .catch(err => console.error(err))
+    .then((response) => {
+      settings.updateSettings(response.data)
+      return response
+    })
+    .catch((error) => {
+      if (!error.response) {
+        toast.add({
+          severity: 'error',
+          summary: t('errors.unknown'),
+          detail: { text: t('errors.network') },
+          life: 5000,
+        })
+        return error
+      }
+      toast.add({
+        severity: 'error',
+        summary: t('error'), // TODO: get error title from backend
+        detail: { text: m(error) },
+        life: 5000,
+      })
+      return error
+    })
 }
 
 provide(UserSettingsKey, { patchSettings })
@@ -31,7 +52,7 @@ provide(UserSettingsKey, { patchSettings })
       {{ t('pages.profile.settings.headers.files_upload') }}
     </h1>
     <DefaultFileVisibility :value="defaultFileVisibility" />
-    <AutoDeleteOldestFiles :value="autoRemoveFiles" />
+    <AutoRemoveFiles :value="autoRemoveFiles" />
 
     <h1 class="text-2xl mt-6">
       {{ t('pages.profile.settings.headers.display_and_animations') }}

@@ -7,6 +7,7 @@ const model = ref(initialValue)
 
 const { t } = useI18n()
 const { patchSettings } = useSettingsPage()
+const locale = useLocale()
 
 watch(model, (value) => {
   patchSettings({ preferredLocale: value })
@@ -33,11 +34,11 @@ function getOption(value: string) {
       option-label="name"
       option-value="value"
       class="w-full md:w-14rem"
+      @update:model-value="(value: string) => locale = value"
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">
           <img :src="getOption(value).flag" class="w-5">
-          <!-- <i :class="`${getOption(value).icon} mr-2`" /> -->
           <div>{{ getOption(value).name }}</div>
         </div>
         <span v-else>

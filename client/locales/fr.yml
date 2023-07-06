@@ -128,6 +128,7 @@ pages:
         files_upload: Envoi de fichiers
         display_and_animations: Affichage et animations
       local_setting: Affecte ce navigateur uniquement
+      sync_failed: Échec de la synchronisation
       file_size_scale:
         title: Échelle de taille de fichier
         description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci va affecter la façon dont les quotas peuvent être interprétés.

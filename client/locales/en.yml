@@ -128,6 +128,7 @@ pages:
         files_upload: Files upload
         display_and_animations: Display and animations
       local_setting: Affects this browser only
+      sync_failed: Failed to sync
       file_size_scale:
         title: File size scale
         description: Choose to display file sizes in a binary or decimal scale. This will affect the way quotas may be interpreted.

@@ -1,5 +1,7 @@
+import type { AxiosResponse } from 'axios'
+
 export interface UserSettingsContext {
-  patchSettings: (newSettings: Partial<UserSettings>) => void
+  patchSettings: (newSettings: Partial<UserSettings>) => Promise<void | AxiosResponse<UserSettings>>
 }
 
 export function useSettingsPage() {

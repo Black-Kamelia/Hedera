@@ -5,18 +5,15 @@ const { value: initialValue } = defineProps<{
 const model = ref(initialValue)
 
 const { t } = useI18n()
-const { patchSettings } = useSettingsPage()
-
-watch(model, (value) => {
-  patchSettings({ autoRemoveFiles: value })
-})
+const { patchSetting, isError } = useSetting(model, value => ({ autoRemoveFiles: value }))
 </script>
 
 <template>
   <HorizontalActionPanel
     :header="t('pages.profile.settings.auto_delete_oldest_files.title')"
     :description="t('pages.profile.settings.auto_delete_oldest_files.description')"
+    :error="isError"
   >
-    <PInputSwitch v-model="model" />
+    <PInputSwitch v-model="model" :class="{ 'p-invalid': isError }" @input="patchSetting" />
   </HorizontalActionPanel>
 </template>

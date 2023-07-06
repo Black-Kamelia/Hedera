@@ -3,14 +3,15 @@ const { header, description, localSetting = false } = defineProps<{
   header: string
   description: string
   localSetting: boolean
+  error: boolean
 }>()
 
 const { t } = useI18n()
 </script>
 
 <template>
-  <div class="p-card p-7">
-    <div class="flex flex-row justify-between">
+  <div class="p-card p-7 p-invalid">
+    <div class="flex flex-row justify-between flex-wrap">
       <div class="flex flex-row items-center flex-wrap">
         <h2 class="text-lg font-bold mr-3">
           {{ header }}
@@ -22,7 +23,10 @@ const { t } = useI18n()
           {{ t('pages.profile.settings.local_setting') }}
         </PInlineMessage>
       </div>
-      <!-- <i v-tooltip.left="'Out of sync'" class="i-tabler-link-off text-[--red-500]" /> -->
+      <div v-if="error" class="flex items-center gap-1 text-[--red-400]">
+        <i class="h-75% i-tabler-alert-square-filled" />
+        {{ t('pages.profile.settings.sync_failed') }}
+      </div>
     </div>
     <div class="flex items-start flex-col gap-4 md:flex-row md:gap-12 mt-2">
       <div class="flex items-start flex-grow flex-col gap-2">

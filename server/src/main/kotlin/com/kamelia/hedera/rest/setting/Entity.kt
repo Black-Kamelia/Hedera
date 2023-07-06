@@ -7,11 +7,12 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import java.util.*
 
 object UserSettingsTable : IdTable<UUID>("users_settings") {
 
-    override val id = reference("user_id", Users)
+    override val id = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
     val user get() = id
 
     val defaultFileVisibility = enumerationByName<FileVisibility>("default_file_visibility", 16)

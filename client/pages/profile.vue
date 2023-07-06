@@ -45,7 +45,7 @@ const menus = [
       </div>
       <hr>
     </div>
-    <div class="t self-center px-8 mt-5 w-full xl:w-70%">
+    <div class="adaptive-width self-center px-8 mt-5 w-full xl:w-70%">
       <NuxtPage />
     </div>
   </div>

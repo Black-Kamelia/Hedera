@@ -117,8 +117,20 @@ pages:
     title: Debug
   profile:
     title: '{username}''s profile'
+    menu:
+      details: Details
+      security: Security
+      sessions: Sessions
+      tokens: Personal tokens
+      settings: Settings
     settings:
+      headers:
+        files_upload: Files upload
+        display_and_animations: Display and animations
+      local_setting: Affects this browser only
       file_size_scale:
+        title: File size scale
+        description: Choose to display file sizes in a binary or decimal scale. This will affect the way quotas may be interpreted.
         binary:
           title: Binary scale
           description: Units are powers of 2
@@ -127,6 +139,29 @@ pages:
           title: Decimal scale
           description: Units are powers of 10
           summary: 1 KB = 1000 bytes
+      default_files_visibility:
+        title: Default files visibility
+        description: Choose the default visibility of the files you upload. You can change the visibility of each file individually at any time.
+        choose: Choose a visibility
+      auto_delete_oldest_files:
+        title: Auto-delete oldest files
+        description: When your are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
+      enable_animations:
+        title: Enable animations and transitions
+        description: Hedera uses animations and transitions to make the user experience more enjoyable. If you experience performance issues, you can disable them here.
+      preferred_theme:
+        title: Theme
+        description: Choose your preferred theme among light, dark and system default. The system default theme will follow your operating system's theme preference.
+        choose: Choose a theme
+      preferred_locale:
+        title: Language
+        description: Choose your preferred language. If your language is not available, or is not completely translated, you can contribute to the translation on GitHub!
+        choose: Choose a language
+      contribute_to_translation: Contribute to the translation of Hedera
+      preferred_date_time_format:
+        title: Date and time format
+        description: Choose your preferred date and time format. This format will be used in the files table and in analytics.
+        choose: Choose a format
 
 forms:
   submit: Submit
@@ -176,5 +211,10 @@ errors:
     not_found: This file does not exist
 
 theme:
+  system: System
   dark: Dark
   light: Light
+
+locale:
+  en: English
+  fr: French

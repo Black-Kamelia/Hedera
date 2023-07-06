@@ -127,7 +127,7 @@ pages:
       headers:
         files_upload: Envoi de fichiers
         display_and_animations: Affichage et animations
-      local_setting: Pour ce navigateur uniquement
+      local_setting: Affecte ce navigateur uniquement
       file_size_scale:
         title: Échelle de taille de fichier
         description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci va affecter la façon dont les quotas peuvent être interprétés.
@@ -155,13 +155,13 @@ pages:
         choose: Choisissez un thème
       preferred_locale:
         title: Langue
-        description: Choisissez votre langue préférée. Si votre langue n'est pas disponible, ou traduite de façon incomplète, vous pouvez contribuer à la traduction sur GitHub !
+        description: Choisissez votre langue préférée. Si votre langue n'est pas disponible, ou est traduite de façon incomplète, vous pouvez contribuer à la traduction sur GitHub !
         choose: Choisissez une langue
+      contribute_to_translation: Contribuer à la traduction de Hedera
       preferred_date_time_format:
         title: Format de date et d'heure
         description: Choisissez le format de date et d'heure que vous préférez. Ce format sera utilisé dans la table des fichiers et dans les statistiques.
         choose: Choisissez un format
-      contribute_to_translation: Contribuer à la traduction de Hedera
 
 forms:
   submit: Valider

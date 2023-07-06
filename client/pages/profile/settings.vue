@@ -10,7 +10,7 @@ const preferredDateTimeFormat = computed(() => ({
   dateStyle: settings.preferredDateStyle.toLowerCase(),
   timeStyle: settings.preferredTimeStyle.toLowerCase(),
 }))
-const preferredLocale = ref('fr')
+const preferredLocale = computed(() => settings.preferredLocale)
 
 // Local settings
 const color = useColorMode()
@@ -40,7 +40,7 @@ provide(UserSettingsKey, { patchSettings })
     <EnableAnimations v-model="animations" />
     <PreferredTheme v-model="color.preference" />
     <PreferredDateTimeFormat :value="preferredDateTimeFormat" />
-    <PreferredLocale v-model="preferredLocale" />
+    <PreferredLocale :value="preferredLocale" />
 
     <div class="flex items-center justify-center flex-col mt-8 p-4 color-[--text-color-secondary]">
       <div class="logo w-20em h-4em" />

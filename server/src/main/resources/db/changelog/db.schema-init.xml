@@ -132,7 +132,7 @@
             <column name="preferred_time_style" type="VARCHAR(16)" defaultValue="MEDIUM">
                 <constraints nullable="false"/>
             </column>
-            <column name="preferred_locale" type="VARCHAR(5)" defaultValue="en_US">
+            <column name="preferred_locale" type="VARCHAR(5)" defaultValue="en">
                 <constraints nullable="false"/>
             </column>
         </createTable>

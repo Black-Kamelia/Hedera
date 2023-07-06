@@ -1,7 +1,16 @@
 <script setup lang="ts">
-const model = defineModel<'en' | 'fr'>({ default: 'en', required: true })
+const { value: initialValue } = defineProps<{
+  value: 'en' | 'fr'
+}>()
+
+const model = ref(initialValue)
 
 const { t } = useI18n()
+const { patchSettings } = useSettingsPage()
+
+watch(model, (value) => {
+  patchSettings({ preferredLocale: value })
+})
 
 const options = computed(() => [
   { name: t('locale.en'), flag: '/assets/img/flags/en_US.svg', value: 'en' },

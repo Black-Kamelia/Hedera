@@ -22,7 +22,7 @@ object UserSettingsTable : UUIDTable("users_settings") {
     val preferredTimeStyle = enumerationByName<TimeStyle>("preferred_time_style", 16)
         .clientDefault { TimeStyle.MEDIUM }
     val preferredLocale = enumerationByName<Locale>("preferred_locale", 5)
-        .clientDefault { Locale.en_US }
+        .clientDefault { Locale.en }
 
     fun update(settings: UserSettings, dto: UserSettingsUpdateDTO): UserSettings = settings.apply {
         dto.defaultFileVisibility?.let { defaultFileVisibility = it }

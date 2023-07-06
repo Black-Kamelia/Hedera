@@ -80,7 +80,7 @@ declare global {
     filesSizeScale: 'BINARY' | 'DECIMAL'
     preferredDateStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
     preferredTimeStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
-    preferredLocale: 'en_US' | 'fr_FR'
+    preferredLocale: 'en' | 'fr'
   }
 
   interface SessionOpeningDTO {

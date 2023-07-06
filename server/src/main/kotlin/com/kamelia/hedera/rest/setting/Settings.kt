@@ -2,8 +2,8 @@ package com.kamelia.hedera.rest.setting
 
 @Suppress("EnumEntryName")
 enum class Locale {
-    en_US,
-    fr_FR,
+    en,
+    fr,
 }
 
 enum class DateStyle {

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const model = defineModel<'SYSTEM' | 'LIGHT' | 'DARK'>({ default: 'SYSTEM', required: true })
+const model = defineModel<'system' | 'light' | 'dark'>({ default: 'system', required: true })
 
 const { t } = useI18n()
 
 const options = computed(() => [
-  { icon: 'i-tabler-device-desktop', name: t('theme.system'), value: 'SYSTEM' },
-  { icon: 'i-tabler-sun', name: t('theme.light'), value: 'LIGHT' },
-  { icon: 'i-tabler-moon', name: t('theme.dark'), value: 'DARK' },
+  { icon: 'i-tabler-device-desktop', name: t('theme.system'), value: 'system' },
+  { icon: 'i-tabler-sun', name: t('theme.light'), value: 'light' },
+  { icon: 'i-tabler-moon', name: t('theme.dark'), value: 'dark' },
 ])
 
 function getOption(value: string) {

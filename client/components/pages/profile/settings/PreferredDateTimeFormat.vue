@@ -1,22 +1,42 @@
 <script setup lang="ts">
-const model = defineModel<{
-  dateStyle: 'short' | 'medium' | 'long'
-  timeStyle: 'short' | 'medium' | 'long'
-}>({ default: { dateStyle: 'short', timeStyle: 'medium' }, required: true })
+interface Values {
+  timeStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
+  dateStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
+}
+
+const { value: initialValue } = defineProps<{
+  value: Values
+}>()
+const model = ref(initialValue)
 
 const { t, d } = useI18n()
+const { patchSettings } = useSettingsPage()
 const now = useNow()
+
+watch(model, (value: Values) => {
+  patchSettings({
+    preferredDateStyle: value.dateStyle.toUpperCase(),
+    preferredTimeStyle: value.timeStyle.toUpperCase(),
+  } as Partial<UserSettings>)
+})
 
 const options = computed(() => [
   { dateStyle: 'short', timeStyle: 'short' },
   { dateStyle: 'short', timeStyle: 'medium' },
   { dateStyle: 'short', timeStyle: 'long' },
+  { dateStyle: 'short', timeStyle: 'full' },
   { dateStyle: 'medium', timeStyle: 'short' },
   { dateStyle: 'medium', timeStyle: 'medium' },
   { dateStyle: 'medium', timeStyle: 'long' },
+  { dateStyle: 'medium', timeStyle: 'full' },
   { dateStyle: 'long', timeStyle: 'short' },
   { dateStyle: 'long', timeStyle: 'medium' },
   { dateStyle: 'long', timeStyle: 'long' },
+  { dateStyle: 'long', timeStyle: 'full' },
+  { dateStyle: 'full', timeStyle: 'short' },
+  { dateStyle: 'full', timeStyle: 'medium' },
+  { dateStyle: 'full', timeStyle: 'long' },
+  { dateStyle: 'full', timeStyle: 'full' },
 ])
 </script>
 

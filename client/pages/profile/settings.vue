@@ -1,13 +1,27 @@
 <script setup lang="ts">
-const fileSizeScale = ref('BINARY')
-const defaultFileVisibility = ref('UNLISTED')
-const autoDeleteOldestFiles = ref(false)
-const enableAnimations = ref(true)
-const preferredTheme = ref('DARK')
-const preferredLocale = ref('en')
-const preferredDateTimeFormat = ref()
+const settings = useUserSettings()
+const axios = useAxiosFactory()
 
+const fileSizeScale = computed(() => settings.filesSizeScale)
+const defaultFileVisibility = computed(() => settings.defaultFileVisibility)
+const autoRemoveFiles = computed(() => settings.autoRemoveFiles)
+const preferredDateTimeFormat = computed(() => ({
+  dateStyle: settings.preferredDateStyle.toLowerCase(),
+  timeStyle: settings.preferredTimeStyle.toLowerCase(),
+}))
+const preferredLocale = ref('fr')
+
+// Local settings
+const color = useColorMode()
 const animations = useLocalStorage('animations', true)
+
+function patchSettings(newSettings: Partial<UserSettings>) {
+  return axios().patch<UserSettings>('/users/settings', newSettings)
+    .then(response => settings.updateSettings(response.data))
+    .catch(err => console.error(err))
+}
+
+provide(UserSettingsKey, { patchSettings })
 </script>
 
 <template>
@@ -15,16 +29,16 @@ const animations = useLocalStorage('animations', true)
     <h1 class="text-2xl">
       Envoi de fichiers
     </h1>
-    <DefaultFileVisibility v-model="defaultFileVisibility" />
-    <AutoDeleteOldestFiles v-model="autoDeleteOldestFiles" />
+    <DefaultFileVisibility :value="defaultFileVisibility" />
+    <AutoDeleteOldestFiles :value="autoRemoveFiles" />
 
     <h1 class="text-2xl mt-6">
       Affichage et animations
     </h1>
-    <FileSizeScale v-model="fileSizeScale" />
+    <FileSizeScale :value="fileSizeScale" />
     <EnableAnimations v-model="animations" />
-    <PreferredTheme v-model="preferredTheme" />
-    <PreferredDateTimeFormat v-model="preferredDateTimeFormat" />
+    <PreferredTheme v-model="color.preference" />
+    <PreferredDateTimeFormat :value="preferredDateTimeFormat" />
     <PreferredLocale v-model="preferredLocale" />
 
     <div class="flex items-center justify-center flex-col mt-8 p-4 color-[--text-color-secondary]">

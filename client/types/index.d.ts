@@ -78,8 +78,8 @@ declare global {
     defaultFileVisibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE'
     autoRemoveFiles: boolean
     filesSizeScale: 'BINARY' | 'DECIMAL'
-    preferredDateStyle: 'SHORT' | 'MEDIUM' | 'LONG'
-    preferredTimeStyle: 'SHORT' | 'MEDIUM' | 'LONG'
+    preferredDateStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
+    preferredTimeStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
     preferredLocale: 'en_US' | 'fr_FR'
   }
 

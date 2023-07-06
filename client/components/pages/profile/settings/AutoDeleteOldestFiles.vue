@@ -1,6 +1,15 @@
 <script setup lang="ts">
-const model = defineModel<boolean>({ required: true })
+const { value: initialValue } = defineProps<{
+  value: boolean
+}>()
+const model = ref(initialValue)
+
 const { t } = useI18n()
+const { patchSettings } = useSettingsPage()
+
+watch(model, (value) => {
+  patchSettings({ autoRemoveFiles: value })
+})
 </script>
 
 <template>

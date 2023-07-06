@@ -1,7 +1,16 @@
 <script setup lang="ts">
-const model = defineModel<'PUBLIC' | 'UNLISTED' | 'PRIVATE'>({ default: 'UNLISTED', required: true })
+const { value: initialValue } = defineProps<{
+  value: 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
+}>()
+
+const model = ref(initialValue)
 
 const { t } = useI18n()
+const { patchSettings } = useSettingsPage()
+
+watch(model, (value) => {
+  patchSettings({ defaultFileVisibility: value })
+})
 
 const options = computed(() => [
   { icon: 'i-tabler-world', name: t('pages.files.visibility.public'), value: 'PUBLIC' },

@@ -1,6 +1,15 @@
 <script setup lang="ts">
-const model = defineModel<'BINARY' | 'DECIMAL'>({ required: true })
+const { value: initialValue } = defineProps<{
+  value: 'BINARY' | 'DECIMAL'
+}>()
+const model = ref(initialValue)
+
 const { t } = useI18n()
+const { patchSettings } = useSettingsPage()
+
+watch(model, (value: 'BINARY' | 'DECIMAL') => {
+  patchSettings({ filesSizeScale: value })
+})
 </script>
 
 <template>

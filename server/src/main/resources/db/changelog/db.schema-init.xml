@@ -27,6 +27,9 @@
             <column name="upload_token" type="VARCHAR(32)">
                 <constraints nullable="true" unique="true"/>
             </column>
+            <column name="settings" type="UUID">
+                <constraints nullable="false" />
+            </column>
 
             <column name="created_by" type="UUID">
                 <constraints nullable="false"/>
@@ -111,8 +114,8 @@
                                  referencedColumnNames="id"/>
 
         <createTable tableName="users_settings">
-            <column name="user_id" type="UUID">
-                <constraints primaryKey="true" unique="true" nullable="false"/>
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
             </column>
             <column name="default_file_visibility" type="VARCHAR(16)" defaultValue="UNLISTED">
                 <constraints nullable="false"/>
@@ -134,12 +137,11 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="users_settings"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_users_settings__user_id__id"
-                                 referencedTableName="users"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="settings"
+                                 constraintName="fk_users__settings_ig__id"
+                                 referencedTableName="users_settings"
+                                 referencedColumnNames="id"/>
 
     </changeSet>
 </databaseChangeLog>

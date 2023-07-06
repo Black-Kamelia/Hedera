@@ -10,12 +10,14 @@ enum class DateStyle {
     SHORT,
     MEDIUM,
     LONG,
+    FULL,
 }
 
 enum class TimeStyle {
     SHORT,
     MEDIUM,
     LONG,
+    FULL,
 }
 
 enum class FilesSizeScale {

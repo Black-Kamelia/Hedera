@@ -1,6 +1,11 @@
 package com.kamelia.hedera.rest.user
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -30,7 +35,7 @@ object UserService {
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         val user = Users.findById(id) ?: return@transaction Response.notFound()
 
-        println(user.getSettings().toRepresentationDTO())
+        println(user.settings.toRepresentationDTO())
 
         Response.ok(user.toRepresentationDTO())
     }

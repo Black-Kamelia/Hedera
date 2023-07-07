@@ -11,9 +11,9 @@ const model = ref(initialValue)
 
 const { t, d } = useI18n()
 const { patchSetting, isError } = useSetting(model, value => ({
-  preferredDateStyle: value.dateStyle.toUpperCase(),
-  preferredTimeStyle: value.timeStyle.toUpperCase(),
-} as Partial<UserSettings>))
+  preferredDateStyle: value.dateStyle,
+  preferredTimeStyle: value.timeStyle,
+}))
 const now = useNow()
 
 const options = [

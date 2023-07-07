@@ -35,7 +35,7 @@ function getOption(value: string) {
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">
-          <img :src="getOption(value).flag" class="w-5" alt="Flag icon">
+          <img :src="getOption(value).flag" class="w-5" :alt="getOption(value).name">
           <div>{{ getOption(value).name }}</div>
         </div>
         <span v-else>
@@ -44,7 +44,7 @@ function getOption(value: string) {
       </template>
       <template #option="slotProps">
         <div class="flex items-center gap-2">
-          <img :src="slotProps.option.flag" class="w-5" alt="Flag icon">
+          <img :src="slotProps.option.flag" class="w-5" :alt="slotProps.option.name">
           <div>{{ slotProps.option.name }}</div>
         </div>
       </template>

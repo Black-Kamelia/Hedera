@@ -9,7 +9,6 @@ import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.rest.setting.toRepresentationDTO
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import kotlin.math.ceil
@@ -34,9 +33,6 @@ object UserService {
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         val user = Users.findById(id) ?: return@transaction Response.notFound()
-
-        println(user.settings.toRepresentationDTO())
-
         Response.ok(user.toRepresentationDTO())
     }
 

@@ -5,10 +5,10 @@ import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.uuid
+import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
 
 enum class FileVisibility {
     PRIVATE,
@@ -61,13 +61,14 @@ object Files : AuditableUUIDTable("files") {
         name: String,
         mimeType: String,
         size: Long,
+        visibility: FileVisibility,
         creator: User,
     ): File = File.new {
         this.code = code
         this.name = name
         this.mimeType = mimeType
         this.size = size
-        this.visibility = FileVisibility.PRIVATE
+        this.visibility = visibility
         this.owner = creator
 
         onCreate(creator)

@@ -3,6 +3,7 @@ import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 
 import type { PContextMenu } from '#components'
 
 const { locale, t, d } = useI18n()
+const settings = useUserSettings()
 
 const files = defineModel<FileRepresentationDTO[]>('files', { required: true })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
@@ -174,7 +175,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' }) }}
+        {{ d(slotProps.data.creationDate) }}
       </template>
       <template #loading>
         <PSkeleton width="8rem" height="1rem" />

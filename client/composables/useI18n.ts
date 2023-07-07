@@ -1,14 +1,23 @@
 import { AxiosError } from 'axios'
+import type { DateTimeOptions } from 'vue-i18n'
 import { useI18n as _useI18n } from 'vue-i18n'
 import type { MessageKeyDTO } from '~/utils/messages'
 
 export default function useI18n(fallback = 'en') {
   const i18n = _useI18n()
   const locale = useLocale(fallback)
+  const { preferredTimeStyle, preferredDateStyle } = useUserSettings()
 
   watch(locale, (value) => {
     i18n.locale.value = value
   })
+
+  function d(date: Date | string | number, options?: DateTimeOptions): string {
+    return i18n.d(date, options ?? {
+      dateStyle: preferredDateStyle.toLowerCase(),
+      timeStyle: preferredTimeStyle.toLowerCase(),
+    } as DateTimeOptions)
+  }
 
   function m(message?: MessageKeyDTO | AxiosError): string {
     const dto = (message instanceof AxiosError ? getDTOFromError(message) : message) ?? { key: 'errors.unknown' }
@@ -27,5 +36,5 @@ export default function useI18n(fallback = 'en') {
     return i18n.t(key)
   }
 
-  return { locale, t: i18n.t, d: i18n.d, m }
+  return { locale, t: i18n.t, d, m }
 }

@@ -1,15 +1,16 @@
 package com.kamelia.hedera.rest.setting
 
 import com.kamelia.hedera.rest.file.FileVisibility
+import com.kamelia.hedera.rest.user.Users
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.select
 
 object UserSettingsTable : UUIDTable("users_settings") {
-
-    val user get() = id
 
     val defaultFileVisibility = enumerationByName<FileVisibility>("default_file_visibility", 16)
         .clientDefault { FileVisibility.UNLISTED }
@@ -32,6 +33,12 @@ object UserSettingsTable : UUIDTable("users_settings") {
         dto.preferredTimeStyle?.let { preferredTimeStyle = it }
         dto.preferredLocale?.let { preferredLocale = it }
     }
+
+    fun findByUserId(userId: UUID): UserSettings =
+        Users.join(UserSettingsTable, JoinType.INNER, Users.settings, UserSettingsTable.id)
+            .select { Users.id eq userId }
+            .first()
+            .let { return UserSettings.wrapRow(it) }
 }
 
 class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {

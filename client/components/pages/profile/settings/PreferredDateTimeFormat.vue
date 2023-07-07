@@ -16,24 +16,24 @@ const { patchSetting, isError } = useSetting(model, value => ({
 } as Partial<UserSettings>))
 const now = useNow()
 
-const options = computed(() => [
-  { dateStyle: 'short', timeStyle: 'short' },
-  { dateStyle: 'short', timeStyle: 'medium' },
-  { dateStyle: 'short', timeStyle: 'long' },
-  { dateStyle: 'short', timeStyle: 'full' },
-  { dateStyle: 'medium', timeStyle: 'short' },
-  { dateStyle: 'medium', timeStyle: 'medium' },
-  { dateStyle: 'medium', timeStyle: 'long' },
-  { dateStyle: 'medium', timeStyle: 'full' },
-  { dateStyle: 'long', timeStyle: 'short' },
-  { dateStyle: 'long', timeStyle: 'medium' },
-  { dateStyle: 'long', timeStyle: 'long' },
-  { dateStyle: 'long', timeStyle: 'full' },
-  { dateStyle: 'full', timeStyle: 'short' },
-  { dateStyle: 'full', timeStyle: 'medium' },
-  { dateStyle: 'full', timeStyle: 'long' },
-  { dateStyle: 'full', timeStyle: 'full' },
-])
+const options = [
+  { dateStyle: 'SHORT', timeStyle: 'SHORT' },
+  { dateStyle: 'SHORT', timeStyle: 'MEDIUM' },
+  { dateStyle: 'SHORT', timeStyle: 'LONG' },
+  { dateStyle: 'SHORT', timeStyle: 'FULL' },
+  { dateStyle: 'MEDIUM', timeStyle: 'SHORT' },
+  { dateStyle: 'MEDIUM', timeStyle: 'MEDIUM' },
+  { dateStyle: 'MEDIUM', timeStyle: 'LONG' },
+  { dateStyle: 'MEDIUM', timeStyle: 'FULL' },
+  { dateStyle: 'LONG', timeStyle: 'SHORT' },
+  { dateStyle: 'LONG', timeStyle: 'MEDIUM' },
+  { dateStyle: 'LONG', timeStyle: 'LONG' },
+  { dateStyle: 'LONG', timeStyle: 'FULL' },
+  { dateStyle: 'FULL', timeStyle: 'SHORT' },
+  { dateStyle: 'FULL', timeStyle: 'MEDIUM' },
+  { dateStyle: 'FULL', timeStyle: 'LONG' },
+  { dateStyle: 'FULL', timeStyle: 'FULL' },
+]
 </script>
 
 <template>

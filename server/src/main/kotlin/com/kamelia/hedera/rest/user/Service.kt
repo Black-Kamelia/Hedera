@@ -122,12 +122,12 @@ object UserService {
             ?: Response.notFound()
     }
 
-    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
-        val user = Users.findById(id) ?: return@transaction Response.notFound()
-        Response.created(Users
-            .regenerateUploadToken(user)
-            .toRepresentationDTO())
-    }
+    // suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
+    //     val user = Users.findById(id) ?: return@transaction Response.notFound()
+    //     Response.created(Users
+    //         .regenerateUploadToken(user)
+    //         .toRepresentationDTO())
+    // }
 }
 
 private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {

@@ -1,17 +1,22 @@
-<script lang="ts" setup>
-const { title, subtitle, radioName, value } = defineProps<{
+<script lang="ts" setup generic="T">
+const { title, subtitle, radioName, value: initialValue } = defineProps<{
   title: string
   subtitle?: string
   radioName: string
-  value: string
+  value: T
 }>()
 
 const emit = defineEmits<{
-  (event: 'change', newValue: typeof value): void
+  (event: 'change', newValue: T): void
 }>()
 
-const model = defineModel<any>()
+const model = defineModel<T>()
 const focus = ref(false)
+
+function onClick() {
+  model.value = initialValue
+  emit('change', initialValue)
+}
 </script>
 
 <template>
@@ -19,10 +24,7 @@ const focus = ref(false)
     class="h-radiocard"
     :class="{ 'checked': model === value, 'p-focus': focus }"
     tabindex="-1"
-    @click="() => {
-      model = value
-      emit('change', value)
-    }"
+    @click="onClick"
     @focus="focus = true"
     @focusin="focus = true"
     @focusout="focus = false"

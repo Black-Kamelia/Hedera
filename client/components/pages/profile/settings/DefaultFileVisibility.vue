@@ -34,10 +34,10 @@ function getOption(value: string) {
       :class="{ 'p-invalid': isError }"
       @update:model-value="patchSetting"
     >
-      <template #value="{ value }">
-        <div v-if="value" class="flex items-center gap-2">
-          <i :class="getOption(value)!.icon" />
-          <div>{{ getOption(value)!.name }}</div>
+      <template #value="{ value: selectedOption }">
+        <div v-if="selectedOption" class="flex items-center gap-2">
+          <i :class="getOption(selectedOption)!.icon" />
+          <div>{{ getOption(selectedOption)!.name }}</div>
         </div>
         <span v-else>
           {{ t('pages.profile.settings.default_files_visibility.choose') }}

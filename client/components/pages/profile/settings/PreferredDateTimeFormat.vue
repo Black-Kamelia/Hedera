@@ -50,9 +50,9 @@ const options = computed(() => [
       :class="{ 'p-invalid': isError }"
       @update:model-value="patchSetting"
     >
-      <template #value="{ value }">
-        <div v-if="value" class="flex align-items-center">
-          <div>{{ d(now, value) }}</div>
+      <template #value="{ value: selectedOption }">
+        <div v-if="selectedOption" class="flex align-items-center">
+          <div>{{ d(now, selectedOption) }}</div>
         </div>
         <span v-else>
           {{ t('pages.profile.settings.preferred_theme.choose') }}

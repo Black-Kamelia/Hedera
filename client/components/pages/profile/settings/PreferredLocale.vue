@@ -33,10 +33,10 @@ function getOption(value: string) {
       :class="{ 'p-invalid': isError }"
       @update:model-value="patchSetting"
     >
-      <template #value="{ value }">
-        <div v-if="value" class="flex items-center gap-2">
-          <img :src="getOption(value)!.flag" class="w-5" :alt="getOption(value)!.name">
-          <div>{{ getOption(value)!.name }}</div>
+      <template #value="{ value: selectedOption }">
+        <div v-if="selectedOption" class="flex items-center gap-2">
+          <img :src="getOption(selectedOption)!.flag" class="w-5" :alt="getOption(selectedOption)!.name">
+          <div>{{ getOption(selectedOption)!.name }}</div>
         </div>
         <span v-else>
           {{ t('pages.profile.settings.preferred_locale.choose') }}

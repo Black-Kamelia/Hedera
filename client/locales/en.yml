@@ -131,7 +131,7 @@ pages:
       sync_failed: Failed to sync
       file_size_scale:
         title: File size scale
-        description: Choose to display file sizes in a binary or decimal scale. This will affect the way quotas may be interpreted.
+        description: Choose to display file sizes in a binary or decimal scale. This will affect the way quotas can be interpreted.
         binary:
           title: Binary scale
           description: Units are powers of 2
@@ -146,7 +146,7 @@ pages:
         choose: Choose a visibility
       auto_delete_oldest_files:
         title: Auto-delete oldest files
-        description: When your are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
+        description: When you are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
       enable_animations:
         title: Enable animations and transitions
         description: Hedera uses animations and transitions to make the user experience more enjoyable. If you experience performance issues, you can disable them here.

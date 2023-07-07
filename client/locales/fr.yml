@@ -131,7 +131,7 @@ pages:
       sync_failed: Échec de la synchronisation
       file_size_scale:
         title: Échelle de taille de fichier
-        description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci va affecter la façon dont les quotas peuvent être interprétés.
+        description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci pourrait affecter la façon dont vous pourriez interpréter les quotas.
         binary:
           title: Échelle binaire
           description: Les unités sont des puissances de 2

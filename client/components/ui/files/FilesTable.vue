@@ -3,7 +3,6 @@ import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 
 import type { PContextMenu } from '#components'
 
 const { locale, t, d } = useI18n()
-const settings = useUserSettings()
 
 const files = defineModel<FileRepresentationDTO[]>('files', { required: true })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)

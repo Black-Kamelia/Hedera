@@ -1,6 +1,6 @@
 import type { PContextMenu } from '~/.nuxt/components'
 import type { FilesTableContext } from '~/composables/fileTable/useFilesTable'
-import type { UserSettingsContext } from '~/composables/useSettings'
+import type { UserSettingsContext } from '~/composables/settings/useSettingsPage'
 
 export const FileTableKey = Symbol('fileTable') as InjectionKey<FilesTableContext>
 

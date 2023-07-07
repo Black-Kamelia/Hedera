@@ -8,8 +8,8 @@ const fileSizeScale = computed(() => settings.filesSizeScale)
 const defaultFileVisibility = computed(() => settings.defaultFileVisibility)
 const autoRemoveFiles = computed(() => settings.autoRemoveFiles)
 const preferredDateTimeFormat = computed(() => ({
-  dateStyle: settings.preferredDateStyle.toLowerCase(),
-  timeStyle: settings.preferredTimeStyle.toLowerCase(),
+  dateStyle: settings.preferredDateStyle as DateTimeStyle,
+  timeStyle: settings.preferredTimeStyle as DateTimeStyle,
 }))
 const preferredLocale = computed(() => settings.preferredLocale)
 

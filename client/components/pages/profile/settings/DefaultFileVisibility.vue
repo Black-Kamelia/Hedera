@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { value: initialValue } = defineProps<{
-  value: 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
+  value: FileVisibility
 }>()
 
 const model = ref(initialValue)
@@ -36,8 +36,8 @@ function getOption(value: string) {
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">
-          <i :class="getOption(value).icon" />
-          <div>{{ getOption(value).name }}</div>
+          <i :class="getOption(value)!.icon" />
+          <div>{{ getOption(value)!.name }}</div>
         </div>
         <span v-else>
           {{ t('pages.profile.settings.default_files_visibility.choose') }}

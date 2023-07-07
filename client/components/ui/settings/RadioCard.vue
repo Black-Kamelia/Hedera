@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="T">
-const { title, subtitle, radioName, value: initialValue } = defineProps<{
+const { title, subtitle, radioName, value } = defineProps<{
   title: string
   subtitle?: string
   radioName: string
@@ -14,8 +14,8 @@ const model = defineModel<T>()
 const focus = ref(false)
 
 function onClick() {
-  model.value = initialValue
-  emit('change', initialValue)
+  model.value = value
+  emit('change', value)
 }
 </script>
 

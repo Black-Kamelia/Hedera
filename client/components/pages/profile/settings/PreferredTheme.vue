@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const model = defineModel<'system' | 'light' | 'dark'>({ default: 'system', required: true })
+const model = defineModel<string>({ default: 'system', required: true })
 
 const { t } = useI18n()
 
@@ -29,8 +29,8 @@ function getOption(value: string) {
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">
-          <i :class="getOption(value).icon" />
-          <div>{{ getOption(value).name }}</div>
+          <i :class="getOption(value)!.icon" />
+          <div>{{ getOption(value)!.name }}</div>
         </div>
         <span v-else>
           {{ t('pages.profile.settings.preferred_theme.choose') }}

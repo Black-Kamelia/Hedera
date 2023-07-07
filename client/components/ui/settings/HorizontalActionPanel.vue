@@ -2,8 +2,8 @@
 const { header, description, localSetting = false } = defineProps<{
   header: string
   description: string
-  localSetting: boolean
-  error: boolean
+  localSetting?: boolean
+  error?: boolean
 }>()
 
 const { t } = useI18n()

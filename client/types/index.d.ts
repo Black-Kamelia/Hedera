@@ -66,21 +66,28 @@ declare global {
     refreshTokenExpiration: number
   }
 
+  type Role = 'REGULAR' | 'ADMIN' | 'OWNER'
+
   interface UserRepresentationDTO {
     id: string
     username: string
     email: string
-    role: 'REGULAR' | 'ADMIN' | 'OWNER'
+    role: Role
     enabled: boolean
   }
 
+  type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
+  type FileSizeScale = 'BINARY' | 'DECIMAL'
+  type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
+  type Locale = 'en' | 'fr'
+
   interface UserSettings {
-    defaultFileVisibility: 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE'
+    defaultFileVisibility: FileVisibility
     autoRemoveFiles: boolean
-    filesSizeScale: 'BINARY' | 'DECIMAL'
-    preferredDateStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
-    preferredTimeStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
-    preferredLocale: 'en' | 'fr'
+    filesSizeScale: FileSizeScale
+    preferredDateStyle: DateTimeStyle
+    preferredTimeStyle: DateTimeStyle
+    preferredLocale: Locale
   }
 
   interface SessionOpeningDTO {

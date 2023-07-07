@@ -13,9 +13,15 @@ export default function useI18n(fallback = 'en') {
   })
 
   function d(date: Date | string | number, options?: DateTimeOptions): string {
-    return i18n.d(date, options ?? {
-      dateStyle: preferredDateStyle.toLowerCase(),
-      timeStyle: preferredTimeStyle.toLowerCase(),
+    if (!options) {
+      return i18n.d(date, {
+        dateStyle: preferredDateStyle.toLowerCase(),
+        timeStyle: preferredTimeStyle.toLowerCase(),
+      } as DateTimeOptions)
+    }
+    return i18n.d(date, {
+      dateStyle: options.dateStyle?.toLowerCase(),
+      timeStyle: options.timeStyle?.toLowerCase(),
     } as DateTimeOptions)
   }
 

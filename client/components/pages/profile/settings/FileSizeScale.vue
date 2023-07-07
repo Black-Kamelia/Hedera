@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { value: initialValue } = defineProps<{
-  value: 'BINARY' | 'DECIMAL'
+  value: FileSizeScale
 }>()
 const model = ref(initialValue)
 
@@ -18,7 +18,7 @@ const { patchSetting, isError } = useSetting(model, value => ({ filesSizeScale: 
       <RadioCard
         v-model="model"
         :class="{ 'p-invalid': isError }"
-        :value="'BINARY' as typeof initialValue"
+        :value="'BINARY' as FileSizeScale"
         :title="t('pages.profile.settings.file_size_scale.binary.title')"
         :subtitle="t('pages.profile.settings.file_size_scale.binary.description')"
         radio-name="size-scale"
@@ -31,7 +31,7 @@ const { patchSetting, isError } = useSetting(model, value => ({ filesSizeScale: 
       <RadioCard
         v-model="model"
         :class="{ 'p-invalid': isError }"
-        :value="'DECIMAL' as typeof initialValue"
+        :value="'DECIMAL' as FileSizeScale"
         :title="t('pages.profile.settings.file_size_scale.decimal.title')"
         :subtitle="t('pages.profile.settings.file_size_scale.decimal.description')"
         radio-name="size-scale"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Values {
-  timeStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
-  dateStyle: 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
+  timeStyle: DateTimeStyle
+  dateStyle: DateTimeStyle
 }
 
 const { value: initialValue } = defineProps<{

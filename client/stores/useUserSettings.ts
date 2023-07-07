@@ -1,24 +1,24 @@
 import type { Ref } from 'vue'
 
 export interface UserSettingsStore {
-  defaultFileVisibility: Ref<'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE'>
+  defaultFileVisibility: Ref<FileVisibility>
   autoRemoveFiles: Ref<boolean>
-  filesSizeScale: Ref<'BINARY' | 'DECIMAL'>
-  preferredDateStyle: Ref<'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'>
-  preferredTimeStyle: Ref<'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'>
-  preferredLocale: Ref<'en' | 'fr'>
+  filesSizeScale: Ref<FileSizeScale>
+  preferredDateStyle: Ref<DateTimeStyle>
+  preferredTimeStyle: Ref<DateTimeStyle>
+  preferredLocale: Ref<Locale>
   updateSettings: (filters: Partial<UserSettings>) => void
 }
 
 export const useUserSettings = defineStore('userSettings', (): UserSettingsStore => {
   const locale = useLocale()
 
-  const defaultFileVisibility = ref<'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE'>('UNLISTED')
+  const defaultFileVisibility = ref<FileVisibility>('UNLISTED')
   const autoRemoveFiles = ref<boolean>(false)
-  const filesSizeScale = ref<'BINARY' | 'DECIMAL'>('BINARY')
-  const preferredDateStyle = ref<'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'>('SHORT')
-  const preferredTimeStyle = ref<'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'>('MEDIUM')
-  const preferredLocale = ref<'en' | 'fr'>('en')
+  const filesSizeScale = ref<FileSizeScale>('BINARY')
+  const preferredDateStyle = ref<DateTimeStyle>('SHORT')
+  const preferredTimeStyle = ref<DateTimeStyle>('MEDIUM')
+  const preferredLocale = ref<Locale>('en')
 
   function updateSettings(settings: Partial<UserSettings>) {
     if (settings.defaultFileVisibility !== undefined)

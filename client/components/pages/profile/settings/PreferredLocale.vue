@@ -7,7 +7,6 @@ const model = ref(initialValue)
 
 const { t } = useI18n()
 const { patchSetting, isError } = useSetting(model, value => ({ preferredLocale: value }))
-const locale = useLocale()
 
 const options = computed(() => [
   { name: t('locale.en'), flag: '/assets/img/flags/en_US.svg', value: 'en' },
@@ -32,10 +31,7 @@ function getOption(value: string) {
       option-value="value"
       class="w-full md:w-14rem"
       :class="{ 'p-invalid': isError }"
-      @update:model-value="(newValue: 'en' | 'fr') => {
-        patchSetting(newValue)
-        locale = newValue
-      }"
+      @update:model-value="patchSetting"
     >
       <template #value="{ value }">
         <div v-if="value" class="flex items-center gap-2">

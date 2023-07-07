@@ -23,7 +23,7 @@ export const useAuth = s<UseAuthComposer>(defineStore('auth', (): UseAuthCompose
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const axios = useAxiosFactory()
-  const { updateSettings } = useUserSettings()
+  const { updateSettings, preferredLocale } = useUserSettings()
 
   const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)

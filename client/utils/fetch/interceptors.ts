@@ -6,8 +6,7 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
       const { tokens } = storeToRefs(useAuth())
       if (tokens.value) {
         options.headers = {
-          'Authorization': `Bearer ${tokens.value.accessToken}`,
-          'Access-Control-Allow-Origin': '*',
+          Authorization: `Bearer ${tokens.value.accessToken}`,
           ...options.headers,
         }
       }

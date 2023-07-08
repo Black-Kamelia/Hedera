@@ -1,11 +1,30 @@
-import type { UseFetchOptions } from 'nuxt/app'
+import type { AvailableRouterMethod, NitroFetchOptions, NitroFetchRequest } from 'nitropack'
+import type { AsyncDataOptions } from 'nuxt/app'
+import type { WatchSource } from 'vue'
 
-type _FetchOptions = Parameters<typeof $fetch>[1]
+type _FetchOptions = Parameters<typeof globalThis.$fetch>[1]
 export type FetchAPIOptions = _FetchOptions & {
   ignoreAPIBaseURL?: boolean
   skipAuthRefresh?: boolean
 }
-export type UseFetchAPIOptions<T> = UseFetchOptions<T> & {
+
+type ComputedOptions<T extends Record<string, any>> = {
+  [K in keyof T]: T[K] extends Function ? T[K] : T[K] extends Record<string, any> ? ComputedOptions<T[K]> | Ref<T[K]> | T[K] : Ref<T[K]> | T[K]
+}
+
+type ComputedFetchOptions<R extends NitroFetchRequest, M extends AvailableRouterMethod<R>> = ComputedOptions<NitroFetchOptions<R, M>>
+
+export interface UseFetchAPIOptions<
+  ResT,
+  DataT = ResT,
+  PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
+  DefaultT = null,
+  R extends NitroFetchRequest = string & {},
+  M extends AvailableRouterMethod<R> = AvailableRouterMethod<R>,
+> extends Omit<AsyncDataOptions<ResT, DataT, PickKeys, DefaultT>, 'watch'>, ComputedFetchOptions<R, M> {
+  key?: string
+  $fetch?: typeof globalThis.$fetch
+  watch?: (WatchSource<unknown> | object)[] | false
   ignoreAPIBaseURL?: boolean
   skipAuthRefresh?: boolean
 }

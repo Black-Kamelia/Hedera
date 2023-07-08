@@ -1,4 +1,6 @@
-type $Fetch = typeof $fetch
+import type { FetchError } from 'ofetch'
+
+type $Fetch = typeof globalThis.$fetch
 type $FetchParams = Parameters<$Fetch>
 type $FetchUrl = $FetchParams[0]
 type $FetchOptions = $FetchParams[1]
@@ -6,7 +8,7 @@ type $FetchReturnType = ReturnType<$Fetch>
 
 export interface Configuration {
   refreshToken: (fetch: $Fetch) => Promise<void>
-  shouldRefreshToken: (error: any) => boolean
+  shouldRefreshToken: (error: FetchError) => boolean
   fetch: $Fetch
 }
 

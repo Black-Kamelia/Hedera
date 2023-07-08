@@ -1,4 +1,3 @@
-import { $fetch } from 'ofetch'
 import type { FetchAPIOptions } from './types'
 import type { Tokens } from '~/stores/useAuth'
 
@@ -25,12 +24,10 @@ const $fetchRefresh = configureRefreshFetch({
       auth.setTokens(response)
       tokensRefreshedEvent.emit({ tokens: response })
     }).catch((error) => {
-      if (error.response?.status !== 401) {
-        auth.setUser(null)
-        auth.setTokens(null)
-        refreshTokenExpiredEvent.emit({ error: getDTOFromError(error.response.body) })
-        return Promise.resolve()
-      }
+      auth.setUser(null)
+      auth.setTokens(null)
+      refreshTokenExpiredEvent.emit({ error: getDTOFromError(error.response.body) })
+      throw error
     })
   },
   shouldRefreshToken(e) {

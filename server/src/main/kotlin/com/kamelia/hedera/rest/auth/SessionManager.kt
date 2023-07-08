@@ -1,18 +1,30 @@
 package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.*
-import com.kamelia.hedera.rest.user.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.TokenData
+import com.kamelia.hedera.rest.setting.toRepresentationDTO
+import com.kamelia.hedera.rest.user.User
+import com.kamelia.hedera.rest.user.UserEvents
+import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
+import com.kamelia.hedera.rest.user.UserRepresentationDTO
+import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
+import java.util.*
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import java.util.*
-import kotlin.time.Duration.Companion.minutes
 
 object SessionManager {
 
@@ -80,7 +92,7 @@ object SessionManager {
         loggedUsers[userId]
     }
 
-    suspend fun login(username: String, password: String): Response<TokenData, MessageKeyDTO> {
+    suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageKeyDTO> {
         val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
         val user = Users.findByUsername(username) ?: return unauthorized
 
@@ -92,12 +104,16 @@ object SessionManager {
             return Response.forbidden(Errors.Auth.ACCOUNT_DISABLED)
         }
 
-        return Response.ok(generateTokens(user))
+        return Response.created(SessionOpeningDTO(
+            tokens = generateTokens(user),
+            user = user.toRepresentationDTO(),
+            userSettings = user.settings.toRepresentationDTO()
+        ))
     }
 
     suspend fun refresh(jwt: Payload): Response<TokenData, MessageKeyDTO> {
         val user = Users.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
-        return Response.ok(generateTokens(user))
+        return Response.created(generateTokens(user))
     }
 
     suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
@@ -147,7 +163,6 @@ data class UserState(
         email,
         role,
         enabled,
-        uploadToken,
     )
 }
 

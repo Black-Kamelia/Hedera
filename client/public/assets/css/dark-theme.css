@@ -53,6 +53,11 @@
   box-sizing: border-box;
 }
 
+hr {
+  border: 0;
+  border-top: 1px solid var(--surface-overlay);
+}
+
 .ground {
   background-color: var(--ground);
   color: var(--text-color);
@@ -848,6 +853,54 @@
 
 .p-colorpicker-overlay-panel {
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.h-radiocard {
+  background: var(--surface-c);
+  outline: 1px solid var(--surface-d);
+  transition: background-color 0.2s, border-color 0.2s, outline-color 0.2s, outline-width 0.2s, box-shadow 0.2s;
+  border-radius: 8px;
+  padding: 1.25em;
+  cursor: pointer;
+}
+
+.h-radiocard * {
+  user-select: none;
+  color: var(--text-color-secondary);
+  transition: color 0.2s;
+}
+
+.h-radiocard.checked {
+  background: var(--ground);
+  outline: 2px solid var(--primary-500);
+}
+
+.h-radiocard.checked * {
+  color: var(--text-color);
+}
+
+.h-radiocard:not(.p-disabled).p-invalid {
+  outline-color: #ff9a9a;
+}
+
+.h-radiocard:not(.p-disabled):hover {
+  outline-color: var(--primary-500);
+}
+
+.h-radiocard:not(.p-disabled):hover .p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight) {
+  border-color: var(--primary-500);
+}
+
+.h-radiocard:not(.p-disabled).p-focus {
+  box-shadow: 0 0 0 3px var(--primary-600);
+  outline: 2px solid var(--primary-500);
+}
+
+.h-radiocard:not(.p-disabled).p-focus .p-radiobutton .p-radiobutton-box:not(.p-disabled) {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 1px var(--primary-600);
+  border-color: var(--primary-500);
 }
 
 .p-dropdown {
@@ -1686,6 +1739,7 @@
   color: var(--text-color);
 }
 
+.h-radiocard.p-invalid .p-radiobutton > .p-radiobutton-box,
 .p-radiobutton.p-invalid > .p-radiobutton-box {
   border-color: #ff9a9a;
 }
@@ -6400,10 +6454,10 @@
 }
 
 .p-inline-message.p-inline-message-info {
-  background: #e9e9ff;
+  background: #696cff40;
   border: solid #696cff;
-  border-width: 1px;
-  color: #696cff;
+  border-width: 0px;
+  color: #e9e9ff;
 }
 
 .p-inline-message.p-inline-message-info .p-inline-message-icon {
@@ -6422,10 +6476,10 @@
 }
 
 .p-inline-message.p-inline-message-warn {
-  background: #fff2e2;
-  border: solid #cc8925;
-  border-width: 1px;
-  color: #cc8925;
+  background: #cc892540;
+  border: solid #cc892540;
+  border-width: 0px;
+  color: #fff2e2;
 }
 
 .p-inline-message.p-inline-message-warn .p-inline-message-icon {

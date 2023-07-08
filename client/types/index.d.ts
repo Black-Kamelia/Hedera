@@ -58,6 +58,43 @@ declare global {
     owner: FileOwnerDTO,
     creationDate: string,
   }
+
+  interface TokenData {
+    accessToken: string
+    accessTokenExpiration: number
+    refreshToken: string
+    refreshTokenExpiration: number
+  }
+
+  type Role = 'REGULAR' | 'ADMIN' | 'OWNER'
+
+  interface UserRepresentationDTO {
+    id: string
+    username: string
+    email: string
+    role: Role
+    enabled: boolean
+  }
+
+  type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
+  type FileSizeScale = 'BINARY' | 'DECIMAL'
+  type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
+  type Locale = 'en' | 'fr'
+
+  interface UserSettings {
+    defaultFileVisibility: FileVisibility
+    autoRemoveFiles: boolean
+    filesSizeScale: FileSizeScale
+    preferredDateStyle: DateTimeStyle
+    preferredTimeStyle: DateTimeStyle
+    preferredLocale: Locale
+  }
+
+  interface SessionOpeningDTO {
+    tokens: TokenData
+    user: UserRepresentationDTO
+    userSettings: UserSettings
+  }
 }
 // END SECTION: DTO
 

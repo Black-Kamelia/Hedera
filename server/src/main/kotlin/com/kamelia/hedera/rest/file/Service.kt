@@ -1,6 +1,14 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Actions
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -39,12 +47,13 @@ object FileService {
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
-        Response.ok(
+        Response.created(
             Files.create(
                 code = code,
                 name = filename,
                 mimeType = type,
                 size = size,
+                visibility = creator.settings.defaultFileVisibility,
                 creator = creator
             ).toRepresentationDTO()
         )

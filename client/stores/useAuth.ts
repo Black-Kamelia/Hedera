@@ -23,6 +23,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const axios = useAxiosFactory()
+  const { updateSettings } = useUserSettings()
 
   const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
@@ -49,10 +50,11 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
 
   async function login(values: Record<string, any>) {
     try {
-      const { data: tokens } = await axios().post<Tokens>('/login', values)
+      const { data: { tokens, user, userSettings } } = await axios().post<SessionOpeningDTO>('/login', values)
       setTokens(tokens)
+      setUser(user)
+      updateSettings(userSettings)
       loggedInEvent.emit({ tokens })
-      setUser({ username: values.username })
     }
     catch (error) {
       if (error instanceof AxiosError) {

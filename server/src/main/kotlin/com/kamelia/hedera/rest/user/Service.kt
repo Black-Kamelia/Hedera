@@ -1,6 +1,11 @@
 package com.kamelia.hedera.rest.user
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -21,7 +26,7 @@ object UserService {
             throw IllegalActionException()
         }
 
-        Response.ok(Users
+        Response.created(Users
             .create(dto)
             .toRepresentationDTO())
     }
@@ -113,15 +118,15 @@ object UserService {
             ?: Response.notFound()
     }
 
-    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
-        val user = Users.findById(id) ?: return@transaction Response.notFound()
-        Response.ok(Users
-            .regenerateUploadToken(user)
-            .toRepresentationDTO())
-    }
+    // suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
+    //     val user = Users.findById(id) ?: return@transaction Response.notFound()
+    //     Response.created(Users
+    //         .regenerateUploadToken(user)
+    //         .toRepresentationDTO())
+    // }
 }
 
-private fun checkEmail(email: String?, toEdit: User? = null) = when {
+private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {
     email == null -> null
     "@" !in email -> Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
     else -> Users.findByEmail(email)?.let {
@@ -145,7 +150,7 @@ private fun checkUsername(username: String?, toEdit: User? = null): Response<Not
     }
 }
 
-private fun checkPassword(password: String?) = when {
+private fun checkPassword(password: String?): Response<Nothing, MessageKeyDTO>? = when {
     password == null -> null
     password.length < 8 -> Response.forbidden(Errors.Users.Password.TOO_SHORT)
     else -> null

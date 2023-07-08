@@ -5,7 +5,6 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
-import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -73,12 +72,6 @@ val UUIDEntity.uuid: UUID
 fun ApplicationCall.getUUIDOrNull(name: String = "uuid"): UUID? = getParamOrNull(name)?.toUUIDOrNull()
 
 fun ApplicationCall.getUUID(name: String = "uuid"): UUID = getUUIDOrNull(name) ?: throw InvalidUUIDException()
-
-suspend fun ApplicationCall.receivePageDefinition(): PageDefinitionDTO = if (request.contentType() == ApplicationJSON) {
-    receive()
-} else {
-    PageDefinitionDTO()
-}
 
 fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
 

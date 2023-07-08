@@ -25,18 +25,12 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 useEventBus(LoggedOutEvent).on(() => {
   navigateTo('/login')
 })
-function test() {
-  $fetchAPI('/users/settings')
-    .then(res => console.log('res', res))
-    .catch(e => console.log('e', e))
-}
+
+const animation = useLocalStorage('animations', true)
 </script>
 
 <template>
-  <PButton @click="test">
-    x
-  </PButton>
-  <div font="text" class="p-input-filled">
+  <div font="text" class="p-input-filled" :class="{ 'no-animation': !animation }">
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />
@@ -54,6 +48,24 @@ function test() {
 
   --sidebar-width-open: 19em;
   --sidebar-width-collapsed: 5em;
+}
+
+body:has(.no-animation),
+body:has(.no-animation) *,
+body:has(.no-animation) *:before,
+body:has(.no-animation) *:after {
+  transition: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition-duration: 0s !important;
+  -webkit-transition-duration: 0s !important;
+  -moz-transition-duration: 0s !important;
+  -o-transition-duration: 0s !important;
+  animation: none !important;
+  -moz-animation: none !important;
+  -webkit-animation: none !important;
+  -o-animation: none !important;
 }
 
 .layout-in-enter-active,

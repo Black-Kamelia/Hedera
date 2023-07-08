@@ -4,7 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
     <changeSet author="test" id="data">
-        <loadData tableName="users" file="classpath:db/data/users.csv" separator=";" />
-        <loadData tableName="files" file="classpath:db/data/files.csv" separator=";" />
+        <loadData tableName="users_settings" file="classpath:db/data/users-settings.csv" />
+        <loadData tableName="users" file="classpath:db/data/users.csv"  />
+        <loadData tableName="files" file="classpath:db/data/files.csv" />
     </changeSet>
 </databaseChangeLog>

@@ -3,7 +3,13 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.respond
 import com.kamelia.hedera.plugins.AuthJwt
-import com.kamelia.hedera.util.*
+import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.util.adminRestrict
+import com.kamelia.hedera.util.authenticatedUser
+import com.kamelia.hedera.util.getPageParameters
+import com.kamelia.hedera.util.getUUID
+import com.kamelia.hedera.util.idRestrict
+import com.kamelia.hedera.util.ifRegular
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
@@ -15,11 +21,11 @@ fun Route.userRoutes() = route("/users") {
     authenticate(AuthJwt) {
         getUserById()
         getAllUsers()
-        getPagedUsers()
+        searchUsers()
         updateUser()
         updateUserPassword()
         deleteUser()
-        regenerateUploadToken()
+        // regenerateUploadToken()
     }
 }
 
@@ -40,12 +46,11 @@ private fun Route.getAllUsers() = get("/all") {
     call.respond(UserService.getUsers())
 }
 
-private fun Route.getPagedUsers() = get("/paged") {
+private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->
     adminRestrict()
     val (page, pageSize) = call.getPageParameters()
-    val definition = call.receivePageDefinition()
 
-    call.respond(UserService.getUsers(page, pageSize, definition))
+    call.respond(UserService.getUsers(page, pageSize, body))
 }
 
 private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
@@ -72,9 +77,9 @@ private fun Route.deleteUser() = delete("/{uuid}") {
     call.respond(UserService.deleteUser(uuid))
 }
 
-private fun Route.regenerateUploadToken() = post("/uploadToken") {
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
-    idRestrict(userId)
-
-    call.respond(UserService.regenerateUploadToken(userId))
-}
+// private fun Route.regenerateUploadToken() = post("/uploadToken") {
+//     val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+//     idRestrict(userId)
+//
+//     call.respond(UserService.regenerateUploadToken(userId))
+// }

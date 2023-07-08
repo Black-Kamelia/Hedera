@@ -174,7 +174,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' }) }}
+        {{ d(slotProps.data.creationDate) }}
       </template>
       <template #loading>
         <PSkeleton width="8rem" height="1rem" />

@@ -225,7 +225,7 @@ class FileTest {
     fun filesFiltering1() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.get("/api/files/paged") {
+        val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(
                 PageDefinitionDTO(
@@ -263,7 +263,7 @@ class FileTest {
     fun filesFiltering2() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.get("/api/files/paged") {
+        val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(
                 PageDefinitionDTO(
@@ -327,9 +327,9 @@ class FileTest {
 
         @JvmStatic
         fun uploadFile(): Stream<Arguments> = Stream.of(
-            Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.OK),
-            Arguments.of(Named.of("admin", admin), HttpStatusCode.OK),
-            Arguments.of(Named.of("regular user", user1), HttpStatusCode.OK),
+            Arguments.of(Named.of("superadmin", superadmin), HttpStatusCode.Created),
+            Arguments.of(Named.of("admin", admin), HttpStatusCode.Created),
+            Arguments.of(Named.of("regular user", user1), HttpStatusCode.Created),
             Arguments.of(Named.of("guest", guest), HttpStatusCode.Unauthorized),
         )
 
@@ -338,17 +338,17 @@ class FileTest {
             Arguments.of(
                 "0f2577e20ca8466b89724d2cfb56e2db",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
-                HttpStatusCode.OK
+                HttpStatusCode.Created
             ),
             Arguments.of(
                 "a9b42b75a4774e41b6391e7724c05f77",
                 Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
-                HttpStatusCode.OK
+                HttpStatusCode.Created
             ),
             Arguments.of(
                 "8da63c40d5534a50b69e44f4b6789712",
                 Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
-                HttpStatusCode.OK
+                HttpStatusCode.Created
             ),
             Arguments.of(
                 "00000000000000000000000000000000",

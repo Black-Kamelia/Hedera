@@ -1,15 +1,15 @@
 import type { EventBusKey } from '@vueuse/core'
-import type { AxiosError } from 'axios'
+import type { FetchError } from 'ofetch'
 import type { MessageKeyDTO } from './messages'
 import type { Tokens } from '~/stores/useAuth'
 
 export const LoggedInEvent: EventBusKey<{
   tokens?: Tokens
-  error?: AxiosError
+  error?: FetchError
 }> = Symbol('logged-in')
 
 export const LoggedOutEvent: EventBusKey<{
-  error?: AxiosError
+  error?: FetchError
 }> = Symbol('logged-out')
 
 export const TokensRefreshedEvent: EventBusKey<{

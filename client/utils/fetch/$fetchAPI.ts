@@ -1,9 +1,10 @@
 import type { NitroFetchRequest } from 'nitropack'
+import { $fetch } from 'ofetch'
 import type { FetchAPIOptions } from './api/types'
 import type { Tokens } from '~/stores/useAuth'
 
 const $fetchRefresh = configureRefreshFetch({
-  fetch: globalThis.$fetch,
+  fetch: $fetch,
   refreshToken(fetch) {
     const apiUrl = useRuntimeConfig().public.apiBaseUrl
     const accessTokenExpiredEvent = useEventBus(AccessTokenExpiredEvent)

@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios'
+import { FetchError } from 'ofetch'
 import type { HederaUserConnectedPayload } from '~/utils/websocketEvents'
 
 export interface Tokens {
@@ -22,7 +22,6 @@ export interface UseAuthComposer {
 export const useAuth = defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
-  const axios = useAxiosFactory()
   const { updateSettings } = useUserSettings()
 
   const user = ref<Nullable<User>>(null)
@@ -50,14 +49,14 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
 
   async function login(values: Record<string, any>) {
     try {
-      const { data: { tokens, user, userSettings } } = await axios().post<SessionOpeningDTO>('/login', values)
+      const { tokens, user, userSettings } = await $fetchAPI<SessionOpeningDTO>('/login', { method: 'post', body: values })
       setTokens(tokens)
       setUser(user)
       updateSettings(userSettings)
       loggedInEvent.emit({ tokens })
     }
     catch (error) {
-      if (error instanceof AxiosError) {
+      if (error instanceof FetchError) {
         loggedInEvent.emit({ error })
         return
       }
@@ -67,13 +66,13 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
 
   async function logout() {
     try {
-      await axios().post('/logout')
+      await $fetchAPI('/logout', { method: 'post' })
       setTokens(null)
       setUser(null)
       loggedOutEvent.emit()
     }
     catch (error) {
-      if (error instanceof AxiosError) {
+      if (error instanceof FetchError) {
         loggedOutEvent.emit({ error })
         return
       }

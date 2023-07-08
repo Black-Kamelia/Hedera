@@ -32,7 +32,8 @@ const $fetchRefresh = configureRefreshFetch({
     })
   },
   shouldRefreshToken(e) {
-    return e.response?.status === 401
+    const apiUrl = useRuntimeConfig().public.apiBaseUrl
+    return e.request?.startsWith(apiUrl) && e.response?.status === 401
   },
 })
 

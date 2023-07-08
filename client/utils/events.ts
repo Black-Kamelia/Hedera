@@ -16,9 +16,7 @@ export const TokensRefreshedEvent: EventBusKey<{
   tokens: Tokens
 }> = Symbol('tokens-refreshed')
 
-export const AccessTokenExpiredEvent: EventBusKey<{
-  error: AxiosError
-}> = Symbol('access-token-expired')
+export const AccessTokenExpiredEvent: EventBusKey<void> = Symbol('access-token-expired')
 
 export const RefreshTokenExpiredEvent: EventBusKey<{
   error?: MessageKeyDTO

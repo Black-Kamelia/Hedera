@@ -8,7 +8,7 @@ function tryRefreshFactory(axios: AxiosInstance) {
     const accessTokenExpiredEvent = useEventBus(AccessTokenExpiredEvent)
     const tokensRefreshedEvent = useEventBus(TokensRefreshedEvent)
 
-    accessTokenExpiredEvent.emit({ error: failedRequest })
+    accessTokenExpiredEvent.emit()
 
     if (skipRefreshRoutes.includes(failedRequest.response?.config.url ?? ''))
       return Promise.reject(failedRequest)

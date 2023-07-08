@@ -25,9 +25,17 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 useEventBus(LoggedOutEvent).on(() => {
   navigateTo('/login')
 })
+function test() {
+  $fetchAPI('/users/settings')
+    .then(res => console.log('res', res))
+    .catch(e => console.log('e', e))
+}
 </script>
 
 <template>
+  <PButton @click="test">
+    x
+  </PButton>
   <div font="text" class="p-input-filled">
     <NuxtLoadingIndicator />
     <NuxtLayout>

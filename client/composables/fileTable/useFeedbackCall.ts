@@ -1,19 +1,22 @@
-import type { AxiosResponse } from 'axios'
+import type { MessageDTO } from '~/utils/messages'
 
-export default function useFeedbackCall<F extends (...args: Parameters<F>) => Promise<AxiosResponse>>(requestFactory: F) {
+export default function useFeedbackCall<
+  T,
+  F extends (...args: Parameters<F>) => Promise<MessageDTO<T>>,
+>(requestFactory: F) {
   const { t, m } = useI18n()
   const toast = useToast()
 
-  return function call(...args: Parameters<F>) {
+  return function call(...args: Parameters<F>): Promise<MessageDTO<T> | void> {
     return requestFactory(...args)
-      .then((response) => {
+      .then((response: MessageDTO<T>) => {
         toast.add({
           severity: 'success',
-          summary: m(response.data.title),
-          detail: { text: m(response.data.message) },
+          summary: m(response.title),
+          detail: { text: m(response.message) },
           life: 5000,
         })
-        return response
+        return response as MessageDTO<T>
       })
       .catch((error) => {
         if (!error.response) {

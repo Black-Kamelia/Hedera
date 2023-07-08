@@ -8,10 +8,9 @@ export const useRenameFileDialog = defineStore('renameFileDialog', {
 })
 
 export function useRenameFile() {
-  const axios = useAxiosFactory()
   const { t } = useI18n()
   const call = useFeedbackCall((fileId: string, newName: string) => {
-    return axios().put<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/name`, { name: newName })
+    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/name`, { method: 'put', body: { name: newName } })
   })
   const { selectedRow, selectedRowId, updateSelectedRow, unselectRow } = useFilesTable()
   const dialog = useDialog()
@@ -23,7 +22,7 @@ export function useRenameFile() {
     if (!selectedRowId.value)
       return
     call(selectedRowId.value, newName)
-      .then(response => updateSelectedRow(response?.data.payload))
+      .then(response => updateSelectedRow(response?.payload as FileRepresentationDTO))
       .finally(unselectRow)
   }
 

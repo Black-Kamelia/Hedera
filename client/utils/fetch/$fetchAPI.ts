@@ -1,9 +1,9 @@
-import { $fetch } from 'ofetch'
-import type { FetchAPIOptions } from './types'
+import type { NitroFetchRequest } from 'nitropack'
+import type { FetchAPIOptions } from './api/types'
 import type { Tokens } from '~/stores/useAuth'
 
 const $fetchRefresh = configureRefreshFetch({
-  fetch: $fetch,
+  fetch: globalThis.$fetch,
   refreshToken(fetch) {
     const apiUrl = useRuntimeConfig().public.apiBaseUrl
     const accessTokenExpiredEvent = useEventBus(AccessTokenExpiredEvent)
@@ -33,11 +33,11 @@ const $fetchRefresh = configureRefreshFetch({
   },
   shouldRefreshToken(e) {
     const apiUrl = useRuntimeConfig().public.apiBaseUrl
-    return e.request?.startsWith(apiUrl) && e.response?.status === 401
+    return e.request?.toString().startsWith(apiUrl) === true && e.response?.status === 401
   },
 })
 
-export function $fetchAPI<T = unknown>(url: string, options: FetchAPIOptions = {}) {
+export function $fetchAPI<T = unknown>(url: NitroFetchRequest, options: FetchAPIOptions = {}) {
   const actualOptions = { retry: 0, ...options }
   if (!options.ignoreAPIBaseURL)
     actualOptions.baseURL = useRuntimeConfig().public.apiBaseUrl

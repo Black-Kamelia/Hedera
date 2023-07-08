@@ -6,7 +6,9 @@ import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.sql.Connection
 
@@ -40,6 +42,9 @@ object Connection {
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         block: suspend Transaction.() -> T,
     ): T = newSuspendedTransaction(dispatcher, database) {
+        if (Environment.isDev) {
+            addLogger(StdOutSqlLogger)
+        }
         block()
     }
 }

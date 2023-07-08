@@ -10,7 +10,7 @@ import java.util.*
 
 object AuthService {
 
-    suspend fun login(username: String, password: String): Response<TokenData, MessageKeyDTO> = Connection.transaction {
+    suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageKeyDTO> = Connection.transaction {
         SessionManager.login(username, password)
     }
 

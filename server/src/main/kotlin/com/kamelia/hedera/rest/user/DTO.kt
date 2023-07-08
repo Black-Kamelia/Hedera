@@ -6,7 +6,7 @@ import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.util.UUIDSerializer
 import com.kamelia.hedera.util.uuid
-import java.util.UUID
+import java.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
@@ -16,7 +16,6 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
-    uploadToken,
 )
 
 /**
@@ -68,7 +67,6 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
-    val uploadToken: String,
 ) : DTO
 
 @Serializable

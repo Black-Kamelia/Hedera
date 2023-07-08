@@ -2,6 +2,7 @@ package com.kamelia.hedera
 
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.auth.LoginDTO
+import com.kamelia.hedera.rest.auth.SessionOpeningDTO
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import com.kamelia.hedera.util.UUIDSerializer
@@ -14,13 +15,13 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
+import java.util.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
-import java.util.*
 
 typealias TestUser = Pair<TokenData?, UUID>
 
@@ -47,12 +48,12 @@ suspend fun ApplicationTestBuilder.login(
         setBody(dto)
     }
     val body = if (response.status == HttpStatusCode.Created) {
-        Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
+        Json.decodeFromString(SessionOpeningDTO.serializer(), response.bodyAsText())
     } else {
         System.err.println(response.bodyAsText())
         null
     }
-    return response to body
+    return response to body?.tokens
 }
 
 suspend fun ApplicationTestBuilder.loginBlocking(
@@ -67,12 +68,12 @@ suspend fun ApplicationTestBuilder.loginBlocking(
         }
     }
     val body = if (response.status == HttpStatusCode.Created) {
-        Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
+        Json.decodeFromString(SessionOpeningDTO.serializer(), response.bodyAsText())
     } else {
         System.err.println(response.bodyAsText())
         null
     }
-    return response to body
+    return response to body?.tokens
 }
 
 fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(

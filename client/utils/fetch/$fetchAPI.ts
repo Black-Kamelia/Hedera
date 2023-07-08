@@ -39,7 +39,7 @@ const $fetchRefresh = configureRefreshFetch({
 })
 
 export function $fetchAPI<T = unknown>(url: NitroFetchRequest, options: FetchAPIOptions = {}) {
-  const actualOptions = { retry: 0, ...options }
+  const actualOptions = { retry: 0, ...options, method: options.method?.toUpperCase() } as FetchAPIOptions
   if (!options.ignoreAPIBaseURL)
     actualOptions.baseURL = useRuntimeConfig().public.apiBaseUrl
 

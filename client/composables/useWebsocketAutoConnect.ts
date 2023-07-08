@@ -6,7 +6,6 @@ export default function useWebsocketAutoConnect() {
   const appConfig = useRuntimeConfig()
   const host = appConfig.public.websocketUrl || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
 
-  const axios = useAxiosFactory()
   const { isAuthenticated } = storeToRefs(useAuth())
 
   const wsToken = ref<Nullable<string>>(null)
@@ -25,7 +24,7 @@ export default function useWebsocketAutoConnect() {
   })
 
   async function requestWSToken() {
-    const { data } = await axios().get<{ token: string }>('/ws')
+    const data = await $fetchAPI<{ token: string }>('/ws')
     wsToken.value = data.token
   }
 

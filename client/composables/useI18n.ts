@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios'
 import type { DateTimeOptions } from 'vue-i18n'
 import { useI18n as _useI18n } from 'vue-i18n'
 import type { MessageKeyDTO } from '~/utils/messages'
@@ -25,8 +24,8 @@ export default function useI18n(fallback = 'en') {
     } as DateTimeOptions)
   }
 
-  function m(message?: MessageKeyDTO | AxiosError): string {
-    const dto = (message instanceof AxiosError ? getDTOFromError(message) : message) ?? { key: 'errors.unknown' }
+  function m(message?: MessageKeyDTO): string {
+    const dto = message ?? { key: 'errors.unknown' }
     const { key, parameters } = dto
 
     if (parameters) {

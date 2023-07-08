@@ -1,15 +1,16 @@
-type $FetchParams = Parameters<typeof $fetch>
+type $Fetch = typeof $fetch
+type $FetchParams = Parameters<$Fetch>
 type $FetchUrl = $FetchParams[0]
 type $FetchOptions = $FetchParams[1]
-type $FetchReturnType = ReturnType<typeof $fetch>
+type $FetchReturnType = ReturnType<$Fetch>
 
 export interface Configuration {
-  refreshToken: (fetch: typeof $fetch) => Promise<void>
+  refreshToken: (fetch: $Fetch) => Promise<void>
   shouldRefreshToken: (error: any) => boolean
-  fetch: typeof $fetch
+  fetch: $Fetch
 }
 
-export function configureRefreshFetch(config: Configuration): typeof $fetch {
+export function configureRefreshFetch(config: Configuration): $Fetch {
   const { refreshToken, shouldRefreshToken, fetch } = config
 
   let refreshingPromise: Promise<void> | null = null
@@ -46,5 +47,5 @@ export function configureRefreshFetch(config: Configuration): typeof $fetch {
   wrappedFetch.prototype.raw = fetch.raw
   wrappedFetch.prototype.create = fetch.create
 
-  return wrappedFetch as typeof $fetch
+  return wrappedFetch as $Fetch
 }

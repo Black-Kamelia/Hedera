@@ -32,7 +32,7 @@ export default function useI18n(fallback = 'en') {
     if (parameters) {
       // map every value to a translated value
       const mapped = Object.fromEntries(
-        Object.entries(parameters).map(([key, value]) => [key, i18n.t(value)]),
+        Object.entries(parameters).map(([key, value]) => [key, i18n.t(value, {}, { missingWarn: false })]),
       )
 
       // return the final translation

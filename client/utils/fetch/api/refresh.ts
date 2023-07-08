@@ -46,8 +46,8 @@ export function configureRefreshFetch(config: Configuration): $Fetch {
     })
   }
 
-  wrappedFetch.prototype.raw = fetch.raw
-  wrappedFetch.prototype.create = fetch.create
+  wrappedFetch.raw = fetch.raw
+  wrappedFetch.create = fetch.create
 
   return wrappedFetch as $Fetch
 }

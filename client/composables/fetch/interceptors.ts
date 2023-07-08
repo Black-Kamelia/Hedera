@@ -1,8 +1,6 @@
-const skipRefreshRoutes = ['/refresh', '/login', '/users/signup', '/upload/token']
-
 export const onRequestInterceptors = defineInterceptors<'onRequest'>([
   {
-    route: skipRefreshRoutes,
+    route: ['/refresh', '/login', '/users/signup', '/upload/token'],
     negateRoute: true,
     fn({ options }) {
       const { tokens } = storeToRefs(useAuth())

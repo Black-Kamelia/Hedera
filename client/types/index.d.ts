@@ -4,6 +4,22 @@ type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N 
 declare global {
   type Nullable<T> = T | null | undefined
   type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
+  type KeysOf<T> = Array<
+    T extends T // Include all keys of union types, not just common keys
+    ? keyof T extends string
+      ? keyof T
+      : never
+    : never
+  >
+  type PickFrom<T, K extends Array<string>> = T extends Array<any>
+    ? T
+    : T extends Record<string, any>
+      ? keyof T extends K[number]
+        ? T // Exact same keys as the target, skip Pick
+        : K[number] extends never
+          ? T
+          : Pick<T, K[number]>
+      : T
 }
 // END SECTION: Utils
 

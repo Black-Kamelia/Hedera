@@ -1,8 +1,6 @@
 <script setup lang="ts">
 const settings = useUserSettings()
-const axios = useAxiosFactory()
-const { t, m } = useI18n()
-const toast = useToast()
+const { t } = useI18n()
 
 const fileSizeScale = computed(() => settings.filesSizeScale)
 const defaultFileVisibility = computed(() => settings.defaultFileVisibility)
@@ -16,34 +14,6 @@ const preferredLocale = computed(() => settings.preferredLocale)
 // Local settings
 const color = useColorMode()
 const animations = useLocalStorage('animations', true)
-
-function patchSettings(newSettings: Partial<UserSettings>) {
-  return axios().patch<UserSettings>('/users/settings', newSettings)
-    .then((response) => {
-      settings.updateSettings(response.data)
-      return response
-    })
-    .catch((error) => {
-      if (!error.response) {
-        toast.add({
-          severity: 'error',
-          summary: t('errors.unknown'),
-          detail: { text: t('errors.network') },
-          life: 5000,
-        })
-        return error
-      }
-      toast.add({
-        severity: 'error',
-        summary: t('error'), // TODO: get error title from backend
-        detail: { text: m(error) },
-        life: 5000,
-      })
-      return error
-    })
-}
-
-provide(UserSettingsKey, { patchSettings })
 </script>
 
 <template>

@@ -11,10 +11,11 @@ const files = ref<Array<FileRepresentationDTO>>([])
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 const selecting = computed(() => selectedRows.value.length > 0)
 
-const { data, isFinished, isLoading } = useAPI<PageableDTO>('/files/search', { method: 'post', data: {} })
-watch(isFinished, (isFinished) => {
-  if (isFinished && data.value?.page.items)
-    files.value = data.value?.page.items
+const { data, pending } = await useLazyFetchAPI<PageableDTO>('/files/search', { method: 'post', body: {} })
+watch(pending, (pending) => {
+  const items = data.value?.page.items
+  if (!pending && items)
+    files.value = items
 })
 </script>
 
@@ -35,7 +36,7 @@ watch(isFinished, (isFinished) => {
     </div>
 
     <div class="p-card p-0 overflow-hidden flex-grow">
-      <div v-if="files.length === 0 && !isLoading" class="h-full w-full flex flex-col justify-center items-center">
+      <div v-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
         <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
         <h1 class="text-2xl">
           {{ t('pages.files.empty.title') }}

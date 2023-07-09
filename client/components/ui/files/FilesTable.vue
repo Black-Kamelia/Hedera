@@ -1,12 +1,18 @@
 <script lang="ts" setup>
 import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 'primevue/datatable'
+import type { VirtualScrollerProps } from 'primevue/virtualscroller'
 import type { PContextMenu } from '#components'
+
+const emit = defineEmits<{
+  (event: 'fetchMore', tableEvent: any): void
+}>()
 
 const { locale, t, d } = useI18n()
 
 const files = defineModel<FileRepresentationDTO[]>('files', { required: true })
-const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
+
+const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const selectedRowId = computed(() => selectedRow.value?.id)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
@@ -14,9 +20,11 @@ function updateSelectedRow(newRow: FileRepresentationDTO) {
   if (file && newRow)
     Object.assign(file, newRow)
 }
+
 function removeSelectedRow() {
   files.value = files.value.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)
 }
+
 function unselectRow() {
   selectedRow.value = null
 }
@@ -31,12 +39,31 @@ provide(FileTableKey, {
 
 const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)
 provide(FileTableContextMenuKey, contextMenu)
+
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   window.open(`/${event.data.code}`)
 }
+
+const lazyLoading = ref(false)
+const lazyContent = Array.from({ length: 3000 })
+const lazyScrollerOptions: VirtualScrollerProps = {
+  lazy: true,
+  onLazyLoad: event => console.log(event),
+  itemSize: (6 * 16) + 1,
+  // delay: 200,
+  showLoader: true,
+  loading: lazyLoading.value,
+  numToleratedItems: 25,
+}
+
+onMounted(() => {
+  console.log(lazyContent)
+  lazyLoading.value = true
+})
 </script>
 
 <template>
@@ -44,23 +71,27 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   <PDataTable
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
-    :value="files"
+    :value="lazyContent"
     data-key="id"
     scrollable
-    scroll-height="100%"
+    scroll-height="flex"
     sort-mode="multiple"
     removable-sort
     context-menu
     class="h-full"
+    :virtual-scroller-options="lazyScrollerOptions"
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
-    <PColumn style="width: 3.375em;" selection-mode="multiple" />
+    <PColumn style="width: 3.375em;" selection-mode="multiple">
+      <template #loading />
+    </PColumn>
 
     <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
         <Transition name="fade" mode="out-in">
-          <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
+          <MediaPreview v-if="slotProps.data" :key="slotProps.data.mimeType" :data="slotProps.data" />
+          <PSkeleton v-else width="6rem" height="4rem" />
         </Transition>
       </template>
       <template #loading>
@@ -82,7 +113,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         <div class="flex flex-row gap-1 items-center justify-between">
           <div class="flex flex-col gap-1">
             <Transition name="fade" mode="out-in">
-              <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
+              <span v-if="slotProps.data" :key="slotProps.data.name">{{ slotProps.data.name }}</span>
+              <PSkeleton v-else width="10rem" height="1rem" />
             </Transition>
             <!-- For future use -->
             <!-- <div class="flex flex-row items-center gap-1">
@@ -97,7 +129,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       <template #loading>
         <div class="flex flex-col gap-1">
           <PSkeleton width="10rem" height="1rem" />
-          <PSkeleton width="2rem" height=".75rem" />
+          <!-- <PSkeleton width="2rem" height=".75rem" /> -->
         </div>
       </template>
     </PColumn>
@@ -113,7 +145,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ humanSizeStructure(slotProps.data.size, locale, t) }}
+        <span v-if="slotProps.data" :key="slotProps.data.size">{{ humanSizeStructure(slotProps.data?.size, locale, t) }}</span>
+        <PSkeleton v-else width="5rem" height="1rem" />
       </template>
       <template #loading>
         <PSkeleton width="5rem" height="1rem" />
@@ -132,7 +165,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
       <template #body="slotProps">
         <Transition name="fade" mode="out-in">
-          <span :key="slotProps.data.mimeType">{{ slotProps.data.mimeType }}</span>
+          <span v-if="slotProps.data" :key="slotProps.data?.mimeType">{{ slotProps.data?.mimeType }}</span>
+          <PSkeleton v-else width="5rem" height="1rem" />
         </Transition>
       </template>
       <template #loading>
@@ -152,7 +186,14 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
       <template #body="slotProps">
         <Transition name="fade" mode="out-in">
-          <VisibilityDisplayer :key="slotProps.data.visibility" :visibility="slotProps.data.visibility" />
+          <VisibilityDisplayer
+            v-if="slotProps.data" :key="slotProps.data.visibility"
+            :visibility="slotProps.data.visibility"
+          />
+          <div v-else class="flex flex-row items-center gap-2">
+            <PSkeleton size="1.5rem" shape="circle" />
+            <PSkeleton width="5rem" height="1rem" />
+          </div>
         </Transition>
       </template>
       <template #loading>
@@ -174,7 +215,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' }) }}
+        <span v-if="slotProps.data" :key="slotProps.data.creationDate">{{
+          d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' })
+        }}</span>
+        <PSkeleton v-else width="8rem" height="1rem" />
       </template>
       <template #loading>
         <PSkeleton width="8rem" height="1rem" />

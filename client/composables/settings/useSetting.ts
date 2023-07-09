@@ -16,7 +16,7 @@ export function useSetting<T>(
 
   function patchSetting(newSetting: T) {
     isError.value = false
-    return $fetchAPI<UserSettings>('/users/settings', { method: 'patch', body: mapSetting(newSetting) })
+    return $fetchAPI<UserSettings>('/users/settings', { method: 'PATCH', body: mapSetting(newSetting) })
       .then((response) => {
         updateSettings(response)
         return response

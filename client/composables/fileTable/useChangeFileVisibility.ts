@@ -4,7 +4,7 @@ export type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PROTECTED' | 'PRIVATE'
 
 export default function useChangeFileVisibility() {
   const call = useFeedbackCall((fileId: string, visibility: FileVisibility) => {
-    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/visibility`, { method: 'put', body: { visibility } })
+    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/visibility`, { method: 'PUT', body: { visibility } })
   })
   const { selectedRowId, updateSelectedRow, unselectRow } = useFilesTable()
 

@@ -49,7 +49,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
 
   async function login(values: Record<string, any>) {
     try {
-      const { tokens, user, userSettings } = await $fetchAPI<SessionOpeningDTO>('/login', { method: 'post', body: values })
+      const { tokens, user, userSettings } = await $fetchAPI<SessionOpeningDTO>('/login', { method: 'POST', body: values })
       setTokens(tokens)
       setUser(user)
       updateSettings(userSettings)
@@ -66,7 +66,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
 
   async function logout() {
     try {
-      await $fetchAPI('/logout', { method: 'post' })
+      await $fetchAPI('/logout', { method: 'POST' })
       setTokens(null)
       setUser(null)
       loggedOutEvent.emit()

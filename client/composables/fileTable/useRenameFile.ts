@@ -10,7 +10,7 @@ export const useRenameFileDialog = defineStore('renameFileDialog', {
 export function useRenameFile() {
   const { t } = useI18n()
   const call = useFeedbackCall((fileId: string, newName: string) => {
-    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/name`, { method: 'put', body: { name: newName } })
+    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}/name`, { method: 'PUT', body: { name: newName } })
   })
   const { selectedRow, selectedRowId, updateSelectedRow, unselectRow } = useFilesTable()
   const dialog = useDialog()

@@ -11,7 +11,7 @@ const files = ref<Array<FileRepresentationDTO>>([])
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 const selecting = computed(() => selectedRows.value.length > 0)
 
-const { data, pending } = await useLazyFetchAPI<PageableDTO>('/files/search', { method: 'post', body: {} })
+const { data, pending } = await useLazyFetchAPI<PageableDTO>('/files/search', { method: 'POST', body: {} })
 watch(pending, (pending) => {
   const items = data.value?.page.items
   if (!pending && items)

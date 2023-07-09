@@ -2,7 +2,7 @@ import type { MessageDTO } from '~/utils/messages'
 
 export default function useDeleteFile() {
   const call = useFeedbackCall((fileId: string) => {
-    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`, { method: 'delete' })
+    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`, { method: 'DELETE' })
   })
   const { selectedRowId, unselectRow, removeSelectedRow } = useFilesTable()
 

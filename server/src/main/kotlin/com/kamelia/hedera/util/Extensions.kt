@@ -123,16 +123,16 @@ fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
 
 fun ApplicationCall.getSliceParameters(): Pair<Int, Int> {
     val params = request.queryParameters
-    val first = (params["first"] ?: "0").let {
+    val first = params["first"]?.let {
         val first = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid first number")
         if (first < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_FIRST_NUMBER)
         first
-    }
-    val last = (params["last"] ?: "25").let {
+    } ?: throw MissingParameterException("first")
+    val last = params["last"]?.let {
         val last = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid last number")
         if (last < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_LAST_NUMBER)
         last
-    }
+    } ?: throw MissingParameterException("last")
     return first to last
 }
 

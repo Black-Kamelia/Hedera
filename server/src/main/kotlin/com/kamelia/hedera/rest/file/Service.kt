@@ -75,6 +75,11 @@ object FileService {
             ?: Response.notFound()
     }
 
+    suspend fun getFilesCount(): Response<Long, String> = Connection.transaction {
+        val count = Files.countAll()
+        Response.ok(count)
+    }
+
     suspend fun getFilesSlice(
         first: Int,
         last: Int,

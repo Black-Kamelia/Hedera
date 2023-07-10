@@ -54,7 +54,7 @@ object Files : AuditableUUIDTable("files") {
 
     fun getSlice(first: Int, last: Int): List<File> = File
         .all()
-        .limit(last - first + 1, first.toLong())
+        .limit(last - first, first.toLong())
         .toList()
 
     fun findById(uuid: UUID): File? = File.findById(uuid)

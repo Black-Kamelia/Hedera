@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 'primevue/datatable'
-import type { VirtualScrollerProps } from 'primevue/virtualscroller'
+import type { VirtualScrollerLazyEvent, VirtualScrollerProps } from 'primevue/virtualscroller'
 import type { PContextMenu } from '#components'
 
 const emit = defineEmits<{
@@ -14,6 +14,8 @@ const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', {
 
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const selectedRowId = computed(() => selectedRow.value?.id)
+
+const axios = useAxiosFactory()
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
   const file = files.value.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
@@ -49,21 +51,37 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 }
 
 const lazyLoading = ref(false)
-const lazyContent = Array.from({ length: 3000 })
-const lazyScrollerOptions: VirtualScrollerProps = {
-  lazy: true,
-  onLazyLoad: event => console.log(event),
-  itemSize: (6 * 16) + 1,
-  // delay: 200,
-  showLoader: true,
-  loading: lazyLoading.value,
-  numToleratedItems: 25,
+const lazyContent = ref(Array.from({ length: 62 }))
+
+function fetch(event: VirtualScrollerLazyEvent) {
+  if (!lazyLoading.value)
+    lazyLoading.value = true
+
+  const { first, last } = event
+  axios().get('/files/search/slice', {
+    params: { first, last },
+  }).then((response) => {
+    lazyLoading.value = false
+    if (response.data) {
+      const data = response.data
+      const _virtualCars = [...lazyContent.value]
+      Array.prototype.splice.apply(_virtualCars, [first, last - first + 1, ...data])
+      lazyContent.value = _virtualCars
+    }
+  }).catch((error) => {
+    console.error(error)
+  })
 }
 
-onMounted(() => {
-  console.log(lazyContent)
-  lazyLoading.value = true
-})
+const lazyScrollerOptions: VirtualScrollerProps = {
+  lazy: true,
+  onLazyLoad: fetch,
+  itemSize: (6 * 16) + 1,
+  delay: 200,
+  showLoader: false,
+  loading: lazyLoading.value,
+  numToleratedItems: 20,
+}
 </script>
 
 <template>
@@ -145,7 +163,9 @@ onMounted(() => {
         />
       </template>
       <template #body="slotProps">
-        <span v-if="slotProps.data" :key="slotProps.data.size">{{ humanSizeStructure(slotProps.data?.size, locale, t) }}</span>
+        <span v-if="slotProps.data" :key="slotProps.data.size">{{
+          humanSizeStructure(slotProps.data.size, locale, t)
+        }}</span>
         <PSkeleton v-else width="5rem" height="1rem" />
       </template>
       <template #loading>
@@ -165,7 +185,7 @@ onMounted(() => {
       </template>
       <template #body="slotProps">
         <Transition name="fade" mode="out-in">
-          <span v-if="slotProps.data" :key="slotProps.data?.mimeType">{{ slotProps.data?.mimeType }}</span>
+          <span v-if="slotProps.data" :key="slotProps.data.mimeType">{{ slotProps.data.mimeType }}</span>
           <PSkeleton v-else width="5rem" height="1rem" />
         </Transition>
       </template>

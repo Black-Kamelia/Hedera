@@ -115,6 +115,54 @@ pages:
     title: Configuration
   debug:
     title: Débogage
+  profile:
+    title: Profil de {username}
+    menu:
+      details: Informations
+      security: Sécurité
+      sessions: Sessions
+      tokens: Jetons personnels
+      settings: Paramètres
+    settings:
+      headers:
+        files_upload: Envoi de fichiers
+        display_and_animations: Affichage et animations
+      local_setting: Affecte ce navigateur uniquement
+      sync_failed: Échec de la synchronisation
+      file_size_scale:
+        title: Échelle de taille de fichier
+        description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci pourrait affecter la façon dont vous pourriez interpréter les quotas.
+        binary:
+          title: Échelle binaire
+          description: Les unités sont des puissances de 2
+          summary: 1 Kio = 1024 octets
+        decimal:
+          title: Échelle décimale
+          description: Les unités sont des puissances de 10
+          summary: 1 Ko = 1000 octets
+      default_files_visibility:
+        title: Visibilité par défaut des fichiers
+        description: Choisissez la visibilité par défaut des fichiers que vous envoyez. Vous pouvez modifier la visibilité de chaque fichier individuellement à tout moment.
+        choose: Choisissez une visibilité
+      auto_delete_oldest_files:
+        title: Supprimer automatiquement les fichiers les plus anciens
+        description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d'envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
+      enable_animations:
+        title: Activer les animations et transitions
+        description: Hedera utilise des animations et des transitions pour rendre l'expérience utilisateur plus appréciable. Si vous rencontrez des problèmes de performance, vous pouvez les désactiver ici.
+      preferred_theme:
+        title: Thème
+        description: Choisissez votre thème parmi le thème clair, le thème sombre ou le thème système. Le thème système utilise le thème de votre système d'exploitation.
+        choose: Choisissez un thème
+      preferred_locale:
+        title: Langue
+        description: Choisissez votre langue préférée. Si votre langue n'est pas disponible, ou est traduite de façon incomplète, vous pouvez contribuer à la traduction sur GitHub !
+        choose: Choisissez une langue
+      contribute_to_translation: Contribuer à la traduction de Hedera
+      preferred_date_time_format:
+        title: Format de date et d'heure
+        description: Choisissez le format de date et d'heure que vous préférez. Ce format sera utilisé dans la table des fichiers et dans les statistiques.
+        choose: Choisissez un format
 
 forms:
   submit: Valider
@@ -164,5 +212,10 @@ errors:
     not_found: Ce fichier n'existe pas
 
 theme:
+  system: Système
   dark: Sombre
   light: Clair
+
+locale:
+  en: Anglais
+  fr: Français

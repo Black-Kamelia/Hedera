@@ -1,10 +1,7 @@
 <script lang="ts" setup>
 const { t } = useI18n()
-const { isDark, toggle } = useDark()
+const color = useColorMode()
 const { user } = useAuth()
-
-const themeIcon = computed(() => isDark.value ? 'i-tabler-sun' : 'i-tabler-moon')
-const themeName = computed(() => isDark.value ? t('sidebar.light_mode') : t('sidebar.dark_mode'))
 
 const sidebar = toReactive(useLocalStorage('sidebar', { open: true }))
 const sidebarRef = ref<HTMLElement | null>(null)
@@ -22,7 +19,7 @@ function toggleSidebar() {
   <aside
     ref="sidebarRef"
     class="sidebar flex flex-col p-0 h-full"
-    :class="{ expanded: sidebar.open, dark: isDark }"
+    :class="{ expanded: sidebar.open, dark: color.value === 'dark' }"
   >
     <div class="header flex flex-row items-center">
       <div class="flex-grow overflow-hidden">
@@ -61,19 +58,21 @@ function toggleSidebar() {
           :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
         />
         <SidebarButton
-          v-if="isAdmin" icon="i-tabler-settings" :label="t('pages.configuration.title')" :open="sidebar.open"
+          v-if="isAdmin" icon="i-tabler-tool" :label="t('pages.configuration.title')" :open="sidebar.open"
           :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
         />
         <SidebarButton
-          v-if="isDebugEnabled" icon="i-tabler-tool" :label="t('pages.debug.title')" :open="sidebar.open"
+          v-if="isDebugEnabled" icon="i-tabler-traffic-cone" :label="t('pages.debug.title')" :open="sidebar.open"
           :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
         />
       </div>
       <div class="flex flex-col p-4 gap-2">
         <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
-        <SidebarButton :icon="themeIcon" :label="themeName" :open="sidebar.open" @click="toggle()" />
         <div class="sep" />
-        <SidebarButton icon="i-tabler-user-circle" :label="user?.username ?? ''" :open="sidebar.open" />
+        <SidebarButton
+          icon="i-tabler-user-circle" :label="user?.username ?? ''" :open="sidebar.open"
+          :active="route => route.startsWith('/profile')" @click="navigateTo('/profile')"
+        />
       </div>
     </div>
   </aside>

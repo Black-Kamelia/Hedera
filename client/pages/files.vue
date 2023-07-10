@@ -19,7 +19,7 @@ watch(isFinished, (isFinished) => {
 </script>
 
 <template>
-  <div class="h-full flex flex-col gap-4">
+  <div class="py-4 px-8 h-full flex flex-col gap-4">
     <div class="flex flex-row gap-4">
       <span class="flex-grow p-input-icon-left">
         <i class="i-tabler-search" />

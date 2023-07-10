@@ -121,6 +121,21 @@ fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
     return page to pageSize
 }
 
+fun ApplicationCall.getSliceParameters(): Pair<Int, Int> {
+    val params = request.queryParameters
+    val first = (params["first"] ?: "0").let {
+        val first = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid first number")
+        if (first < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_FIRST_NUMBER)
+        first
+    }
+    val last = (params["last"] ?: "25").let {
+        val last = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid last number")
+        if (last < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_LAST_NUMBER)
+        last
+    }
+    return first to last
+}
+
 fun ApplicationCall.getHeader(header: String) = request.headers[header] ?: throw MissingHeaderException(header)
 
 suspend fun ApplicationCall.doWithForm(

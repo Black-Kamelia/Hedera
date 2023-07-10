@@ -14,6 +14,7 @@ fun Route.filesRoutes() = route("/files") {
 
     authenticate(AuthJwt) {
         uploadFile()
+        searchFilesSlice()
         searchFiles()
         editFile()
         editFileVisibility()
@@ -88,6 +89,13 @@ private fun Route.getFile() = get("/{code}") {
             call.respondNothing(Response.notFound())
         },
     )
+}
+
+private fun Route.searchFilesSlice() = get("/search/slice") {
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val (first, last) = call.getSliceParameters()
+
+    call.respond(FileService.getFilesSlice(first, last))
 }
 
 private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->

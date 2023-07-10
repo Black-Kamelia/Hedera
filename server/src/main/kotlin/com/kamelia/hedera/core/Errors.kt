@@ -49,6 +49,8 @@ object Errors {
 
         const val INVALID_PAGE_NUMBER = "$PREFIX.invalid_page_number"
         const val INVALID_PAGE_SIZE = "$PREFIX.invalid_page_size"
+        const val INVALID_FIRST_NUMBER = "$PREFIX.invalid_first_number"
+        const val INVALID_LAST_NUMBER = "$PREFIX.invalid_last_number"
 
     }
 

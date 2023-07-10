@@ -216,7 +216,7 @@ onMounted(() => {
       </template>
       <template #body="slotProps">
         <span v-if="slotProps.data" :key="slotProps.data.creationDate">{{
-          d(slotProps.data.creationDate, { timeStyle: 'medium', dateStyle: 'short' })
+          d(slotProps.data.creationDate)
         }}</span>
         <PSkeleton v-else width="8rem" height="1rem" />
       </template>

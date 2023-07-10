@@ -1,6 +1,14 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Actions
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -45,6 +53,7 @@ object FileService {
                 name = filename,
                 mimeType = type,
                 size = size,
+                visibility = creator.settings.defaultFileVisibility,
                 creator = creator
             ).toRepresentationDTO()
         )
@@ -64,6 +73,14 @@ object FileService {
                 Response.ok(file.toRepresentationDTO())
             }
             ?: Response.notFound()
+    }
+
+    suspend fun getFilesSlice(
+        first: Int,
+        last: Int,
+    ): Response<List<FileRepresentationDTO>, String> = Connection.transaction {
+        val files = Files.getSlice(first, last)
+        Response.ok(files.map { it.toRepresentationDTO() })
     }
 
     suspend fun getFiles(

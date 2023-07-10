@@ -1,6 +1,11 @@
 package com.kamelia.hedera.rest.user
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -113,12 +118,12 @@ object UserService {
             ?: Response.notFound()
     }
 
-    suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
-        val user = Users.findById(id) ?: return@transaction Response.notFound()
-        Response.created(Users
-            .regenerateUploadToken(user)
-            .toRepresentationDTO())
-    }
+    // suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
+    //     val user = Users.findById(id) ?: return@transaction Response.notFound()
+    //     Response.created(Users
+    //         .regenerateUploadToken(user)
+    //         .toRepresentationDTO())
+    // }
 }
 
 private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {

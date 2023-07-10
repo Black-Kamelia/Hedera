@@ -13,12 +13,14 @@ import com.kamelia.hedera.rest.core.pageable.filter
 import com.kamelia.hedera.rest.file.File
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.Files
+import com.kamelia.hedera.rest.setting.UserSettings
+import com.kamelia.hedera.rest.setting.UserSettingsTable
 import com.kamelia.hedera.util.uuid
+import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.selectAll
-import java.util.*
 
 enum class UserRole(private val power: Int) {
     REGULAR(1),
@@ -52,6 +54,7 @@ object Users : AuditableUUIDTable("users") {
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
     val uploadToken = varchar("upload_token", 32).uniqueIndex()
+    val settings = reference("settings", UserSettingsTable)
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
@@ -108,6 +111,7 @@ object Users : AuditableUUIDTable("users") {
         role = user.role
         enabled = false
         uploadToken = UUID.randomUUID().toString().replace("-", "")
+        settings = UserSettings.new {}
 
         onCreate(creator ?: this)
     }
@@ -146,6 +150,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var role by Users.role
     var enabled by Users.enabled
     var uploadToken by Users.uploadToken
+    var settings by UserSettings referencedOn Users.settings
 
     private val files by File referrersOn Files.owner
 

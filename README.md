@@ -5,6 +5,10 @@
 
 <h3><i>A self-hosted screenshots/files hosting system.</i></h3>
 
+![Jenkins](https://shields.black-kamelia.com/jenkins/build?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&style=for-the-badge)
+![Jenkins tests](https://shields.black-kamelia.com/jenkins/tests?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&style=for-the-badge)
+![Jenkins Coverage](https://shields.black-kamelia.com/jenkins/coverage/apiv4?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&style=for-the-badge)
+
 </div>
 
 ## 🤔 What is it?
@@ -42,7 +46,7 @@ You just need to run the dedicated Gradle tasks.
 This tasks install Node.js, sets everything up through pNPM and builds the front-end.
 
 ```bash
-gradle pnpmBuild
+gradle client:build
 ```
 
 ### Back-end
@@ -52,7 +56,7 @@ Simply run the default Gradle build task.
 This task will compile the back-end and run the tests.
 
 ```bash
-gradle build
+gradle back:build
 ```
 
 ### Full build
@@ -61,7 +65,7 @@ To build a complete production-ready JAR, run the package task.
 This tasks bundles the front-end, and compiles the JAR using the shadow plugin.
 
 ```bash
-gradle package
+gradle assemble
 ```
 
 ## ⚙ How to update?

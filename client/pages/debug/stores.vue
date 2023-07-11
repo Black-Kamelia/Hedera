@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const auth = useAuth()
-const dark = useDark()
+const color = useColorMode()
 const filters = useFilesFilters()
 const sidebar = useLocalStorage('sidebar', { open: true })
 </script>
@@ -14,7 +14,7 @@ const sidebar = useLocalStorage('sidebar', { open: true })
         </PPanel>
 
         <PPanel class="max-w-100% w-100%" header="Theme" toggleable>
-          <pre class="overflow-y-auto">{{ dark }}</pre>
+          <pre class="overflow-y-auto">{{ color }}</pre>
         </PPanel>
       </div>
 

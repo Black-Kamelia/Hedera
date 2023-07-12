@@ -5,9 +5,12 @@
 
 <h3><i>A self-hosted screenshots/files hosting system.</i></h3>
 
-![Jenkins](https://shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F)
-![Jenkins tests](https://shields.io/jenkins/tests?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F)
-![Jenkins Coverage](https://shields.io/jenkins/coverage/apiv4?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F)
+[![Jenkins](https://shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&label=Build)
+](https://ci.black-kamelia.com/job/Hedera/job/Hedera/job/develop/lastBuild/)
+[![Jenkins Tests](https://shields.io/jenkins/tests?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&label=Tests)
+](https://ci.black-kamelia.com/job/Hedera/job/Hedera/job/develop/lastBuild/testReport/)
+[![Jenkins Coverage](https://shields.io/jenkins/coverage/apiv4?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&label=Coverage)
+](https://ci.black-kamelia.com/job/Hedera/job/Hedera/job/develop/lastBuild/coverage/)
 
 </div>
 

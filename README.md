@@ -5,9 +5,9 @@
 
 <h3><i>A self-hosted screenshots/files hosting system.</i></h3>
 
-![Jenkins](https://shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&style=for-the-badge)
-![Jenkins tests](https://shields.io/jenkins/tests?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&style=for-the-badge)
-![Jenkins Coverage](https://shields.io/jenkins/coverage/apiv4?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F&style=for-the-badge)
+![Jenkins](https://shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F)
+![Jenkins tests](https://shields.io/jenkins/tests?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F)
+![Jenkins Coverage](https://shields.io/jenkins/coverage/apiv4?jobUrl=https%3A%2F%2Fci.black-kamelia.com%2Fview%2FHedera%2Fjob%2FHedera%2Fjob%2FHedera%2Fjob%2Fdevelop%2F)
 
 </div>
 
@@ -56,7 +56,7 @@ Simply run the default Gradle build task.
 This task will compile the back-end and run the tests.
 
 ```bash
-gradle back:build
+gradle server:build
 ```
 
 ### Full build

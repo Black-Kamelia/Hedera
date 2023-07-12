@@ -1,9 +1,8 @@
 import type { MessageDTO } from '~/utils/messages'
 
 export default function useDeleteFile() {
-  const axios = useAxiosFactory()
   const call = useFeedbackCall((fileId: string) => {
-    return axios().delete<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`)
+    return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`, { method: 'DELETE' })
   })
   const { selectedRowId, unselectRow, removeSelectedRow } = useFilesTable()
 

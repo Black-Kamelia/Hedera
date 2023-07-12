@@ -1,5 +1,5 @@
 <script setup>
-const { isAuthenticated } = useAuth()
+const { isAuthenticated } = storeToRefs(useAuth())
 
 usePageName(() => '404')
 watch(isAuthenticated, (val) => {

@@ -1,3 +1,4 @@
+import type { FetchError } from 'ofetch'
 import { blobToBase64 } from '~/utils/blobs'
 
 /**
@@ -15,13 +16,12 @@ export function useThumbnail(code: string, mimeType: string) {
   const thumbnail = ref<string | null>(null)
   const isLoading = ref(true)
   const isError = ref(false)
-  const axios = useAxiosFactory()
 
   if (mimeType.startsWith('image/')) {
-    axios().get(`/files/${code}`, { responseType: 'blob' })
-      .then(response => blobToBase64(response.data))
+    $fetchAPI<Blob>(`/files/${code}`, { responseType: 'blob' })
+      .then(response => blobToBase64(response))
       .then(base64 => thumbnail.value = base64)
-      .catch((error) => {
+      .catch((error: FetchError) => {
         if (error.response && error.response.status !== 200)
           isError.value = true
         thumbnail.value = null

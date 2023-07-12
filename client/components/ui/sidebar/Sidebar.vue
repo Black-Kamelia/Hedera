@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const { t } = useI18n()
 const color = useColorMode()
-const { user } = useAuth()
+const { user } = storeToRefs(useAuth())
 
 const sidebar = toReactive(useLocalStorage('sidebar', { open: true }))
 const sidebarRef = ref<HTMLElement | null>(null)

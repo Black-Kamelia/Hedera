@@ -34,7 +34,9 @@ const $fetchRefresh = configureRefreshFetch({
   },
   shouldRefreshToken(e) {
     const apiUrl = useRuntimeConfig().public.apiBaseUrl
-    return e.request?.toString().startsWith(apiUrl) === true && e.response?.status === 401
+    return e.request?.toString().startsWith(apiUrl) === true // is API request
+      && !IGNORE_REFRESH_ROUTES.includes(e.request.toString().slice(apiUrl.length)) // is not ignored route
+      && e.response?.status === 401 // is unauthorized
   },
 })
 

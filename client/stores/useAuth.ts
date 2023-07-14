@@ -54,8 +54,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
       setUser(user)
       updateSettings(userSettings)
       loggedInEvent.emit({ tokens })
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof FetchError) {
         loggedInEvent.emit({ error })
         return
@@ -70,8 +69,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
       setTokens(null)
       setUser(null)
       loggedOutEvent.emit()
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof FetchError) {
         loggedOutEvent.emit({ error })
         return

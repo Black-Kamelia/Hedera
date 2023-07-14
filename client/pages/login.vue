@@ -65,10 +65,9 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.content = m(event.error)
+    message.content = m(event.error.data)
     message.severity = 'error'
-  }
-  else {
+  } else {
     navigateTo('/files')
   }
 })

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-const auth = useAuth()
+const auth = reactive(storeToRefs(useAuth()))
 const color = useColorMode()
-const filters = useFilesFilters()
+const filters = reactive(storeToRefs(useFilesFilters()))
 const sidebar = useLocalStorage('sidebar', { open: true })
 </script>
 

@@ -10,25 +10,17 @@ const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
 
 const icon = computed(() => {
   if (data.mimeType.startsWith('image/')) {
-    if (isError)
-      return 'i-tabler-photo-exclamation'
-    if (!isLoading && !thumbnail)
-      return 'i-tabler-photo-x'
+    if (isError) return 'i-tabler-photo-exclamation'
+    if (!isLoading && !thumbnail) return 'i-tabler-photo-x'
 
     return 'i-tabler-photo'
   }
-  if (data.mimeType.startsWith('audio/'))
-    return 'i-tabler-music'
-  if (data.mimeType.startsWith('video/'))
-    return 'i-tabler-video'
-  if (data.mimeType.startsWith('text/'))
-    return 'i-tabler-file-text'
-  if (data.mimeType === 'application/zip')
-    return 'i-tabler-file-zip'
-  if (data.mimeType === 'application/pdf')
-    return 'i-tabler-file-text'
-  if (data.mimeType === 'application/unknown')
-    return 'i-tabler-file-unknown'
+  if (data.mimeType.startsWith('audio/')) return 'i-tabler-music'
+  if (data.mimeType.startsWith('video/')) return 'i-tabler-video'
+  if (data.mimeType.startsWith('text/')) return 'i-tabler-file-text'
+  if (data.mimeType === 'application/zip') return 'i-tabler-file-zip'
+  if (data.mimeType === 'application/pdf') return 'i-tabler-file-text'
+  if (data.mimeType === 'application/unknown') return 'i-tabler-file-unknown'
   return 'i-tabler-file'
 })
 </script>

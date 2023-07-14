@@ -9,7 +9,7 @@ export interface InputOTPEmits {
 
 const { disabled = false } = defineProps<InputOTPProps>()
 const emit = defineEmits<InputOTPEmits>()
-const modelValue = defineModel<OTP>({ default: () => new Array(6).fill(null) })
+const modelValue = defineModel<OTP>({ default: () => Array.from({ length: 6 }).fill(null) })
 
 const otpInputRefs = ref<CompElement[]>([])
 
@@ -21,8 +21,7 @@ onMounted(() => {
 watchDebounced(
   modelValue,
   (digits) => {
-    if (digits.every(digit => digit !== null))
-      emit('completed', digits)
+    if (digits.every(digit => digit !== null)) emit('completed', digits)
   },
   { debounce: 5, maxWait: 5 },
 )
@@ -48,11 +47,9 @@ function onPaste(e: ClipboardEvent, index: number) {
   const clipboardData = e.clipboardData
   const pastedText = clipboardData?.getData('text')
 
-  if (pastedText === undefined)
-    return
+  if (pastedText === undefined) return
 
-  if (!pastedText.match(OTP_REGEX))
-    return
+  if (!pastedText.match(OTP_REGEX)) return
 
   doUpdate(createOTPFromString(pastedText))
   otpInputRefs.value[index].$el?.blur()
@@ -68,8 +65,7 @@ function onKeyDown(event: KeyboardEvent, index: number) {
     if (modelValue.value[index] === null && index > 0) {
       doUpdate(OTPWith(modelValue.value, index - 1, null))
       otpInputRefs.value[index - 1].$el?.focus()
-    }
-    else {
+    } else {
       event.preventDefault()
       doUpdate(OTPWith(modelValue.value, index, null))
     }
@@ -79,17 +75,20 @@ function onKeyDown(event: KeyboardEvent, index: number) {
   if (key >= '0' && key <= '9') {
     event.preventDefault()
     doUpdate(OTPWith(modelValue.value, index, Number.parseInt(key)))
-    if (index < OTP_LENGTH - 1)
+    if (index < OTP_LENGTH - 1) {
       otpInputRefs.value[index + 1].$el?.focus()
-    else
+    } else {
       otpInputRefs.value[index].$el?.blur()
+    }
   }
 
   // Navigate between inputs using arrow keys
-  if (key === 'ArrowLeft' && index > 0)
+  if (key === 'ArrowLeft' && index > 0) {
     otpInputRefs.value[index - 1].$el?.focus()
-  if (key === 'ArrowRight' && index < OTP_LENGTH - 1)
+  }
+  if (key === 'ArrowRight' && index < OTP_LENGTH - 1) {
     otpInputRefs.value[index + 1].$el?.focus()
+  }
 }
 
 const el = ref<Nullable<CompElement>>()

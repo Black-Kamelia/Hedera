@@ -5,20 +5,11 @@ export function defineInterceptors<I extends InterceptorType>(interceptors: Inte
 }
 
 export function checkRoute(url: string, route?: InterceptorRoute): boolean {
-  if (route === undefined)
-    return true
-
-  if (typeof route === 'string')
-    return route === url
-
-  if (Array.isArray(route))
-    return route.includes(url)
-
-  if (route instanceof RegExp)
-    return route.test(url)
-
-  if (typeof route === 'function')
-    return route(url)
+  if (route === undefined) return true
+  if (typeof route === 'string') return route === url
+  if (Array.isArray(route)) return route.includes(url)
+  if (route instanceof RegExp) return route.test(url)
+  if (typeof route === 'function') return route(url)
 
   return false
 }
@@ -33,8 +24,9 @@ function tryForInterceptors<I extends InterceptorType>(
     const url = context.request.toString()
     for (const { route, withBaseURL = false, negateRoute = false, fn } of interceptors) {
       const trimmedURL = withBaseURL ? url : url.replace(context.options.baseURL ?? '', '')
-      if (checkRoute(trimmedURL, route) !== negateRoute)
+      if (checkRoute(trimmedURL, route) !== negateRoute) {
         fn(context)
+      }
     }
   }
 }

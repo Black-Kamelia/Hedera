@@ -7,8 +7,7 @@ export default function useDeleteFile() {
   const { selectedRowId, unselectRow, removeSelectedRow } = useFilesTable()
 
   return function changeFileVisibility() {
-    if (!selectedRowId.value)
-      return
+    if (!selectedRowId.value) return
 
     call(selectedRowId.value)
       .then(removeSelectedRow) // TODO : check if succeeded (callback?)

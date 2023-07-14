@@ -11,8 +11,9 @@ const selectedRowId = computed(() => selectedRow.value?.id)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
   const file = files.value.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
-  if (file && newRow)
+  if (file && newRow) {
     Object.assign(file, newRow)
+  }
 }
 function removeSelectedRow() {
   files.value = files.value.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)

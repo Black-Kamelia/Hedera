@@ -22,13 +22,13 @@ export function useThumbnail(code: string, mimeType: string) {
       .then(response => blobToBase64(response))
       .then(base64 => thumbnail.value = base64)
       .catch((error: FetchError) => {
-        if (error.response && error.response.status !== 200)
+        if (error.response && error.response.status !== 200) {
           isError.value = true
+        }
         thumbnail.value = null
       })
       .finally(() => isLoading.value = false)
-  }
-  else {
+  } else {
     isLoading.value = false
   }
 

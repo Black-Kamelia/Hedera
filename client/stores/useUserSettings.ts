@@ -21,23 +21,12 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
   const preferredLocale = ref<Locale>('en')
 
   function updateSettings(settings: Partial<UserSettings>) {
-    if (settings.defaultFileVisibility !== undefined)
-      defaultFileVisibility.value = settings.defaultFileVisibility
-
-    if (settings.autoRemoveFiles !== undefined)
-      autoRemoveFiles.value = settings.autoRemoveFiles
-
-    if (settings.filesSizeScale !== undefined)
-      filesSizeScale.value = settings.filesSizeScale
-
-    if (settings.preferredDateStyle !== undefined)
-      preferredDateStyle.value = settings.preferredDateStyle
-
-    if (settings.preferredTimeStyle !== undefined)
-      preferredTimeStyle.value = settings.preferredTimeStyle
-
-    if (settings.preferredLocale !== undefined)
-      locale.value = preferredLocale.value = settings.preferredLocale
+    if (settings.defaultFileVisibility !== undefined) defaultFileVisibility.value = settings.defaultFileVisibility
+    if (settings.autoRemoveFiles !== undefined) autoRemoveFiles.value = settings.autoRemoveFiles
+    if (settings.filesSizeScale !== undefined) filesSizeScale.value = settings.filesSizeScale
+    if (settings.preferredDateStyle !== undefined) preferredDateStyle.value = settings.preferredDateStyle
+    if (settings.preferredTimeStyle !== undefined) preferredTimeStyle.value = settings.preferredTimeStyle
+    if (settings.preferredLocale !== undefined) locale.value = preferredLocale.value = settings.preferredLocale
   }
 
   return {

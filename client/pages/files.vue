@@ -7,17 +7,8 @@ definePageMeta({ layout: 'sidebar', middleware: ['auth'] })
 
 const openFiltersDialog = ref(false)
 
-const files = ref<Array<FileRepresentationDTO>>([])
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 const selecting = computed(() => selectedRows.value.length > 0)
-
-const { data, pending } = await useLazyFetchAPI<PageableDTO>('/files/search', { method: 'POST', body: {} })
-watch(pending, (pending) => {
-  const items = data.value?.page.items
-  if (!pending && items) {
-    files.value = items
-  }
-})
 </script>
 
 <template>
@@ -37,7 +28,7 @@ watch(pending, (pending) => {
     </div>
 
     <div class="p-card p-0 overflow-hidden flex-grow">
-      <div v-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
+      <div v-if="false" class="h-full w-full flex flex-col justify-center items-center">
         <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
         <h1 class="text-2xl">
           {{ t('pages.files.empty.title') }}
@@ -50,7 +41,6 @@ watch(pending, (pending) => {
       <FilesTable
         v-else
         v-model:selectedRows="selectedRows"
-        v-model:files="files"
       />
     </div>
 

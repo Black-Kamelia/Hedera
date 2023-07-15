@@ -1,12 +1,28 @@
 <script lang="ts" setup>
-import type { DataTableRowContextMenuEvent, DataTableRowDoubleClickEvent } from 'primevue/datatable'
+import type {
+  DataTablePageEvent,
+  DataTableRowContextMenuEvent,
+  DataTableRowDoubleClickEvent,
+  DataTableSortEvent,
+} from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
 const { locale, t, d } = useI18n()
 
-const files = defineModel<FileRepresentationDTO[]>('files', { required: true })
-const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
+const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
+const page = ref(0)
+const pageSize = ref(10)
+
+const { data, pending } = await useLazyFetchAPI<PageableDTO>('/files/search', {
+  method: 'POST',
+  body: {},
+  query: { page, pageSize },
+})
+
+const files = computed(() => data.value?.page.items ?? [])
+const rows = computed(() => data.value?.page.pageSize ?? pageSize.value)
+const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
@@ -15,9 +31,11 @@ function updateSelectedRow(newRow: FileRepresentationDTO) {
     Object.assign(file, newRow)
   }
 }
+
 function removeSelectedRow() {
-  files.value = files.value.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)
+  // files.value = files.value.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)
 }
+
 function unselectRow() {
   selectedRow.value = null
 }
@@ -32,9 +50,20 @@ provide(FileTableKey, {
 
 const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)
 provide(FileTableContextMenuKey, contextMenu)
+
+function onPage(event: DataTablePageEvent) {
+  page.value = event.page
+  pageSize.value = event.rows
+}
+
+function onSort(event: DataTableSortEvent) {
+
+}
+
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   window.open(`/${event.data.code}`)
 }
@@ -42,17 +71,38 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
 <template>
   <FilesTableContextMenu />
+
+  <div v-if="files.length === 0" class="h-full w-full flex flex-col justify-center items-center">
+    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <h1 class="text-2xl">
+      {{ t('pages.files.empty.title') }}
+    </h1>
+    <p class="pb-10">
+      {{ t('pages.files.empty.description') }}
+    </p>
+    <PButton rounded :label="t('pages.files.empty.upload_button')" />
+  </div>
+
   <PDataTable
+    v-else
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
-    :value="files"
+    class="h-full"
     data-key="id"
+    lazy
+    :value="files"
+    :loading="pending"
     scrollable
-    scroll-height="100%"
+    scroll-height="flex"
+    paginator
+    :rows-per-page-options="[10, 25, 50, 100]"
+    :rows="rows"
+    :total-records="totalRecords"
     sort-mode="multiple"
     removable-sort
     context-menu
-    class="h-full"
+    @page="onPage"
+    @sort="onSort"
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
@@ -87,9 +137,9 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
             </Transition>
             <!-- For future use -->
             <!-- <div class="flex flex-row items-center gap-1">
-              <i class="i-tabler-eye text-xs" />
-              <span class="text-xs">{{ 0 }}</span>
-            </div> -->
+                <i class="i-tabler-eye text-xs" />
+                <span class="text-xs">{{ 0 }}</span>
+              </div> -->
           </div>
           <!-- For future use -->
           <!-- <PButton icon="i-tabler-star" severity="warning" rounded text /> -->
@@ -181,6 +231,19 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         <PSkeleton width="8rem" height="1rem" />
       </template>
     </PColumn>
+
+    <template #empty>
+      <div class="flex-grow w-full flex flex-col justify-center items-center">
+        <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+        <h1 class="text-2xl">
+          {{ t('pages.files.empty.title') }}
+        </h1>
+        <p class="pb-10">
+          {{ t('pages.files.empty.description') }}
+        </p>
+        <PButton rounded :label="t('pages.files.empty.upload_button')" />
+      </div>
+    </template>
   </PDataTable>
 </template>
 

@@ -56,32 +56,15 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
   const isEmpty = computed(() => activeFilters.value === 0)
 
   function updateFilters(filters: Partial<FileFilters>) {
-    if (filters.visibility !== undefined)
-      visibility.value = filters.visibility
-
-    if (filters.startingDate !== undefined)
-      startingDate.value = filters.startingDate
-
-    if (filters.endingDate !== undefined)
-      endingDate.value = filters.endingDate
-
-    if (filters.minimalSize !== undefined)
-      minimalSize.value = filters.minimalSize
-
-    if (filters.maximalSize !== undefined)
-      maximalSize.value = filters.maximalSize
-
-    if (filters.minimalViews !== undefined)
-      minimalViews.value = filters.minimalViews
-
-    if (filters.maximalViews !== undefined)
-      maximalViews.value = filters.maximalViews
-
-    if (filters.formats !== undefined)
-      formats.value = filters.formats
-
-    if (filters.owners !== undefined)
-      owners.value = filters.owners
+    if (filters.visibility !== undefined) visibility.value = filters.visibility
+    if (filters.startingDate !== undefined) startingDate.value = filters.startingDate
+    if (filters.endingDate !== undefined) endingDate.value = filters.endingDate
+    if (filters.minimalSize !== undefined) minimalSize.value = filters.minimalSize
+    if (filters.maximalSize !== undefined) maximalSize.value = filters.maximalSize
+    if (filters.minimalViews !== undefined) minimalViews.value = filters.minimalViews
+    if (filters.maximalViews !== undefined) maximalViews.value = filters.maximalViews
+    if (filters.formats !== undefined) formats.value = filters.formats
+    if (filters.owners !== undefined) owners.value = filters.owners
   }
 
   function reset() {

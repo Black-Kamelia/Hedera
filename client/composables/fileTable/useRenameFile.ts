@@ -16,11 +16,9 @@ export function useRenameFile() {
   const dialog = useDialog()
 
   function onClose(options?: DynamicDialogOptions) {
-    if (!options?.data)
-      return
+    if (!options?.data) return
     const newName = options?.data.newName as string
-    if (!selectedRowId.value)
-      return
+    if (!selectedRowId.value) return
     call(selectedRowId.value, newName)
       .then(response => updateSelectedRow(response?.payload as FileRepresentationDTO))
       .finally(unselectRow)

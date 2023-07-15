@@ -9,8 +9,7 @@ export default function useChangeFileVisibility() {
   const { selectedRowId, updateSelectedRow, unselectRow } = useFilesTable()
 
   return function changeFileVisibility(newVisibility: FileVisibility) {
-    if (!selectedRowId.value)
-      return
+    if (!selectedRowId.value) return
 
     call(selectedRowId.value, newVisibility)
       .then(response => updateSelectedRow(response?.payload as FileRepresentationDTO))

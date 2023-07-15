@@ -67,7 +67,7 @@ object FileUtils {
         if (file.exists()) file.delete()
     }
 
-    private suspend fun generateUniqueCode(): String {
+    private fun generateUniqueCode(): String {
         repeat(10) {
             val code = String.random(10)
             if (Files.findByCode(code) == null) {

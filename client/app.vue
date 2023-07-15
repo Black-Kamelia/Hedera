@@ -48,6 +48,9 @@ const animation = useLocalStorage('animations', true)
 
   --sidebar-width-open: 19em;
   --sidebar-width-collapsed: 5em;
+
+  --layout-in-duration: 0.4s;
+  --layout-out-duration: 0.6s;
 }
 
 body:has(.no-animation),
@@ -75,10 +78,10 @@ body:has(.no-animation) *:after {
   left: 0;
   width: 100%;
   height: 100%;
-  transition: all 0.4s var(--easeInOutExpo);
+  transition: all var(--layout-in-duration) var(--easeInOutExpo);
 
   .p-card {
-    transition: all 0.4s var(--easeInOutExpo);
+    transition: all var(--layout-in-duration) var(--easeInOutExpo);
   }
 }
 
@@ -86,6 +89,7 @@ body:has(.no-animation) *:after {
 .layout-in-enter-from {
   opacity: 0;
   transform: var(--scaleBack);
+  filter: blur(5px);
   z-index: 0;
 }
 
@@ -96,8 +100,9 @@ body:has(.no-animation) *:after {
   filter: blur(10px);
   z-index: 10;
 
-  .p-card {
+  > .p-card {
     transform: var(--scaleFrontParallax);
+    filter: blur(12px);
   }
 }
 
@@ -108,10 +113,10 @@ body:has(.no-animation) *:after {
   left: 0;
   width: 100%;
   height: 100%;
-  transition: all 0.6s var(--easeOutExpo);
+  transition: all var(--layout-out-duration) var(--easeOutExpo);
 
   .p-card {
-    transition: all 0.6s var(--easeOutExpo);
+    transition: all var(--layout-out-duration) var(--easeOutExpo);
   }
 }
 
@@ -122,8 +127,9 @@ body:has(.no-animation) *:after {
   filter: blur(10px);
   z-index: 10;
 
-  .p-card {
+  > .p-card {
     transform: var(--scaleFrontParallax);
+    filter: blur(12px);
   }
 }
 
@@ -131,8 +137,8 @@ body:has(.no-animation) *:after {
 .layout-out-leave-to {
   opacity: 0;
   transform: var(--scaleBack);
+  filter: blur(5px);
   z-index: 0;
-  //filter: blur(5px);
 }
 
 /* Main theme */

@@ -2,14 +2,10 @@
 const toast = useToast()
 
 function getIcon(severity: string, detail?: { icon: string }) {
-  if (detail?.icon)
-    return detail.icon
-  if (severity === 'success')
-    return 'i-tabler-circle-check-filled'
-  if (severity === 'info')
-    return 'i-tabler-info-circle-filled'
-  if (severity === 'warn')
-    return 'i-tabler-alert-triangle-filled'
+  if (detail?.icon) return detail.icon
+  if (severity === 'success') return 'i-tabler-circle-check-filled'
+  if (severity === 'info') return 'i-tabler-info-circle-filled'
+  if (severity === 'warn') return 'i-tabler-alert-triangle-filled'
   return 'i-tabler-alert-circle-filled'
 }
 </script>

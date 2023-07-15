@@ -34,23 +34,23 @@ export function useFetchAPI<
   const [opts = {}, autoKey] = typeof arg1 === 'string' ? [{}, arg1] : [arg1, arg2]
   const _key = opts.key ?? hash([autoKey, unref(opts.baseURL), typeof request === 'string' ? request : '', unref(opts.params ?? opts.query)])
 
-  if (!_key || typeof _key !== 'string')
-    throw new Error(`[useFetchAPI] key must be a string: ${_key}`)
+  if (!_key || typeof _key !== 'string') throw new Error(`[useFetchAPI] key must be a string: ${_key}`)
 
-  if (!request)
-    throw new Error('[useFetchAPI] request is required')
+  if (!request) throw new Error('[useFetchAPI] request is required')
 
   const key = _key === autoKey ? `$f${_key}` : _key
 
   const _request = computed(() => {
     let r = request
-    if (typeof r === 'function')
+    if (typeof r === 'function') {
       r = r()
+    }
     return unref(r)
   })
 
-  if (!opts.baseURL && typeof _request.value === 'string' && _request.value.startsWith('//'))
+  if (!opts.baseURL && typeof _request.value === 'string' && _request.value.startsWith('//')) {
     throw new Error(`[useFetchAPI] baseURL is required for relative URL and must not start with //: ${_request.value}`)
+  }
 
   const {
     server,

@@ -32,11 +32,13 @@ const { currentRoute } = useRouter()
 const { isDebugEnabled, close } = useDebug()
 
 function redirect([isDebugEnabled, currentRoute]: [boolean | undefined, { path: string }]) {
-  if (!isDebugEnabled)
+  if (!isDebugEnabled) {
     navigateTo('/files', { replace: true })
+  }
 
-  if (currentRoute.path === '/debug')
+  if (currentRoute.path === '/debug') {
     navigateTo('/debug/stores', { replace: true })
+  }
 }
 
 watch([isDebugEnabled, currentRoute], redirect, { immediate: true })

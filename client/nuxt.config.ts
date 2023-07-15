@@ -17,7 +17,7 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       ],
     },
-    layoutTransition: { name: 'layout-in', mode: 'default' },
+    layoutTransition: { name: 'layout-in', appear: true },
   },
   ssr: false,
   css: [

@@ -1,6 +1,8 @@
+export const IGNORE_REFRESH_ROUTES = ['/refresh', '/login', '/users/signup', '/upload/token']
+
 export const onRequestInterceptors = defineInterceptors<'onRequest'>([
   {
-    route: ['/refresh', '/login', '/users/signup', '/upload/token'],
+    route: IGNORE_REFRESH_ROUTES,
     negateRoute: true,
     fn({ options }) {
       const { tokens } = storeToRefs(useAuth())

@@ -25,8 +25,7 @@ export function configureRefreshFetch(config: Configuration): $Fetch {
     }
 
     return fetch(url, options).catch((error) => {
-      if (!shouldRefreshToken(error))
-        throw error
+      if (!shouldRefreshToken(error)) throw error
 
       if (refreshingPromise === null) {
         refreshingPromise = new Promise((resolve, reject) => refreshToken(fetch)

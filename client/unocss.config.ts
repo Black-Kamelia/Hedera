@@ -45,5 +45,12 @@ export default defineConfig({
     transformerDirectives(),
     transformerVariantGroup(),
   ],
-  safelist: 'prose prose-sm m-auto text-left'.split(' '),
+  safelist: 'prose prose-sm m-auto text-left'.split(' ')
+    .concat([
+      'i-tabler-circle-check-filled',
+      'i-tabler-info-circle-filled',
+      'i-tabler-alert-triangle-filled',
+      'i-tabler-alert-circle-filled',
+      'i-tabler-clipboard-check',
+    ]),
 })

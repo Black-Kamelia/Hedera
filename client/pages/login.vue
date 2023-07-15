@@ -21,10 +21,6 @@ usePageName(() => t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
-  layoutTransition: {
-    name: 'layout-out',
-    mode: 'default',
-  },
 })
 const { currentRoute } = useRouter()
 

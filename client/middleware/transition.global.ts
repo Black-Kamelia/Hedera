@@ -1,11 +1,14 @@
-const ANONYMOUS_ROUTES = ['/login', '/register', '/reset-password']
+const OUT_OF_APP_ROUTES = ['/login', '/register', '/reset-password']
+
+const LAYOUT_OUT = { name: 'layout-out', appear: true }
+const LAYOUT_IN = { name: 'layout-in', appear: true }
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  if (ANONYMOUS_ROUTES.includes(to.path)) {
-    from.meta.layoutTransition = { name: 'layout-out', appear: true }
-    to.meta.layoutTransition = { name: 'layout-out', appear: true }
+  if (OUT_OF_APP_ROUTES.includes(to.path)) {
+    from.meta.layoutTransition = LAYOUT_OUT
+    to.meta.layoutTransition = LAYOUT_OUT
   } else {
-    from.meta.layoutTransition = { name: 'layout-in', appear: true }
-    to.meta.layoutTransition = { name: 'layout-in', appear: true }
+    from.meta.layoutTransition = LAYOUT_IN
+    to.meta.layoutTransition = LAYOUT_IN
   }
 })

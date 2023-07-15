@@ -59,6 +59,7 @@ pages:
       visibility: Visibilité
       creation_date: Date de création
       views: Vues
+      paginator: "{'{'}first{'}'} à {'{'}last{'}'} sur {'{'}totalRecords{'}'}"
     context_menu:
       open: Ouvrir
       rename: Renommer

@@ -95,6 +95,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     scrollable
     scroll-height="flex"
     paginator
+    paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
+    :current-page-report-template="t('pages.files.table.paginator', {}, { escapeParameter: true })"
     :rows-per-page-options="[10, 25, 50, 100]"
     :rows="rows"
     :total-records="totalRecords"

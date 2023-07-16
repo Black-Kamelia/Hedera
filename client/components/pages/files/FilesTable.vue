@@ -14,7 +14,7 @@ const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const page = ref(0)
 const pageSize = ref(10)
 
-const { data, pending } = await useLazyFetchAPI<PageableDTO>('/files/search', {
+const { data, pending } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
   body: {},
   query: { page, pageSize },

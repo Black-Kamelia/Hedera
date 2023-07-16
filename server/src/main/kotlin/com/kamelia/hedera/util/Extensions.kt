@@ -109,13 +109,13 @@ fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
 fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
     val params = request.queryParameters
     val page = (params["page"] ?: "0").let {
-        val page = it.toLongOrNull() ?: throw IllegalArgumentException("Invalid page number")
-        if (page < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_PAGE_NUMBER)
+        val page = it.toLongOrNull()
+        if (page == null || page < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_PAGE_NUMBER)
         page
     }
     val pageSize = (params["pageSize"] ?: "25").let {
-        val pageSize = it.toIntOrNull() ?: throw IllegalArgumentException("Invalid page size")
-        if (pageSize < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_PAGE_SIZE)
+        val pageSize = it.toIntOrNull()
+        if (pageSize == null || pageSize < 0) throw IllegalArgumentException(Errors.Pagination.INVALID_PAGE_SIZE)
         pageSize
     }
     return page to pageSize

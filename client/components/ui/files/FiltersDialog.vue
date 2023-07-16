@@ -62,8 +62,9 @@ function reset() {
 }
 
 watch(visible, (visible) => {
-  if (visible)
+  if (visible) {
     loadFilters(localFilters, filters)
+  }
 })
 </script>
 

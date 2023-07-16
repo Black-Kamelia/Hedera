@@ -5,8 +5,7 @@ export default function useCopyFileLink() {
   const { selectedRow, unselectRow } = useFilesTable()
 
   return function copyFileLink() {
-    if (!selectedRow.value)
-      return
+    if (!selectedRow.value) return
     copy(`${location.origin}/${selectedRow.value!.code}`)
       .then(() => {
         toast.add({

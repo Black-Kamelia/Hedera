@@ -3,14 +3,13 @@ export const OTP_LENGTH = 6
 export const OTP_REGEX = new RegExp(`^\\d{${OTP_LENGTH}}$`)
 
 export function createOTPFromArray(array: Nullable<number>[]): OTP {
-  if (array.length !== OTP_LENGTH)
-    throw new Error(`Array length is not ${OTP_LENGTH}, but ${array.length}`)
+  if (array.length !== OTP_LENGTH) throw new Error(`Array length is not ${OTP_LENGTH}, but ${array.length}`)
 
   return array as OTP
 }
 
 export function createOTPFromString(str: string): OTP {
-  return createOTPFromArray(str.split('').map(c => parseInt(c)))
+  return createOTPFromArray(str.split('').map(c => Number.parseInt(c)))
 }
 
 export function createEmptyOTP(): OTP {
@@ -27,8 +26,7 @@ export function createEmptyOTP(): OTP {
 export function asOTPFn<T extends (...args: any[]) => Nullable<number>[]>(fn: T): (...args: Parameters<T>) => OTP {
   return function wrapped(...args: Parameters<T>) {
     const otp = fn(...args)
-    if (otp.length !== OTP_LENGTH)
-      throw new Error(`OTP length is not ${OTP_LENGTH}, but ${otp.length}`)
+    if (otp.length !== OTP_LENGTH) throw new Error(`OTP length is not ${OTP_LENGTH}, but ${otp.length}`)
 
     return otp as OTP
   }

@@ -1,3 +1,11 @@
 {
-  "extends": "@antfu"
+  "extends": "@antfu",
+  "rules": {
+    "curly": ["error", "multi-line"],
+    "antfu/if-newline": "off",
+    "antfu/generic-spacing": "off",
+    "brace-style": "off",
+    "@typescript-eslint/brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+    "@typescript-eslint/ban-types": "off"
+  }
 }

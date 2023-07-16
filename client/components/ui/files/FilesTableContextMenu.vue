@@ -19,8 +19,7 @@ const menuModel = computed(() => [
     label: t('pages.files.context_menu.open'),
     icon: 'i-tabler-external-link',
     command() {
-      if (!selectedRow.value)
-        return
+      if (!selectedRow.value) return
       window.open(`/${selectedRow.value.code}`)
     },
   },

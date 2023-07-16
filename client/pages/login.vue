@@ -21,10 +21,6 @@ usePageName(() => t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
-  layoutTransition: {
-    name: 'layout-out',
-    mode: 'default',
-  },
 })
 const { currentRoute } = useRouter()
 
@@ -65,10 +61,9 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.content = m(event.error)
+    message.content = m(event.error.data)
     message.severity = 'error'
-  }
-  else {
+  } else {
     navigateTo('/files')
   }
 })

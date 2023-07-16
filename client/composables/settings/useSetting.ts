@@ -4,7 +4,6 @@ export function useSetting<T>(
   setting: Ref<T>,
   mapSetting: (newSetting: T) => Partial<UserSettings>,
 ) {
-  const axios = useAxiosFactory()
   const { updateSettings } = useUserSettings()
   const toast = useToast()
   const { t, m } = useI18n()
@@ -17,9 +16,9 @@ export function useSetting<T>(
 
   function patchSetting(newSetting: T) {
     isError.value = false
-    return axios().patch<UserSettings>('/users/settings', mapSetting(newSetting))
+    return $fetchAPI<UserSettings>('/users/settings', { method: 'PATCH', body: mapSetting(newSetting) })
       .then((response) => {
-        updateSettings(response.data)
+        updateSettings(response)
         return response
       })
       .catch((error) => {

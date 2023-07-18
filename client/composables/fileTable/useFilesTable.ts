@@ -4,8 +4,8 @@ export interface FilesTableContext {
   selectedRow: Readonly<Ref<Nullable<FileRepresentationDTO>>>
   selectedRowId: ComputedRef<string | undefined>
   updateSelectedRow: (newRow: FileRepresentationDTO) => void
-  removeSelectedRow: () => void
   unselectRow: () => void
+  refresh: () => Promise<void>
 }
 
 export function useFilesTable() {

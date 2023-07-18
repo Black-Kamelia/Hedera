@@ -32,10 +32,6 @@ function updateSelectedRow(newRow: FileRepresentationDTO) {
   }
 }
 
-function removeSelectedRow() {
-  // files.value = files.value.filter((f: FileRepresentationDTO) => f.id !== selectedRowId.value)
-}
-
 function unselectRow() {
   selectedRow.value = null
 }
@@ -44,8 +40,8 @@ provide(FileTableKey, {
   selectedRow,
   selectedRowId,
   updateSelectedRow,
-  removeSelectedRow,
   unselectRow,
+  refresh,
 })
 
 const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)

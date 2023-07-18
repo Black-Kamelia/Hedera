@@ -110,6 +110,7 @@ pages:
       title: Something went wrong
       description: Failed to load the list of files
       retry_button: Retry
+      reset_button: Reset
   favorites:
     title: Favorites
   upload:

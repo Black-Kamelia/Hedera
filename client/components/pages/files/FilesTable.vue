@@ -13,10 +13,11 @@ const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', {
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const page = ref(0)
 const pageSize = ref(10)
+const pageDefinition = ref<PageDefinitionDTO>({})
 
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
-  body: {},
+  body: pageDefinition,
   query: { page, pageSize },
 })
 
@@ -24,6 +25,7 @@ const files = computed(() => data.value?.page.items ?? [])
 const rows = computed(() => data.value?.page.pageSize ?? pageSize.value)
 const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
+const errorStatus = computed(() => error.value?.statusCode)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
   const file = files.value.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
@@ -47,13 +49,23 @@ provide(FileTableKey, {
 const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)
 provide(FileTableContextMenuKey, contextMenu)
 
+function resetPage() {
+  page.value = 0
+  pageSize.value = 10
+  pageDefinition.value = {}
+  refresh()
+}
+
 function onPage(event: DataTablePageEvent) {
   page.value = event.page
   pageSize.value = event.rows
 }
 
 function onSort(event: DataTableSortEvent) {
-
+  pageDefinition.value.sorter = event.multiSortMeta?.map(sort => ({
+    field: sort.field,
+    direction: sort.order === 1 ? 'ASC' : 'DESC',
+  }))
 }
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
@@ -77,7 +89,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <p class="pb-10">
       {{ t('pages.files.error.description') }}
     </p>
-    <PButton :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
+    <PButton v-if="errorStatus === 400" :loading="pending" rounded :label="t('pages.files.error.reset_button')" @click="resetPage()" />
+    <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
   </div>
 
   <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
@@ -225,7 +238,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
     </PColumn>
 
-    <PColumn field="creationDate" sortable :header="t('pages.files.table.creation_date')">
+    <PColumn field="created" sortable :header="t('pages.files.table.creation_date')">
       <template #sorticon="slotProps">
         <i
           class="pointer-events-none ml-1 text-xs block" :class="{

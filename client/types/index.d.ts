@@ -59,6 +59,31 @@ declare global {
     page: PageDTO<FileRepresentationDTO>
   }
 
+  interface PageDefinitionDTO {
+    filters?: FilterDefinitionDTO
+    sorter?: SorterDefinitionDTO
+  }
+
+  type FilterDefinitionDTO = FilterGroupDTO[]
+  type FilterGroupDTO = FilterObject[]
+
+  interface FilterObject{
+    field: string
+    operator: string
+    value: string
+    type: FilterType
+  }
+
+  type SorterDefinitionDTO = SortObject[]
+
+  interface SortObject {
+    field: string
+    direction: SortDirection
+  }
+
+  type FilterType = 'POSITIVE' | 'NEGATIVE'
+  type SortDirection = 'ASC' | 'DESC'
+
   interface FileOwnerDTO {
     id: string
     username: string

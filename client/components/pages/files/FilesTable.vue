@@ -14,7 +14,7 @@ const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const page = ref(0)
 const pageSize = ref(10)
 
-const { data, pending } = useLazyFetchAPI<PageableDTO>('/files/search', {
+const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
   body: {},
   query: { page, pageSize },
@@ -72,7 +72,20 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 <template>
   <FilesTableContextMenu />
 
-  <div v-if="files.length === 0" class="h-full w-full flex flex-col justify-center items-center">
+  <div v-if="error" class="h-full w-full flex flex-col justify-center items-center">
+    <!-- TODO: Error state illustration -->
+    <img class="w-10em" src="/assets/img/new_file.png" alt="Error file">
+    <h1 class="text-2xl">
+      {{ t('pages.files.error.title') }}
+    </h1>
+    <p class="pb-10">
+      {{ t('pages.files.error.description') }}
+    </p>
+    <PButton :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
+  </div>
+
+  <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
+    <!-- TODO: Empty state illustration -->
     <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
     <h1 class="text-2xl">
       {{ t('pages.files.empty.title') }}

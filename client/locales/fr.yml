@@ -106,6 +106,10 @@ pages:
       title: Ça semble vide par ici
       description: Vous n'avez pas encore envoyé de fichiers.
       upload_button: Envoyer un fichier
+    error:
+      title: Quelque chose s'est mal passé
+      description: Impossible de charger la liste des fichiers
+      retry_button: Réessayer
   favorites:
     title: Favoris
   upload:

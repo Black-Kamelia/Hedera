@@ -106,6 +106,10 @@ pages:
       title: Looks pretty empty in here
       description: You have not uploaded any files yet.
       upload_button: Upload a file
+    error:
+      title: Something went wrong
+      description: Failed to load the list of files
+      retry_button: Retry
   favorites:
     title: Favorites
   upload:

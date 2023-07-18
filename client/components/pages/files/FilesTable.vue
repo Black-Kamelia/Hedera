@@ -233,19 +233,6 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         <PSkeleton width="8rem" height="1rem" />
       </template>
     </PColumn>
-
-    <template #empty>
-      <div class="flex-grow w-full flex flex-col justify-center items-center">
-        <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
-        <h1 class="text-2xl">
-          {{ t('pages.files.empty.title') }}
-        </h1>
-        <p class="pb-10">
-          {{ t('pages.files.empty.description') }}
-        </p>
-        <PButton rounded :label="t('pages.files.empty.upload_button')" />
-      </div>
-    </template>
   </PDataTable>
 </template>
 

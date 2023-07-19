@@ -220,4 +220,9 @@ input:focus::placeholder {
   width: 2em;
   height: 2em;
 }
+
+.p-sortable-column-badge,
+.p-column-header-content span:has(i) {
+  pointer-events: none;
+}
 </style>

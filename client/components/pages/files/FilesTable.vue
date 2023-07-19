@@ -155,7 +155,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PColumn field="name" sortable :header="t('pages.files.table.name')">
       <template #sorticon="slotProps">
         <i
-          class="pointer-events-none ml-1 text-xs block" :class="{
+          class="ml-1 text-xs block" :class="{
             'i-tabler-arrows-sort': !slotProps.sorted,
             'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
             'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
@@ -186,7 +186,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PColumn field="size" sortable :header="t('pages.files.table.size')">
       <template #sorticon="slotProps">
         <i
-          class="pointer-events-none ml-1 text-xs block" :class="{
+          class="ml-1 text-xs block" :class="{
             'i-tabler-arrows-sort': !slotProps.sorted,
             'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
             'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
@@ -205,7 +205,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PColumn field="mimeType" sortable :header="t('pages.files.table.format')">
       <template #sorticon="slotProps">
         <i
-          class="pointer-events-none ml-1 text-xs block" :class="{
+          class="ml-1 text-xs block" :class="{
             'i-tabler-arrows-sort': !slotProps.sorted,
             'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
             'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
@@ -223,7 +223,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PColumn field="visibility" sortable :header="t('pages.files.table.visibility')">
       <template #sorticon="slotProps">
         <i
-          class="pointer-events-none ml-1 text-xs block" :class="{
+          class="ml-1 text-xs block" :class="{
             'i-tabler-arrows-sort': !slotProps.sorted,
             'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
             'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
@@ -244,7 +244,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PColumn field="createdAt" sortable :header="t('pages.files.table.creation_date')">
       <template #sorticon="slotProps">
         <i
-          class="pointer-events-none ml-1 text-xs block" :class="{
+          class="ml-1 text-xs block" :class="{
             'i-tabler-arrows-sort': !slotProps.sorted,
             'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
             'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,

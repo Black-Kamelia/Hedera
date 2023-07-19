@@ -143,7 +143,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
-          <MediaPreview :key="slotProps.data?.mimeType" :data="slotProps.data" />
+          <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
         </Transition>
         <PSkeleton v-else width="6rem" height="4rem" />
       </template>

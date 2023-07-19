@@ -17,20 +17,21 @@ const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', {
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
-const pageDefinition = ref<PageDefinitionDTO>({})
+const sortDefinition = ref<SorterDefinitionDTO>([])
+
+const pageDefinition = computed<PageDefinitionDTO>(() => ({ sorter: sortDefinition.value }))
 
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
   body: pageDefinition,
   query: { page, pageSize },
 })
+const debouncedPending = useDebounce(pending, 500)
 
 const files = computed(() => data.value?.page.items ?? [])
 const rows = computed(() => data.value?.page.pageSize ?? pageSize.value)
 const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
-const errorStatus = computed(() => error.value?.statusCode)
-const debouncedPending = useDebounce(pending, 500)
 const loading = computed(() => pending.value && debouncedPending.value)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
@@ -58,7 +59,7 @@ provide(FileTableContextMenuKey, contextMenu)
 function resetPage() {
   page.value = DEFAULT_PAGE
   pageSize.value = DEFAULT_PAGE_SIZE
-  pageDefinition.value = {}
+  sortDefinition.value = []
   refresh()
 }
 
@@ -68,12 +69,11 @@ function onPage(event: DataTablePageEvent) {
 }
 
 function onSort(event: DataTableSortEvent) {
-  pageDefinition.value = {
-    ...pageDefinition.value,
-    sorter: event.multiSortMeta?.map((sort: DataTableSortMeta) => ({
+  if (event.multiSortMeta) {
+    sortDefinition.value = event.multiSortMeta?.map<SortObject>((sort: DataTableSortMeta) => ({
       field: sort.field,
       direction: sort.order === 1 ? 'ASC' : 'DESC',
-    })),
+    }))
   }
 }
 
@@ -99,7 +99,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       {{ t('pages.files.error.description') }}
     </p>
     <PButton
-      v-if="errorStatus === 400"
+      v-if="error.value?.statusCode === 400"
       :loading="pending"
       rounded
       :label="t('pages.files.error.reset_button')"

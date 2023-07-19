@@ -153,9 +153,6 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         </Transition>
         <PSkeleton v-else width="6rem" height="4rem" />
       </template>
-      <template #loading>
-        <PSkeleton width="6rem" height="4rem" />
-      </template>
     </PColumn>
 
     <PColumn field="name" sortable :header="t('pages.files.table.name')">
@@ -202,9 +199,6 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ humanSizeStructure(slotProps.data.size, locale, t) }}</span>
         <PSkeleton v-else width="5rem" height="1rem" />
-      </template>
-      <template #loading>
-        <PSkeleton width="5rem" height="1rem" />
       </template>
     </PColumn>
 

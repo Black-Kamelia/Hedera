@@ -4,7 +4,6 @@ import type {
   DataTableRowContextMenuEvent,
   DataTableRowDoubleClickEvent,
   DataTableSortEvent,
-  DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
@@ -69,12 +68,12 @@ function onPage(event: DataTablePageEvent) {
 }
 
 function onSort(event: DataTableSortEvent) {
-  if (event.multiSortMeta) {
-    sortDefinition.value = event.multiSortMeta?.map<SortObject>((sort: DataTableSortMeta) => ({
-      field: sort.field,
-      direction: sort.order === 1 ? 'ASC' : 'DESC',
-    }))
-  }
+  if (!event.multiSortMeta) return
+
+  sortDefinition.value = event.multiSortMeta.map(({ field, order }) => ({
+    field,
+    direction: order === 1 ? 'ASC' : 'DESC',
+  }))
 }
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
@@ -99,7 +98,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       {{ t('pages.files.error.description') }}
     </p>
     <PButton
-      v-if="error.value?.statusCode === 400"
+      v-if="error.statusCode === 400"
       :loading="pending"
       rounded
       :label="t('pages.files.error.reset_button')"

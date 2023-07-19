@@ -13,8 +13,8 @@ const pageName = usePageName()
     <TopbarSeparator />
     <div class="flex flex-row gap-2">
       <ThemeSwitcher />
-      <PButton v-tooltip.bottom="'Notifications'" icon="i-tabler-bell" text rounded />
-      <PButton v-tooltip.bottom="'Log out'" icon="i-tabler-logout" text rounded @click="logout()" />
+      <PButton v-tooltip.bottom="{ value: 'Notification', showDelay: '1000' }" icon="i-tabler-bell" text rounded />
+      <PButton v-tooltip.bottom="{ value: 'Log out', showDelay: '1000' }" icon="i-tabler-logout" text rounded @click="logout()" />
     </div>
   </div>
 </template>

@@ -21,7 +21,7 @@ function onChange() {
 </script>
 
 <template>
-  <PButton v-tooltip.bottom="'Theme'" icon="i-tabler-palette" text rounded @click="openThemeSwitcher" />
+  <PButton v-tooltip.bottom="{ value: 'Theme', showDelay: '1000' }" icon="i-tabler-palette" text rounded @click="openThemeSwitcher" />
 
   <POverlayPanel
     ref="overlayPanel"

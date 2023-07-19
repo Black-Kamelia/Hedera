@@ -48,10 +48,10 @@ function onChange() {
       @change="onChange()"
       @update:model-value="(value) => color.preference = value ?? 'system'"
     >
-      <template #option="option">
+      <template #option="slotProps">
         <div class="flex flex-row items-center gap-2">
-          <i :class="option.option.icon" />
-          <span>{{ option.option.name }}</span>
+          <i :class="slotProps.option.icon" />
+          <span>{{ slotProps.option.name }}</span>
         </div>
       </template>
     </PListbox>

@@ -4,6 +4,7 @@ import type {
   DataTableRowContextMenuEvent,
   DataTableRowDoubleClickEvent,
   DataTableSortEvent,
+  DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
@@ -62,10 +63,13 @@ function onPage(event: DataTablePageEvent) {
 }
 
 function onSort(event: DataTableSortEvent) {
-  pageDefinition.value.sorter = event.multiSortMeta?.map(sort => ({
-    field: sort.field,
-    direction: sort.order === 1 ? 'ASC' : 'DESC',
-  }))
+  pageDefinition.value = {
+    ...pageDefinition.value,
+    sorter: event.multiSortMeta?.map((sort: DataTableSortMeta) => ({
+      field: sort.field,
+      direction: sort.order === 1 ? 'ASC' : 'DESC',
+    })),
+  }
 }
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
@@ -112,8 +116,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     class="h-full"
     data-key="id"
     lazy
-    :value="files"
-    :loading="pending"
+    :value="pending ? Array.from({ length: rows }) : files"
     scrollable
     scroll-height="flex"
     paginator
@@ -134,9 +137,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
     <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
-        <Transition name="fade" mode="out-in">
-          <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
+        <Transition v-if="slotProps.data" name="fade" mode="out-in">
+          <MediaPreview :key="slotProps.data?.mimeType" :data="slotProps.data" />
         </Transition>
+        <PSkeleton v-else width="6rem" height="4rem" />
       </template>
       <template #loading>
         <PSkeleton width="6rem" height="4rem" />
@@ -155,7 +159,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
       <template #body="slotProps">
         <div class="flex flex-row gap-1 items-center justify-between">
-          <div class="flex flex-col gap-1">
+          <div v-if="slotProps.data" class="flex flex-col gap-1">
             <Transition name="fade" mode="out-in">
               <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
             </Transition>
@@ -165,14 +169,12 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
                 <span class="text-xs">{{ 0 }}</span>
               </div> -->
           </div>
+          <div v-else class="flex flex-col gap-1">
+            <PSkeleton width="10rem" height="1rem" />
+            <PSkeleton width="2rem" height=".75rem" />
+          </div>
           <!-- For future use -->
           <!-- <PButton icon="i-tabler-star" severity="warning" rounded text /> -->
-        </div>
-      </template>
-      <template #loading>
-        <div class="flex flex-col gap-1">
-          <PSkeleton width="10rem" height="1rem" />
-          <PSkeleton width="2rem" height=".75rem" />
         </div>
       </template>
     </PColumn>
@@ -188,7 +190,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ humanSizeStructure(slotProps.data.size, locale, t) }}
+        <span v-if="slotProps.data">{{ humanSizeStructure(slotProps.data.size, locale, t) }}</span>
+        <PSkeleton v-else width="5rem" height="1rem" />
       </template>
       <template #loading>
         <PSkeleton width="5rem" height="1rem" />
@@ -206,12 +209,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        <Transition name="fade" mode="out-in">
+        <Transition v-if="slotProps.data" name="fade" mode="out-in">
           <span :key="slotProps.data.mimeType">{{ slotProps.data.mimeType }}</span>
         </Transition>
-      </template>
-      <template #loading>
-        <PSkeleton width="5rem" height="1rem" />
+        <PSkeleton v-else width="5rem" height="1rem" />
       </template>
     </PColumn>
 
@@ -226,12 +227,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        <Transition name="fade" mode="out-in">
+        <Transition v-if="slotProps.data" name="fade" mode="out-in">
           <VisibilityDisplayer :key="slotProps.data.visibility" :visibility="slotProps.data.visibility" />
         </Transition>
-      </template>
-      <template #loading>
-        <div class="flex flex-row items-center gap-2">
+        <div v-else class="flex flex-row items-center gap-2">
           <PSkeleton size="1.5rem" shape="circle" />
           <PSkeleton width="5rem" height="1rem" />
         </div>
@@ -249,10 +248,8 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ d(slotProps.data.createdAt) }}
-      </template>
-      <template #loading>
-        <PSkeleton width="8rem" height="1rem" />
+        <span v-if="slotProps.data">{{ d(slotProps.data.createdAt) }}</span>
+        <PSkeleton v-else width="8rem" height="1rem" />
       </template>
     </PColumn>
   </PDataTable>

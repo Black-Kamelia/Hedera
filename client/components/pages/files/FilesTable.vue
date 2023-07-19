@@ -27,6 +27,8 @@ const rows = computed(() => data.value?.page.pageSize ?? pageSize.value)
 const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
 const errorStatus = computed(() => error.value?.statusCode)
+const debouncedPending = useDebounce(pending, 500)
+const loading = computed(() => pending.value && debouncedPending.value)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
   const file = files.value.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
@@ -93,7 +95,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <p class="pb-10">
       {{ t('pages.files.error.description') }}
     </p>
-    <PButton v-if="errorStatus === 400" :loading="pending" rounded :label="t('pages.files.error.reset_button')" @click="resetPage()" />
+    <PButton
+      v-if="errorStatus === 400" :loading="pending" rounded :label="t('pages.files.error.reset_button')"
+      @click="resetPage()"
+    />
     <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
   </div>
 
@@ -116,7 +121,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     class="h-full"
     data-key="id"
     lazy
-    :value="pending ? Array.from({ length: rows }) : files"
+    :value="loading ? Array.from({ length: rows }) : files"
     scrollable
     scroll-height="flex"
     paginator
@@ -165,13 +170,12 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
             </Transition>
             <!-- For future use -->
             <!-- <div class="flex flex-row items-center gap-1">
-                <i class="i-tabler-eye text-xs" />
-                <span class="text-xs">{{ 0 }}</span>
-              </div> -->
+              <i class="i-tabler-eye text-xs" />
+              <span class="text-xs">{{ 0 }}</span>
+            </div> -->
           </div>
           <div v-else class="flex flex-col gap-1">
             <PSkeleton width="10rem" height="1rem" />
-            <PSkeleton width="2rem" height=".75rem" />
           </div>
           <!-- For future use -->
           <!-- <PButton icon="i-tabler-star" severity="warning" rounded text /> -->

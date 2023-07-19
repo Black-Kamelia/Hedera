@@ -12,9 +12,9 @@ const pageName = usePageName()
     <QuotaPreviewer :quota="536870912" :max="1073741824" />
     <TopbarSeparator />
     <div class="flex flex-row gap-2">
-      <PButton icon="i-tabler-language" text rounded />
-      <PButton icon="i-tabler-bell" text rounded />
-      <PButton icon="i-tabler-logout" text rounded @click="logout()" />
+      <ThemeSwitcher />
+      <PButton v-tooltip.bottom="'Notifications'" icon="i-tabler-bell" text rounded />
+      <PButton v-tooltip.bottom="'Log out'" icon="i-tabler-logout" text rounded @click="logout()" />
     </div>
   </div>
 </template>

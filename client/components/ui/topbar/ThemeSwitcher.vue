@@ -34,7 +34,6 @@ function onChange() {
     }"
   >
     <PListbox
-      v-model="color.preference"
       :pt="{
         root: {
           style: {
@@ -45,6 +44,7 @@ function onChange() {
       :options="options"
       option-label="name"
       option-value="value"
+      :model-value="color.preference"
       @change="onChange()"
       @update:model-value="(value) => color.preference = value ?? 'system'"
     >

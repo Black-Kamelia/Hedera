@@ -96,7 +96,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       {{ t('pages.files.error.description') }}
     </p>
     <PButton
-      v-if="errorStatus === 400" :loading="pending" rounded :label="t('pages.files.error.reset_button')"
+      v-if="errorStatus === 400"
+      :loading="pending"
+      rounded
+      :label="t('pages.files.error.reset_button')"
       @click="resetPage()"
     />
     <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />

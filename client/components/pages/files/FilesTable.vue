@@ -8,12 +8,15 @@ import type {
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
+const DEFAULT_PAGE = 0
+const DEFAULT_PAGE_SIZE = 10
+
 const { locale, t, d } = useI18n()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
-const page = ref(0)
-const pageSize = ref(10)
+const page = ref(DEFAULT_PAGE)
+const pageSize = ref(DEFAULT_PAGE_SIZE)
 const pageDefinition = ref<PageDefinitionDTO>({})
 
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
@@ -53,8 +56,8 @@ const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)
 provide(FileTableContextMenuKey, contextMenu)
 
 function resetPage() {
-  page.value = 0
-  pageSize.value = 10
+  page.value = DEFAULT_PAGE
+  pageSize.value = DEFAULT_PAGE_SIZE
   pageDefinition.value = {}
   refresh()
 }

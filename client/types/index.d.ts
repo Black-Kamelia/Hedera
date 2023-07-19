@@ -97,7 +97,7 @@ declare global {
     size: FileSize,
     visibility: string,
     owner: FileOwnerDTO,
-    creationDate: string,
+    createdAt: string,
   }
 
   interface TokenData {

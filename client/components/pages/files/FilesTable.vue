@@ -238,7 +238,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
     </PColumn>
 
-    <PColumn field="created" sortable :header="t('pages.files.table.creation_date')">
+    <PColumn field="createdAt" sortable :header="t('pages.files.table.creation_date')">
       <template #sorticon="slotProps">
         <i
           class="pointer-events-none ml-1 text-xs block" :class="{
@@ -249,7 +249,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        {{ d(slotProps.data.creationDate) }}
+        {{ d(slotProps.data.createdAt) }}
       </template>
       <template #loading>
         <PSkeleton width="8rem" height="1rem" />

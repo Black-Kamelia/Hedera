@@ -46,7 +46,7 @@ data class FileRepresentationDTO(
     val size: FileSizeDTO,
     val visibility: FileVisibility,
     val owner: FileOwnerDTO,
-    val creationDate: String,
+    val createdAt: String,
 ) : DTO
 
 @Serializable

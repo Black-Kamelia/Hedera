@@ -106,6 +106,10 @@ pages:
       title: Looks pretty empty in here
       description: You have not uploaded any files yet.
       upload_button: Upload a file
+    no_results:
+      title: Hmm, we couldn't find anything
+      description: Your filters matched no files.
+      reset_filters: Reset filters
     error:
       title: Something went wrong
       description: Failed to load the list of files

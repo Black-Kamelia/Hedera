@@ -106,6 +106,10 @@ pages:
       title: Ça semble vide par ici
       description: Vous n'avez pas encore envoyé de fichiers.
       upload_button: Envoyer un fichier
+    no_results:
+      title: Hmm, nous n'avons rien trouvé
+      description: Vos filtres ne correspondent à aucun fichier.
+      reset_filters: Réinitialiser les filtres
     error:
       title: Quelque chose s'est mal passé
       description: Impossible de charger la liste des fichiers

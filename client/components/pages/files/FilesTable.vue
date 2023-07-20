@@ -11,15 +11,16 @@ const DEFAULT_PAGE = 0
 const DEFAULT_PAGE_SIZE = 10
 
 const { locale, t, d } = useI18n()
+const filters = useFilesFilters()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
 const sortDefinition = ref<SorterDefinitionDTO>([])
+const filterDefinition = computed(() => filtersToDefinition(filters))
 
-const pageDefinition = computed<PageDefinitionDTO>(() => ({ sorter: sortDefinition.value }))
-
+const pageDefinition = computed<PageDefinitionDTO>(() => ({ sorter: sortDefinition.value, filters: filterDefinition.value }))
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
   body: pageDefinition,
@@ -107,6 +108,18 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
   </div>
 
+  <div v-else-if="files.length === 0 && !pending && !filters.isEmpty" class="h-full w-full flex flex-col justify-center items-center">
+    <!-- TODO: Empty state illustration -->
+    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <h1 class="text-2xl">
+      {{ t('pages.files.no_results.title') }}
+    </h1>
+    <p class="pb-10">
+      {{ t('pages.files.no_results.description') }}
+    </p>
+    <PButton rounded :label="t('pages.files.no_results.reset_filters')" @click="filters.reset()" />
+  </div>
+
   <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->
     <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
@@ -116,7 +129,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <p class="pb-10">
       {{ t('pages.files.empty.description') }}
     </p>
-    <PButton rounded :label="t('pages.files.empty.upload_button')" />
+    <PButton rounded :label="t('pages.files.empty.upload_button')" @click="navigateTo('/upload')" />
   </div>
 
   <PDataTable
@@ -154,7 +167,12 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
     </PColumn>
 
-    <PColumn field="name" sortable :header="t('pages.files.table.name')">
+    <PColumn
+      style="max-width: 10em; text-overflow: ellipsis; overflow: hidden;"
+      field="name"
+      sortable
+      :header="t('pages.files.table.name')"
+    >
       <template #sorticon="slotProps">
         <i
           class="ml-1 text-xs block" :class="{
@@ -166,7 +184,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
       <template #body="slotProps">
         <div class="flex flex-row gap-1 items-center justify-between">
-          <div v-if="slotProps.data" class="flex flex-col gap-1">
+          <div v-if="slotProps.data" class="flex flex-col gap-1 text-overflow-ellipsis text-wrap-nowrap">
             <Transition name="fade" mode="out-in">
               <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
             </Transition>
@@ -201,7 +219,12 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       </template>
     </PColumn>
 
-    <PColumn field="mimeType" sortable :header="t('pages.files.table.format')">
+    <PColumn
+      style="max-width: 10em; text-overflow: ellipsis; overflow: hidden;"
+      field="mimeType"
+      sortable
+      :header="t('pages.files.table.format')"
+    >
       <template #sorticon="slotProps">
         <i
           class="ml-1 text-xs block" :class="{

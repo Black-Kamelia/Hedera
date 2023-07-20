@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -18,6 +19,7 @@ import io.ktor.util.pipeline.*
 import org.jetbrains.exposed.dao.UUIDEntity
 import java.io.File
 import java.util.*
+import kotlin.math.roundToLong
 
 suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) {
     response.header(
@@ -168,3 +170,11 @@ private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy
 fun String.Companion.random(size: Int) = (1..size)
     .map { CHARSET.random() }
     .joinToString("")
+
+fun FilterObject.adaptFileSize(): FilterObject {
+    val (value, unit) = value.split(";")
+    val size = value.toDoubleOrNull() ?: throw IllegalFilterException(this)
+    val shift = unit.toIntOrNull() ?: throw IllegalFilterException(this)
+    val bytes = size * (1 shl shift)
+    return copy(value= bytes.roundToLong().toString())
+}

@@ -90,16 +90,30 @@ watch(visible, (visible) => {
         <h2>{{ t('pages.files.table.creation_date') }}</h2>
         <div class="flex flex-row gap-3">
           <PCalendar
-            v-model="localFilters.startingDate" class="w-full" :placeholder="t('pages.files.filters.start_date')" show-button-bar show-time
-            hour-format="24" show-icon :show-on-focus="false"
+            v-model="localFilters.startingDate"
+            class="w-full"
+            :placeholder="t('pages.files.filters.start_date')"
+            show-button-bar
+            show-time
+            show-seconds
+            show-icon
+            hour-format="24"
+            :show-on-focus="false"
           >
             <template #dropdownicon>
               <i class="i-tabler-calendar-event" />
             </template>
           </PCalendar>
           <PCalendar
-            v-model="localFilters.endingDate" class="w-full" :placeholder="t('pages.files.filters.end_date')" show-button-bar show-time
-            hour-format="24" show-icon :show-on-focus="false"
+            v-model="localFilters.endingDate"
+            class="w-full"
+            :placeholder="t('pages.files.filters.end_date')"
+            show-button-bar
+            show-time
+            show-seconds
+            show-icon
+            hour-format="24"
+            :show-on-focus="false"
           >
             <template #dropdownicon>
               <i class="i-tabler-calendar-event" />
@@ -119,8 +133,8 @@ watch(visible, (visible) => {
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.views') }}</h2>
         <div class="flex flex-row gap-3">
-          <PInputNumber v-model="localFilters.minimalViews" class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
-          <PInputNumber v-model="localFilters.maximalViews" class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
+          <PInputNumber v-model="localFilters.minimalViews" disabled class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
+          <PInputNumber v-model="localFilters.maximalViews" disabled class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
         </div>
       </div>
 

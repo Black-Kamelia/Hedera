@@ -4,7 +4,8 @@ import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.toUUIDOrNull
-import java.util.UUID
+import java.time.Instant
+import java.util.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
@@ -51,6 +52,8 @@ val fileVisibilityFilters = comparableFilters<FileVisibility>()
 
 val userRoleFilters = comparableFilters<UserRole>()
 
+val instantFilters = comparableFilters<Instant>()
+
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean> = when (T::class) {
     String::class -> stringFilters[filter.operator]?.let { it(this as Column<String>, filter.value) }
@@ -77,6 +80,9 @@ inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean>
     UserRole::class -> userRoleFilters[filter.operator]?.let {
         val value = UserRole.valueOfOrNull(filter.value)
         if (value != null) it(this as Column<UserRole>, value) else null
+    }
+    Instant::class -> instantFilters[filter.operator]?.let {
+        it(this as Column<Instant>, Instant.parse(filter.value))
     }
     else -> null
 } ?: throw IllegalFilterException(filter)

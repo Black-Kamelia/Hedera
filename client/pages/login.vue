@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { object, string } from 'yup'
 
+interface LoginForm {
+  username: string
+  password: string
+}
+
 const { t, m } = useI18n()
 const { login } = useAuth()
 
@@ -39,7 +44,7 @@ const schema = object({
   password: string()
     .required(t('forms.login.errors.missing_password')),
 })
-const { handleSubmit, resetField } = useForm({
+const { handleSubmit, resetField } = useForm<LoginForm>({
   validationSchema: schema,
 })
 

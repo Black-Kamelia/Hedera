@@ -10,7 +10,7 @@ export interface UserSettingsStore {
   updateSettings: (filters: Partial<UserSettings>) => void
 }
 
-export const useUserSettings = defineStore('userSettings', (): UserSettingsStore => {
+export const useUserSettings = definePiniaStore('userSettings', (): UserSettingsStore => {
   const locale = useLocale()
 
   const defaultFileVisibility = ref<FileVisibility>('UNLISTED')

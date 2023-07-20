@@ -2,7 +2,7 @@ import type { DynamicDialogOptions } from 'primevue/dynamicdialogoptions'
 import type { MessageDTO } from '~/utils/messages'
 import { RenameDialog, RenameDialogFooter } from '#components'
 
-export const useRenameFileDialog = defineStore('renameFileDialog', {
+export const useRenameFileDialog = definePiniaStore('renameFileDialog', {
   state: () => ({ name: '' }),
   persist: false,
 })

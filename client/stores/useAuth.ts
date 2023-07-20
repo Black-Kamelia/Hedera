@@ -19,7 +19,7 @@ export interface UseAuthComposer {
   logout: () => Promise<void>
 }
 
-export const useAuth = defineStore('auth', (): UseAuthComposer => {
+export const useAuth = definePiniaStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const { updateSettings } = useUserSettings()

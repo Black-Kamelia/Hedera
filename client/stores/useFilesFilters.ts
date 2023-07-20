@@ -28,7 +28,7 @@ export interface FilesFiltersStore {
   reset: () => void
 }
 
-export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore => {
+export const useFilesFilters = definePiniaStore('filesFilters', (): FilesFiltersStore => {
   const visibility = ref<string[]>([])
   const startingDate = ref<Date | null>(null)
   const endingDate = ref<Date | null>(null)

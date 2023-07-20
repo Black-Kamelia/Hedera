@@ -190,4 +190,9 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
             val rows = File.wrapRows(it)
             rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
+
+    fun getFilesFormats(): List<String> = files
+        .map { it.mimeType }
+        .distinct()
+        .sorted()
 }

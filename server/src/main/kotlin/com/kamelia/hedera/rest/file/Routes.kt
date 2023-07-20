@@ -15,6 +15,7 @@ fun Route.filesRoutes() = route("/files") {
     authenticate(AuthJwt) {
         uploadFile()
         searchFiles()
+        getFilesFormats()
         editFile()
         editFileVisibility()
         editFileName()
@@ -97,6 +98,11 @@ private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { b
     val (page, pageSize) = call.getPageParameters()
 
     call.respond(FileService.getFiles(userId, page, pageSize, body, asOwner = uuid == null))
+}
+
+private fun Route.getFilesFormats() = get("/formats") {
+    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    call.respond(FileService.getFilesFormats(userId))
 }
 
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->

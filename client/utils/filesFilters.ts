@@ -46,5 +46,14 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>)
     }])
   }
 
+  if (filters.formats.length > 0) {
+    filtersDefinition.push(filters.formats.map<FilterObject>(format => ({
+      field: 'mimeType',
+      operator: 'eq',
+      value: format,
+      type: 'POSITIVE',
+    })))
+  }
+
   return filtersDefinition
 }

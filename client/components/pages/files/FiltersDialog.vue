@@ -9,45 +9,9 @@ const visibilityOptions = [
   { name: t('pages.files.visibility.protected'), value: 'PROTECTED', disabled: true, icon: 'i-tabler-lock' },
   { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ]
-const types = [
-  {
-    name: 'Images',
-    items: [
-      { name: 'image/png' },
-      { name: 'image/jpg' },
-      { name: 'image/gif' },
-    ],
-  },
-  {
-    name: 'Vidéos',
-    items: [
-      { name: 'video/mp4' },
-      { name: 'video/avi' },
-      { name: 'video/mkv' },
-    ],
-  },
-  {
-    name: 'Documents',
-    items: [
-      { name: 'application/pdf' },
-    ],
-  },
-  {
-    name: 'Musiques',
-    items: [
-      { name: 'audio/mp3' },
-      { name: 'audio/wav' },
-      { name: 'audio/ogg' },
-    ],
-  },
-  {
-    name: 'Archives',
-    items: [
-      { name: 'application/zip' },
-      { name: 'application/x-rar-compressed' },
-    ],
-  },
-]
+
+const { data, pending } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
+const types = computed(() => data.value ?? [])
 
 const filters = useFilesFilters()
 const localFilters = reactiveFilters(filters)
@@ -69,7 +33,12 @@ watch(visible, (visible) => {
 </script>
 
 <template>
-  <PDialog v-model:visible="visible" modal :header="t('pages.files.advanced_filters')" :draggable="false">
+  <PDialog
+    v-model:visible="visible"
+    modal
+    :header="t('pages.files.advanced_filters')"
+    :draggable="false"
+  >
     <div class="grid grid-cols-1 xl:grid-cols-2 grid-gap-6 justify-items-stretch">
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.visibility') }}</h2>
@@ -141,8 +110,15 @@ watch(visible, (visible) => {
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.format') }}</h2>
         <PMultiSelect
-          v-model="localFilters.formats" :options="types" option-label="name" option-group-label="name" option-group-children="items" :placeholder="t('pages.files.filters.all_formats')"
-          :max-selected-labels="3" class="w-full" filter :selected-items-label="t('pages.files.filters.formats')"
+          v-model="localFilters.formats"
+          :options="types"
+          display="chip"
+          :placeholder="t('pages.files.filters.all_formats')"
+          :max-selected-labels="5"
+          class="min-w-0"
+          filter
+          :loading="pending"
+          :selected-items-label="t('pages.files.filters.formats')"
         />
       </div>
     </div>

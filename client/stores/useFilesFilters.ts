@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { defineStore } from 'pinia'
 
 export interface FileFilters {
   visibility: string[]
@@ -28,7 +29,7 @@ export interface FilesFiltersStore {
   reset: () => void
 }
 
-export const useFilesFilters = definePiniaStore('filesFilters', (): FilesFiltersStore => {
+export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore => {
   const visibility = ref<string[]>([])
   const startingDate = ref<Date | null>(null)
   const endingDate = ref<Date | null>(null)

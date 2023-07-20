@@ -1,4 +1,5 @@
 import { FetchError } from 'ofetch'
+import { defineStore } from 'pinia'
 import type { HederaUserConnectedPayload } from '~/utils/websocketEvents'
 
 export interface Tokens {
@@ -19,7 +20,7 @@ export interface UseAuthComposer {
   logout: () => Promise<void>
 }
 
-export const useAuth = definePiniaStore('auth', (): UseAuthComposer => {
+export const useAuth = defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const { updateSettings } = useUserSettings()

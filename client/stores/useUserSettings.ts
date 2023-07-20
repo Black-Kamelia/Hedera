@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { defineStore } from 'pinia'
 
 export interface UserSettingsStore {
   defaultFileVisibility: Ref<FileVisibility>
@@ -10,7 +11,7 @@ export interface UserSettingsStore {
   updateSettings: (filters: Partial<UserSettings>) => void
 }
 
-export const useUserSettings = definePiniaStore('userSettings', (): UserSettingsStore => {
+export const useUserSettings = defineStore('userSettings', (): UserSettingsStore => {
   const locale = useLocale()
 
   const defaultFileVisibility = ref<FileVisibility>('UNLISTED')

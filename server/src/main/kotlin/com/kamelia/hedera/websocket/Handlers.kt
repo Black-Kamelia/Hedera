@@ -9,6 +9,7 @@ import com.kamelia.hedera.util.forcefullyClose
 import com.kamelia.hedera.util.gracefullyClose
 import com.kamelia.hedera.util.sendEvent
 import io.ktor.server.websocket.*
+import io.ktor.util.*
 import io.ktor.websocket.*
 import java.util.*
 
@@ -34,20 +35,26 @@ private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: 
 private const val INVALID_USER_ID = "invalid-user-id"
 private const val USER_CONNECTED = "user-connected"
 private const val CONNECTION_CLOSED_BY_CLIENT = "connection-closed-by-client"
+private const val INVALID_FRAME = "invalid-frame"
 private suspend fun WebSocketServerSession.keepAlive(userId: UUID, vararg closers: () -> Unit) {
-    val user = SessionManager.getUserOrNull(userId) ?: return forcefullyClose(INVALID_USER_ID) {
-        closers.forEach { it() }
-    }
+    val terminator: () -> Unit = { closers.forEach { it() } }
+
+    val user = SessionManager.getUserOrNull(userId) ?: return forcefullyClose(INVALID_USER_ID, terminator)
 
     sendEvent(USER_CONNECTED, user.toUserRepresentationDTO())
 
-    for (frame in incoming) {
-        if (frame !is Frame.Text) continue
-        val text = frame.readText()
-        if (text.lowercase() == "close") break
+    for (frame in incoming) when (frame) {
+        is Frame.Ping -> send(Frame.Pong(frame.buffer.copy()))
+        is Frame.Text -> {
+            val text = frame.readText()
+            when (text.lowercase()) {
+                "close" -> break
+                "ping" -> send(Frame.Text("pong"))
+                else -> forcefullyClose(INVALID_FRAME, terminator)
+            }
+        }
+        else -> forcefullyClose(INVALID_FRAME, terminator)
     }
 
-    gracefullyClose(CONNECTION_CLOSED_BY_CLIENT) {
-        closers.forEach { it() }
-    }
+    gracefullyClose(CONNECTION_CLOSED_BY_CLIENT, terminator)
 }

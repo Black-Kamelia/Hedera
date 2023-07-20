@@ -8,7 +8,7 @@ import type {
 import type { PContextMenu } from '#components'
 
 const DEFAULT_PAGE = 0
-const DEFAULT_PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 25
 
 const { locale, t, d } = useI18n()
 const filters = useFilesFilters()
@@ -168,7 +168,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     </PColumn>
 
     <PColumn
-      style="max-width: 10em; text-overflow: ellipsis; overflow: hidden;"
+      style="max-width: 30em; text-overflow: ellipsis; overflow: hidden;"
       field="name"
       sortable
       :header="t('pages.files.table.name')"
@@ -183,23 +183,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        <div class="flex flex-row gap-1 items-center justify-between">
-          <div v-if="slotProps.data" class="flex flex-col gap-1 text-overflow-ellipsis text-wrap-nowrap">
-            <Transition name="fade" mode="out-in">
-              <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
-            </Transition>
-            <!-- For future use -->
-            <!-- <div class="flex flex-row items-center gap-1">
-              <i class="i-tabler-eye text-xs" />
-              <span class="text-xs">{{ 0 }}</span>
-            </div> -->
-          </div>
-          <div v-else class="flex flex-col gap-1">
-            <PSkeleton width="10rem" height="1rem" />
-          </div>
-          <!-- For future use -->
-          <!-- <PButton icon="i-tabler-star" severity="warning" rounded text /> -->
-        </div>
+        <Transition v-if="slotProps.data" name="fade" mode="out-in">
+          <span :key="slotProps.data.name" class="text-nowrap">{{ slotProps.data.name }}</span>
+        </Transition>
+        <PSkeleton v-else width="10rem" height="1rem" />
       </template>
     </PColumn>
 

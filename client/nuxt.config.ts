@@ -39,6 +39,7 @@ export default defineNuxtConfig({
     '@nuxt/devtools',
     '@vueuse/nuxt',
     '@vue-macros/nuxt',
+    '@vee-validate/nuxt',
     '@unocss/nuxt',
     '@nuxtjs/critters',
     '@pinia/nuxt',
@@ -77,6 +78,15 @@ export default defineNuxtConfig({
     exportProps: true,
     reactivityTransform: true,
     betterDefine: true,
+  },
+  veeValidate: {
+    autoImports: true,
+    componentNames: {
+      Form: 'VForm',
+      Field: 'VField',
+      ErrorMessage: 'VErrorMessage',
+      FieldArray: 'VFieldArray',
+    },
   },
   pinia: {
     autoImports: [

@@ -26,6 +26,7 @@
     "@pinia/nuxt": "^0.4.11",
     "@unocss/nuxt": "^0.53.5",
     "@unocss/reset": "^0.53.5",
+    "@vee-validate/nuxt": "^4.10.7",
     "@vue-macros/nuxt": "^1.3.18",
     "@vue-macros/short-vmodel": "^1.2.11",
     "@vue-macros/volar": "^0.12.1",

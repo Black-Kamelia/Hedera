@@ -41,6 +41,9 @@ devDependencies:
   '@unocss/reset':
     specifier: ^0.53.5
     version: 0.53.5
+  '@vee-validate/nuxt':
+    specifier: ^4.10.7
+    version: 4.10.7(vue@3.3.4)
   '@vue-macros/nuxt':
     specifier: ^1.3.18
     version: 1.3.18(@vue-macros/reactivity-transform@0.3.14)(@vueuse/core@10.2.1)(nuxt@3.6.3)(typescript@4.9.5)(vite@4.3.9)(vue@3.3.4)(webpack@5.75.0)
@@ -1416,8 +1419,8 @@ packages:
       nuxt: ^3.6.1
       vite: '*'
     dependencies:
-      '@nuxt/kit': 3.6.2
-      '@nuxt/schema': 3.6.2
+      '@nuxt/kit': 3.6.3
+      '@nuxt/schema': 3.6.3
       execa: 7.1.1
       nuxt: 3.6.3(@types/node@18.11.18)(eslint@8.45.0)(sass@1.63.6)(typescript@4.9.5)
       vite: 4.3.9(@types/node@18.11.18)(sass@1.63.6)
@@ -2566,6 +2569,18 @@ packages:
       webpack-sources: 3.2.3
     transitivePeerDependencies:
       - rollup
+    dev: true
+
+  /@vee-validate/nuxt@4.10.7(vue@3.3.4):
+    resolution: {integrity: sha512-/8O3cYbL/KlFSQoi4BI5HUD+8CJSwZPScvKY0gR8NIGe2jI966bNi8IEyfOxMG5UFmr/AkuJp0Gdg8UiRB4igQ==}
+    dependencies:
+      '@nuxt/kit': 3.6.3
+      local-pkg: 0.4.3
+      vee-validate: 4.10.7(vue@3.3.4)
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+      - vue
     dev: true
 
   /@vercel/nft@0.22.6:
@@ -9146,6 +9161,11 @@ packages:
     engines: {node: '>=14.16'}
     dev: true
 
+  /type-fest@3.13.1:
+    resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
+    engines: {node: '>=14.16'}
+    dev: true
+
   /typed-array-length@1.0.4:
     resolution: {integrity: sha512-KjZypGq+I/H7HI5HlOoGHkWUUGq+Q0TPhQurLbyrVrvnKTBgzLhIJ7j6J/XTQOi0d1RjyZ0wdas8bKs2p0x3Ng==}
     dependencies:
@@ -9561,6 +9581,16 @@ packages:
     dependencies:
       '@vue/devtools-api': 6.5.0
       type-fest: 3.12.0
+      vue: 3.3.4
+    dev: true
+
+  /vee-validate@4.10.7(vue@3.3.4):
+    resolution: {integrity: sha512-LvJ2vAMyeJBoDnm+Ic37qvQRVsLirLynaBKW2mYCo05V6fOz7yFhMGECzW2fLsNmaHgRaaxivF/ky91dLx4efw==}
+    peerDependencies:
+      vue: ^3.3.4
+    dependencies:
+      '@vue/devtools-api': 6.5.0
+      type-fest: 3.13.1
       vue: 3.3.4
     dev: true
 

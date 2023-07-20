@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
-import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
 

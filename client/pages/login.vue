@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
 
 const { t, m } = useI18n()

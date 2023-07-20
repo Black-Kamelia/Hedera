@@ -3182,12 +3182,12 @@ hr {
 }
 
 .p-datatable .p-paginator-top {
-  border-width: 1px 0 1px 0;
+  border-width: 0;
   border-radius: 0;
 }
 
 .p-datatable .p-paginator-bottom {
-  border-width: 0 0 1px 0;
+  border-width: 0;
   border-radius: 0;
 }
 
@@ -4160,8 +4160,8 @@ hr {
 .p-paginator {
   background: #1c1d26;
   color: #b3b3b3;
-  border: solid #2e303d;
-  border-width: 1px;
+  border: 1px solid #2e303d;
+  border-width: 0;
   padding: 0.5rem 1rem;
   border-radius: 8px;
 }
@@ -4172,31 +4172,31 @@ hr {
 .p-paginator .p-paginator-last {
   background-color: transparent;
   border: 0 none;
-  color: #b3b3b3;
+  color: var(--text-color-secondary);
   min-width: 3rem;
   height: 3rem;
   margin: 0.143rem;
   transition: box-shadow 0.2s;
-  border-radius: 8px;
+  border-radius: 50%;
 }
 
 .p-paginator .p-paginator-first:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-prev:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-next:not(.p-disabled):not(.p-highlight):hover,
 .p-paginator .p-paginator-last:not(.p-disabled):not(.p-highlight):hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-hover);
   border-color: transparent;
-  color: #e6e6e6;
+  color: var(--text-color);
 }
 
 .p-paginator .p-paginator-first {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
 }
 
 .p-paginator .p-paginator-last {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-top-right-radius: 50%;
+  border-bottom-right-radius: 50%;
 }
 
 .p-paginator .p-dropdown {
@@ -4221,7 +4221,7 @@ hr {
 .p-paginator .p-paginator-current {
   background-color: transparent;
   border: 0 none;
-  color: #b3b3b3;
+  color: var(--text-color-secondary);
   min-width: 3rem;
   height: 3rem;
   margin: 0.143rem;
@@ -4231,24 +4231,24 @@ hr {
 .p-paginator .p-paginator-pages .p-paginator-page {
   background-color: transparent;
   border: 0 none;
-  color: #b3b3b3;
+  color: var(--text-color-secondary);
   min-width: 3rem;
   height: 3rem;
   margin: 0.143rem;
   transition: box-shadow 0.2s;
-  border-radius: 8px;
+  border-radius: 50%;
 }
 
 .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-  background: rgba(177, 157, 247, 0.16);
-  border-color: rgba(177, 157, 247, 0.16);
-  color: var(--primary-400);
+  background: var(--highlight-bg);
+  border-color: var(--highlight-bg);
+  color: var(--primary-500);
 }
 
 .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-hover);
   border-color: transparent;
-  color: #e6e6e6;
+  color: var(--text-color);
 }
 
 .p-picklist .p-picklist-buttons {

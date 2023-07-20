@@ -1,6 +1,22 @@
 package com.kamelia.hedera.plugins
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.HederaException
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.IllegalFilterException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.InvalidUUIDException
+import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.MissingHeaderException
+import com.kamelia.hedera.core.MissingParameterException
+import com.kamelia.hedera.core.MissingTokenException
+import com.kamelia.hedera.core.MultipartParseException
+import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.UnknownFilterFieldException
+import com.kamelia.hedera.core.UnknownSortFieldException
+import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -27,6 +43,7 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is InvalidUUIDException,
         is MultipartParseException,
         is IllegalFilterException,
+        is UnknownSortFieldException,
         is UnknownFilterFieldException -> badRequestMessage(call, cause)
 
         is MissingTokenException,

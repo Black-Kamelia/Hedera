@@ -177,10 +177,11 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
             }
         }.applySort(definition.sorter) {
             when (it) {
-                Files.name.name -> Files.name
-                Files.mimeType.name -> Files.mimeType
-                Files.size.name -> Files.size
-                Files.visibility.name -> Files.visibility
+                "name" -> Files.name
+                "mimeType" -> Files.mimeType
+                "size" -> Files.size
+                "visibility" -> Files.visibility
+                "createdAt" -> Files.createdAt
                 else -> throw UnknownSortFieldException(it)
             }
         }.let {

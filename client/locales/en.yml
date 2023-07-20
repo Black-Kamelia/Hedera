@@ -59,6 +59,7 @@ pages:
       visibility: Visibility
       creation_date: Creation date
       views: Views
+      paginator: "{'{'}first{'}'} to {'{'}last{'}'} of {'{'}totalRecords{'}'}"
     context_menu:
       open: Open
       rename: Rename
@@ -105,6 +106,11 @@ pages:
       title: Looks pretty empty in here
       description: You have not uploaded any files yet.
       upload_button: Upload a file
+    error:
+      title: Something went wrong
+      description: Failed to load the list of files
+      retry_button: Retry
+      reset_button: Reset
   favorites:
     title: Favorites
   upload:

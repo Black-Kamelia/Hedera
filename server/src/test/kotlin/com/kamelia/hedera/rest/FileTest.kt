@@ -296,6 +296,78 @@ class FileTest {
         assertEquals("filtering2_2.pdf", responseDto.page.items[0].name)
     }
 
+    @DisplayName("Filtering files with negative page number should fail")
+    @Test
+    fun filesFilteringNegativePage() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO())
+            parameter("page", "-1")
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.key)
+    }
+
+    @DisplayName("Filtering files with malformed page number should fail")
+    @Test
+    fun filesFilteringMalformedPage() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO())
+            parameter("page", "abc")
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.key)
+    }
+
+    @DisplayName("Filtering files with negative page size should fail")
+    @Test
+    fun filesFilteringNegativeSize() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO())
+            parameter("pageSize", "-1")
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
+    }
+
+    @DisplayName("Filtering files with malformed page size should fail")
+    @Test
+    fun filesFilteringMalformedSize() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO())
+            parameter("pageSize", "abc")
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
+    }
+
     companion object {
 
         private lateinit var superadmin: TestUser

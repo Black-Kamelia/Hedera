@@ -57,6 +57,14 @@ const { t } = useI18n()
   }
 }
 
+.actions {
+  pointer-events: none;
+
+  .p-button {
+    pointer-events: auto;
+  }
+}
+
 .v-enter-active {
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

@@ -4,13 +4,13 @@ export default function useDeleteFile() {
   const call = useFeedbackCall((fileId: string) => {
     return $fetchAPI<MessageDTO<FileRepresentationDTO>>(`/files/${fileId}`, { method: 'DELETE' })
   })
-  const { selectedRowId, unselectRow, removeSelectedRow } = useFilesTable()
+  const { selectedRowId, unselectRow, refresh } = useFilesTable()
 
   return function changeFileVisibility() {
     if (!selectedRowId.value) return
 
     call(selectedRowId.value)
-      .then(removeSelectedRow) // TODO : check if succeeded (callback?)
+      .then(refresh)
       .finally(unselectRow)
   }
 }

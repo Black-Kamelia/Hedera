@@ -4,6 +4,7 @@ pipeline {
         timestamps()
         ansiColor('xterm')
         timeout(time: 15, unit: 'MINUTES')
+        disableConcurrentBuilds()
     }
     tools {
         gradle 'gradle-8.1.1'

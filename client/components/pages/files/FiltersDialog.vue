@@ -11,7 +11,7 @@ const visibilityOptions = [
 ]
 
 const { data, pending } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
-const types = computed(() => data.value ?? [])
+const formats = computed(() => data.value?.map(type => ({ name: type })) ?? [])
 
 const filters = useFilesFilters()
 const localFilters = reactiveFilters(filters)
@@ -111,14 +111,21 @@ watch(visible, (visible) => {
         <h2>{{ t('pages.files.table.format') }}</h2>
         <PMultiSelect
           v-model="localFilters.formats"
-          :options="types"
+          :options="formats"
+          option-label="name"
+          option-value="name"
           :placeholder="t('pages.files.filters.all_formats')"
-          :max-selected-labels="0"
           class="min-w-0"
           filter
           :loading="pending"
           :selected-items-label="t('pages.files.filters.formats')"
-        />
+        >
+          <template #value="slotOptions">
+            <span v-if="pending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
+            <span v-else-if="slotOptions.value.length === 0">{{ slotOptions.placeholder }}</span>
+            <span v-else>{{ t('pages.files.filters.formats', { count: slotOptions.value.length }) }}</span>
+          </template>
+        </PMultiSelect>
       </div>
     </div>
 

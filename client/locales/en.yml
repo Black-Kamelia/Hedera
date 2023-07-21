@@ -76,7 +76,7 @@ pages:
       maximal_views: Maximum views
       start_date: Start date
       end_date: End date
-      formats: "{'{'}0{'}'} selected formats"
+      formats: "{count} format selected | {count} formats selected"
       all_formats: All formats
       reset: Reset
       apply: Apply filters

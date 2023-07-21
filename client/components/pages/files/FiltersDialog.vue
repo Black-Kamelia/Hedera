@@ -112,9 +112,8 @@ watch(visible, (visible) => {
         <PMultiSelect
           v-model="localFilters.formats"
           :options="types"
-          display="chip"
           :placeholder="t('pages.files.filters.all_formats')"
-          :max-selected-labels="5"
+          :max-selected-labels="0"
           class="min-w-0"
           filter
           :loading="pending"

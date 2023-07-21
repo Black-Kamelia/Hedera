@@ -76,10 +76,8 @@ pages:
       maximal_views: Nombre maximal de vues
       start_date: Date de début
       end_date: Date de fin
-      formats: '{0} formats sélectionnés'
+      formats: "{'{'}0{'}'} formats sélectionnés"
       all_formats: Tous les formats
-      owners: '{0} propriétaires sélectionnés'
-      all_owners: Tous le monde
       reset: Réinitialiser
       apply: Appliquer les filtres
     rename:

@@ -76,10 +76,8 @@ pages:
       maximal_views: Maximum views
       start_date: Start date
       end_date: End date
-      formats: '{0} selected formats'
+      formats: "{'{'}0{'}'} selected formats"
       all_formats: All formats
-      owners: '{0} selected owners'
-      all_owners: Everyone
       reset: Reset
       apply: Apply filters
     rename:

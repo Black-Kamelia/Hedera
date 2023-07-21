@@ -3,7 +3,7 @@ import type {
   DataTablePageEvent,
   DataTableRowContextMenuEvent,
   DataTableRowDoubleClickEvent,
-  DataTableSortEvent,
+  DataTableSortEvent, DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
@@ -14,8 +14,9 @@ const { locale, t, d } = useI18n()
 const filters = useFilesFilters()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
-const query = defineModel<string>('query', { default: () => '' })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
+const sort = ref<DataTableSortMeta[]>([{ field: 'createdAt', order: -1 }])
+const query = defineModel<string>('query', { default: () => '' })
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
 const sortDefinition = ref<SorterDefinitionDTO>([])
@@ -137,6 +138,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     v-else
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
+    v-model:multi-sort-meta="sort"
     class="h-full"
     data-key="id"
     lazy

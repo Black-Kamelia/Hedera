@@ -7,7 +7,6 @@ definePageMeta({ layout: 'sidebar', middleware: ['auth'] })
 
 const openFiltersDialog = ref(false)
 const searchQuery = ref('')
-const debouncedSearchQuery = debouncedRef(searchQuery, 250)
 
 const selectedRows = ref<Array<FileRepresentationDTO>>([])
 const selecting = computed(() => selectedRows.value.length > 0)
@@ -30,7 +29,7 @@ const selecting = computed(() => selectedRows.value.length > 0)
     </div>
 
     <div class="p-card p-0 overflow-hidden flex-grow">
-      <FilesTable v-model:selectedRows="selectedRows" v-model:query="debouncedSearchQuery" />
+      <FilesTable v-model:selectedRows="selectedRows" v-model:query="searchQuery" />
     </div>
 
     <ActionButtons

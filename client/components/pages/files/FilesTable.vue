@@ -3,7 +3,7 @@ import type {
   DataTablePageEvent,
   DataTableRowContextMenuEvent,
   DataTableRowDoubleClickEvent,
-  DataTableSortEvent, DataTableSortMeta,
+  DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
@@ -17,12 +17,19 @@ const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', {
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const sort = ref<DataTableSortMeta[]>([{ field: 'createdAt', order: -1 }])
 const query = defineModel<string>('query', { default: () => '' })
+const debouncedQuery = useDebounce(query, 500)
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
-const sortDefinition = ref<SorterDefinitionDTO>([])
-const filterDefinition = computed(() => filtersToDefinition(filters, query.value))
+const sortDefinition = computed(() => sort.value.map<SortObject>(({ field, order }) => ({
+  field,
+  direction: order === 1 ? 'ASC' : 'DESC',
+})))
+const filterDefinition = computed(() => filtersToDefinition(filters, debouncedQuery.value))
 
-const pageDefinition = computed<PageDefinitionDTO>(() => ({ sorter: sortDefinition.value, filters: filterDefinition.value }))
+const pageDefinition = computed<PageDefinitionDTO>(() => ({
+  sorter: sortDefinition.value,
+  filters: filterDefinition.value,
+}))
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
   body: pageDefinition,
@@ -61,22 +68,14 @@ provide(FileTableContextMenuKey, contextMenu)
 function resetPage() {
   page.value = DEFAULT_PAGE
   pageSize.value = DEFAULT_PAGE_SIZE
-  sortDefinition.value = []
+  sort.value = [{ field: 'createdAt', order: -1 }]
+  query.value = ''
   refresh()
 }
 
 function onPage(event: DataTablePageEvent) {
   page.value = event.page
   pageSize.value = event.rows
-}
-
-function onSort(event: DataTableSortEvent) {
-  if (!event.multiSortMeta) return
-
-  sortDefinition.value = event.multiSortMeta.map(({ field, order }) => ({
-    field,
-    direction: order === 1 ? 'ASC' : 'DESC',
-  }))
 }
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
@@ -110,7 +109,10 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
   </div>
 
-  <div v-else-if="files.length === 0 && !pending && !filters.isEmpty" class="h-full w-full flex flex-col justify-center items-center">
+  <div
+    v-else-if="files.length === 0 && !pending && (!filters.isEmpty || query.length > 0)"
+    class="h-full w-full flex flex-col justify-center items-center"
+  >
     <!-- TODO: Empty state illustration -->
     <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
     <h1 class="text-2xl">
@@ -119,7 +121,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     <p class="pb-10">
       {{ t('pages.files.no_results.description') }}
     </p>
-    <PButton rounded :label="t('pages.files.no_results.reset_filters')" @click="filters.reset()" />
+    <PButton rounded :label="t('pages.files.no_results.reset_filters')" @click="resetPage()" />
   </div>
 
   <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
@@ -155,7 +157,6 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     removable-sort
     context-menu
     @page="onPage"
-    @sort="onSort"
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >

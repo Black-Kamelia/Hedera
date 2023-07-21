@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.core.pageable
 import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.util.fuzzy
 import com.kamelia.hedera.util.toUUIDOrNull
 import java.time.Instant
 import java.util.*
@@ -19,6 +20,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notLike
 import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.not
 import org.jetbrains.exposed.sql.or
 
@@ -30,10 +32,12 @@ inline fun <reified T : Comparable<T>> comparableFilters() = mapOf<String, (Colu
     "lt" to { c, v -> c less v },
     "ge" to { c, v -> c greaterEq v },
     "le" to { c, v -> c lessEq v },
+    "similar" to { c, v -> c lessEq v },
 )
 
 val stringFilters = comparableFilters<String>() + mapOf(
-    "like" to { c, v -> c like v },
+    "like" to { c, v -> c.lowerCase() like v.lowercase() },
+    "fuzzy" to { c, v -> (c fuzzy v) or (c.lowerCase() like "%${v.lowercase()}%")  },
     "nlike" to { c, v -> c notLike v }
 )
 

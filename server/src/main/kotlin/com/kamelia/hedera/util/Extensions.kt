@@ -20,6 +20,16 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import java.io.File
 import java.util.*
 import kotlin.math.roundToLong
+import org.jetbrains.exposed.sql.ComparisonOp
+import org.jetbrains.exposed.sql.Expression
+import org.jetbrains.exposed.sql.LikeEscapeOp
+import org.jetbrains.exposed.sql.LikePattern
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.QueryBuilder
+import org.jetbrains.exposed.sql.stringParam
+import org.jetbrains.exposed.sql.vendors.H2Dialect
+import org.jetbrains.exposed.sql.vendors.PostgreSQLDialect
+import org.jetbrains.exposed.sql.vendors.currentDialect
 
 suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) {
     response.header(
@@ -178,3 +188,14 @@ fun FilterObject.adaptFileSize(): FilterObject {
     val bytes = size * (1 shl shift)
     return copy(value= bytes.roundToLong().toString())
 }
+
+/** Checks if this expression fuzzy matches the specified [pattern]. */
+infix fun <T : String?> Expression<T>.fuzzy(pattern: String) = fuzzy(LikePattern(pattern))
+
+/** Checks if this expression fuzzy matches the specified [pattern]. */
+infix fun <T : String?> Expression<T>.fuzzy(pattern: LikePattern): Op<Boolean> = when(currentDialect) {
+    is PostgreSQLDialect -> FuzzyMatchOp(this, stringParam(pattern.pattern))
+    else -> LikeEscapeOp(this, stringParam("%${pattern.pattern}%"), true, pattern.escapeChar)
+}
+
+class FuzzyMatchOp(expr1: Expression<*>, expr2: Expression<*>) : ComparisonOp(expr1, expr2, "%>")

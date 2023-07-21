@@ -1,6 +1,6 @@
 import type { useFilesFilters } from '~/stores/useFilesFilters'
 
-export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>): FilterDefinitionDTO {
+export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>, query?: string): FilterDefinitionDTO {
   const filtersDefinition: FilterDefinitionDTO = []
 
   if (filters.visibility.length > 0) {
@@ -53,6 +53,15 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>)
       value: format,
       type: 'POSITIVE',
     })))
+  }
+
+  if (query !== undefined && query.length > 0) {
+    filtersDefinition.push([{
+      field: 'name',
+      operator: 'fuzzy',
+      value: query,
+      type: 'POSITIVE',
+    }])
   }
 
   return filtersDefinition

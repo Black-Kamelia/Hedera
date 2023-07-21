@@ -271,13 +271,13 @@ class FileTest {
                         listOf(
                             FilterObject(
                                 field = "name",
-                                operator = "like",
-                                value = "%filtering2%"
+                                operator = "fuzzy",
+                                value = "filtering2"
                             )
                         ),
                         listOf(
                             FilterObject(
-                                field = "mime_type",
+                                field = "mimeType",
                                 operator = "eq",
                                 value = "application/pdf"
                             )

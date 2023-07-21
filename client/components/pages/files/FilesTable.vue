@@ -14,11 +14,12 @@ const { locale, t, d } = useI18n()
 const filters = useFilesFilters()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
+const query = defineModel<string>('query', { default: () => '' })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
 const sortDefinition = ref<SorterDefinitionDTO>([])
-const filterDefinition = computed(() => filtersToDefinition(filters))
+const filterDefinition = computed(() => filtersToDefinition(filters, query.value))
 
 const pageDefinition = computed<PageDefinitionDTO>(() => ({ sorter: sortDefinition.value, filters: filterDefinition.value }))
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {

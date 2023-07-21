@@ -211,6 +211,6 @@ class FuzzyMatchOp(private val expr1: Expression<*>, private val expr2: Expressi
         append(expr1)
         append(" <<-> ")
         append(expr2)
-        append(" <= 0.85")
+        append(" <= ${Environment.searchMaxDistance}")
     }
 }

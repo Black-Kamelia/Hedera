@@ -80,8 +80,6 @@ export default defineNuxtConfig({
   },
   pinia: {
     autoImports: [
-      'defineStore',
-      ['defineStore', 'definePiniaStore'],
       'storeToRefs',
     ],
   },

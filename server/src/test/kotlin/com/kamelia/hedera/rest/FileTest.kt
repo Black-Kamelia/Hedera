@@ -13,6 +13,7 @@ import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileSizeDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
+import com.kamelia.hedera.rest.file.toSizeDTO
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -81,7 +82,9 @@ class FileTest {
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
             assertEquals(userId, responseDto.owner.id)
+            assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)
+            assertEquals(20L.toSizeDTO(), responseDto.size)
         }
     }
 
@@ -279,8 +282,41 @@ class FileTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
-        // assertFalse(responseDto.page.items.isEmpty())
         expectedResult(responseDto)
+    }
+
+    @DisplayName("Filtering files on unknown field")
+    @Test
+    fun filteringFilesUnknownField() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject("unknown", "eq", "fail")))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val messageKeyDTO = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
+        assertEquals(Errors.Filters.UNKNOWN_FIELD, messageKeyDTO.key)
+    }
+
+    @DisplayName("Filtering files with unknown operator")
+    @Test
+    fun filteringFilesUnknownOperator() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject("name", "unknown", "fail")))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val messageKeyDTO = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
+        assertEquals(Errors.Filters.ILLEGAL_FILTER, messageKeyDTO.key)
     }
 
     @DisplayName("Filtering files with negative page number should fail")
@@ -725,62 +761,78 @@ class FileTest {
         @JvmStatic
         fun filteringFiles(): Stream<Arguments> = Stream.of(
             Arguments.of("name", "like", "filtering1_1.png", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.name == "filtering1_1.png" })
             }),
             Arguments.of("name", "nlike", "filtering1_1.png", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.name != "filtering1_1.png" })
             }),
             Arguments.of("name", "fuzzy", "filtering", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.name.contains("filtering") })
             }),
 
             Arguments.of("mimeType", "like", "image/png", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.mimeType == "image/png" })
             }),
             Arguments.of("mimeType", "nlike", "image/png", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.mimeType != "image/png" })
             }),
 
             Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.size == FileSizeDTO("1000", 0) })
             }),
             Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.size != FileSizeDTO("1000", 0) })
             }),
             Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.size.value.toDouble() > 800 })
             }),
             Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.size.value.toDouble() < 800 })
             }),
             Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.size.value.toDouble() >= 800 })
             }),
             Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all { it.size.value.toDouble() <= 800 })
             }),
 
             Arguments.of("createdAt", "eq", "1970-01-10T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all {
                     it.createdAt == "1970-01-10T00:00:00.000000Z"
                 })
             }),
             Arguments.of("createdAt", "ne", "1970-01-10T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all {
                     it.createdAt != "1970-01-10T00:00:00.000000Z"
                 })
             }),
             Arguments.of("createdAt", "gt", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all {
                     Instant.parse(it.createdAt).isAfter(Instant.parse("1970-01-05T00:00:00.000000Z"))
                 })
             }),
             Arguments.of("createdAt", "lt", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all {
                     Instant.parse(it.createdAt).isBefore(Instant.parse("1970-01-05T00:00:00.000000Z"))
                 })
             }),
             Arguments.of("createdAt", "ge", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all {
                     val createdAt = Instant.parse(it.createdAt)
                     val comparisonPoint = Instant.parse("1970-01-05T00:00:00.000000Z")
@@ -788,6 +840,7 @@ class FileTest {
                 })
             }),
             Arguments.of("createdAt", "le", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertFalse(dto.page.items.isEmpty())
                 assertTrue(dto.page.items.all {
                     val createdAt = Instant.parse(it.createdAt)
                     val comparisonPoint = Instant.parse("1970-01-05T00:00:00.000000Z")

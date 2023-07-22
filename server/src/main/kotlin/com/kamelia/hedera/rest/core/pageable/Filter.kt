@@ -32,7 +32,6 @@ inline fun <reified T : Comparable<T>> comparableFilters() = mapOf<String, (Colu
     "lt" to { c, v -> c less v },
     "ge" to { c, v -> c greaterEq v },
     "le" to { c, v -> c lessEq v },
-    "similar" to { c, v -> c lessEq v },
 )
 
 val stringFilters = comparableFilters<String>() + mapOf(

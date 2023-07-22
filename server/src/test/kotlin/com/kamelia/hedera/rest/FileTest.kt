@@ -8,10 +8,9 @@ import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.rest.core.pageable.SortDirection
-import com.kamelia.hedera.rest.core.pageable.SortObject
 import com.kamelia.hedera.rest.file.FilePageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
+import com.kamelia.hedera.rest.file.FileSizeDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
 import io.ktor.client.request.*
@@ -19,19 +18,21 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Instant
+import java.util.*
+import java.util.stream.Stream
+import kotlin.test.assertContains
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.*
-import java.util.stream.Stream
-import kotlin.test.assertContains
-import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {
@@ -220,44 +221,6 @@ class FileTest {
         assertEquals(statusCode, response.status)
     }
 
-    @DisplayName("Filtering files by name and sort by size descending")
-    @Test
-    fun filesFiltering1() = testApplication {
-        val (tokens, _) = user1
-        val client = client()
-        val response = client.post("/api/files/search") {
-            contentType(ContentType.Application.Json)
-            setBody(
-                PageDefinitionDTO(
-                    filters = listOf(
-                        listOf(
-                            FilterObject(
-                                field = "name",
-                                operator = "like",
-                                value = "%filtering1%"
-                            )
-                        )
-                    ),
-                    sorter = listOf(
-                        SortObject(
-                            field = "size",
-                            direction = SortDirection.DESC
-                        )
-                    )
-                )
-            )
-            tokens?.let {
-                bearerAuth(it.accessToken)
-            }
-        }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
-        assertEquals(2, responseDto.page.items.size)
-        assertTrue(responseDto.page.items.all { it.name.contains("filtering1") })
-        assertEquals("filtering1_2.png", responseDto.page.items[0].name)
-        assertEquals("filtering1_1.png", responseDto.page.items[1].name)
-    }
-
     @DisplayName("Filtering files by name and type")
     @Test
     fun filesFiltering2() = testApplication {
@@ -294,6 +257,30 @@ class FileTest {
         assertEquals(1, responseDto.page.items.size)
         assertTrue(responseDto.page.items.all { it.name.contains("filtering2") })
         assertEquals("filtering2_2.pdf", responseDto.page.items[0].name)
+    }
+
+    @DisplayName("Filtering files")
+    @ParameterizedTest(name = "Filtering files by {0} (operator: {1})")
+    @MethodSource
+    fun filteringFiles(
+        field: String,
+        operator: String,
+        value: String,
+        expectedResult: (FilePageDTO) -> Unit,
+    ) = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject(field, operator, value)))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
+        // assertFalse(responseDto.page.items.isEmpty())
+        expectedResult(responseDto)
     }
 
     @DisplayName("Filtering files with negative page number should fail")
@@ -733,6 +720,80 @@ class FileTest {
                 UUID.fromString("00000000-0000-0004-0003-000000000005"),
                 HttpStatusCode.Unauthorized
             ),
+        )
+
+        @JvmStatic
+        fun filteringFiles(): Stream<Arguments> = Stream.of(
+            Arguments.of("name", "like", "filtering1_1.png", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.name == "filtering1_1.png" })
+            }),
+            Arguments.of("name", "nlike", "filtering1_1.png", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.name != "filtering1_1.png" })
+            }),
+            Arguments.of("name", "fuzzy", "filtering", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.name.contains("filtering") })
+            }),
+
+            Arguments.of("mimeType", "like", "image/png", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.mimeType == "image/png" })
+            }),
+            Arguments.of("mimeType", "nlike", "image/png", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.mimeType != "image/png" })
+            }),
+
+            Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.size == FileSizeDTO("1000", 0) })
+            }),
+            Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.size != FileSizeDTO("1000", 0) })
+            }),
+            Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.size.value.toDouble() > 800 })
+            }),
+            Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.size.value.toDouble() < 800 })
+            }),
+            Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.size.value.toDouble() >= 800 })
+            }),
+            Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all { it.size.value.toDouble() <= 800 })
+            }),
+
+            Arguments.of("createdAt", "eq", "1970-01-10T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all {
+                    it.createdAt == "1970-01-10T00:00:00.000000Z"
+                })
+            }),
+            Arguments.of("createdAt", "ne", "1970-01-10T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all {
+                    it.createdAt != "1970-01-10T00:00:00.000000Z"
+                })
+            }),
+            Arguments.of("createdAt", "gt", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all {
+                    Instant.parse(it.createdAt).isAfter(Instant.parse("1970-01-05T00:00:00.000000Z"))
+                })
+            }),
+            Arguments.of("createdAt", "lt", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all {
+                    Instant.parse(it.createdAt).isBefore(Instant.parse("1970-01-05T00:00:00.000000Z"))
+                })
+            }),
+            Arguments.of("createdAt", "ge", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all {
+                    val createdAt = Instant.parse(it.createdAt)
+                    val comparisonPoint = Instant.parse("1970-01-05T00:00:00.000000Z")
+                    createdAt.isAfter(comparisonPoint) || createdAt.equals(comparisonPoint)
+                })
+            }),
+            Arguments.of("createdAt", "le", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                assertTrue(dto.page.items.all {
+                    val createdAt = Instant.parse(it.createdAt)
+                    val comparisonPoint = Instant.parse("1970-01-05T00:00:00.000000Z")
+                    createdAt.isBefore(comparisonPoint) || createdAt.equals(comparisonPoint)
+                })
+            }),
         )
     }
 }

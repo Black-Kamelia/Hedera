@@ -15,7 +15,7 @@ class DtoTest {
     @MethodSource
     fun sizeDtoTest(
         size: Long,
-        value: String,
+        value: Double,
         shift: Int,
     ) {
         val sizeDTO = size.toSizeDTO()
@@ -27,12 +27,12 @@ class DtoTest {
 
         @JvmStatic
         fun sizeDtoTest(): Stream<Arguments> = Stream.of(
-            Arguments.of(20L, String.format("%.2f", 20.0), 0),
-            Arguments.of(1000L, String.format("%.2f", 1000.0), 0),
-            Arguments.of(1024L, String.format("%.2f", 1.0), 10),
-            Arguments.of(2048L, String.format("%.2f", 2.0), 10),
-            Arguments.of(1024L * 1024L, String.format("%.2f", 1.0), 20),
-            Arguments.of(2048L * 1024L, String.format("%.2f", 2.0), 20),
+            Arguments.of(20L, 20.0, 0),
+            Arguments.of(1000L, 1000.0, 0),
+            Arguments.of(1024L, 1.0, 10),
+            Arguments.of(2048L, 2.0, 10),
+            Arguments.of(1024L * 1024L, 1.0, 20),
+            Arguments.of(2048L * 1024L, 2.0, 20),
         )
     }
 

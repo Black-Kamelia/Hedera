@@ -12,6 +12,7 @@ const DEFAULT_PAGE_SIZE = 25
 
 const { locale, t, d } = useI18n()
 const filters = useFilesFilters()
+const { format } = useHumanFileSize()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
@@ -70,6 +71,7 @@ function resetPage() {
   pageSize.value = DEFAULT_PAGE_SIZE
   sort.value = [{ field: 'createdAt', order: -1 }]
   query.value = ''
+  filters.reset()
   refresh()
 }
 
@@ -205,7 +207,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
         />
       </template>
       <template #body="slotProps">
-        <span v-if="slotProps.data">{{ humanSizeStructure(slotProps.data.size, locale, t) }}</span>
+        <span v-if="slotProps.data">{{ format(slotProps.data.size) }}</span>
         <PSkeleton v-else width="5rem" height="1rem" />
       </template>
     </PColumn>

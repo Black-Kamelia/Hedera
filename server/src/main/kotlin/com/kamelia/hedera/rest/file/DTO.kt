@@ -51,7 +51,7 @@ data class FileRepresentationDTO(
 
 @Serializable
 data class FileSizeDTO(
-    val value: String,
+    val value: Double,
     val shift: Int,
 ) : DTO
 
@@ -73,5 +73,5 @@ fun Long.toSizeDTO(): FileSizeDTO {
         size /= 1024
         shift += 10
     }
-    return FileSizeDTO(String.format("%.2f", size), shift)
+    return FileSizeDTO(size, shift)
 }

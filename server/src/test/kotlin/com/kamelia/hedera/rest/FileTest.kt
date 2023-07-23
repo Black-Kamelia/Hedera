@@ -802,6 +802,15 @@ class FileTest {
                     assertTrue(dto.page.items.all { it.size.value <= 800 })
                 }),
 
+                Arguments.of("visibility", "eq", FileVisibility.PRIVATE.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.visibility == FileVisibility.PRIVATE })
+                }),
+                Arguments.of("visibility", "ne", FileVisibility.PRIVATE.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.visibility != FileVisibility.PRIVATE })
+                }),
+
                 Arguments.of("createdAt", "eq", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 1)
                     assertTrue(dto.page.items.all {

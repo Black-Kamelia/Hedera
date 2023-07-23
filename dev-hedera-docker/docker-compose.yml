@@ -13,8 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
-    restart: always
-    mem_limit: 128m
+    restart: unless-stopped
 
 volumes:
   data:

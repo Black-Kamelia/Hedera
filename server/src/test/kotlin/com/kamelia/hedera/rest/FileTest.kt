@@ -224,44 +224,6 @@ class FileTest {
         assertEquals(statusCode, response.status)
     }
 
-    @DisplayName("Filtering files by name and type")
-    @Test
-    fun filesFiltering2() = testApplication {
-        val (tokens, _) = user1
-        val client = client()
-        val response = client.post("/api/files/search") {
-            contentType(ContentType.Application.Json)
-            setBody(
-                PageDefinitionDTO(
-                    filters = listOf(
-                        listOf(
-                            FilterObject(
-                                field = "name",
-                                operator = "fuzzy",
-                                value = "filtering2"
-                            )
-                        ),
-                        listOf(
-                            FilterObject(
-                                field = "mimeType",
-                                operator = "eq",
-                                value = "application/pdf"
-                            )
-                        )
-                    )
-                )
-            )
-            tokens?.let {
-                bearerAuth(it.accessToken)
-            }
-        }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
-        assertEquals(1, responseDto.page.items.size)
-        assertTrue(responseDto.page.items.all { it.name.contains("filtering2") })
-        assertEquals("filtering2_2.pdf", responseDto.page.items[0].name)
-    }
-
     @DisplayName("Filtering files")
     @ParameterizedTest(name = "Filtering files by {0} (operator: {1})")
     @MethodSource
@@ -769,11 +731,11 @@ class FileTest {
 
             return Stream.of(
                 Arguments.of("name", "like", "filtering1_1.png", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 1)
                     assertTrue(dto.page.items.all { it.name == "filtering1_1.png" })
                 }),
                 Arguments.of("name", "nlike", "filtering1_1.png", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 2)
                     assertTrue(dto.page.items.all { it.name != "filtering1_1.png" })
                 }),
                 Arguments.of("name", "fuzzy", "filtering", { dto: FilePageDTO ->
@@ -782,36 +744,36 @@ class FileTest {
                 }),
 
                 Arguments.of("mimeType", "like", "image/png", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 2)
                     assertTrue(dto.page.items.all { it.mimeType == "image/png" })
                 }),
                 Arguments.of("mimeType", "nlike", "image/png", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 1)
                     assertTrue(dto.page.items.all { it.mimeType != "image/png" })
                 }),
 
                 Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 1)
                     assertTrue(dto.page.items.all { it.size == FileSizeDTO(1000.0, 0) })
                 }),
                 Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 2)
                     assertTrue(dto.page.items.all { it.size != FileSizeDTO(1000.0, 0) })
                 }),
                 Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 1)
                     assertTrue(dto.page.items.all { it.size.value > 800 })
                 }),
                 Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 1)
                     assertTrue(dto.page.items.all { it.size.value < 800 })
                 }),
                 Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 2)
                     assertTrue(dto.page.items.all { it.size.value >= 800 })
                 }),
                 Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
-                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.size == 2)
                     assertTrue(dto.page.items.all { it.size.value <= 800 })
                 }),
 

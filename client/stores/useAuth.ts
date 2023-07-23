@@ -1,4 +1,5 @@
 import { FetchError } from 'ofetch'
+import { defineStore } from 'pinia'
 import type { HederaUserConnectedPayload } from '~/utils/websocketEvents'
 
 export interface Tokens {

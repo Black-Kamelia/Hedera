@@ -45,7 +45,7 @@ const selectedRowId = computed(() => selectedRow.value?.id)
 const loading = computed(() => pending.value && debouncedPending.value)
 
 function updateSelectedRow(newRow: FileRepresentationDTO) {
-  const file = files.value.find((f: FileRepresentationDTO) => f.id === selectedRowId.value)
+  const file = files.value.find(f => f.id === selectedRowId.value)
   if (file && newRow) {
     Object.assign(file, newRow)
   }
@@ -86,6 +86,18 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   window.open(`/${event.data.code}`)
+}
+
+function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
+  const order = Number(props.sortOrder)
+  return h('i', {
+    class: {
+      'ml-1 text-xs block': true,
+      'i-tabler-arrows-sort': !props.sorted,
+      'i-tabler-sort-descending': order > 0,
+      'i-tabler-sort-ascending': order < 0,
+    },
+  })
 }
 </script>
 
@@ -180,13 +192,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       :header="t('pages.files.table.name')"
     >
       <template #sorticon="slotProps">
-        <i
-          class="ml-1 text-xs block" :class="{
-            'i-tabler-arrows-sort': !slotProps.sorted,
-            'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
-            'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
-          }"
-        />
+        <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
@@ -198,13 +204,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
     <PColumn field="size" sortable :header="t('pages.files.table.size')">
       <template #sorticon="slotProps">
-        <i
-          class="ml-1 text-xs block" :class="{
-            'i-tabler-arrows-sort': !slotProps.sorted,
-            'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
-            'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
-          }"
-        />
+        <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ format(slotProps.data.size) }}</span>
@@ -219,13 +219,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       :header="t('pages.files.table.format')"
     >
       <template #sorticon="slotProps">
-        <i
-          class="ml-1 text-xs block" :class="{
-            'i-tabler-arrows-sort': !slotProps.sorted,
-            'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
-            'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
-          }"
-        />
+        <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
@@ -237,13 +231,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
     <PColumn field="visibility" sortable :header="t('pages.files.table.visibility')">
       <template #sorticon="slotProps">
-        <i
-          class="ml-1 text-xs block" :class="{
-            'i-tabler-arrows-sort': !slotProps.sorted,
-            'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
-            'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
-          }"
-        />
+        <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
@@ -258,13 +246,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
     <PColumn field="createdAt" sortable :header="t('pages.files.table.creation_date')">
       <template #sorticon="slotProps">
-        <i
-          class="ml-1 text-xs block" :class="{
-            'i-tabler-arrows-sort': !slotProps.sorted,
-            'i-tabler-sort-descending': Number(slotProps.sortOrder) > 0,
-            'i-tabler-sort-ascending': Number(slotProps.sortOrder) < 0,
-          }"
-        />
+        <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ d(slotProps.data.createdAt) }}</span>

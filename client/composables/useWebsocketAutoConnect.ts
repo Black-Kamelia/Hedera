@@ -8,49 +8,45 @@ export default function useWebsocketAutoConnect() {
 
   const { isAuthenticated } = storeToRefs(useAuth())
 
-  const wsToken = ref<Nullable<string>>(null)
-  const webSocketUrl = computed(() => (isAuthenticated.value && wsToken.value)
-    ? `${host}/ws?token=${wsToken.value}`
+  // will redirect to /login if not authenticated
+  const { data: tokenResponse, execute } = useLazyFetchAPI<{ token: string }>('/ws', { immediate: false })
+  const webSocketUrl = computed(() => tokenResponse.value
+    ? `${host}/ws?token=${tokenResponse.value.token}`
     : undefined)
 
-  const { open, close, status, ws } = useWebSocket(webSocketUrl, {
-    immediate: false,
-    autoReconnect: false,
-    heartbeat: {
-      message: 'ping',
-      interval: 10000,
-      pongTimeout: 10000,
+  const { open, close } = useWebSocket(webSocketUrl, {
+    immediate: false, // let the watcher below handle the connection
+    autoReconnect: {
+      retries: 3,
+      delay: 3000,
+      async onFailed() {
+        await openConnection()
+      },
+    },
+    heartbeat: true,
+    autoClose: false,
+    onMessage(_, { data }) {
+      if (data === 'pong') return
+      const payload = JSON.parse(data) as HederaWebsocketPayload
+      websocketPacketReceivedEvent.emit({ payload })
+    },
+    onDisconnected() {
+      // TODO: Feedback to the user
+      console.error('Lost connection to the server')
     },
   })
 
-  async function requestWSToken() {
-    const data = await $fetchAPI<{ token: string }>('/ws')
-    wsToken.value = data.token
+  async function openConnection() {
+    await sleep(1000) // wait a few ticks to avoid contention issues
+    await execute() // will redirect to /login if needed
+    open()
   }
 
-  function handleMessage({ data }: MessageEvent) {
-    const payload = JSON.parse(data) as HederaWebsocketPayload
-    websocketPacketReceivedEvent.emit({ payload })
-  }
-
-  async function handleConnection() {
-    if (isAuthenticated.value && status.value === 'CLOSED') {
-      await requestWSToken()
-      open()
-      ws.value!.addEventListener('message', handleMessage)
-    }
-
-    if (!isAuthenticated.value && status.value === 'OPEN') {
-      ws.value!.removeEventListener('message', handleMessage)
+  watchEffect(async () => {
+    if (isAuthenticated.value) {
+      await openConnection()
+    } else {
       close()
-      wsToken.value = null
     }
-  }
-
-  onMounted(handleConnection)
-  watch(isAuthenticated, handleConnection)
-  onUnmounted(() => {
-    close()
-    ws.value?.removeEventListener('message', handleMessage)
   })
 }

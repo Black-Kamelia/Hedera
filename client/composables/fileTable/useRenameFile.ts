@@ -1,4 +1,5 @@
 import type { DynamicDialogOptions } from 'primevue/dynamicdialogoptions'
+import { defineStore } from 'pinia'
 import type { MessageDTO } from '~/utils/messages'
 import { RenameDialog, RenameDialogFooter } from '#components'
 

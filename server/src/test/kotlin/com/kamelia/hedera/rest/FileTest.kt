@@ -271,7 +271,7 @@ class FileTest {
         value: String,
         expectedResult: (FilePageDTO) -> Unit,
     ) = testApplication {
-        val (tokens, _) = user1
+        val (tokens, _) = userFilters
         val client = client()
 
         val response = client.post("/api/files/search") {
@@ -397,6 +397,7 @@ class FileTest {
         private lateinit var admin: TestUser
         private lateinit var user1: TestUser
         private lateinit var user2: TestUser
+        private lateinit var userFilters: TestUser
         private val guest: TestUser = Pair(null, UUID(0, 0))
 
         init {
@@ -416,6 +417,10 @@ class FileTest {
                 user2 = Pair(
                     login("user2", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000004")
+                )
+                userFilters = Pair(
+                    login("user_filters", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000010")
                 )
             }
         }
@@ -759,94 +764,100 @@ class FileTest {
         )
 
         @JvmStatic
-        fun filteringFiles(): Stream<Arguments> = Stream.of(
-            Arguments.of("name", "like", "filtering1_1.png", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.name == "filtering1_1.png" })
-            }),
-            Arguments.of("name", "nlike", "filtering1_1.png", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.name != "filtering1_1.png" })
-            }),
-            Arguments.of("name", "fuzzy", "filtering", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.name.contains("filtering") })
-            }),
+        fun filteringFiles(): Stream<Arguments> {
+            val date = Instant.parse("1970-01-05T00:00:00.00000Z")
 
-            Arguments.of("mimeType", "like", "image/png", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.mimeType == "image/png" })
-            }),
-            Arguments.of("mimeType", "nlike", "image/png", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.mimeType != "image/png" })
-            }),
+            return Stream.of(
+                Arguments.of("name", "like", "filtering1_1.png", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.name == "filtering1_1.png" })
+                }),
+                Arguments.of("name", "nlike", "filtering1_1.png", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.name != "filtering1_1.png" })
+                }),
+                Arguments.of("name", "fuzzy", "filtering", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.name.contains("filtering") })
+                }),
 
-            Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.size == FileSizeDTO("1000", 0) })
-            }),
-            Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.size != FileSizeDTO("1000", 0) })
-            }),
-            Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.size.value.toDouble() > 800 })
-            }),
-            Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.size.value.toDouble() < 800 })
-            }),
-            Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.size.value.toDouble() >= 800 })
-            }),
-            Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all { it.size.value.toDouble() <= 800 })
-            }),
+                Arguments.of("mimeType", "like", "image/png", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.mimeType == "image/png" })
+                }),
+                Arguments.of("mimeType", "nlike", "image/png", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.mimeType != "image/png" })
+                }),
 
-            Arguments.of("createdAt", "eq", "1970-01-10T00:00:00.000000Z", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all {
-                    it.createdAt == "1970-01-10T00:00:00.000000Z"
-                })
-            }),
-            Arguments.of("createdAt", "ne", "1970-01-10T00:00:00.000000Z", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all {
-                    it.createdAt != "1970-01-10T00:00:00.000000Z"
-                })
-            }),
-            Arguments.of("createdAt", "gt", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all {
-                    Instant.parse(it.createdAt).isAfter(Instant.parse("1970-01-05T00:00:00.000000Z"))
-                })
-            }),
-            Arguments.of("createdAt", "lt", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all {
-                    Instant.parse(it.createdAt).isBefore(Instant.parse("1970-01-05T00:00:00.000000Z"))
-                })
-            }),
-            Arguments.of("createdAt", "ge", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all {
-                    val createdAt = Instant.parse(it.createdAt)
-                    val comparisonPoint = Instant.parse("1970-01-05T00:00:00.000000Z")
-                    createdAt.isAfter(comparisonPoint) || createdAt.equals(comparisonPoint)
-                })
-            }),
-            Arguments.of("createdAt", "le", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
-                assertFalse(dto.page.items.isEmpty())
-                assertTrue(dto.page.items.all {
-                    val createdAt = Instant.parse(it.createdAt)
-                    val comparisonPoint = Instant.parse("1970-01-05T00:00:00.000000Z")
-                    createdAt.isBefore(comparisonPoint) || createdAt.equals(comparisonPoint)
-                })
-            }),
-        )
+                Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.size == FileSizeDTO(1000.0, 0) })
+                }),
+                Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.size != FileSizeDTO(1000.0, 0) })
+                }),
+                Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.size.value > 800 })
+                }),
+                Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.size.value < 800 })
+                }),
+                Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.size.value >= 800 })
+                }),
+                Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.size.value <= 800 })
+                }),
+
+                Arguments.of("createdAt", "eq", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.equals(date)
+                    })
+                }),
+                Arguments.of("createdAt", "ne", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.none {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.equals(date)
+                    })
+                }),
+                Arguments.of("createdAt", "gt", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isAfter(date)
+                    })
+                }),
+                Arguments.of("createdAt", "lt", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isBefore(date)
+                    })
+                }),
+                Arguments.of("createdAt", "ge", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isAfter(date) || createdAt.equals(date)
+                    })
+                }),
+                Arguments.of("createdAt", "le", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isBefore(date) || createdAt.equals(date)
+                    })
+                }),
+            )
+        }
     }
 }

@@ -8,6 +8,8 @@ import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.rest.core.pageable.SortDirection
+import com.kamelia.hedera.rest.core.pageable.SortObject
 import com.kamelia.hedera.rest.file.FilePageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileSizeDTO
@@ -26,6 +28,7 @@ import java.time.Instant
 import java.util.*
 import java.util.stream.Stream
 import kotlin.test.assertContains
+import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
@@ -239,6 +242,28 @@ class FileTest {
         val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
             setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject(field, operator, value)))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
+        expectedResult(responseDto)
+    }
+
+    @DisplayName("Sorting files")
+    @ParameterizedTest(name = "Sorting files by {0} (direction: {1})")
+    @MethodSource
+    fun sortingFiles(
+        field: String,
+        direction: SortDirection,
+        expectedResult: (FilePageDTO) -> Unit,
+    ) = testApplication {
+        val (tokens, _) = userFilters
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(sorter = listOf(SortObject(field, direction))))
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.OK, response.status)
@@ -821,5 +846,76 @@ class FileTest {
                 }),
             )
         }
+
+        @JvmStatic
+        fun sortingFiles(): Stream<Arguments> = Stream.of(
+            Arguments.of("name", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("filtering1_1.png", "filtering1_2.pdf", "filtering1_3.png"),
+                    dto.page.items.map { it.name }
+                )
+            }),
+            Arguments.of("name", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("filtering1_3.png", "filtering1_2.pdf", "filtering1_1.png"),
+                    dto.page.items.map { it.name }
+                )
+            }),
+
+            Arguments.of("mimeType", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("application/pdf", "image/png", "image/png"),
+                    dto.page.items.map { it.mimeType }
+                )
+            }),
+            Arguments.of("mimeType", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("image/png", "image/png", "application/pdf"),
+                    dto.page.items.map { it.mimeType }
+                )
+            }),
+
+            Arguments.of("size", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(FileSizeDTO(500.0, 0), FileSizeDTO(800.0, 0), FileSizeDTO(1000.0, 0)),
+                    dto.page.items.map { it.size }
+                )
+            }),
+            Arguments.of("size", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(FileSizeDTO(1000.0, 0), FileSizeDTO(800.0, 0), FileSizeDTO(500.0, 0)),
+                    dto.page.items.map { it.size }
+                )
+            }),
+
+            Arguments.of("createdAt", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(
+                        Instant.parse("1970-01-01T00:00:00.000000Z"),
+                        Instant.parse("1970-01-05T00:00:00.000000Z"),
+                        Instant.parse("1970-01-10T00:00:00.000000Z"),
+                    ),
+                    dto.page.items.map { Instant.parse(it.createdAt) }
+                )
+            }),
+            Arguments.of("createdAt", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(
+                        Instant.parse("1970-01-10T00:00:00.000000Z"),
+                        Instant.parse("1970-01-05T00:00:00.000000Z"),
+                        Instant.parse("1970-01-01T00:00:00.000000Z"),
+                    ),
+                    dto.page.items.map { Instant.parse(it.createdAt) }
+                )
+            }),
+        )
     }
 }

@@ -105,7 +105,7 @@ pages:
       description: You have not uploaded any files yet.
       upload_button: Upload a file
     no_results:
-      title: Hmm, we couldn't find anything
+      title: Hmm, nothing here
       description: Your filters matched no files.
       reset_filters: Reset filters
     error:

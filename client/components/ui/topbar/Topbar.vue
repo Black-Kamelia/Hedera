@@ -9,7 +9,7 @@ const pageName = usePageName()
     <h2 class="text-3xl w-full">
       {{ pageName }}
     </h2>
-    <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" ratio="0.5" />
+    <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" />
     <TopbarSeparator />
     <div class="flex flex-row gap-2">
       <ThemeSwitcher />

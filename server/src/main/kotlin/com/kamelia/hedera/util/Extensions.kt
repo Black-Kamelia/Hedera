@@ -34,6 +34,7 @@ import org.jetbrains.exposed.sql.LikeEscapeOp
 import org.jetbrains.exposed.sql.LikePattern
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.QueryBuilder
+import org.jetbrains.exposed.sql.append
 import org.jetbrains.exposed.sql.stringParam
 import org.jetbrains.exposed.sql.vendors.PostgreSQLDialect
 import org.jetbrains.exposed.sql.vendors.currentDialect
@@ -205,12 +206,15 @@ infix fun <T : String?> Expression<T>.fuzzy(pattern: LikePattern): Op<Boolean> =
     else -> LikeEscapeOp(this, stringParam("%${pattern.pattern}%"), true, pattern.escapeChar)
 }
 
-class FuzzyMatchOp(private val expr1: Expression<*>, private val expr2: Expression<*>) :
-    Op<Boolean>(), ComplexExpression {
+class FuzzyMatchOp(
+    private val expr1: Expression<*>,
+    private val expr2: Expression<*>
+) : Op<Boolean>(), ComplexExpression {
     override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
         append(expr1)
         append(" <<-> ")
         append(expr2)
-        append(" <= ${Environment.searchMaxDistance}")
+        append(" <= ")
+        append(Environment.searchMaxDistance)
     }
 }

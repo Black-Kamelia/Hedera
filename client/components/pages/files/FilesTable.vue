@@ -9,23 +9,28 @@ import type { PContextMenu } from '#components'
 
 const DEFAULT_PAGE = 0
 const DEFAULT_PAGE_SIZE = 25
+const DEFAULT_SORT: DataTableSortMeta[] = [{ field: 'createdAt', order: -1 }]
+const DEFAULT_QUERY = ''
 
-const { locale, t, d } = useI18n()
+const { t, d } = useI18n()
 const filters = useFilesFilters()
 const { format } = useHumanFileSize()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
-const sort = ref<DataTableSortMeta[]>([{ field: 'createdAt', order: -1 }])
-const query = defineModel<string>('query', { default: () => '' })
+
+const query = defineModel<string>('query', { default: '' })
 const debouncedQuery = useDebounce(query, 500)
+
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
+const filterDefinition = computed(() => filtersToDefinition(filters, debouncedQuery.value))
+
+const sort = ref<DataTableSortMeta[]>([{ field: 'createdAt', order: -1 }])
 const sortDefinition = computed(() => sort.value.map<SortObject>(({ field, order }) => ({
   field,
   direction: order === 1 ? 'ASC' : 'DESC',
 })))
-const filterDefinition = computed(() => filtersToDefinition(filters, debouncedQuery.value))
 
 const pageDefinition = computed<PageDefinitionDTO>(() => ({
   sorter: sortDefinition.value,
@@ -69,8 +74,8 @@ provide(FileTableContextMenuKey, contextMenu)
 function resetPage() {
   page.value = DEFAULT_PAGE
   pageSize.value = DEFAULT_PAGE_SIZE
-  sort.value = [{ field: 'createdAt', order: -1 }]
-  query.value = ''
+  sort.value = DEFAULT_SORT
+  query.value = DEFAULT_QUERY
   filters.reset()
   refresh()
 }
@@ -186,7 +191,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     </PColumn>
 
     <PColumn
-      style="max-width: 30em; text-overflow: ellipsis; overflow: hidden;"
+      class="max-w-[10em] text-ellipsis overflow-hidden"
       field="name"
       sortable
       :header="t('pages.files.table.name')"
@@ -213,7 +218,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     </PColumn>
 
     <PColumn
-      style="max-width: 10em; text-overflow: ellipsis; overflow: hidden;"
+      class="max-w-[10em] text-ellipsis overflow-hidden"
       field="mimeType"
       sortable
       :header="t('pages.files.table.format')"

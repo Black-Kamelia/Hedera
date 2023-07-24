@@ -4,7 +4,7 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>,
   const filtersDefinition: FilterDefinitionDTO = []
 
   if (filters.visibility.length > 0) {
-    filtersDefinition.push(filters.visibility.map<FilterObject>(visibility => ({
+    filtersDefinition.push(filters.visibility.map(visibility => ({
       field: 'visibility',
       operator: 'eq',
       value: visibility,
@@ -47,7 +47,7 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>,
   }
 
   if (filters.formats.length > 0) {
-    filtersDefinition.push(filters.formats.map<FilterObject>(format => ({
+    filtersDefinition.push(filters.formats.map(format => ({
       field: 'mimeType',
       operator: 'eq',
       value: format,

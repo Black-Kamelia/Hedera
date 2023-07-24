@@ -33,11 +33,11 @@ fun Route.rawFileRoute() = get("/{code}") {
     val code = call.getParam("code")
 
     FileService.getFile(code, authedId).ifSuccessOrElse(
-        onSuccess = { it as MessageDTO.Payload
-            checkNotNull(it.payload) { "File not found" }
-            val file = FileUtils.getOrNull(it.payload.owner.id, code)
+        onSuccess = { (data) ->
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
-                call.respondFileInline(file, ContentType.parse(it.payload.mimeType))
+                call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
                 // TODO notify orphaned file
                 call.proxyRedirect("/")
@@ -74,18 +74,18 @@ private fun Route.getFile() = get("/{code}") {
     val code = call.getParam("code")
 
     FileService.getFile(code, authedId).ifSuccessOrElse(
-        onSuccess = {it as MessageDTO.Payload
-            checkNotNull(it.payload) { "File not found" }
-            val file = FileUtils.getOrNull(it.payload.owner.id, code)
+        onSuccess = { (data) ->
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
-                call.respondFile(file, it.payload.name, it.payload.mimeType)
+                call.respondFile(file, data.name, data.mimeType)
             } else {
                 // TODO notify orphaned file
-                call.respond(Response.notFound())
+                call.respondNothing(Response.notFound())
             }
         },
         onError = {
-            call.respond(Response.notFound())
+            call.respondNothing(Response.notFound())
         },
     )
 }

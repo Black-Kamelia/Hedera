@@ -1,7 +1,6 @@
 package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.TokenData
@@ -11,7 +10,7 @@ import java.util.*
 
 object AuthService {
 
-    suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageDTO<Nothing>> = Connection.transaction {
+    suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageKeyDTO> = Connection.transaction {
         SessionManager.login(username, password)
     }
 
@@ -19,7 +18,7 @@ object AuthService {
         SessionManager.refresh(jwt)
     }
 
-    suspend fun logout(token: String): Response<Nothing, MessageKeyDTO> = Connection.transaction {
+    suspend fun logout(token: String): Response<Boolean, MessageKeyDTO> = Connection.transaction {
         SessionManager.logout(token)
         Response.ok()
     }

@@ -100,8 +100,6 @@ object Errors {
 
         private const val PREFIX = "${Errors.PREFIX}.users"
 
-        const val NOT_FOUND = "$PREFIX.not_found"
-
         object Email {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.email"

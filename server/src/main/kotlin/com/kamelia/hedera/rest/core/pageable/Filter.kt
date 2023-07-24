@@ -3,8 +3,10 @@ package com.kamelia.hedera.rest.core.pageable
 import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.util.fuzzy
 import com.kamelia.hedera.util.toUUIDOrNull
-import java.util.UUID
+import java.time.Instant
+import java.util.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
@@ -18,6 +20,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notLike
 import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.not
 import org.jetbrains.exposed.sql.or
 
@@ -32,7 +35,8 @@ inline fun <reified T : Comparable<T>> comparableFilters() = mapOf<String, (Colu
 )
 
 val stringFilters = comparableFilters<String>() + mapOf(
-    "like" to { c, v -> c like v },
+    "like" to { c, v -> c.lowerCase() like v.lowercase() },
+    "fuzzy" to { c, v -> (c fuzzy v) or (c.lowerCase() like "%${v.lowercase()}%")  },
     "nlike" to { c, v -> c notLike v }
 )
 
@@ -50,6 +54,8 @@ val uuidFilters = mapOf<String, (Column<EntityID<UUID>>, UUID) -> Op<Boolean>>(
 val fileVisibilityFilters = comparableFilters<FileVisibility>()
 
 val userRoleFilters = comparableFilters<UserRole>()
+
+val instantFilters = comparableFilters<Instant>()
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean> = when (T::class) {
@@ -77,6 +83,9 @@ inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean>
     UserRole::class -> userRoleFilters[filter.operator]?.let {
         val value = UserRole.valueOfOrNull(filter.value)
         if (value != null) it(this as Column<UserRole>, value) else null
+    }
+    Instant::class -> instantFilters[filter.operator]?.let {
+        it(this as Column<Instant>, Instant.parse(filter.value))
     }
     else -> null
 } ?: throw IllegalFilterException(filter)

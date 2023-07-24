@@ -15,6 +15,7 @@ import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.Files
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
+import com.kamelia.hedera.util.adaptFileSize
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -169,10 +170,11 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
         .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }
         .applyFilters(definition.filters) {
             when (it.field) {
-                Files.name.name -> Files.name.filter(it)
-                Files.mimeType.name -> Files.mimeType.filter(it)
-                Files.size.name -> Files.size.filter(it)
-                Files.visibility.name -> Files.visibility.filter(it)
+                "name" -> Files.name.filter(it)
+                "mimeType" -> Files.mimeType.filter(it)
+                "size" -> Files.size.filter(it.adaptFileSize())
+                "visibility" -> Files.visibility.filter(it)
+                "createdAt" -> Files.createdAt.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)
             }
         }.applySort(definition.sorter) {
@@ -188,4 +190,9 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
             val rows = File.wrapRows(it)
             rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
+
+    fun getFilesFormats(): List<String> = files
+        .map { it.mimeType }
+        .distinct()
+        .sorted()
 }

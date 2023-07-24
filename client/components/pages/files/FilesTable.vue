@@ -3,23 +3,39 @@ import type {
   DataTablePageEvent,
   DataTableRowContextMenuEvent,
   DataTableRowDoubleClickEvent,
-  DataTableSortEvent,
+  DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
 
 const DEFAULT_PAGE = 0
-const DEFAULT_PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 25
+const DEFAULT_SORT: DataTableSortMeta[] = [{ field: 'createdAt', order: -1 }]
+const DEFAULT_QUERY = ''
 
-const { locale, t, d } = useI18n()
+const { t, d } = useI18n()
+const filters = useFilesFilters()
+const { format } = useHumanFileSize()
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
+
+const query = defineModel<string>('query', { default: DEFAULT_QUERY })
+const debouncedQuery = useDebounce(query, 500)
+
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
-const sortDefinition = ref<SorterDefinitionDTO>([])
+const filterDefinition = reactify(filtersToDefinition)(filters, debouncedQuery)
 
-const pageDefinition = computed<PageDefinitionDTO>(() => ({ sorter: sortDefinition.value }))
+const sort = ref<DataTableSortMeta[]>([{ field: 'createdAt', order: -1 }])
+const sortDefinition = computed(() => sort.value.map<SortObject>(({ field, order }) => ({
+  field,
+  direction: order === 1 ? 'ASC' : 'DESC',
+})))
 
+const pageDefinition = computed<PageDefinitionDTO>(() => ({
+  sorter: sortDefinition.value,
+  filters: filterDefinition.value,
+}))
 const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO>('/files/search', {
   method: 'POST',
   body: pageDefinition,
@@ -58,22 +74,15 @@ provide(FileTableContextMenuKey, contextMenu)
 function resetPage() {
   page.value = DEFAULT_PAGE
   pageSize.value = DEFAULT_PAGE_SIZE
-  sortDefinition.value = []
+  sort.value = DEFAULT_SORT
+  query.value = DEFAULT_QUERY
+  filters.reset()
   refresh()
 }
 
 function onPage(event: DataTablePageEvent) {
   page.value = event.page
   pageSize.value = event.rows
-}
-
-function onSort(event: DataTableSortEvent) {
-  if (!event.multiSortMeta) return
-
-  sortDefinition.value = event.multiSortMeta.map(({ field, order }) => ({
-    field,
-    direction: order === 1 ? 'ASC' : 'DESC',
-  }))
 }
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
@@ -119,6 +128,21 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
   </div>
 
+  <div
+    v-else-if="files.length === 0 && !pending && (!filters.isEmpty || query.length > 0)"
+    class="h-full w-full flex flex-col justify-center items-center"
+  >
+    <!-- TODO: Empty state illustration -->
+    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <h1 class="text-2xl">
+      {{ t('pages.files.no_results.title') }}
+    </h1>
+    <p class="pb-10">
+      {{ t('pages.files.no_results.description') }}
+    </p>
+    <PButton rounded :label="t('pages.files.no_results.reset_filters')" @click="resetPage()" />
+  </div>
+
   <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->
     <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
@@ -128,13 +152,14 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     <p class="pb-10">
       {{ t('pages.files.empty.description') }}
     </p>
-    <PButton rounded :label="t('pages.files.empty.upload_button')" />
+    <PButton rounded :label="t('pages.files.empty.upload_button')" @click="navigateTo('/upload')" />
   </div>
 
   <PDataTable
     v-else
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
+    v-model:multi-sort-meta="sort"
     class="h-full"
     data-key="id"
     lazy
@@ -151,13 +176,12 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     removable-sort
     context-menu
     @page="onPage"
-    @sort="onSort"
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
-    <PColumn style="width: 3.375em;" selection-mode="multiple" />
+    <PColumn class="w-3.375em" selection-mode="multiple" />
 
-    <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
+    <PColumn class="w-6em" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
           <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
@@ -166,28 +190,20 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
       </template>
     </PColumn>
 
-    <PColumn field="name" sortable :header="t('pages.files.table.name')">
+    <PColumn
+      class="max-w-10em text-ellipsis overflow-hidden"
+      field="name"
+      sortable
+      :header="t('pages.files.table.name')"
+    >
       <template #sorticon="slotProps">
         <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
-        <div class="flex flex-row gap-1 items-center justify-between">
-          <div v-if="slotProps.data" class="flex flex-col gap-1">
-            <Transition name="fade" mode="out-in">
-              <span :key="slotProps.data.name">{{ slotProps.data.name }}</span>
-            </Transition>
-            <!-- For future use -->
-            <!-- <div class="flex flex-row items-center gap-1">
-              <i class="i-tabler-eye text-xs" />
-              <span class="text-xs">{{ 0 }}</span>
-            </div> -->
-          </div>
-          <div v-else class="flex flex-col gap-1">
-            <PSkeleton width="10rem" height="1rem" />
-          </div>
-          <!-- For future use -->
-          <!-- <PButton icon="i-tabler-star" severity="warning" rounded text /> -->
-        </div>
+        <Transition v-if="slotProps.data" name="fade" mode="out-in">
+          <span :key="slotProps.data.name" class="text-nowrap">{{ slotProps.data.name }}</span>
+        </Transition>
+        <PSkeleton v-else width="10rem" height="1rem" />
       </template>
     </PColumn>
 
@@ -196,12 +212,17 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
         <RenderIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
-        <span v-if="slotProps.data">{{ humanSizeStructure(slotProps.data.size, locale, t) }}</span>
+        <span v-if="slotProps.data">{{ format(slotProps.data.size) }}</span>
         <PSkeleton v-else width="5rem" height="1rem" />
       </template>
     </PColumn>
 
-    <PColumn field="mimeType" sortable :header="t('pages.files.table.format')">
+    <PColumn
+      class="max-w-10em text-ellipsis overflow-hidden"
+      field="mimeType"
+      sortable
+      :header="t('pages.files.table.format')"
+    >
       <template #sorticon="slotProps">
         <RenderIcon v-bind="slotProps" />
       </template>

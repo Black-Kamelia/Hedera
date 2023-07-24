@@ -1,11 +1,13 @@
 package com.kamelia.hedera.rest.user
 
+import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.MessageKeyDTO
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.UserNotFoundException
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -17,7 +19,7 @@ private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, Nothing> = Connection.transaction {
         checkEmail(dto.email)?.let { return@transaction it }
         checkUsername(dto.username)?.let { return@transaction it }
         checkPassword(dto.password)?.let { return@transaction it }
@@ -26,53 +28,61 @@ object UserService {
             throw IllegalActionException()
         }
 
-        Response.created(Users
-            .create(dto)
-            .toRepresentationDTO())
+        Response.created(
+            Users
+                .create(dto)
+                .toRepresentationDTO()
+        )
     }
 
-    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, Nothing> = Connection.transaction {
         val user = Users.findById(id) ?: return@transaction Response.notFound()
         Response.ok(user.toRepresentationDTO())
     }
 
-    suspend fun getUsers(): Response<UserPageDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun getUsers(): Response<UserPageDTO, Nothing> = Connection.transaction {
         val users = Users.getAll()
         val total = Users.countAll()
-        Response.ok(UserPageDTO(
-            PageDTO(
-                users.map { it.toRepresentationDTO() },
-                0,
-                -1,
-                1,
-                total
+
+        Response.ok(
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toRepresentationDTO() },
+                    0,
+                    -1,
+                    1,
+                    total
+                )
             )
-        ))
+        )
     }
 
     suspend fun getUsers(
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO
-    ): Response<UserPageDTO, String> = Connection.transaction {
+    ): Response<UserPageDTO, Nothing> = Connection.transaction {
         val (users, total) = Users.getAll(page, pageSize, definition)
-        Response.ok(UserPageDTO(
-            PageDTO(
-                users.map { it.toRepresentationDTO() },
-                page,
-                pageSize,
-                ceil(total / pageSize.toDouble()).toLong(),
-                total
+
+        Response.ok(
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toRepresentationDTO() },
+                    page,
+                    pageSize,
+                    ceil(total / pageSize.toDouble()).toLong(),
+                    total
+                )
             )
-        ))
+        )
     }
 
     suspend fun updateUser(
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
-        val toEdit = Users.findById(id) ?: return@transaction Response.notFound()
+    ): Response<UserRepresentationDTO, Nothing> = Connection.transaction {
+        val toEdit = Users.findById(id) ?: throw UserNotFoundException()
 
         checkEmail(dto.email, toEdit)?.let { return@transaction it }
         checkUsername(dto.username, toEdit)?.let { return@transaction it }
@@ -90,32 +100,46 @@ object UserService {
             throw InsufficientPermissionsException()
         }
 
-        Response.ok(Users
-            .update(toEdit, dto, updater)
-            .toRepresentationDTO())
+        Response.ok(
+            Users
+                .update(toEdit, dto, updater)
+                .toRepresentationDTO()
+        )
     }
 
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-    ): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    ): Response<UserRepresentationDTO, Nothing> = Connection.transaction {
+        val toEdit = Users.findById(id) ?: throw UserNotFoundException()
+
         checkPassword(dto.newPassword)?.let { return@transaction it }
 
-        val toEdit = Users.findById(id) ?: return@transaction Response.notFound()
-
         if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-            return@transaction Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
+            return@transaction Response.forbidden(
+                MessageDTO.Simple(
+                    title = Actions.Users.Update.Password.Failure.TITLE,
+                    message = Errors.Users.Password.INCORRECT_PASSWORD
+                )
+            )
         }
 
-        Response.ok(Users
+        val newUserState = Users
             .updatePassword(toEdit, dto)
-            .toRepresentationDTO())
+            .toRepresentationDTO()
+
+        Response.ok(
+            MessageDTO.Payload(
+                payload = newUserState,
+                title = Actions.Users.Update.Password.Success.MESSAGE
+            )
+        )
     }
 
-    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
-        Users.delete(id)
-            ?.let { Response.ok(it.toRepresentationDTO()) }
-            ?: Response.notFound()
+    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, Nothing> = Connection.transaction {
+        val deletedUser = Users.delete(id) ?: throw UserNotFoundException()
+
+        Response.ok(deletedUser.toRepresentationDTO())
     }
 
     // suspend fun regenerateUploadToken(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
@@ -126,7 +150,7 @@ object UserService {
     // }
 }
 
-private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {
+private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, Nothing>? = when {
     email == null -> null
     "@" !in email -> Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
     else -> Users.findByEmail(email)?.let {
@@ -138,7 +162,7 @@ private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, 
     }
 }
 
-private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {
+private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, Nothing>? = when {
     username == null -> null
     !USERNAME_REGEX.matches(username) -> Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
     else -> Users.findByUsername(username)?.let {
@@ -150,7 +174,7 @@ private fun checkUsername(username: String?, toEdit: User? = null): Response<Not
     }
 }
 
-private fun checkPassword(password: String?): Response<Nothing, MessageKeyDTO>? = when {
+private fun checkPassword(password: String?): Response<Nothing, Nothing>? = when {
     password == null -> null
     password.length < 8 -> Response.forbidden(Errors.Users.Password.TOO_SHORT)
     else -> null

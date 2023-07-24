@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.TokenData
@@ -92,7 +93,7 @@ object SessionManager {
         loggedUsers[userId]
     }
 
-    suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageKeyDTO> {
+    suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageDTO<Nothing>> {
         val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
         val user = Users.findByUsername(username) ?: return unauthorized
 

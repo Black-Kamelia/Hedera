@@ -2,6 +2,7 @@ package com.kamelia.hedera.core
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.secretAccess
@@ -16,7 +17,7 @@ class TokenData(
     val accessTokenExpiration: Long,
     val refreshToken: String,
     val refreshTokenExpiration: Long,
-) {
+) : DTO {
     companion object {
         fun from(user: User): TokenData {
             val now = System.currentTimeMillis()

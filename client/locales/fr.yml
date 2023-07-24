@@ -187,6 +187,14 @@ forms:
       invalid_email: Format d'adresse e-mail invalide
     fields:
       email: Adresse e-mail
+  update_password:
+    submit: Mettre à jour
+    errors:
+      oe: oe
+    fields:
+      old_password: Mot de passe actuel
+      new_password: Nouveau mot de passe
+      confirm_new_password: Confirmer le nouveau mot de passe
 
 actions:
   files:
@@ -203,6 +211,13 @@ actions:
         success:
           title: Fichier renommé
           message: Le fichier “{oldName}” a été renommé en “{newName}”
+  users:
+    update:
+      password:
+        success:
+          message: Votre mot de passe a été mis à jour
+        failure:
+          message: Impossible de mettre à jour votre mot de passe
 
 errors:
   unknown: Une erreur inattendue est survenue

@@ -26,7 +26,7 @@ object FileService {
     suspend fun handleFile(
         part: PartData.FileItem,
         creatorToken: String
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val creator = Users.findByUploadToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
         handleFile(part, creator)
     }
@@ -34,7 +34,7 @@ object FileService {
     suspend fun handleFile(
         part: PartData.FileItem,
         creatorId: UUID
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val creator = Users.findById(creatorId) ?: throw ExpiredOrInvalidTokenException()
         handleFile(part, creator)
     }
@@ -42,27 +42,27 @@ object FileService {
     private suspend fun handleFile(
         part: PartData.FileItem,
         creator: User
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
-        Response.created(
-            Files.create(
-                code = code,
-                name = filename,
-                mimeType = type,
-                size = size,
-                visibility = creator.settings.defaultFileVisibility,
-                creator = creator
-            ).toRepresentationDTO()
+        val createdFile = Files.create(
+            code = code,
+            name = filename,
+            mimeType = type,
+            size = size,
+            visibility = creator.settings.defaultFileVisibility,
+            creator = creator
         )
+
+        Response.created(createdFile.toRepresentationDTO())
     }
 
     suspend fun getFile(
         code: String,
         authId: UUID?,
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val user = authId?.let { Users.findById(it) }
         Files.findByCode(code)
             ?.takeUnless { file ->
@@ -81,9 +81,10 @@ object FileService {
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean = false,
-    ): Response<FilePageDTO, String> = Connection.transaction {
+    ): Response<FilePageDTO, Nothing> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
+
         Response.ok(
             FilePageDTO(
                 PageDTO(
@@ -101,7 +102,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
@@ -119,7 +120,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
@@ -133,7 +134,7 @@ object FileService {
         val oldVisibility = file.visibility
         val payload = Files.update(file, FileUpdateDTO(visibility = dto.visibility), user).toRepresentationDTO()
         Response.ok(
-            MessageDTO(
+            MessageDTO.Payload(
                 title = MessageKeyDTO.of(Actions.Files.Update.Visibility.Success.TITLE),
                 message = MessageKeyDTO.of(
                     Actions.Files.Update.Visibility.Success.MESSAGE,
@@ -150,7 +151,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
@@ -164,7 +165,7 @@ object FileService {
         val oldName = file.name
         val payload = Files.update(file, FileUpdateDTO(name = dto.name), user).toRepresentationDTO()
         Response.ok(
-            MessageDTO(
+            MessageDTO.Payload(
                 title = MessageKeyDTO.of(Actions.Files.Update.Name.Success.TITLE),
                 message = MessageKeyDTO.of(
                     Actions.Files.Update.Name.Success.MESSAGE,
@@ -179,7 +180,7 @@ object FileService {
     suspend fun deleteFile(
         fileId: UUID,
         userId: UUID,
-    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, Nothing> = Connection.transaction {
         val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val file = Files.findById(fileId) ?: throw FileNotFoundException()
 
@@ -190,12 +191,14 @@ object FileService {
             throw FileNotFoundException()
         }
 
+        val deletedFile = Files.delete(fileId) ?: throw FileNotFoundException()
         FileUtils.delete(file.ownerId, file.code)
+
         Response.ok(
-            MessageDTO(
+            MessageDTO.Payload(
                 title = MessageKeyDTO.of(Actions.Files.Delete.Success.TITLE),
                 message = MessageKeyDTO.of(Actions.Files.Delete.Success.MESSAGE, "name" to file.name),
-                payload = Files.delete(fileId)?.toRepresentationDTO()
+                payload = deletedFile.toRepresentationDTO()
             )
         )
     }

@@ -13,7 +13,7 @@ export default function useFeedbackCall<
         toast.add({
           severity: 'success',
           summary: m(response.title),
-          detail: { text: m(response.message) },
+          detail: { text: response.message ? m(response.message) : null },
           life: 5000,
         })
         return response as MessageDTO<T>
@@ -30,8 +30,8 @@ export default function useFeedbackCall<
         }
         toast.add({
           severity: 'error',
-          summary: t('error'), // TODO: get error title from backend
-          detail: { text: m(error) },
+          summary: m(error.response._data.title), // TODO: get error title from backend
+          detail: { text: error.response._data.message ? m(error.response._data.message) : null },
           life: 5000,
         })
       })

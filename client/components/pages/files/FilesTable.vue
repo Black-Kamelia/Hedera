@@ -19,12 +19,12 @@ const { format } = useHumanFileSize()
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 
-const query = defineModel<string>('query', { default: '' })
+const query = defineModel<string>('query', { default: DEFAULT_QUERY })
 const debouncedQuery = useDebounce(query, 500)
 
 const page = ref(DEFAULT_PAGE)
 const pageSize = ref(DEFAULT_PAGE_SIZE)
-const filterDefinition = computed(() => filtersToDefinition(filters, debouncedQuery.value))
+const filterDefinition = reactify(filtersToDefinition)(filters, debouncedQuery)
 
 const sort = ref<DataTableSortMeta[]>([{ field: 'createdAt', order: -1 }])
 const sortDefinition = computed(() => sort.value.map<SortObject>(({ field, order }) => ({
@@ -179,9 +179,9 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
-    <PColumn style="width: 3.375em;" selection-mode="multiple" />
+    <PColumn class="w-3.375em" selection-mode="multiple" />
 
-    <PColumn style="width: 6em;" field="code" :header="t('pages.files.table.preview')" :sortable="false">
+    <PColumn class="w-6em" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
           <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
@@ -191,7 +191,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     </PColumn>
 
     <PColumn
-      class="max-w-[10em] text-ellipsis overflow-hidden"
+      class="max-w-10em text-ellipsis overflow-hidden"
       field="name"
       sortable
       :header="t('pages.files.table.name')"
@@ -218,7 +218,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     </PColumn>
 
     <PColumn
-      class="max-w-[10em] text-ellipsis overflow-hidden"
+      class="max-w-10em text-ellipsis overflow-hidden"
       field="mimeType"
       sortable
       :header="t('pages.files.table.format')"

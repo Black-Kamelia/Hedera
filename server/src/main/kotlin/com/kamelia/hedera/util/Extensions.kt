@@ -215,6 +215,6 @@ class FuzzyMatchOp(
         append(" <<-> ")
         append(expr2)
         append(" <= ")
-        append(Environment.searchMaxDistance)
+        append(Environment.searchMaxDistance.toString())
     }
 }

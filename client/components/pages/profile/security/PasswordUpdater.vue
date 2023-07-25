@@ -65,7 +65,6 @@ const onSubmit = handleSubmit((values) => {
       />
       <div class="flex flex-row-reverse items-center gap-3 pt-3">
         <PButton :label="t('forms.update_password.submit')" type="submit" />
-        <PButton :label="t('pages.login.forgot_password')" text disabled />
       </div>
     </form>
   </div>

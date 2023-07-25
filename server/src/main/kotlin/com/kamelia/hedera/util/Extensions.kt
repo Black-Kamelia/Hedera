@@ -2,9 +2,18 @@ package com.kamelia.hedera.util
 
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.IllegalFilterException
+import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.InvalidUUIDException
+import com.kamelia.hedera.core.MissingHeaderException
+import com.kamelia.hedera.core.MissingParameterException
+import com.kamelia.hedera.core.MultipartParseException
 import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -15,9 +24,20 @@ import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
-import org.jetbrains.exposed.dao.UUIDEntity
 import java.io.File
 import java.util.*
+import kotlin.math.roundToLong
+import org.jetbrains.exposed.dao.UUIDEntity
+import org.jetbrains.exposed.sql.ComplexExpression
+import org.jetbrains.exposed.sql.Expression
+import org.jetbrains.exposed.sql.LikeEscapeOp
+import org.jetbrains.exposed.sql.LikePattern
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.QueryBuilder
+import org.jetbrains.exposed.sql.append
+import org.jetbrains.exposed.sql.stringParam
+import org.jetbrains.exposed.sql.vendors.PostgreSQLDialect
+import org.jetbrains.exposed.sql.vendors.currentDialect
 
 suspend fun ApplicationCall.respondFile(file: File, name: String, type: String) {
     response.header(
@@ -168,3 +188,33 @@ private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy
 fun String.Companion.random(size: Int) = (1..size)
     .map { CHARSET.random() }
     .joinToString("")
+
+fun FilterObject.adaptFileSize(): FilterObject {
+    val (value, unit) = value.split(";")
+    val size = value.toDoubleOrNull() ?: throw IllegalFilterException(this)
+    val shift = unit.toIntOrNull() ?: throw IllegalFilterException(this)
+    val bytes = size * (1 shl shift)
+    return copy(value = bytes.roundToLong().toString())
+}
+
+/** Checks if this expression fuzzy matches the specified [pattern]. */
+infix fun <T : String?> Expression<T>.fuzzy(pattern: String) = fuzzy(LikePattern(pattern))
+
+/** Checks if this expression fuzzy matches the specified [pattern]. */
+infix fun <T : String?> Expression<T>.fuzzy(pattern: LikePattern): Op<Boolean> = when (currentDialect) {
+    is PostgreSQLDialect -> FuzzyMatchOp(this, stringParam(pattern.pattern))
+    else -> LikeEscapeOp(this, stringParam("%${pattern.pattern}%"), true, pattern.escapeChar)
+}
+
+class FuzzyMatchOp(
+    private val expr1: Expression<*>,
+    private val expr2: Expression<*>
+) : Op<Boolean>(), ComplexExpression {
+    override fun toQueryBuilder(queryBuilder: QueryBuilder) = queryBuilder {
+        append(expr1)
+        append(" <<-> ")
+        append(expr2)
+        append(" <= ")
+        append(Environment.searchMaxDistance.toString())
+    }
+}

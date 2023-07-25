@@ -97,6 +97,11 @@ object FileService {
         )
     }
 
+    suspend fun getFilesFormats(userId: UUID): Response<List<String>, String> = Connection.transaction {
+        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+        Response.ok(user.getFilesFormats())
+    }
+
     suspend fun updateFile(
         fileId: UUID,
         userId: UUID,

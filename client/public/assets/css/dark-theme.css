@@ -3187,8 +3187,9 @@ hr {
 }
 
 .p-datatable .p-paginator-bottom {
-  border-width: 0;
+  border-width: 1px 0 0 0;
   border-radius: 0;
+  border-color: var(--surface-border);
 }
 
 .p-datatable .p-datatable-header {

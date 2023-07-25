@@ -76,10 +76,8 @@ pages:
       maximal_views: Nombre maximal de vues
       start_date: Date de début
       end_date: Date de fin
-      formats: '{0} formats sélectionnés'
+      formats: "{count} format sélectionné | {count} formats sélectionnés"
       all_formats: Tous les formats
-      owners: '{0} propriétaires sélectionnés'
-      all_owners: Tous le monde
       reset: Réinitialiser
       apply: Appliquer les filtres
     rename:
@@ -106,6 +104,10 @@ pages:
       title: Ça semble vide par ici
       description: Vous n'avez pas encore envoyé de fichiers.
       upload_button: Envoyer un fichier
+    no_results:
+      title: Hmm, il n'y a rien par ici
+      description: Vos filtres ne correspondent à aucun fichier.
+      reset_filters: Réinitialiser les filtres
     error:
       title: Quelque chose s'est mal passé
       description: Impossible de charger la liste des fichiers

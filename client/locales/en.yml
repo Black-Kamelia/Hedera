@@ -76,10 +76,8 @@ pages:
       maximal_views: Maximum views
       start_date: Start date
       end_date: End date
-      formats: '{0} selected formats'
+      formats: "{count} format selected | {count} formats selected"
       all_formats: All formats
-      owners: '{0} selected owners'
-      all_owners: Everyone
       reset: Reset
       apply: Apply filters
     rename:
@@ -106,6 +104,10 @@ pages:
       title: Looks pretty empty in here
       description: You have not uploaded any files yet.
       upload_button: Upload a file
+    no_results:
+      title: Hmm, nothing here
+      description: Your filters matched no files.
+      reset_filters: Reset filters
     error:
       title: Something went wrong
       description: Failed to load the list of files

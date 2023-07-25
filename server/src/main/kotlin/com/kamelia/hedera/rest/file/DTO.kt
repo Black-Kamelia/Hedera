@@ -51,7 +51,7 @@ data class FileRepresentationDTO(
 
 @Serializable
 data class FileSizeDTO(
-    val value: String,
+    val value: Double,
     val shift: Int,
 ) : DTO
 
@@ -69,9 +69,9 @@ data class FilePageDTO(
 fun Long.toSizeDTO(): FileSizeDTO {
     var size = toDouble()
     var shift = 0
-    do {
+    while (size >= 1024) {
         size /= 1024
         shift += 10
-    } while (size > 1024)
-    return FileSizeDTO(String.format("%.2f", size), shift)
+    }
+    return FileSizeDTO(size, shift)
 }

@@ -13,6 +13,7 @@ liquibase:
 
 hedera:
   uploadFolder: "$HEDERA_UPLOAD_FOLDER:uploads"
+  searchMaxDistance: "$HEDERA_SEARCH_MAX_DISTANCE:0.85"
 
   jwt:
     secretAccess: $HEDERA_JWT_SECRET

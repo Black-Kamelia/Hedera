@@ -3,7 +3,7 @@ import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 
 const { t } = useI18n()
-const updatePassword = useUpdatePassword()
+const { updatePassword } = useUpdatePassword()
 
 const oldPasswordField = ref<Nullable<CompElement>>(null)
 const newPasswordField = ref<Nullable<CompElement>>(null)
@@ -11,33 +11,36 @@ const confirmNewPasswordField = ref<Nullable<CompElement>>(null)
 
 const schema = object({
   oldPassword: string()
-    .required(t('forms.login.errors.missing_password')),
+    .required(t('forms.update_password.errors.missing_old_password')),
   newPassword: string()
-    .required(t('forms.login.errors.missing_password'))
-    .min(8, t('forms.login.errors.password_too_short'))
-    .max(64, t('forms.login.errors.password_too_long')),
+    .required(t('forms.update_password.errors.missing_new_password'))
+    .min(8, t('forms.update_password.errors.password_too_short'))
+    .max(64, t('forms.update_password.errors.password_too_long')),
   confirmNewPassword: string()
-    .required(t('forms.login.errors.missing_password'))
-    .oneOf([yref('newPassword')], t('forms.login.errors.passwords_mismatch')),
+    .required(t('forms.update_password.errors.missing_new_password'))
+    .oneOf([yref('newPassword')], t('forms.update_password.errors.passwords_mismatch')),
 })
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, setFieldError } = useForm({
   validationSchema: schema,
 })
 
 const onSubmit = handleSubmit((values) => {
   updatePassword(values.oldPassword, values.newPassword)
     .then(() => resetForm())
+    .catch(() => {
+      setFieldError('oldPassword', t('forms.update_password.errors.wrong_password'))
+    })
 })
 </script>
 
 <template>
   <div class="p-card p-7">
     <h2 class="text-lg font-bold mb-5">
-      Modifier le mot de passe
+      {{ t('pages.profile.security.change_password') }}
     </h2>
     <form v-focus-trap @submit="onSubmit">
       <FormInputText
-        id="password"
+        id="oldPassword"
         ref="oldPasswordField"
         class="w-full"
         name="oldPassword"
@@ -45,7 +48,7 @@ const onSubmit = handleSubmit((values) => {
         :label="t('forms.update_password.fields.old_password')"
       />
       <FormInputText
-        id="password"
+        id="newPassword"
         ref="newPasswordField"
         class="w-full"
         name="newPassword"
@@ -53,7 +56,7 @@ const onSubmit = handleSubmit((values) => {
         :label="t('forms.update_password.fields.new_password')"
       />
       <FormInputText
-        id="password"
+        id="confirmNewPassword"
         ref="confirmNewPasswordField"
         class="w-full"
         name="confirmNewPassword"
@@ -62,7 +65,7 @@ const onSubmit = handleSubmit((values) => {
       />
       <div class="flex flex-row-reverse items-center gap-3 pt-3">
         <PButton :label="t('forms.update_password.submit')" type="submit" />
-        <PButton :label="t('pages.login.forgot_password')" text />
+        <PButton :label="t('pages.login.forgot_password')" text disabled />
       </div>
     </form>
   </div>

@@ -131,6 +131,8 @@ pages:
       sessions: Sessions
       tokens: Jetons personnels
       settings: Paramètres
+    security:
+      change_password: Modifier le mot de passe
     settings:
       headers:
         files_upload: Envoi de fichiers
@@ -192,7 +194,12 @@ forms:
   update_password:
     submit: Mettre à jour
     errors:
-      oe: oe
+      missing_old_password: Ancien mot de passe requis
+      missing_new_password: Nouveau mot de passe requis
+      password_too_short: Le mot de passe doit contenir au moins 8 caractères
+      password_too_long: Le mot de passe doit contenir au plus 64 caractères
+      passwords_mismatch: Les mots de passe ne correspondent pas
+      wrong_password: Mot de passe incorrect
     fields:
       old_password: Mot de passe actuel
       new_password: Nouveau mot de passe
@@ -233,6 +240,9 @@ errors:
     invalid_uuid: Identifiant unique invalide
   files:
     not_found: Ce fichier n'existe pas
+  users:
+    password:
+      incorrect_password: Mot de passe incorrect
 
 theme:
   system: Système

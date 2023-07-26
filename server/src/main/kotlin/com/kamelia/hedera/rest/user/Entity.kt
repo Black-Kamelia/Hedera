@@ -15,6 +15,8 @@ import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.Files
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
+import com.kamelia.hedera.rest.token.PersonalToken
+import com.kamelia.hedera.rest.token.PersonalTokens
 import com.kamelia.hedera.util.adaptFileSize
 import com.kamelia.hedera.util.uuid
 import java.util.*
@@ -154,10 +156,15 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var settings by UserSettings referencedOn Users.settings
 
     private val files by File referrersOn Files.owner
+    private val personalTokens by PersonalToken referrersOn PersonalTokens.owner
 
     fun countFiles(): Long = files.count()
 
     fun getFiles(): List<File> = files.toList()
+
+    fun countPersonalTokens(): Long = personalTokens.count()
+
+    fun getPersonalTokens(): List<PersonalToken> = personalTokens.toList()
 
     fun getFiles(
         page: Long,

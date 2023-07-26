@@ -16,6 +16,7 @@ import com.kamelia.hedera.core.MultipartParseException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
+import com.kamelia.hedera.core.UserNotFoundException
 import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
@@ -52,7 +53,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is IllegalActionException,
         is InsufficientPermissionsException -> forbiddenMessage(call, cause)
 
-        is FileNotFoundException -> notFound(call, cause)
+        is FileNotFoundException,
+        is UserNotFoundException -> notFound(call, cause)
 
         else -> unhandledError(call, cause)
     }

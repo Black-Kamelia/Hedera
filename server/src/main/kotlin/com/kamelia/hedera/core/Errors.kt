@@ -68,6 +68,14 @@ object Errors {
 
     }
 
+    object PersonalTokens {
+
+        private const val PREFIX = "${Errors.PREFIX}.personal_tokens"
+
+        const val NOT_FOUND = "$PREFIX.not_found"
+
+    }
+
     object Sorts {
 
         private const val PREFIX = "${Errors.PREFIX}.sorts"
@@ -99,6 +107,8 @@ object Errors {
     object Users {
 
         private const val PREFIX = "${Errors.PREFIX}.users"
+
+        const val NOT_FOUND = "$PREFIX.not_found"
 
         object Email {
 

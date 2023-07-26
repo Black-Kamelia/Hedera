@@ -153,5 +153,6 @@ private fun checkUsername(username: String?, toEdit: User? = null): Response<Not
 private fun checkPassword(password: String?): Response<Nothing, MessageKeyDTO>? = when {
     password == null -> null
     password.length < 8 -> Response.forbidden(Errors.Users.Password.TOO_SHORT)
+    password.length > 128 -> Response.forbidden(Errors.Users.Password.TOO_LONG)
     else -> null
 }

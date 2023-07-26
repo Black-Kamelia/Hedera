@@ -196,8 +196,8 @@ forms:
     errors:
       missing_old_password: Old password is required
       missing_new_password: New password is required
-      password_too_short: The password must be at least 8 characters long
-      password_too_long: The password must be at most 64 characters long
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
       passwords_mismatch: The passwords do not match
       wrong_password: Incorrect password
     fields:

@@ -14,8 +14,8 @@ const schema = object({
     .required(t('forms.update_password.errors.missing_old_password')),
   newPassword: string()
     .required(t('forms.update_password.errors.missing_new_password'))
-    .min(8, t('forms.update_password.errors.password_too_short'))
-    .max(64, t('forms.update_password.errors.password_too_long')),
+    .min(8, t('forms.update_password.errors.password_too_short', { min: 8 }))
+    .max(128, t('forms.update_password.errors.password_too_long', { max: 128 })),
   confirmNewPassword: string()
     .required(t('forms.update_password.errors.missing_new_password'))
     .oneOf([yref('newPassword')], t('forms.update_password.errors.passwords_mismatch')),

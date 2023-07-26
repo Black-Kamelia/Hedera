@@ -23,7 +23,7 @@ import kotlin.math.ceil
 
 object FileService {
 
-    suspend fun handleFile(
+    suspend fun handleFileWithToken(
         part: PartData.FileItem,
         creatorToken: String
     ): Response<FileRepresentationDTO, String> = Connection.transaction {

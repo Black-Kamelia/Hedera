@@ -78,7 +78,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     val authToken = call.getHeader("Upload-Token")
 
     call.doWithForm(onFiles = mapOf(
-        "file" to { call.respond(FileService.handleFile(it, authToken)) }
+        "file" to { call.respond(FileService.handleFileWithToken(it, authToken)) }
     ), onMissing = {
         call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })

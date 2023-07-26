@@ -13,6 +13,7 @@ import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.MultipartParseException
+import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
@@ -54,7 +55,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is InsufficientPermissionsException -> forbiddenMessage(call, cause)
 
         is FileNotFoundException,
-        is UserNotFoundException -> notFound(call, cause)
+        is UserNotFoundException,
+        is PersonalTokenNotFoundException -> notFound(call, cause)
 
         else -> unhandledError(call, cause)
     }

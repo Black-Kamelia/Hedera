@@ -1,6 +1,7 @@
 package com.kamelia.hedera.rest.token
 
 import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UserNotFoundException
@@ -13,7 +14,7 @@ object PersonalTokenService {
     suspend fun createPersonalToken(
         ownerId: UUID,
         dto: PersonalTokenCreationDTO,
-    ): Response<PersonalTokenDTO, Nothing> = Connection.transaction {
+    ): Response<PersonalTokenDTO, MessageKeyDTO> = Connection.transaction {
         val owner = User.findById(ownerId) ?: throw UserNotFoundException()
 
         Response.created(
@@ -26,7 +27,7 @@ object PersonalTokenService {
 
     suspend fun getPersonalTokens(
         ownerId: UUID,
-    ): Response<List<PersonalTokenDTO>, Nothing> = Connection.transaction {
+    ): Response<List<PersonalTokenDTO>, String> = Connection.transaction {
         val owner = User.findById(ownerId) ?: throw UserNotFoundException()
         val tokens = owner.getPersonalTokens().map { it.toRepresentationDTO() }
 
@@ -36,7 +37,7 @@ object PersonalTokenService {
     suspend fun deletePersonalToken(
         ownerId: UUID,
         tokenId: UUID,
-    ): Response<Nothing, Nothing> = Connection.transaction {
+    ): Response<String, String> = Connection.transaction {
         val token = PersonalTokens.findById(tokenId) ?: throw PersonalTokenNotFoundException()
 
         if (token.ownerId != ownerId) {

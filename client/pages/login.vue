@@ -14,6 +14,7 @@ const message = reactive<{
   severity: undefined,
 })
 
+const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
 
@@ -68,7 +69,11 @@ useEventBus(LoggedInEvent).on((event) => {
   }
 })
 
-const onSubmit = handleSubmit(login)
+const onSubmit = handleSubmit(async (values) => {
+  loading.value = true
+  await login(values)
+  loading.value = false
+})
 </script>
 
 <template>
@@ -117,6 +122,6 @@ const onSubmit = handleSubmit(login)
       </NuxtLink>
     </div>
 
-    <PButton :label="t('forms.submit')" class="w-full" type="submit" />
+    <PButton :label="t('forms.submit')" class="w-full" type="submit" :loading="loading" />
   </form>
 </template>

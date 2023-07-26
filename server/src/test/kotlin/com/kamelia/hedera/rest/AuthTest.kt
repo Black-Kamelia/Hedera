@@ -10,6 +10,7 @@ import com.kamelia.hedera.loginBlocking
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.UserUpdateDTO
+import com.kamelia.hedera.util.Environment
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,6 +20,7 @@ import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -35,8 +37,11 @@ class AuthTest {
     @DisplayName("Logging in with incorrect password")
     @Test
     fun loggingInIncorrectPassword() = testApplication {
+        val startTime = System.currentTimeMillis()
         val (response, _) = login("user1", "wrongPassword")
+        val endTime = System.currentTimeMillis()
         assertEquals(HttpStatusCode.Unauthorized, response.status)
+        assertTrue(endTime - startTime >= Environment.loginThrottle, "Login throttle not respected")
 
         val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
         assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.key)

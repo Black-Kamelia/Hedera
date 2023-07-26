@@ -16,7 +16,7 @@ export default function useFeedbackCall<
           detail: { text: response.message ? m(response.message) : null },
           life: 5000,
         })
-        return response as MessageDTO<T>
+        return response satisfies MessageDTO<T>
       })
       .catch((error) => {
         if (!error.response) {
@@ -28,10 +28,11 @@ export default function useFeedbackCall<
           })
           return
         }
+        const { title, message } = error.response._data
         toast.add({
           severity: 'error',
-          summary: m(error.response._data.title), // TODO: get error title from backend
-          detail: { text: error.response._data.message ? m(error.response._data.message) : null },
+          summary: m(title), // TODO: get error title from backend
+          detail: { text: message ? m(message) : null },
           life: 5000,
         })
       })

@@ -1,12 +1,16 @@
 import type { MessageDTO } from '~/utils/messages'
 
 export default function useUpdatePassword() {
-  const { user } = useAuth()
+  const { user, isAuthenticated } = storeToRefs(useAuth())
   const { t, m } = useI18n()
   const toast = useToast()
 
+  if (!isAuthenticated.value) {
+    throw new Error('User is not authenticated')
+  }
+
   function updatePassword(oldPassword: string, newPassword: string) {
-    return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/users/${user!.id}/password`, {
+    return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/users/${user.value!.id}/password`, {
       method: 'PATCH',
       body: {
         oldPassword,

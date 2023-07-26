@@ -24,11 +24,11 @@ const menus = computed(() => [
   //   icon: 'i-tabler-devices',
   //   path: '/profile/sessions',
   // },
-  // {
-  //   label: t('pages.profile.menu.tokens'),
-  //   icon: 'i-tabler-key',
-  //   path: '/profile/tokens',
-  // },
+  {
+    label: t('pages.profile.menu.tokens'),
+    icon: 'i-tabler-key',
+    path: '/profile/tokens',
+  },
   {
     label: t('pages.profile.menu.settings'),
     icon: 'i-tabler-settings',

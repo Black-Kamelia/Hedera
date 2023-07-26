@@ -15,6 +15,7 @@ import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.rest.user.toRepresentationDTO
+import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
@@ -98,7 +99,7 @@ object SessionManager {
         val user = Users.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
-            delay(3000)
+            delay(Environment.loginThrottle)
             return unauthorized
         }
 

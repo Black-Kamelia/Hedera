@@ -114,6 +114,7 @@ object Errors {
             private const val PREFIX = "${Errors.Users.PREFIX}.password"
 
             const val TOO_SHORT = "$PREFIX.too_short"
+            const val TOO_LONG = "$PREFIX.too_long"
             const val INCORRECT_PASSWORD = "$PREFIX.incorrect_password"
 
         }

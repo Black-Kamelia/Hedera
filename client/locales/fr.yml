@@ -131,6 +131,8 @@ pages:
       sessions: Sessions
       tokens: Jetons personnels
       settings: Paramètres
+    security:
+      change_password: Modifier le mot de passe
     settings:
       headers:
         files_upload: Envoi de fichiers
@@ -189,6 +191,19 @@ forms:
       invalid_email: Format d'adresse e-mail invalide
     fields:
       email: Adresse e-mail
+  update_password:
+    submit: Mettre à jour
+    errors:
+      missing_old_password: Ancien mot de passe requis
+      missing_new_password: Nouveau mot de passe requis
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      passwords_mismatch: Les mots de passe ne correspondent pas
+      wrong_password: Mot de passe incorrect
+    fields:
+      old_password: Mot de passe actuel
+      new_password: Nouveau mot de passe
+      confirm_new_password: Confirmer le nouveau mot de passe
 
 actions:
   files:
@@ -205,6 +220,13 @@ actions:
         success:
           title: Fichier renommé
           message: Le fichier “{oldName}” a été renommé en “{newName}”
+  users:
+    update:
+      password:
+        success:
+          message: Votre mot de passe a été mis à jour
+        failure:
+          message: Impossible de mettre à jour votre mot de passe
 
 errors:
   unknown: Une erreur inattendue est survenue
@@ -218,6 +240,9 @@ errors:
     invalid_uuid: Identifiant unique invalide
   files:
     not_found: Ce fichier n'existe pas
+  users:
+    password:
+      incorrect_password: Mot de passe incorrect
 
 theme:
   system: Système

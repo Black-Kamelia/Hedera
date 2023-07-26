@@ -35,6 +35,16 @@ const menus = computed(() => [
     path: '/profile/settings',
   },
 ])
+
+const { currentRoute } = useRouter()
+
+function redirect(currentRoute: { path: string }) {
+  if (currentRoute.path === '/profile') {
+    navigateTo('/profile/details', { replace: true })
+  }
+}
+
+watch(currentRoute, redirect, { immediate: true })
 </script>
 
 <template>

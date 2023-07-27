@@ -40,7 +40,7 @@ function deleteToken() {
         </div>
 
         <span class="text-[--text-color-secondary]">
-          {{ t('pages.profile.tokens.created_at', { date: d(token.createdAt) }) }}
+          {{ t('pages.profile.tokens.created_at', { date: d(token.createdAt, { dateStyle: "long", timeStyle: "short" }) }) }}
         </span>
 
         <span v-if="token.lastUsed" class="text-[--text-color-secondary]" :class="{ 'text-[--green-500]': recentlyUsed }">

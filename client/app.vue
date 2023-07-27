@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { Settings } from 'luxon'
+
 useTheme()
 useWebsocketAutoConnect()
 
 const { setTokens, setUser } = useAuth()
+const { locale } = useI18n()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
@@ -25,6 +28,8 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 useEventBus(LoggedOutEvent).on(() => {
   navigateTo('/login')
 })
+
+watch(locale, value => Settings.defaultLocale = value, { immediate: true })
 
 const animation = useLocalStorage('animations', true)
 </script>

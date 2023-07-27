@@ -5,15 +5,15 @@ package com.kamelia.hedera.rest.token
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.util.UUIDSerializer
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
-fun PersonalToken.toRepresentationDTO() = PersonalTokenDTO(
+fun PersonalToken.toRepresentationDTO(lastUsed: Instant? = null) = PersonalTokenDTO(
     id = id.value,
     name = name,
     createdAt = createdAt.toString(),
-    lastUsed = Instant.now().toString(),
+    lastUsed = lastUsed?.toString(),
 )
 
 @Serializable

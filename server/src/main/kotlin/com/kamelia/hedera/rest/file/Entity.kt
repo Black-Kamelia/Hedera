@@ -2,6 +2,8 @@ package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
+import com.kamelia.hedera.rest.token.PersonalToken
+import com.kamelia.hedera.rest.token.PersonalTokens
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.uuid
@@ -37,6 +39,7 @@ object Files : AuditableUUIDTable("files") {
     val size = long("size")
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", Users)
+    val uploadToken = reference("upload_token", PersonalTokens).nullable()
 
     init {
         createdBy
@@ -97,6 +100,7 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {
     var size by Files.size
     var visibility by Files.visibility
     var owner by User referencedOn Files.owner
+    var uploadToken by PersonalToken optionalReferencedOn Files.uploadToken
 
     val ownerId get() = transaction { owner.uuid }
 }

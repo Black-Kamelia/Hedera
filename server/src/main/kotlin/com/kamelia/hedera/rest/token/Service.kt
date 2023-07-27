@@ -29,7 +29,9 @@ object PersonalTokenService {
         ownerId: UUID,
     ): Response<List<PersonalTokenDTO>, String> = Connection.transaction {
         val owner = User.findById(ownerId) ?: throw UserNotFoundException()
-        val tokens = owner.getPersonalTokens().map { it.toRepresentationDTO() }
+        val tokens = PersonalTokens.findAllWithLastUsed(owner).map { (token, lastUsed) ->
+            token.toRepresentationDTO(lastUsed)
+        }
 
         Response.ok(tokens)
     }

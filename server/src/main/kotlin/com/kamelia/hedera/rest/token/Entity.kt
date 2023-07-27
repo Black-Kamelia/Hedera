@@ -2,12 +2,19 @@ package com.kamelia.hedera.rest.token
 
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
+import com.kamelia.hedera.rest.file.Files
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.uuid
+import java.time.Instant
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.alias
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.leftJoin
+import org.jetbrains.exposed.sql.max
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object PersonalTokens : AuditableUUIDTable("personal_tokens") {
@@ -24,6 +31,19 @@ object PersonalTokens : AuditableUUIDTable("personal_tokens") {
 
     fun findById(id: UUID): PersonalToken? = PersonalToken.findById(id)
 
+    fun findAllWithLastUsed(
+        user: User,
+    ): List<Pair<PersonalToken, Instant?>> {
+        val lastUsed = Files.createdAt.max().alias("lastUsed")
+        return transaction {
+            PersonalTokens
+                .leftJoin(Files, { id }, { uploadToken })
+                .slice(PersonalTokens.columns + lastUsed)
+                .select { (owner eq user.id) and (deleted eq false) }
+                .groupBy(PersonalTokens.id)
+                .map { PersonalToken.wrapRow(it) to it.getOrNull(lastUsed) }
+        }
+    }
 
     fun create(
         name: String,

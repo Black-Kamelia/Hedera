@@ -32,15 +32,16 @@ object PersonalTokens : AuditableUUIDTable("personal_tokens") {
     fun findById(id: UUID): PersonalToken? = PersonalToken.findById(id)
 
     fun findAllWithLastUsed(
-        user: User,
+        userId: UUID,
     ): List<Pair<PersonalToken, Instant?>> {
         val lastUsed = Files.createdAt.max().alias("lastUsed")
         return transaction {
             PersonalTokens
                 .leftJoin(Files, { id }, { uploadToken })
                 .slice(PersonalTokens.columns + lastUsed)
-                .select { (owner eq user.id) and (deleted eq false) }
+                .select { (owner eq userId) and (deleted eq false) }
                 .groupBy(PersonalTokens.id)
+                .sortedByDescending { it[PersonalTokens.createdAt] }
                 .map { PersonalToken.wrapRow(it) to it.getOrNull(lastUsed) }
         }
     }
@@ -68,4 +69,9 @@ class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokens
     var deleted by PersonalTokens.deleted
 
     val ownerId get() = transaction { owner.uuid }
+
+    fun delete(user: User): PersonalToken = apply {
+        deleted = true
+        onUpdate(user)
+    }
 }

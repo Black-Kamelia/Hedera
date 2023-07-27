@@ -1,7 +1,13 @@
 <script lang="ts" setup>
-const { data, pending } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
+import { PersonalTokensListKey } from '~/utils/symbols'
+
+const { data, pending, refresh } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
 
 const { t } = useI18n()
+
+provide(PersonalTokensListKey, {
+  refresh,
+})
 </script>
 
 <template>

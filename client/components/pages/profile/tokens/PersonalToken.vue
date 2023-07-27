@@ -6,10 +6,12 @@ const { token } = defineProps<{ token: PersonalTokenDTO }>()
 const { t, d } = useI18n()
 const confirm = useConfirm()
 
+const deleteToken = useDeleteToken()
+
 // const recentlyCreated = computed(() => DateTime.fromISO(token.createdAt).diffNow().negate().as('hours') < 24)
 const recentlyUsed = computed(() => token.lastUsed && DateTime.fromISO(token.lastUsed).diffNow().negate().as('weeks') < 1)
 
-function deleteToken() {
+function remove() {
   confirm.require({
     message: t('pages.profile.tokens.delete.warning'),
     header: t('pages.profile.tokens.delete.title'),
@@ -17,7 +19,7 @@ function deleteToken() {
     acceptLabel: t('pages.profile.tokens.delete.submit'),
     acceptClass: 'p-button-danger',
     rejectLabel: t('pages.profile.tokens.delete.cancel'),
-    accept: () => console.log('delete'),
+    accept: () => deleteToken(token.id),
   })
 }
 </script>
@@ -44,7 +46,7 @@ function deleteToken() {
         </span>
 
         <span v-if="token.lastUsed" class="text-[--text-color-secondary]" :class="{ 'text-[--green-500]': recentlyUsed }">
-          {{ t('pages.profile.tokens.last_used', { date: DateTime.fromISO(token.createdAt).toRelativeCalendar() }) }}
+          {{ t('pages.profile.tokens.last_used', { date: DateTime.fromISO(token.lastUsed).toRelativeCalendar() }) }}
         </span>
         <span v-else class="text-[--orange-500]">
           {{ t('pages.profile.tokens.never_used') }}
@@ -52,7 +54,7 @@ function deleteToken() {
       </div>
       <div class="flex flex-row gap-3">
         <PButton icon="i-tabler-pencil" text rounded />
-        <PButton icon="i-tabler-trash" severity="danger" text rounded @click="deleteToken" />
+        <PButton icon="i-tabler-trash" severity="danger" text rounded @click="remove" />
       </div>
     </div>
   </div>

@@ -28,25 +28,24 @@ object PersonalTokenService {
     suspend fun getPersonalTokens(
         ownerId: UUID,
     ): Response<List<PersonalTokenDTO>, String> = Connection.transaction {
-        val owner = User.findById(ownerId) ?: throw UserNotFoundException()
-        val tokens = PersonalTokens.findAllWithLastUsed(owner).map { (token, lastUsed) ->
-            token.toRepresentationDTO(lastUsed)
-        }
+        val tokens = PersonalTokens.findAllWithLastUsed(ownerId)
+            .map { (token, lastUsed) -> token.toRepresentationDTO(lastUsed) }
 
         Response.ok(tokens)
     }
 
     suspend fun deletePersonalToken(
-        ownerId: UUID,
+        userId: UUID,
         tokenId: UUID,
     ): Response<String, String> = Connection.transaction {
         val token = PersonalTokens.findById(tokenId) ?: throw PersonalTokenNotFoundException()
+        val user = User.findById(userId) ?: throw UserNotFoundException()
 
-        if (token.ownerId != ownerId) {
+        if (token.ownerId != userId) {
             throw IllegalActionException()
         }
 
-        token.delete()
+        token.delete(user)
         Response.ok()
     }
 

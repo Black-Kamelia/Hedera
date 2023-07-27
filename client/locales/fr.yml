@@ -133,6 +133,20 @@ pages:
       settings: Paramètres
     security:
       change_password: Modifier le mot de passe
+    tokens:
+      title: Jetons personnels
+      create: Créer un nouveau jeton
+      created_at: Créé le {date}
+      last_used: Dernière utilisation {date}
+      never_used: Jamais utilisé
+      recently_created: Créé récemment
+      delete:
+        title: Supprimer un jeton
+        success: Le fichier a été supprimé
+        error: Le fichier n'a pas pu être supprimé
+        warning: Êtes-vous sûr(e) de vouloir supprimer ce jeton ? Cette action est irréversible. Vous ne pourrez plus envoyer de fichiers en utilisant ce jeton.
+        cancel: Annuler
+        submit: Supprimer
     settings:
       headers:
         files_upload: Envoi de fichiers

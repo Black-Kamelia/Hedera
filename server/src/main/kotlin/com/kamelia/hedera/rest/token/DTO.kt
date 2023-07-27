@@ -12,7 +12,7 @@ import kotlinx.serialization.UseSerializers
 fun PersonalToken.toRepresentationDTO() = PersonalTokenDTO(
     id = id.value,
     name = name,
-    creationDate = createdAt.toString(),
+    createdAt = createdAt.toString(),
     lastUsed = Instant.now().toString(),
 )
 
@@ -25,6 +25,6 @@ data class PersonalTokenCreationDTO(
 data class PersonalTokenDTO(
     val id: UUID,
     val name: String,
-    val creationDate: String,
+    val createdAt: String,
     val lastUsed: String? = null,
 ) : DTO

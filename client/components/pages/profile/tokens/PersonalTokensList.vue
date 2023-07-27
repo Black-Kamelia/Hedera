@@ -1,26 +1,27 @@
 <script lang="ts" setup>
-const token = {
-  id: '1',
-  name: 'test',
-  creationDate: '2021-10-10',
-  lastUsed: '2021-10-10',
-}
+const { data, pending } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
+
+const { t } = useI18n()
 </script>
 
 <template>
-  <div class="p-card p-7">
-    <div class="flex flex-row justify-between items-center mb-3">
-      <h1 class="text-2xl">
-        Personal tokens
-      </h1>
-      <PButton label="Add new token" icon="i-tabler-plus" />
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <PersonalToken :token="token" />
-      <PersonalToken :token="token" />
-      <PersonalToken :token="token" />
-      <PersonalToken :token="token" />
-    </div>
+  <div v-if="data && !pending" class="flex flex-col gap-3">
+    <PersonalToken v-for="token in data" :key="token.id" :token="token" />
   </div>
+  <div v-if="pending" class="flex flex-col gap-3">
+    <PersonalTokenSkeleton />
+    <PersonalTokenSkeleton />
+    <PersonalTokenSkeleton />
+  </div>
+
+  <div class="flex flex-row-reverse justify-between items-center my-3">
+    <PButton :label="t('pages.profile.tokens.create')" icon="i-tabler-plus" outlined />
+  </div>
+
+  <PConfirmDialog
+    :pt="{
+      root: { class: 'max-w-75% xl:max-w-50%' },
+      rejectButton: { icon: { class: 'display-none' } },
+    }"
+  />
 </template>

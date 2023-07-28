@@ -6,6 +6,7 @@ import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.getUUID
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
 
 fun Route.personalTokensRoutes() = route("/personalTokens") {

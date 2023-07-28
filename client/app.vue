@@ -201,10 +201,6 @@ h1, h2, h3, h4, h5, h6 {
   height: 1em !important;
 }
 
-input:focus::placeholder {
-  color: transparent;
-}
-
 .p-card:has(.p-datatable) {
   border: 1px solid var(--surface-border);
   border-radius: 8px;

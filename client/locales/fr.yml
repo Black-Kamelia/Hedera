@@ -144,11 +144,16 @@ pages:
         title: Vous n'avez pas encore créé de jeton
         description: Créez un jeton pour pouvoir envoyer des fichiers depuis une application tierce.
         create_token: Créer un jeton
-      delete:
+      create_dialog:
+        title: Créer un jeton
+        summary: Un jeton personnel vous permet d'autoriser une application tierce à envoyer des fichiers avec votre identité. Les jetons sont strictement personnels et ne doivent pas être partagés. Si vous pensez qu'un jeton est compromis, il est vivement conseillé de le supprimer.
+        fields:
+          name: Nom du jeton
+        cancel: Annuler
+        submit: Créer
+      delete_dialog:
         title: Supprimer un jeton
-        success: Le fichier a été supprimé
-        error: Le fichier n'a pas pu être supprimé
-        warning: Êtes-vous sûr(e) de vouloir supprimer ce jeton ? Cette action est irréversible. Vous ne pourrez plus envoyer de fichiers en utilisant ce jeton.
+        summary: Êtes-vous sûr(e) de vouloir supprimer ce jeton ? Cette action est irréversible. Vous ne pourrez plus envoyer de fichiers en utilisant ce jeton.
         cancel: Annuler
         submit: Supprimer
     settings:
@@ -245,6 +250,15 @@ actions:
           message: Votre mot de passe a été mis à jour
         failure:
           message: Impossible de mettre à jour votre mot de passe
+  tokens:
+    create:
+      success:
+        title: Jeton créé
+        message: Le jeton “{name}” a été créé
+    delete:
+      success:
+          title: Jeton supprimé
+          message: Le jeton “{name}” a été supprimé
 
 errors:
   unknown: Une erreur inattendue est survenue

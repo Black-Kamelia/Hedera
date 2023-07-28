@@ -144,11 +144,16 @@ pages:
         title: You have not created any token yet
         description: Create a token to upload files from a third-party application.
         create_token: Create a token
-      delete:
+      create_dialog:
+        title: Create a new token
+        summary: A personal token allows you to authorize a third-party application to upload files with your identity. Tokens are strictly personal and must not be shared. If you think a token has been compromised, it is strongly recommended to delete it.
+        fields:
+          name: Token name
+        cancel: Cancel
+        submit: Create
+      delete_dialog:
         title: Delete a token
-        success: Le fichier a été supprimé
-        error: Le fichier n'a pas pu être supprimé
-        warning: Are you sure you want to delete this token? This action is irreversible. You will not be able to upload files using this token anymore.
+        summary: Are you sure you want to delete this token? This action is irreversible. You will not be able to upload files using this token anymore.
         cancel: Cancel
         submit: Delete
     settings:
@@ -245,6 +250,15 @@ actions:
           message: Your password has been updated
         failure:
           message: Could not update your password
+  tokens:
+    create:
+      success:
+        title: Token created
+        message: The token “{name}” has been created
+    delete:
+      success:
+        title: Token deleted
+        message: The token “{name}” has been deleted
 
 errors:
   unknown: An unknown error has occurred

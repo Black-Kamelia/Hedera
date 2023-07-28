@@ -1,19 +1,20 @@
 <script lang="ts" setup>
-import { PersonalTokensListKey } from '~/utils/symbols'
-
 const { t } = useI18n()
-const { data, pending, refresh } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
+const { data, pending } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
 
 const empty = computed(() => !pending.value && data.value?.length === 0)
 
-function deleteById(id: string) {
-  if (!data.value) return
-  data.value = data.value.filter(t => t.id !== id)
+const createToken = useCreateToken()
+function handleCreate() {
+  createToken().then((response) => {
+    if (response) data.value!.unshift(response.payload)
+  })
 }
 
-provide(PersonalTokensListKey, {
-  refresh,
-})
+function handleDelete(tokenId: string) {
+  if (!data.value) return
+  data.value = data.value.filter(token => token.id !== tokenId)
+}
 </script>
 
 <template>
@@ -25,10 +26,15 @@ provide(PersonalTokensListKey, {
 
   <div v-else-if="data && !empty">
     <div class="flex flex-col gap-3">
-      <PersonalToken v-for="token in data" :key="token.id" :token="token" @delete="deleteById" />
+      <PersonalToken
+        v-for="token in data"
+        :key="token.id"
+        :token="token"
+        @delete="handleDelete"
+      />
     </div>
     <div class="flex flex-row-reverse justify-between items-center my-3">
-      <PButton :label="t('pages.profile.tokens.create')" icon="i-tabler-plus" outlined />
+      <PButton :label="t('pages.profile.tokens.create')" icon="i-tabler-plus" outlined @click="handleCreate" />
     </div>
   </div>
   <div v-else class="p-card p-7 py-15 h-full w-full flex flex-col justify-center items-center">
@@ -40,9 +46,14 @@ provide(PersonalTokensListKey, {
     <p class="pb-10">
       {{ t('pages.profile.tokens.empty.description') }}
     </p>
-    <PButton rounded :label="t('pages.profile.tokens.empty.create_token')" />
+    <PButton rounded :label="t('pages.profile.tokens.empty.create_token')" @click="handleCreate" />
   </div>
 
+  <PDynamicDialog
+    :pt="{
+      root: { class: 'max-w-75% xl:max-w-50%' },
+    }"
+  />
   <PConfirmDialog
     :pt="{
       root: { class: 'max-w-75% xl:max-w-50%' },

@@ -1,6 +1,8 @@
 package com.kamelia.hedera.rest.token
 
+import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.Response
@@ -12,24 +14,29 @@ import java.util.*
 object PersonalTokenService {
 
     suspend fun createPersonalToken(
-        ownerId: UUID,
+        userId: UUID,
         dto: PersonalTokenCreationDTO,
-    ): Response<PersonalTokenDTO, MessageKeyDTO> = Connection.transaction {
-        val owner = User.findById(ownerId) ?: throw UserNotFoundException()
+    ): Response<MessageDTO<PersonalTokenDTO>, MessageKeyDTO> = Connection.transaction {
+        val owner = User.findById(userId) ?: throw UserNotFoundException()
 
+        val token = PersonalTokens.create(
+            name = dto.name,
+            owner = owner
+        )
         Response.created(
-            PersonalTokens.create(
-                name = dto.name,
-                owner = owner
-            ).toRepresentationDTO()
+            MessageDTO(
+                title = MessageKeyDTO.of(Actions.Tokens.Create.Success.TITLE),
+                message = MessageKeyDTO.of(Actions.Tokens.Create.Success.MESSAGE, "name" to token.name),
+                token.toRepresentationDTO(token = token.token)
+            )
         )
     }
 
     suspend fun getPersonalTokens(
-        ownerId: UUID,
+        userId: UUID,
     ): Response<List<PersonalTokenDTO>, String> = Connection.transaction {
-        val tokens = PersonalTokens.findAllWithLastUsed(ownerId)
-            .map { (token, lastUsed) -> token.toRepresentationDTO(lastUsed) }
+        val tokens = PersonalTokens.findAllWithLastUsed(userId)
+            .map { (token, lastUsed) -> token.toRepresentationDTO(lastUsed = lastUsed) }
 
         Response.ok(tokens)
     }
@@ -37,16 +44,20 @@ object PersonalTokenService {
     suspend fun deletePersonalToken(
         userId: UUID,
         tokenId: UUID,
-    ): Response<String, String> = Connection.transaction {
+    ): Response<MessageDTO<Nothing>, String> = Connection.transaction {
         val token = PersonalTokens.findById(tokenId) ?: throw PersonalTokenNotFoundException()
         val user = User.findById(userId) ?: throw UserNotFoundException()
 
-        if (token.ownerId != userId) {
-            throw IllegalActionException()
-        }
+        if (token.deleted) throw PersonalTokenNotFoundException()
+        if (token.ownerId != userId) throw IllegalActionException()
 
         token.delete(user)
-        Response.ok()
+        Response.ok(
+            MessageDTO(
+                title = MessageKeyDTO.of(Actions.Tokens.Delete.Success.TITLE),
+                message = MessageKeyDTO.of(Actions.Tokens.Delete.Success.MESSAGE, "name" to token.name)
+            )
+        )
     }
 
 }

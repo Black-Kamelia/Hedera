@@ -5087,6 +5087,7 @@ hr {
   border-radius: 8px;
   box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);
   border: 1px solid #2e303d;
+  transition: max-width 0.2s ease-in-out;
 }
 
 .p-dialog .p-dialog-header {
@@ -5151,7 +5152,7 @@ hr {
   border-bottom-left-radius: 8px;
 }
 
-.p-dialog .p-dialog-footer button {
+.p-dialog .p-dialog-footer button:not(:last-child) {
   margin: 0 0.5rem 0 0;
   width: auto;
 }

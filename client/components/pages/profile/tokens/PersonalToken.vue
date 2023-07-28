@@ -2,6 +2,9 @@
 import { DateTime } from 'luxon'
 
 const { token } = defineProps<{ token: PersonalTokenDTO }>()
+const emit = defineEmits<{
+  (event: 'delete', tokenId: string): void
+}>()
 
 const { t, d } = useI18n()
 const confirm = useConfirm()
@@ -19,7 +22,7 @@ function remove() {
     acceptLabel: t('pages.profile.tokens.delete.submit'),
     acceptClass: 'p-button-danger',
     rejectLabel: t('pages.profile.tokens.delete.cancel'),
-    accept: () => deleteToken(token.id),
+    accept: () => deleteToken(token.id).then(() => emit('delete', token.id)),
   })
 }
 </script>

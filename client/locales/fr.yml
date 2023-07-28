@@ -140,6 +140,10 @@ pages:
       last_used: Dernière utilisation {date}
       never_used: Jamais utilisé
       recently_created: Créé récemment
+      empty:
+        title: Vous n'avez pas encore créé de jeton
+        description: Créez un jeton pour pouvoir envoyer des fichiers depuis une application tierce.
+        create_token: Créer un jeton
       delete:
         title: Supprimer un jeton
         success: Le fichier a été supprimé

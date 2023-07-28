@@ -140,6 +140,10 @@ pages:
       last_used: Last used {date}
       never_used: Never used
       recently_created: Recently created
+      empty:
+        title: You have not created any token yet
+        description: Create a token to upload files from a third-party application.
+        create_token: Create a token
       delete:
         title: Delete a token
         success: Le fichier a été supprimé

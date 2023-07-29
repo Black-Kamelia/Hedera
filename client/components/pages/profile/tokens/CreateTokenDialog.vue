@@ -80,8 +80,8 @@ watch(visible, (value) => {
             {{ t('pages.profile.tokens.generated_dialog.download') }}
           </p>
           <div class="flex flex-row gap-2 items-center">
-            <PButton size="small" severity="secondary" label="ShareX" icon="i-tabler-download" />
-            <PButton size="small" severity="secondary" label="uPic" icon="i-tabler-download" />
+            <PButton size="small" severity="secondary" label="ShareX" />
+            <PButton size="small" severity="secondary" label="uPic" />
           </div>
         </div>
       </Transition>
@@ -107,7 +107,7 @@ watch(visible, (value) => {
 <style scoped>
 .slide-left-enter-active,
 .slide-left-leave-active {
-  transition: all .3s ease-in-out;
+  transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
 }
 
 .slide-left-leave-active {

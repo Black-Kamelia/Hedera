@@ -1,33 +1,73 @@
 <script lang="ts" setup>
-import type { DynamicDialogInstance } from 'primevue/dynamicdialogoptions'
-import type { ComputedRef } from 'vue'
-import PInputText from 'primevue/inputtext'
+import { object, string } from 'yup'
+import { useForm } from 'vee-validate'
+
+const emit = defineEmits<{
+  (event: 'completed', payload: PersonalTokenDTO): void
+}>()
 
 const { t } = useI18n()
 
-const dialog = inject<ComputedRef<DynamicDialogInstance>>('dialogRef')
-const input = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>(null)
+const visible = defineModel<boolean>('visible', { default: true })
+const pending = ref(false)
+const createToken = useCreateToken()
 
-const name = ref('')
+const schema = object({
+  name: string()
+    .required(t('pages.profile.tokens.create_dialog.errors.missing_name')),
+})
+const { handleSubmit } = useForm({
+  validationSchema: schema,
+})
 
-function submit() {
-  dialog?.value.close({ name: name.value })
-}
+const submit = handleSubmit(async (values) => {
+  pending.value = true
+  createToken(values.name).then((response) => {
+    if (response) {
+      emit('completed', response.payload)
+      pending.value = false
+      visible.value = false
+    }
+  })
+})
 </script>
 
 <template>
-  <div class="flex flex-col gap-3">
-    <p class="text-[--text-color-secondary]">
-      {{ t('pages.profile.tokens.create_dialog.summary') }}
-    </p>
+  <PDialog
+    v-model:visible="visible"
+    modal
+    class="max-w-75% xl:max-w-50%"
+    :header="t('pages.profile.tokens.create_dialog.title')"
+    :draggable="false"
+  >
+    <div class="flex flex-col gap-3">
+      <p class="text-[--text-color-secondary]">
+        {{ t('pages.profile.tokens.create_dialog.summary') }}
+      </p>
 
-    <PInputText
-      ref="input"
-      v-model="name"
-      :placeholder="t('pages.profile.tokens.create_dialog.fields.name')"
-      class="w-full mt-0.5"
-      autofocus
-      @keydown.enter="submit()"
-    />
-  </div>
+      <FormInputText
+        id="token_name"
+        name="name"
+        :placeholder="t('pages.profile.tokens.create_dialog.fields.name')"
+        class="w-full"
+        autofocus
+        @keydown.enter="submit()"
+      />
+    </div>
+
+    <template #footer>
+      <PButton
+        :label="t('pages.profile.tokens.create_dialog.cancel')"
+        text
+        :disabled="pending"
+        @click="visible = false"
+      />
+      <PButton
+        :label="t('pages.profile.tokens.create_dialog.submit')"
+        :loading="pending"
+        type="submit"
+        @click="submit()"
+      />
+    </template>
+  </PDialog>
 </template>

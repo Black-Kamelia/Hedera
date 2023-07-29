@@ -4,11 +4,11 @@ const { data, pending } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
 
 const empty = computed(() => !pending.value && data.value?.length === 0)
 
-const createToken = useCreateToken()
-function handleCreate() {
-  createToken().then((response) => {
-    if (response) data.value!.unshift(response.payload)
-  })
+const createTokenDialog = ref<boolean>(false)
+
+function handleCreate(token: PersonalTokenDTO) {
+  if (!data.value) return
+  data.value.unshift(token)
 }
 
 function handleDelete(tokenId: string) {
@@ -34,7 +34,7 @@ function handleDelete(tokenId: string) {
       />
     </div>
     <div class="flex flex-row-reverse justify-between items-center my-3">
-      <PButton :label="t('pages.profile.tokens.create')" icon="i-tabler-plus" outlined @click="handleCreate" />
+      <PButton :label="t('pages.profile.tokens.create')" icon="i-tabler-plus" outlined @click="createTokenDialog = true" />
     </div>
   </div>
   <div v-else class="p-card p-7 py-15 h-full w-full flex flex-col justify-center items-center">
@@ -46,14 +46,10 @@ function handleDelete(tokenId: string) {
     <p class="pb-10">
       {{ t('pages.profile.tokens.empty.description') }}
     </p>
-    <PButton rounded :label="t('pages.profile.tokens.empty.create_token')" @click="handleCreate" />
+    <PButton rounded :label="t('pages.profile.tokens.empty.create_token')" @click="createTokenDialog = true" />
   </div>
 
-  <PDynamicDialog
-    :pt="{
-      root: { class: 'max-w-75% xl:max-w-50%' },
-    }"
-  />
+  <CreateTokenDialog v-model:visible="createTokenDialog" @completed="handleCreate" />
   <PConfirmDialog
     :pt="{
       root: { class: 'max-w-75% xl:max-w-50%' },

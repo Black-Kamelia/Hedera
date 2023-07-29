@@ -5087,7 +5087,6 @@ hr {
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   border: 0 none;
-  transition: max-width 0.2s ease-in-out;
 }
 
 .p-dialog .p-dialog-header {

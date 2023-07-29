@@ -27,8 +27,8 @@ defineExpose({
 </script>
 
 <template>
-  <label :for="id" class="block font-900 font-medium mb-2">{{ label }}</label>
-  <div class="mb-3">
+  <label v-if="label" :for="id" class="block font-900 font-medium mb-2">{{ label }}</label>
+  <div>
     <span class="w-full mb-1" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
       <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" @input="onInput" />

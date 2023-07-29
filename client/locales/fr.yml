@@ -140,6 +140,8 @@ pages:
       last_used: Dernière utilisation {date}
       never_used: Jamais utilisé
       recently_created: Créé récemment
+      copy_token: Copier
+      token_copied: Le jeton a été copié dans le presse-papier
       empty:
         title: Vous n'avez pas encore créé de jeton
         description: Créez un jeton pour pouvoir envoyer des fichiers depuis une application tierce.
@@ -149,10 +151,15 @@ pages:
         summary: Un jeton personnel vous permet d'autoriser une application tierce à envoyer des fichiers avec votre identité. Les jetons sont strictement personnels et ne doivent pas être partagés. Si vous pensez qu'un jeton est compromis, il est vivement conseillé de le supprimer.
         fields:
           name: Nom du jeton
+          name_placeholder: ex. Ordinateur de Alan
         errors:
           missing_name: Nom du jeton requis
         cancel: Annuler
         submit: Créer
+      generated_dialog:
+        title: Nouveau jeton généré
+        summary: Votre nouveau jeton a été généré avec succès ! Assurez-vous de copier votre jeton dès maintenant, vous ne pourrez plus le voir à nouveau.
+        download: 'Vous pouvez télécharger un fichier de configuration à importer directement pour les applications suivantes :'
       delete_dialog:
         title: Supprimer un jeton
         summary: Êtes-vous sûr(e) de vouloir supprimer ce jeton ? Cette action est irréversible. Vous ne pourrez plus envoyer de fichiers en utilisant ce jeton.

@@ -139,6 +139,7 @@ declare global {
 
   interface PersonalTokenDTO {
     id: string
+    token?: string
     name: string
     createdAt: string
     lastUsed?: string

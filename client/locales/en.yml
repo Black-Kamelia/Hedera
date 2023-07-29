@@ -140,6 +140,8 @@ pages:
       last_used: Last used {date}
       never_used: Never used
       recently_created: Recently created
+      copy_token: Copy
+      token_copied: The token has been copied to the clipboard
       empty:
         title: You have not created any token yet
         description: Create a token to upload files from a third-party application.
@@ -149,10 +151,15 @@ pages:
         summary: A personal token allows you to authorize a third-party application to upload files with your identity. Tokens are strictly personal and must not be shared. If you think a token has been compromised, it is strongly recommended to delete it.
         fields:
           name: Token name
+          name_placeholder: e.g. Alan's computer
         errors:
           missing_name: Token name is required
         cancel: Cancel
         submit: Create
+      generated_dialog:
+        title: New token generated
+        summary: Your new token has been generated successfully! Make sure to copy your token right now, you will not be able to see it again.
+        download: 'You can download a configuration file to import directly for the following applications:'
       delete_dialog:
         title: Delete a token
         summary: Are you sure you want to delete this token? This action is irreversible. You will not be able to upload files using this token anymore.

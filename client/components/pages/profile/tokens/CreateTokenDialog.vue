@@ -10,7 +10,7 @@ const { t } = useI18n()
 const createToken = useCreateToken()
 const { copyToken, isSupported } = useCopyToken()
 
-const visible = defineModel<boolean>('visible', { default: true })
+const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
 const newToken = ref<Nullable<string>>(null)
 
@@ -28,9 +28,8 @@ const submit = handleSubmit(async (values) => {
     if (response) {
       newToken.value = response.payload.token
       emit('completed', response.payload)
-      pending.value = false
     }
-  })
+  }).finally(() => pending.value = false)
 })
 
 watch(visible, (value) => {

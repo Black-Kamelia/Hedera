@@ -6,7 +6,6 @@ import type { Tokens } from '~/stores/useAuth'
 const $fetchRefresh = configureRefreshFetch({
   fetch: $fetch,
   refreshToken(fetch) {
-    const apiUrl = useRuntimeConfig().public.apiBaseUrl
     const accessTokenExpiredEvent = useEventBus(AccessTokenExpiredEvent)
     const tokensRefreshedEvent = useEventBus(TokensRefreshedEvent)
     const refreshTokenExpiredEvent = useEventBus(RefreshTokenExpiredEvent)
@@ -15,8 +14,7 @@ const $fetchRefresh = configureRefreshFetch({
 
     const auth = useAuth()
 
-    return fetch<Tokens>('/refresh', {
-      baseURL: apiUrl,
+    return fetch<Tokens>('/api/refresh', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${auth.tokens?.refreshToken}`,
@@ -41,12 +39,12 @@ const $fetchRefresh = configureRefreshFetch({
 })
 
 export function $fetchAPI<T = unknown>(url: NitroFetchRequest, options: FetchAPIOptions = {}) {
-  const actualOptions = { retry: 0, ...options, method: options.method?.toUpperCase() } as FetchAPIOptions
-  if (!options.ignoreAPIBaseURL) {
-    actualOptions.baseURL = useRuntimeConfig().public.apiBaseUrl
-  }
+  const actualMethod = options.method?.toUpperCase() as typeof options.method
+  const actualOptions = { retry: 0, ...options, method: actualMethod } satisfies FetchAPIOptions
 
-  return $fetchRefresh<T>(url, {
+  const actualUrl = actualOptions.isNotApi === true ? url : `/api${url}`
+
+  return $fetchRefresh<T>(actualUrl, {
     ...actualOptions,
     ...createFetchInterceptors(
       options.onRequest,

@@ -15,8 +15,6 @@ import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.Files
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
-import com.kamelia.hedera.rest.token.PersonalToken
-import com.kamelia.hedera.rest.token.PersonalTokens
 import com.kamelia.hedera.util.adaptFileSize
 import com.kamelia.hedera.util.uuid
 import java.util.*
@@ -61,80 +59,55 @@ object Users : AuditableUUIDTable("users") {
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
 
-    fun countAll(): Long = User.count()
-
-    fun getAll(): List<User> = User.all().toList()
-
-    fun getAll(
-        page: Long,
-        pageSize: Int,
-        definition: PageDefinitionDTO
-    ): Pair<List<User>, Long> = Users
-        .selectAll()
-        .applyFilters(definition.filters) {
-            when (it.field) {
-                username.name -> username.filter(it)
-                email.name -> email.filter(it)
-                role.name -> role.filter(it)
-                enabled.name -> enabled.filter(it)
-                else -> throw UnknownFilterFieldException(it.field)
-            }
-        }.applySort(definition.sorter) {
-            when (it) {
-                username.name -> username
-                email.name -> email
-                role.name -> role
-                enabled.name -> enabled
-                else -> throw UnknownFilterFieldException(it)
-            }
-        }.let {
-            val rows = User.wrapRows(it)
-            rows.limit(pageSize, page * pageSize).toList() to rows.count()
-        }
-
-    fun findById(uuid: UUID): User? = User.findById(uuid)
-
-    fun findByUsername(username: String): User? = User
-        .find { Users.username eq username }
-        .firstOrNull()
-
-    fun findByEmail(email: String): User? = User
-        .find { Users.email eq email }
-        .firstOrNull()
-
-    fun create(user: UserDTO, creator: User? = null): User = User.new {
-        username = user.username
-        email = user.email
-        password = Hasher.hash(user.password)
-        role = user.role
-        enabled = false
-        settings = UserSettings.new {}
-
-        onCreate(creator ?: this)
-    }
-
-    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = user.apply {
-        dto.username?.let { username = it }
-        dto.email?.let { email = it }
-        dto.role?.let { role = it }
-        dto.enabled?.let { enabled = it }
-
-        SessionManager.updateSession(uuid, this)
-        onUpdate(updater)
-    }
-
-    fun updatePassword(user: User, dto: UserPasswordUpdateDTO): User = user.apply {
-        password = Hasher.hash(dto.newPassword)
-        onUpdate(user)
-    }
-
-    fun delete(id: UUID): User? = User
-        .findById(id)
-        ?.apply { delete() }
 }
 
 class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
-    companion object : UUIDEntityClass<User>(Users)
+
+    companion object : UUIDEntityClass<User>(Users) {
+
+        fun findByUsername(username: String): User? = find { Users.username eq username }.firstOrNull()
+
+        fun findByEmail(email: String): User? = find { Users.email eq email }.firstOrNull()
+
+        fun all(
+            page: Long,
+            pageSize: Int,
+            definition: PageDefinitionDTO
+        ): Pair<List<User>, Long> = Users
+            .selectAll()
+            .applyFilters(definition.filters) {
+                when (it.field) {
+                    Users.username.name -> Users.username.filter(it)
+                    Users.email.name -> Users.email.filter(it)
+                    Users.role.name -> Users.role.filter(it)
+                    Users.enabled.name -> Users.enabled.filter(it)
+                    else -> throw UnknownFilterFieldException(it.field)
+                }
+            }.applySort(definition.sorter) {
+                when (it) {
+                    Users.username.name -> Users.username
+                    Users.email.name -> Users.email
+                    Users.role.name -> Users.role
+                    Users.enabled.name -> Users.enabled
+                    else -> throw UnknownFilterFieldException(it)
+                }
+            }.let {
+                val rows = User.wrapRows(it)
+                rows.limit(pageSize, page * pageSize).toList() to rows.count()
+            }
+
+        fun create(user: UserDTO, creator: User? = null): User = new {
+            username = user.username
+            email = user.email
+            password = Hasher.hash(user.password)
+            role = user.role
+            enabled = false
+            settings = UserSettings.new {}
+
+            onCreate(creator ?: this)
+        }
+
+    }
 
     var username by Users.username
     var email by Users.email
@@ -144,9 +117,6 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var settings by UserSettings referencedOn Users.settings
 
     private val files by File referrersOn Files.owner
-    private val personalTokens by PersonalToken referrersOn PersonalTokens.owner
-
-    fun getFiles(): List<File> = files.toList()
 
     fun getFiles(
         page: Long,
@@ -166,7 +136,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
                 "createdAt" -> Files.createdAt.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)
             }
-        }.applySort(definition.sorter) {
+        }
+        .applySort(definition.sorter) {
             when (it) {
                 "name" -> Files.name
                 "mimeType" -> Files.mimeType
@@ -175,13 +146,31 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
                 "createdAt" -> Files.createdAt
                 else -> throw UnknownSortFieldException(it)
             }
-        }.let {
+        }
+        .limit(pageSize, page * pageSize)
+        .let {
             val rows = File.wrapRows(it)
-            rows.limit(pageSize, page * pageSize).toList() to rows.count()
+            rows.toList() to rows.count()
         }
 
     fun getFilesFormats(): List<String> = files
         .map { it.mimeType }
         .distinct()
         .sorted()
+
+    suspend fun update(dto: UserUpdateDTO, updater: User = this): User = apply {
+        dto.username?.let { username = it }
+        dto.email?.let { email = it }
+        dto.role?.let { role = it }
+        dto.enabled?.let { enabled = it }
+
+        SessionManager.updateSession(uuid, this)
+        onUpdate(updater)
+    }
+
+    fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
+        password = Hasher.hash(dto.newPassword)
+        onUpdate(this)
+    }
+
 }

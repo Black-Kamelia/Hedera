@@ -7,14 +7,21 @@ import java.util.*
 
 object UserSettingsService {
 
-    suspend fun getUserSettings(userId: UUID): Response<UserSettingsRepresentationDTO, MessageKeyDTO> = Connection.transaction {
-        val userSettings = UserSettingsTable.findByUserId(userId)
+    suspend fun getUserSettings(
+        userId: UUID
+    ): Response<UserSettingsRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+        val userSettings = UserSettings.getByUserId(userId)
+
         Response.ok(userSettings.toRepresentationDTO())
     }
 
-    suspend fun updateUserSettings(userId: UUID, dto: UserSettingsUpdateDTO): Response<UserSettingsRepresentationDTO, MessageKeyDTO> = Connection.transaction {
-        val userSettings = UserSettingsTable.findByUserId(userId)
-        val updatedUserSettings = UserSettingsTable.update(userSettings, dto)
+    suspend fun updateUserSettings(
+        userId: UUID,
+        dto: UserSettingsUpdateDTO
+    ): Response<UserSettingsRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+        val userSettings = UserSettings.getByUserId(userId)
+        val updatedUserSettings = userSettings.update(dto)
+
         Response.ok(updatedUserSettings.toRepresentationDTO())
     }
 

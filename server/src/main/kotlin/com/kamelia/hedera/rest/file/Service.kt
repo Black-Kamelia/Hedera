@@ -13,7 +13,7 @@ import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.token.PersonalToken
-import com.kamelia.hedera.rest.token.PersonalTokens
+import com.kamelia.hedera.rest.token.PersonalTokenTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.Users
@@ -29,7 +29,7 @@ object FileService {
         part: PartData.FileItem,
         creatorToken: String
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
-        val token = PersonalTokens.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
+        val token = PersonalToken.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
 
         if (token.deleted) throw ExpiredOrInvalidTokenException()
 
@@ -40,21 +40,23 @@ object FileService {
         part: PartData.FileItem,
         creatorId: UUID
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
-        val creator = Users.findById(creatorId) ?: throw ExpiredOrInvalidTokenException()
-        handleFile(part, creator)
+        val user = User[creatorId]
+
+        handleFile(part, user)
     }
 
     private suspend fun handleFile(
         part: PartData.FileItem,
         creator: User,
         uploadToken: PersonalToken? = null,
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO, String> {
         val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
-        Response.created(
-            Files.create(
+
+        return Response.created(
+            File.create(
                 code = code,
                 name = filename,
                 mimeType = type,
@@ -70,8 +72,8 @@ object FileService {
         code: String,
         authId: UUID?,
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
-        val user = authId?.let { Users.findById(it) }
-        Files.findByCode(code)
+        val user = authId?.let { User.findById(it) }
+        File.findByCode(code)
             ?.takeUnless { file ->
                 val isPrivate = file.visibility == FileVisibility.PRIVATE
                 val notHasPermission = user?.let { file.ownerId != it.uuid }
@@ -89,8 +91,9 @@ object FileService {
         definition: PageDefinitionDTO,
         asOwner: Boolean = false,
     ): Response<FilePageDTO, String> = Connection.transaction {
-        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+        val user = User.findById(userId) ?: throw ExpiredOrInvalidTokenException()
         val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
+
         Response.ok(
             FilePageDTO(
                 PageDTO(
@@ -104,19 +107,19 @@ object FileService {
         )
     }
 
-    suspend fun getFilesFormats(userId: UUID): Response<List<String>, String> = Connection.transaction {
-        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+    suspend fun getFilesFormats(
+        userId: UUID
+    ): Response<List<String>, String> = Connection.transaction {
+        val user = User.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+
         Response.ok(user.getFilesFormats())
     }
 
-    suspend fun updateFile(
-        fileId: UUID,
-        userId: UUID,
+    private fun updateFile(
+        file: File,
+        user: User,
         dto: FileUpdateDTO,
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
-        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: throw FileNotFoundException()
-
+    ): File {
         if (file.ownerId != user.uuid) {
             if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
                 throw IllegalActionException()
@@ -124,7 +127,7 @@ object FileService {
             throw FileNotFoundException()
         }
 
-        Response.ok(Files.update(file, dto, user).toRepresentationDTO())
+        return file.update(dto, user)
     }
 
     suspend fun updateFileVisibility(
@@ -132,18 +135,13 @@ object FileService {
         userId: UUID,
         dto: FileUpdateDTO,
     ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
-        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: throw FileNotFoundException()
-
-        if (file.ownerId != user.uuid) {
-            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
-                throw IllegalActionException()
-            }
-            throw FileNotFoundException()
-        }
+        val file = File.findById(fileId) ?: throw FileNotFoundException()
+        val user = User[userId]
 
         val oldVisibility = file.visibility
-        val payload = Files.update(file, FileUpdateDTO(visibility = dto.visibility), user).toRepresentationDTO()
+        val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
+        val payload = updatedFile.toRepresentationDTO()
+
         Response.ok(
             MessageDTO(
                 title = MessageKeyDTO.of(Actions.Files.Update.Visibility.Success.TITLE),
@@ -163,18 +161,13 @@ object FileService {
         userId: UUID,
         dto: FileUpdateDTO,
     ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
-        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: throw FileNotFoundException()
-
-        if (file.ownerId != user.uuid) {
-            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
-                throw IllegalActionException()
-            }
-            throw FileNotFoundException()
-        }
+        val file = File.findById(fileId) ?: throw FileNotFoundException()
+        val user = User[userId]
 
         val oldName = file.name
-        val payload = Files.update(file, FileUpdateDTO(name = dto.name), user).toRepresentationDTO()
+        val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
+        val payload = updatedFile.toRepresentationDTO()
+
         Response.ok(
             MessageDTO(
                 title = MessageKeyDTO.of(Actions.Files.Update.Name.Success.TITLE),
@@ -192,8 +185,8 @@ object FileService {
         fileId: UUID,
         userId: UUID,
     ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
-        val user = Users.findById(userId) ?: throw ExpiredOrInvalidTokenException()
-        val file = Files.findById(fileId) ?: throw FileNotFoundException()
+        val file = File.findById(fileId) ?: throw FileNotFoundException()
+        val user = User[userId]
 
         if (file.ownerId != user.uuid && user.role eq UserRole.REGULAR) {
             if (file.visibility != FileVisibility.PRIVATE) {
@@ -202,22 +195,15 @@ object FileService {
             throw FileNotFoundException()
         }
 
+        file.delete()
         FileUtils.delete(file.ownerId, file.code)
+
         Response.ok(
             MessageDTO(
                 title = MessageKeyDTO.of(Actions.Files.Delete.Success.TITLE),
                 message = MessageKeyDTO.of(Actions.Files.Delete.Success.MESSAGE, "name" to file.name),
-                payload = Files.delete(fileId)?.toRepresentationDTO()
+                payload = file.toRepresentationDTO()
             )
         )
     }
-
-    /*
-    suspend fun deleteFileByCodeAsAdmin(code: String): QueryResult<FileRepresentationDTO, String> {
-        val file = Files.findByCode(code) ?: return QueryResult.notFound()
-
-        FileUtils.delete(file.ownerId, file.code)
-        return QueryResult.ok(Files.delete(file.uuid)?.toRepresentationDTO())
-    }
-     */
 }

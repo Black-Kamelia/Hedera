@@ -95,7 +95,7 @@ object SessionManager {
 
     suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageKeyDTO> {
         val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
-        val user = Users.findByUsername(username) ?: return unauthorized
+        val user = User.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
             delay(Environment.loginThrottle)
@@ -114,7 +114,7 @@ object SessionManager {
     }
 
     suspend fun refresh(jwt: Payload): Response<TokenData, MessageKeyDTO> {
-        val user = Users.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
+        val user = User.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
         return Response.created(generateTokens(user))
     }
 

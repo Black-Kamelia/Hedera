@@ -31,7 +31,7 @@ fun Route.filesRoutes() = route("/files") {
         uploadFile()
         searchFiles()
         getFilesFormats()
-        editFile()
+        // editFile()
         editFileVisibility()
         editFileName()
         deleteFile()
@@ -120,12 +120,14 @@ private fun Route.getFilesFormats() = get("/formats") {
     call.respond(FileService.getFilesFormats(userId))
 }
 
+/*
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val fileId = call.getUUID("uuid")
     val userId = authenticatedUser!!.uuid
 
     call.respond(FileService.updateFile(fileId, userId, body))
 }
+ */
 
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
     val fileId = call.getUUID("uuid")

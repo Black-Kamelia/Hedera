@@ -3,7 +3,7 @@ package com.kamelia.hedera.rest.file
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.token.PersonalToken
-import com.kamelia.hedera.rest.token.PersonalTokens
+import com.kamelia.hedera.rest.token.PersonalTokenTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.uuid
@@ -39,62 +39,42 @@ object Files : AuditableUUIDTable("files") {
     val size = long("size")
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", Users)
-    val uploadToken = reference("upload_token", PersonalTokens).nullable()
+    val uploadToken = reference("upload_token", PersonalTokenTable).nullable()
 
     init {
         createdBy
         updatedBy
     }
 
-    fun countAll(): Long = File.count()
-
-    fun getAll(): List<File> = File.all().toList()
-
-    fun getAll(page: Long, pageSize: Int): List<File> = File
-        .all()
-        .limit(pageSize, page * pageSize)
-        .toList()
-
-    fun findById(uuid: UUID): File? = File.findById(uuid)
-
-    fun findByCode(code: String): File? = File.find { Files.code eq code }.firstOrNull()
-
-    fun create(
-        code: String,
-        name: String,
-        mimeType: String,
-        size: Long,
-        visibility: FileVisibility,
-        creator: User,
-        uploadToken: PersonalToken? = null,
-    ): File = File.new {
-        this.code = code
-        this.name = name
-        this.mimeType = mimeType
-        this.size = size
-        this.visibility = visibility
-        this.owner = creator
-        this.uploadToken = uploadToken
-
-        onCreate(creator)
-    }
-
-    fun update(file: File, dto: FileUpdateDTO, updater: User): File = file.apply {
-        dto.name?.let {
-            name = it
-            // TODO: Mime Type update is under discussion
-            // mimeType = MimeTypes.typeFromFile(it)
-        }
-        dto.visibility?.let { visibility = it }
-
-        onUpdate(updater)
-    }
-
-    fun delete(uuid: UUID): File? = File.findById(uuid)?.apply { delete() }
 }
 
 class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {
-    companion object : UUIDEntityClass<File>(Files)
+
+    companion object : UUIDEntityClass<File>(Files) {
+
+        fun findByCode(code: String): File? = find { Files.code eq code }.firstOrNull()
+
+        fun create(
+            code: String,
+            name: String,
+            mimeType: String,
+            size: Long,
+            visibility: FileVisibility,
+            creator: User,
+            uploadToken: PersonalToken? = null,
+        ): File = new {
+            this.code = code
+            this.name = name
+            this.mimeType = mimeType
+            this.size = size
+            this.visibility = visibility
+            this.owner = creator
+            this.uploadToken = uploadToken
+
+            onCreate(creator)
+        }
+
+    }
 
     var code by Files.code
     var name by Files.name
@@ -105,4 +85,11 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {
     var uploadToken by PersonalToken optionalReferencedOn Files.uploadToken
 
     val ownerId get() = transaction { owner.uuid }
+
+    fun update(dto: FileUpdateDTO, updater: User): File = apply {
+        dto.name?.let { name = it }
+        dto.visibility?.let { visibility = it }
+
+        onUpdate(updater)
+    }
 }

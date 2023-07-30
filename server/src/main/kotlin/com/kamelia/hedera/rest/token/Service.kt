@@ -17,9 +17,9 @@ object PersonalTokenService {
         userId: UUID,
         dto: PersonalTokenCreationDTO,
     ): Response<MessageDTO<PersonalTokenDTO>, MessageKeyDTO> = Connection.transaction {
-        val owner = User.findById(userId) ?: throw UserNotFoundException()
+        val owner = User[userId]
 
-        val token = PersonalTokens.create(
+        val token = PersonalToken.create(
             name = dto.name,
             owner = owner
         )
@@ -35,7 +35,7 @@ object PersonalTokenService {
     suspend fun getPersonalTokens(
         userId: UUID,
     ): Response<List<PersonalTokenDTO>, String> = Connection.transaction {
-        val tokens = PersonalTokens.findAllWithLastUsed(userId)
+        val tokens = PersonalToken.allWithLastUsed(userId)
             .map { (token, lastUsed) -> token.toRepresentationDTO(lastUsed = lastUsed) }
 
         Response.ok(tokens)
@@ -45,8 +45,8 @@ object PersonalTokenService {
         userId: UUID,
         tokenId: UUID,
     ): Response<MessageDTO<Nothing>, String> = Connection.transaction {
-        val token = PersonalTokens.findById(tokenId) ?: throw PersonalTokenNotFoundException()
-        val user = User.findById(userId) ?: throw UserNotFoundException()
+        val token = PersonalToken.findById(tokenId) ?: throw PersonalTokenNotFoundException()
+        val user = User[userId]
 
         if (token.deleted) throw PersonalTokenNotFoundException()
         if (token.ownerId != userId) throw IllegalActionException()

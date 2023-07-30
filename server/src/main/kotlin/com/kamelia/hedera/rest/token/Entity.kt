@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object PersonalTokens : AuditableUUIDTable("personal_tokens") {
+object PersonalTokenTable : AuditableUUIDTable("personal_tokens") {
 
     val token = varchar("token", 32).uniqueIndex()
     val name = varchar("name", 255)
@@ -29,46 +29,45 @@ object PersonalTokens : AuditableUUIDTable("personal_tokens") {
         updatedBy
     }
 
-    fun findById(id: UUID): PersonalToken? = PersonalToken.findById(id)
-
-    fun findByToken(token: String): PersonalToken? = PersonalToken.find { PersonalTokens.token eq token }.firstOrNull()
-
-    fun findAllWithLastUsed(
-        userId: UUID,
-    ): List<Pair<PersonalToken, Instant?>> {
-        val lastUsed = Files.createdAt.max().alias("lastUsed")
-        return transaction {
-            PersonalTokens
-                .leftJoin(Files, { id }, { uploadToken })
-                .slice(PersonalTokens.columns + lastUsed)
-                .select { (owner eq userId) and (deleted eq false) }
-                .groupBy(PersonalTokens.id)
-                .sortedByDescending { it[PersonalTokens.createdAt] }
-                .map { PersonalToken.wrapRow(it) to it.getOrNull(lastUsed) }
-        }
-    }
-
-    fun create(
-        name: String,
-        owner: User,
-    ): PersonalToken = PersonalToken.new {
-        this.token = UUID.randomUUID().toString().replace("-", "")
-        this.name = name
-        this.owner = owner
-        this.deleted = false
-
-        onCreate(owner)
-    }
-
 }
 
-class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokens) {
-    companion object : UUIDEntityClass<PersonalToken>(PersonalTokens)
+class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokenTable) {
 
-    var token by PersonalTokens.token
-    var name by PersonalTokens.name
-    var owner by User referencedOn PersonalTokens.owner
-    var deleted by PersonalTokens.deleted
+    companion object : UUIDEntityClass<PersonalToken>(PersonalTokenTable) {
+
+        fun findByToken(token: String): PersonalToken? = find { PersonalTokenTable.token eq token }.firstOrNull()
+
+        fun create(
+            name: String,
+            owner: User,
+        ): PersonalToken = PersonalToken.new {
+            this.token = UUID.randomUUID().toString().replace("-", "")
+            this.name = name
+            this.owner = owner
+            this.deleted = false
+
+            onCreate(owner)
+        }
+
+        fun allWithLastUsed(
+            userId: UUID,
+        ): List<Pair<PersonalToken, Instant?>> {
+            val lastUsed = Files.createdAt.max().alias("lastUsed")
+            return PersonalTokenTable
+                .leftJoin(Files, { id }, { uploadToken })
+                .slice(PersonalTokenTable.columns + lastUsed)
+                .select { (PersonalTokenTable.owner eq userId) and (PersonalTokenTable.deleted eq false) }
+                .groupBy(PersonalTokenTable.id)
+                .sortedByDescending { it[PersonalTokenTable.createdAt] }
+                .map { PersonalToken.wrapRow(it) to it.getOrNull(lastUsed) }
+        }
+
+    }
+
+    var token by PersonalTokenTable.token
+    var name by PersonalTokenTable.name
+    var owner by User referencedOn PersonalTokenTable.owner
+    var deleted by PersonalTokenTable.deleted
 
     val ownerId get() = transaction { owner.uuid }
 

@@ -64,7 +64,7 @@ object SessionManager {
 
     private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role, user.enabled, user.uploadToken)
+            UserState(user.id.value, user.username, user.email, user.role, user.enabled)
         }
         val tokenData = TokenData.from(user)
         val session = Session(userState, tokenData)
@@ -80,7 +80,6 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
-            uploadToken = user.uploadToken
         }
 
         if (!user.enabled) {
@@ -157,7 +156,6 @@ data class UserState(
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
-    var uploadToken: String,
 ) : Principal {
 
     fun toUserRepresentationDTO() = UserRepresentationDTO(

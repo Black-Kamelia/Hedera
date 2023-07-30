@@ -56,7 +56,6 @@ object Users : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
-    val uploadToken = varchar("upload_token", 32).uniqueIndex()
     val settings = reference("settings", UserSettingsTable)
 
     override val createdBy = reference("created_by", this)
@@ -103,17 +102,12 @@ object Users : AuditableUUIDTable("users") {
         .find { Users.email eq email }
         .firstOrNull()
 
-    fun findByUploadToken(uploadToken: String): User? = User
-        .find { Users.uploadToken eq uploadToken }
-        .firstOrNull()
-
     fun create(user: UserDTO, creator: User? = null): User = User.new {
         username = user.username
         email = user.email
         password = Hasher.hash(user.password)
         role = user.role
         enabled = false
-        uploadToken = UUID.randomUUID().toString().replace("-", "")
         settings = UserSettings.new {}
 
         onCreate(creator ?: this)
@@ -137,11 +131,6 @@ object Users : AuditableUUIDTable("users") {
     fun delete(id: UUID): User? = User
         .findById(id)
         ?.apply { delete() }
-
-    suspend fun regenerateUploadToken(user: User): User = user.apply {
-        uploadToken = UUID.randomUUID().toString().replace("-", "")
-        SessionManager.updateSession(uuid, this)
-    }
 }
 
 class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
@@ -152,19 +141,12 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
     var password by Users.password
     var role by Users.role
     var enabled by Users.enabled
-    var uploadToken by Users.uploadToken
     var settings by UserSettings referencedOn Users.settings
 
     private val files by File referrersOn Files.owner
     private val personalTokens by PersonalToken referrersOn PersonalTokens.owner
 
-    fun countFiles(): Long = files.count()
-
     fun getFiles(): List<File> = files.toList()
-
-    fun countPersonalTokens(): Long = personalTokens.count()
-
-    fun getPersonalTokens(): List<PersonalToken> = personalTokens.toList()
 
     fun getFiles(
         page: Long,

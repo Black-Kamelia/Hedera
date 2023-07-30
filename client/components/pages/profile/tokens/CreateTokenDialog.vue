@@ -10,6 +10,7 @@ const { t } = useI18n()
 const createToken = useCreateToken()
 const { copyToken, isSupported } = useCopyToken()
 
+const getSharexConfig = useSharexConfiguration()
 const getUpicConfig = useUpicConfiguration()
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -87,6 +88,7 @@ watch(visible, (value) => {
                 size="small"
                 severity="secondary"
                 label="ShareX"
+                @click="getSharexConfig(newToken!.name, token)"
               />
               <PButton
                 size="small"

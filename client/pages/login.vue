@@ -52,6 +52,16 @@ function hideErrorMessage() {
 useEventBus(LoggedInEvent).on((event) => {
   if (event.error) {
     const status = event.error?.response?.status
+
+    if (status === 500) {
+      resetField('username')
+      resetField('password')
+      usernameField.value?.$el.focus()
+      message.content = t('forms.login.errors.server_error')
+      message.severity = 'error'
+      return
+    }
+
     if (status === 401) {
       resetField('password')
       passwordField.value?.$el.focus()

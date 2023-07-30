@@ -213,6 +213,7 @@ forms:
       missing_username: Nom d'utilisateur requis
       invalid_username: Format de nom d'utilisateur invalide
       missing_password: Mot de passe requis
+      server_error: Le serveur est indisponible
     fields:
       password: Mot de passe
       remember_me: Se souvenir de moi

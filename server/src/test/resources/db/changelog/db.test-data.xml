@@ -7,5 +7,6 @@
         <loadData tableName="users_settings" file="classpath:db/data/users-settings.csv" />
         <loadData tableName="users" file="classpath:db/data/users.csv"  />
         <loadData tableName="files" file="classpath:db/data/files.csv" />
+        <loadData tableName="personal_tokens" file="classpath:db/data/personal-tokens.csv" />
     </changeSet>
 </databaseChangeLog>

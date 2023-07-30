@@ -41,8 +41,7 @@ class UpicConfiguration {
 }
 
 export default function useUpicConfiguration() {
-  const appConfig = useRuntimeConfig()
-  const baseURL = appConfig.public.apiBaseUrl.slice(0, -4)
+  const baseURL = window.location.origin
 
   function getConfig(name: string, token: string) {
     const config = JSON.stringify([JSON.stringify(new UpicConfiguration(`Hedera [${name}]`, baseURL, token))])

@@ -29,8 +29,7 @@ class SharexConfiguration {
 }
 
 export default function useSharexConfiguration() {
-  const appConfig = useRuntimeConfig()
-  const baseURL = appConfig.public.apiBaseUrl.slice(0, -4)
+  const baseURL = window.location.origin
 
   function getConfig(name: string, token: string) {
     const config = JSON.stringify(new SharexConfiguration(`Hedera [${name}]`, baseURL, token))

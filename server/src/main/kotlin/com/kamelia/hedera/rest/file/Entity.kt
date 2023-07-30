@@ -66,6 +66,7 @@ object Files : AuditableUUIDTable("files") {
         size: Long,
         visibility: FileVisibility,
         creator: User,
+        uploadToken: PersonalToken? = null,
     ): File = File.new {
         this.code = code
         this.name = name
@@ -73,6 +74,7 @@ object Files : AuditableUUIDTable("files") {
         this.size = size
         this.visibility = visibility
         this.owner = creator
+        this.uploadToken = uploadToken
 
         onCreate(creator)
     }

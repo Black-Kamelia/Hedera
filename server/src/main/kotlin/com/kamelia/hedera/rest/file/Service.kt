@@ -12,6 +12,8 @@ import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.rest.token.PersonalToken
+import com.kamelia.hedera.rest.token.PersonalTokens
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.Users
@@ -27,8 +29,11 @@ object FileService {
         part: PartData.FileItem,
         creatorToken: String
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
-        val creator = Users.findByUploadToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
-        handleFile(part, creator)
+        val token = PersonalTokens.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
+
+        if (token.deleted) throw ExpiredOrInvalidTokenException()
+
+        handleFile(part, token.owner, token)
     }
 
     suspend fun handleFile(
@@ -41,7 +46,8 @@ object FileService {
 
     private suspend fun handleFile(
         part: PartData.FileItem,
-        creator: User
+        creator: User,
+        uploadToken: PersonalToken? = null,
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
         val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
@@ -54,7 +60,8 @@ object FileService {
                 mimeType = type,
                 size = size,
                 visibility = creator.settings.defaultFileVisibility,
-                creator = creator
+                creator = creator,
+                uploadToken = uploadToken,
             ).toRepresentationDTO()
         )
     }

@@ -31,6 +31,8 @@ object PersonalTokens : AuditableUUIDTable("personal_tokens") {
 
     fun findById(id: UUID): PersonalToken? = PersonalToken.findById(id)
 
+    fun findByToken(token: String): PersonalToken? = PersonalToken.find { PersonalTokens.token eq token }.firstOrNull()
+
     fun findAllWithLastUsed(
         userId: UUID,
     ): List<Pair<PersonalToken, Instant?>> {

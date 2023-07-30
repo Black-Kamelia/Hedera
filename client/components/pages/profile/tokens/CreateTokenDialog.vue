@@ -10,9 +10,12 @@ const { t } = useI18n()
 const createToken = useCreateToken()
 const { copyToken, isSupported } = useCopyToken()
 
+const getUpicConfig = useUpicConfiguration()
+
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
-const newToken = ref<Nullable<string>>(null)
+const newToken = ref<Nullable<PersonalTokenDTO>>(null)
+const token = computed(() => newToken.value?.token ?? '')
 
 const schema = object({
   name: string()
@@ -26,7 +29,7 @@ const submit = handleSubmit(async (values) => {
   pending.value = true
   createToken(values.name).then((response) => {
     if (response) {
-      newToken.value = response.payload.token
+      newToken.value = response.payload
       emit('completed', response.payload)
     }
   }).finally(() => pending.value = false)
@@ -72,15 +75,27 @@ watch(visible, (value) => {
             {{ t('pages.profile.tokens.generated_dialog.summary') }}
           </p>
           <div class="flex flex-row gap-3 mb-3">
-            <PInputText class="flex-grow" readonly :value="newToken" />
-            <PButton v-if="isSupported" :label="t('pages.profile.tokens.copy_token')" icon="i-tabler-copy" @click="copyToken(newToken)" />
+            <PInputText class="flex-grow" readonly :value="token" />
+            <PButton v-if="isSupported" :label="t('pages.profile.tokens.copy_token')" icon="i-tabler-copy" @click="copyToken(token)" />
           </div>
           <p class="text-[--text-color-secondary]">
             {{ t('pages.profile.tokens.generated_dialog.download') }}
           </p>
-          <div class="flex flex-row gap-2 items-center">
-            <PButton size="small" severity="secondary" label="ShareX" />
-            <PButton size="small" severity="secondary" label="uPic" />
+          <div class="flex flex-row justify-between">
+            <div class="flex flex-row gap-2 items-center">
+              <PButton
+                size="small"
+                severity="secondary"
+                label="ShareX"
+              />
+              <PButton
+                size="small"
+                severity="secondary"
+                label="uPic"
+                @click="getUpicConfig(newToken!.name, token)"
+              />
+            </div>
+            <PButton size="small" text label="Documentation" icon="i-tabler-help-circle-filled" />
           </div>
         </div>
       </Transition>

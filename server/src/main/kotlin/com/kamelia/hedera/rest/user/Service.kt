@@ -56,7 +56,7 @@ object UserService {
         pageSize: Int,
         definition: PageDefinitionDTO
     ): Response<UserPageDTO, String> = Connection.transaction {
-        val (users, total) = User.all(page, pageSize, definition)
+        val (users, total) = User.search(page, pageSize, definition)
         Response.ok(UserPageDTO(
             PageDTO(
                 users.map { it.toRepresentationDTO() },

@@ -69,7 +69,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
 
         fun findByEmail(email: String): User? = find { UserTable.email eq email }.firstOrNull()
 
-        fun all(
+        fun search(
             page: Long,
             pageSize: Int,
             definition: PageDefinitionDTO

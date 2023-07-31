@@ -13,10 +13,8 @@ import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.token.PersonalToken
-import com.kamelia.hedera.rest.token.PersonalTokenTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.util.FileUtils
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.content.*

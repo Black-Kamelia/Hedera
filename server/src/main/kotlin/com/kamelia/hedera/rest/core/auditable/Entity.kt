@@ -1,7 +1,7 @@
 package com.kamelia.hedera.rest.core.auditable
 
 import com.kamelia.hedera.rest.user.User
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.UserTable
 import java.time.Instant
 import java.util.UUID
 import org.jetbrains.exposed.dao.UUIDEntity
@@ -13,9 +13,9 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 abstract class AuditableUUIDTable(name: String) : UUIDTable(name) {
 
     val createdAt = timestamp("created_at").clientDefault { Instant.now() }
-    open val createdBy: Column<EntityID<UUID>> by lazy { reference("created_by", Users) }
+    open val createdBy: Column<EntityID<UUID>> by lazy { reference("created_by", UserTable) }
     val updatedAt = timestamp("updated_at").nullable()
-    open val updatedBy: Column<EntityID<UUID>?> by lazy { reference("updated_by", Users).nullable() }
+    open val updatedBy: Column<EntityID<UUID>?> by lazy { reference("updated_by", UserTable).nullable() }
 }
 
 abstract class AuditableUUIDEntity(id: EntityID<UUID>, table: AuditableUUIDTable) : UUIDEntity(id) {

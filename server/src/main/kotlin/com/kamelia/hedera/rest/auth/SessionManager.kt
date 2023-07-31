@@ -13,7 +13,6 @@ import com.kamelia.hedera.rest.user.UserEvents
 import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic

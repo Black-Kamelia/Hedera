@@ -5,7 +5,7 @@ import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.token.PersonalToken
 import com.kamelia.hedera.rest.token.PersonalTokenTable
 import com.kamelia.hedera.rest.user.User
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.UserTable
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -31,14 +31,14 @@ enum class FileVisibility {
     fun toMessageKey() = "pages.files.visibility.${name.lowercase()}"
 }
 
-object Files : AuditableUUIDTable("files") {
+object FileTable : AuditableUUIDTable("files") {
 
     val code = varchar("code", 10).uniqueIndex()
     val name = varchar("name", 255)
     val mimeType = varchar("mime_type", 64)
     val size = long("size")
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
-    val owner = reference("owner", Users)
+    val owner = reference("owner", UserTable)
     val uploadToken = reference("upload_token", PersonalTokenTable).nullable()
 
     init {
@@ -48,11 +48,11 @@ object Files : AuditableUUIDTable("files") {
 
 }
 
-class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {
+class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
 
-    companion object : UUIDEntityClass<File>(Files) {
+    companion object : UUIDEntityClass<File>(FileTable) {
 
-        fun findByCode(code: String): File? = find { Files.code eq code }.firstOrNull()
+        fun findByCode(code: String): File? = find { FileTable.code eq code }.firstOrNull()
 
         fun create(
             code: String,
@@ -76,13 +76,13 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, Files) {
 
     }
 
-    var code by Files.code
-    var name by Files.name
-    var mimeType by Files.mimeType
-    var size by Files.size
-    var visibility by Files.visibility
-    var owner by User referencedOn Files.owner
-    var uploadToken by PersonalToken optionalReferencedOn Files.uploadToken
+    var code by FileTable.code
+    var name by FileTable.name
+    var mimeType by FileTable.mimeType
+    var size by FileTable.size
+    var visibility by FileTable.visibility
+    var owner by User referencedOn FileTable.owner
+    var uploadToken by PersonalToken optionalReferencedOn FileTable.uploadToken
 
     val ownerId get() = transaction { owner.uuid }
 

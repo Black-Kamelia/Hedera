@@ -1,7 +1,7 @@
 package com.kamelia.hedera.rest.setting
 
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.UserTable
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -31,9 +31,9 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<UserSettings>(UserSettingsTable) {
 
-        fun getByUserId(userId: UUID): UserSettings = Users
-            .join(UserSettingsTable, JoinType.INNER, Users.settings, UserSettingsTable.id)
-            .select { Users.id eq userId }
+        fun getByUserId(userId: UUID): UserSettings = UserTable
+            .join(UserSettingsTable, JoinType.INNER, UserTable.settings, UserSettingsTable.id)
+            .select { UserTable.id eq userId }
             .first()
             .let { return UserSettings.wrapRow(it) }
 

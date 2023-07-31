@@ -12,7 +12,7 @@ import com.kamelia.hedera.rest.core.pageable.applySort
 import com.kamelia.hedera.rest.core.pageable.filter
 import com.kamelia.hedera.rest.file.File
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.file.Files
+import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
 import com.kamelia.hedera.util.adaptFileSize
@@ -47,7 +47,7 @@ enum class UserRole(private val power: Int) {
     infix fun ne(other: UserRole): Boolean = power != other.power
 }
 
-object Users : AuditableUUIDTable("users") {
+object UserTable : AuditableUUIDTable("users") {
 
     val email = varchar("email", 255).uniqueIndex()
     val username = varchar("username", 128).uniqueIndex()
@@ -61,34 +61,34 @@ object Users : AuditableUUIDTable("users") {
 
 }
 
-class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
+class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
 
-    companion object : UUIDEntityClass<User>(Users) {
+    companion object : UUIDEntityClass<User>(UserTable) {
 
-        fun findByUsername(username: String): User? = find { Users.username eq username }.firstOrNull()
+        fun findByUsername(username: String): User? = find { UserTable.username eq username }.firstOrNull()
 
-        fun findByEmail(email: String): User? = find { Users.email eq email }.firstOrNull()
+        fun findByEmail(email: String): User? = find { UserTable.email eq email }.firstOrNull()
 
         fun all(
             page: Long,
             pageSize: Int,
             definition: PageDefinitionDTO
-        ): Pair<List<User>, Long> = Users
+        ): Pair<List<User>, Long> = UserTable
             .selectAll()
             .applyFilters(definition.filters) {
                 when (it.field) {
-                    Users.username.name -> Users.username.filter(it)
-                    Users.email.name -> Users.email.filter(it)
-                    Users.role.name -> Users.role.filter(it)
-                    Users.enabled.name -> Users.enabled.filter(it)
+                    UserTable.username.name -> UserTable.username.filter(it)
+                    UserTable.email.name -> UserTable.email.filter(it)
+                    UserTable.role.name -> UserTable.role.filter(it)
+                    UserTable.enabled.name -> UserTable.enabled.filter(it)
                     else -> throw UnknownFilterFieldException(it.field)
                 }
             }.applySort(definition.sorter) {
                 when (it) {
-                    Users.username.name -> Users.username
-                    Users.email.name -> Users.email
-                    Users.role.name -> Users.role
-                    Users.enabled.name -> Users.enabled
+                    UserTable.username.name -> UserTable.username
+                    UserTable.email.name -> UserTable.email
+                    UserTable.role.name -> UserTable.role
+                    UserTable.enabled.name -> UserTable.enabled
                     else -> throw UnknownFilterFieldException(it)
                 }
             }.let {
@@ -109,41 +109,41 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
 
     }
 
-    var username by Users.username
-    var email by Users.email
-    var password by Users.password
-    var role by Users.role
-    var enabled by Users.enabled
-    var settings by UserSettings referencedOn Users.settings
+    var username by UserTable.username
+    var email by UserTable.email
+    var password by UserTable.password
+    var role by UserTable.role
+    var enabled by UserTable.enabled
+    var settings by UserSettings referencedOn UserTable.settings
 
-    private val files by File referrersOn Files.owner
+    private val files by File referrersOn FileTable.owner
 
     fun getFiles(
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean
-    ): Pair<List<File>, Long> = Files
+    ): Pair<List<File>, Long> = FileTable
         .selectAll()
-        .andWhere { Files.owner eq uuid }
-        .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }
+        .andWhere { FileTable.owner eq uuid }
+        .apply { if (!asOwner) andWhere { FileTable.visibility eq FileVisibility.PUBLIC } }
         .applyFilters(definition.filters) {
             when (it.field) {
-                "name" -> Files.name.filter(it)
-                "mimeType" -> Files.mimeType.filter(it)
-                "size" -> Files.size.filter(it.adaptFileSize())
-                "visibility" -> Files.visibility.filter(it)
-                "createdAt" -> Files.createdAt.filter(it)
+                "name" -> FileTable.name.filter(it)
+                "mimeType" -> FileTable.mimeType.filter(it)
+                "size" -> FileTable.size.filter(it.adaptFileSize())
+                "visibility" -> FileTable.visibility.filter(it)
+                "createdAt" -> FileTable.createdAt.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)
             }
         }
         .applySort(definition.sorter) {
             when (it) {
-                "name" -> Files.name
-                "mimeType" -> Files.mimeType
-                "size" -> Files.size
-                "visibility" -> Files.visibility
-                "createdAt" -> Files.createdAt
+                "name" -> FileTable.name
+                "mimeType" -> FileTable.mimeType
+                "size" -> FileTable.size
+                "visibility" -> FileTable.visibility
+                "createdAt" -> FileTable.createdAt
                 else -> throw UnknownSortFieldException(it)
             }
         }

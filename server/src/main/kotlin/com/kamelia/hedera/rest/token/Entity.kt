@@ -2,9 +2,9 @@ package com.kamelia.hedera.rest.token
 
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
-import com.kamelia.hedera.rest.file.Files
+import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.user.User
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.UserTable
 import com.kamelia.hedera.util.uuid
 import java.time.Instant
 import java.util.*
@@ -21,7 +21,7 @@ object PersonalTokenTable : AuditableUUIDTable("personal_tokens") {
 
     val token = varchar("token", 32).uniqueIndex()
     val name = varchar("name", 255)
-    val owner = reference("owner", Users)
+    val owner = reference("owner", UserTable)
     val deleted = bool("deleted")
 
     init {
@@ -52,9 +52,9 @@ class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokenT
         fun allWithLastUsed(
             userId: UUID,
         ): List<Pair<PersonalToken, Instant?>> {
-            val lastUsed = Files.createdAt.max().alias("lastUsed")
+            val lastUsed = FileTable.createdAt.max().alias("lastUsed")
             return PersonalTokenTable
-                .leftJoin(Files, { id }, { uploadToken })
+                .leftJoin(FileTable, { id }, { uploadToken })
                 .slice(PersonalTokenTable.columns + lastUsed)
                 .select { (PersonalTokenTable.owner eq userId) and (PersonalTokenTable.deleted eq false) }
                 .groupBy(PersonalTokenTable.id)

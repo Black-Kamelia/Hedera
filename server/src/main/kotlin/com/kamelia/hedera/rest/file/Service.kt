@@ -70,18 +70,16 @@ object FileService {
 
     suspend fun getFile(
         code: String,
-        authId: UUID?,
+        authId: UUID? = null,
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
+        val file = File.findByCode(code) ?: throw FileNotFoundException()
         val user = authId?.let { User.findById(it) }
-        File.findByCode(code)
-            ?.takeUnless { file ->
-                val isPrivate = file.visibility == FileVisibility.PRIVATE
-                val notHasPermission = user?.let { file.ownerId != it.uuid }
-                isPrivate && (notHasPermission ?: true)
-            }?.let { file ->
-                Response.ok(file.toRepresentationDTO())
-            }
-            ?: Response.notFound()
+
+        if (file.visibility == FileVisibility.PRIVATE && user?.uuid != file.ownerId) {
+            throw FileNotFoundException()
+        }
+
+        Response.ok(file.toRepresentationDTO())
     }
 
     suspend fun getFiles(
@@ -91,7 +89,7 @@ object FileService {
         definition: PageDefinitionDTO,
         asOwner: Boolean = false,
     ): Response<FilePageDTO, String> = Connection.transaction {
-        val user = User.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+        val user = User[userId]
         val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
 
         Response.ok(
@@ -110,7 +108,7 @@ object FileService {
     suspend fun getFilesFormats(
         userId: UUID
     ): Response<List<String>, String> = Connection.transaction {
-        val user = User.findById(userId) ?: throw ExpiredOrInvalidTokenException()
+        val user = User[userId]
 
         Response.ok(user.getFilesFormats())
     }

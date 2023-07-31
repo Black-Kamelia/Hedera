@@ -154,6 +154,8 @@ pages:
           name_placeholder: ex. Ordinateur de {name}
         errors:
           missing_name: Nom du jeton requis
+        documentation: Documentation
+        propose_app: Proposer une application
         cancel: Annuler
         submit: Créer
       generated_dialog:

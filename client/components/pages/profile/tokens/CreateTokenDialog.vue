@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
 import { useForm } from 'vee-validate'
+import getSharexConfiguration from '~/utils/uploaderConfigs/getSharexConfiguration'
+import getUpicConfiguration from '~/utils/uploaderConfigs/getUpicConfiguration'
 
 const emit = defineEmits<{
   (event: 'completed', payload: PersonalTokenDTO): void
@@ -9,9 +11,6 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const createToken = useCreateToken()
 const { copyToken, isSupported } = useCopyToken()
-
-const getSharexConfig = useSharexConfiguration()
-const getUpicConfig = useUpicConfiguration()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
@@ -77,7 +76,10 @@ watch(visible, (value) => {
           </p>
           <div class="flex flex-row gap-3 mb-3">
             <PInputText class="flex-grow" readonly :value="token" />
-            <PButton v-if="isSupported" :label="t('pages.profile.tokens.copy_token')" icon="i-tabler-copy" @click="copyToken(token)" />
+            <PButton
+              v-if="isSupported" :label="t('pages.profile.tokens.copy_token')" icon="i-tabler-copy"
+              @click="copyToken(token)"
+            />
           </div>
           <p class="text-[--text-color-secondary]">
             {{ t('pages.profile.tokens.generated_dialog.download') }}
@@ -88,16 +90,19 @@ watch(visible, (value) => {
                 size="small"
                 severity="secondary"
                 label="ShareX"
-                @click="getSharexConfig(newToken!.name, token)"
+                @click="getSharexConfiguration(newToken!.name, token)"
               />
               <PButton
                 size="small"
                 severity="secondary"
                 label="uPic"
-                @click="getUpicConfig(newToken!.name, token)"
+                @click="getUpicConfiguration(newToken!.name, token)"
               />
             </div>
-            <PButton size="small" text label="Documentation" icon="i-tabler-help-circle-filled" />
+            <div class="flex flex-row-reverse gap-2 items-center">
+              <PButton size="small" text :label="t('pages.profile.tokens.create_dialog.documentation')" icon="i-tabler-help-circle-filled" />
+              <PButton size="small" text :label="t('pages.profile.tokens.create_dialog.propose_app')" icon="i-tabler-message-report" />
+            </div>
           </div>
         </div>
       </Transition>

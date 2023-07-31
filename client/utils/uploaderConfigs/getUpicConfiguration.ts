@@ -20,7 +20,7 @@ class UpicConfigurationData {
   constructor(baseURL: string, token: string) {
     this.domain = baseURL
     this.headers = JSON.stringify([
-      { key: 'Content-Type', value: 'application/x-www-form-urlencoded' },
+      { key: 'Content-Type', value: 'multipart/form-data' },
       { key: 'Upload-Token', value: token },
     ])
     this.url = `${baseURL}/api/files/upload/token`
@@ -40,14 +40,9 @@ class UpicConfiguration {
   }
 }
 
-export default function useUpicConfiguration() {
+export default function getUpicConfiguration(name: string, token: string) {
   const baseURL = window.location.origin
-
-  function getConfig(name: string, token: string) {
-    const config = JSON.stringify([JSON.stringify(new UpicConfiguration(`Hedera [${name}]`, baseURL, token))])
-    const blob = new Blob([config], { type: 'application/octet-stream' })
-    downloadBlob(blob, 'hedera_upic_config.json')
-  }
-
-  return getConfig
+  const config = JSON.stringify([JSON.stringify(new UpicConfiguration(`Hedera [${name}]`, baseURL, token))])
+  const blob = new Blob([config], { type: 'application/octet-stream' })
+  downloadBlob(blob, 'hedera_upic_config.json')
 }

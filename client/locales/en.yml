@@ -154,6 +154,8 @@ pages:
           name_placeholder: e.g. {name}’s computer
         errors:
           missing_name: Token name is required
+        documentation: Documentation
+        propose_app: Propose an application
         cancel: Cancel
         submit: Create
       generated_dialog:

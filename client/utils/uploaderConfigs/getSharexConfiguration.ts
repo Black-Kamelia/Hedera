@@ -1,7 +1,3 @@
-/**
- * This class represent the configuration file that is used to configure the *ShareX* app.
- */
-
 class SharexConfiguration {
   private Version = '15.0.0'
   private Name: string
@@ -9,7 +5,7 @@ class SharexConfiguration {
   private RequestMethod = 'POST'
   private RequestURL: string
   private Headers: object
-  private Body = 'FormURLEncoded'
+  private Body = 'MultipartFormData'
   private FileFormName = 'file'
   private URL: string
   private ThumbnailURL: string
@@ -22,20 +18,15 @@ class SharexConfiguration {
     this.URL = `${baseURL}/{json:code}`
     this.ThumbnailURL = `${baseURL}/{json:code}`
     this.Headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'multipart/form-data',
       'Upload-Token': token,
     }
   }
 }
 
-export default function useSharexConfiguration() {
+export default function getSharexConfiguration(name: string, token: string) {
   const baseURL = window.location.origin
-
-  function getConfig(name: string, token: string) {
-    const config = JSON.stringify(new SharexConfiguration(`Hedera [${name}]`, baseURL, token))
-    const blob = new Blob([config], { type: 'application/octet-stream' })
-    downloadBlob(blob, 'hedera_sharex_config.sxcu')
-  }
-
-  return getConfig
+  const config = JSON.stringify(new SharexConfiguration(`Hedera [${name}]`, baseURL, token))
+  const blob = new Blob([config], { type: 'application/octet-stream' })
+  downloadBlob(blob, 'hedera_sharex_config.sxcu')
 }

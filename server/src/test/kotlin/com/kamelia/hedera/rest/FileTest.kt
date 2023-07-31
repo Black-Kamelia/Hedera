@@ -114,6 +114,18 @@ class FileTest {
         }
     }
 
+    @DisplayName("Uploading a file with deleted token")
+    @Test
+    fun uploadFileDeletedToken() = testApplication {
+        val client = client()
+        val response = client.submitFormWithBinaryData("/api/files/upload/token", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            header("Upload-Token", "52713337ddd140e8adf8e9c10a5ccb12")
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
     @DisplayName("Uploading a file with incorrect content type")
     @Test
     fun uploadFileWithIncorrectContentType() = testApplication {

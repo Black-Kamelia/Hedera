@@ -40,35 +40,39 @@ function toggleSidebar() {
       </div>
     </div>
     <div class="items flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden">
-      <div class="flex flex-col justify-start gap-2 p-4 grow">
-        <SidebarButton
-          icon="i-tabler-file" :label="t('pages.files.title')" :open="sidebar.open"
-          :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
-        />
-        <SidebarButton
-          icon="i-tabler-star" :label="t('pages.favorites.title')" :open="sidebar.open"
-          :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
-        />
-        <SidebarButton
-          icon="i-tabler-upload" :label="t('pages.upload.title')" :open="sidebar.open"
-          :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
-        />
-        <SidebarButton
-          icon="i-tabler-timeline" :label="t('pages.analytics.title')" :open="sidebar.open"
-          :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
-        />
-        <SidebarButton
-          v-if="isAdmin" icon="i-tabler-tool" :label="t('pages.configuration.title')" :open="sidebar.open"
-          :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
-        />
-        <SidebarButton
-          v-if="isDebugEnabled" icon="i-tabler-traffic-cone" :label="t('pages.debug.title')" :open="sidebar.open"
-          :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
-        />
+      <div class="flex flex-col justify-between grow overflow-y-auto">
+        <div class="flex flex-col justify-start gap-2 p-4">
+          <SidebarButton
+            icon="i-tabler-file" :label="t('pages.files.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
+          />
+          <SidebarButton
+            icon="i-tabler-star" :label="t('pages.favorites.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
+          />
+          <SidebarButton
+            icon="i-tabler-upload" :label="t('pages.upload.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
+          />
+          <SidebarButton
+            icon="i-tabler-timeline" :label="t('pages.analytics.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
+          />
+          <SidebarButton
+            v-if="isAdmin" icon="i-tabler-tool" :label="t('pages.configuration.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
+          />
+          <SidebarButton
+            v-if="isDebugEnabled" icon="i-tabler-traffic-cone" :label="t('pages.debug.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/debug')" @click="navigateTo('/debug')"
+          />
+        </div>
+        <div class="flex flex-col p-4 gap-2">
+          <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
+        </div>
       </div>
-      <div class="flex flex-col p-4 gap-2">
-        <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
-        <div class="sep" />
+      <div class="sep mx-4" />
+      <div class="flex flex-col justify-start gap-2 p-4">
         <SidebarButton
           icon="i-tabler-user-circle" :label="user?.username ?? ''" :open="sidebar.open"
           :active="route => route.startsWith('/profile')" @click="navigateTo('/profile')"
@@ -125,6 +129,7 @@ function toggleSidebar() {
     .p-button.active {
       background-color: var(--primary-color-text);
       color: var(--primary-500);
+      font-weight: bold;
     }
   }
 
@@ -176,11 +181,11 @@ function toggleSidebar() {
       .p-button.active {
         background-color: var(--text-color);
         color: var(--primary-800);
+        font-weight: bold;
       }
     }
 
     .sep {
-      margin: .5rem 0;
       border-top: 1px solid var(--primary-700);
       border-left: 1px solid var(--primary-700);
     }
@@ -188,7 +193,6 @@ function toggleSidebar() {
 }
 
 .sep {
-  margin: .5rem 0;
   border-top: 1px solid var(--primary-400);
   border-left: 1px solid var(--primary-400);
 }

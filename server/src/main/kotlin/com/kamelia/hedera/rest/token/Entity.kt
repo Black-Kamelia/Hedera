@@ -10,6 +10,7 @@ import java.time.Instant
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.leftJoin
@@ -58,7 +59,7 @@ class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokenT
                 .slice(PersonalTokenTable.columns + lastUsed)
                 .select { (PersonalTokenTable.owner eq userId) and (PersonalTokenTable.deleted eq false) }
                 .groupBy(PersonalTokenTable.id)
-                .sortedByDescending { it[PersonalTokenTable.createdAt] }
+                .orderBy(PersonalTokenTable.createdAt, SortOrder.DESC)
                 .map { PersonalToken.wrapRow(it) to it.getOrNull(lastUsed) }
         }
 

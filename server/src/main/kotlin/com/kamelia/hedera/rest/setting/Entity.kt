@@ -34,6 +34,7 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
         fun getByUserId(userId: UUID): UserSettings = UserTable
             .join(UserSettingsTable, JoinType.INNER, UserTable.settings, UserSettingsTable.id)
             .select { UserTable.id eq userId }
+            .limit(1)
             .first()
             .let { return UserSettings.wrapRow(it) }
 

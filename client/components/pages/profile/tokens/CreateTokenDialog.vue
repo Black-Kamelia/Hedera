@@ -31,7 +31,7 @@ const submit = handleSubmit(async (values) => {
   createToken(values.name).then((response) => {
     if (response) {
       newToken.value = response.payload
-      emit('completed', response.payload)
+      emit('completed', response.payload!)
     }
   }).finally(() => pending.value = false)
 })

@@ -5,9 +5,11 @@ export function useCreateToken() {
     return $fetchAPI<MessageDTO<PersonalTokenDTO>>('/personalTokens', { method: 'POST', body: { name: tokenName } })
   })
 
-  return function createToken(tokenName: string): Promise<void | MessageDTO<any>> {
+  return function createToken(tokenName: string): Promise<void | MessageDTO<PersonalTokenDTO>> {
     return new Promise((resolve, reject) => {
-      call(tokenName).then(resolve).catch(reject)
+      (call(tokenName) as Promise<void | MessageDTO<PersonalTokenDTO>>)
+        .then(resolve)
+        .catch(reject)
     })
   }
 }

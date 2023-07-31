@@ -7,7 +7,7 @@ export default function useDeleteToken() {
   const { t } = useI18n()
   const confirm = useConfirm()
 
-  function deleteToken(tokenId: string) {
+  function deleteToken(tokenId: string): Promise<MessageDTO<PersonalTokenDTO> | void> {
     return new Promise((resolve, reject) => {
       confirm.require({
         message: t('pages.profile.tokens.delete_dialog.summary'),
@@ -17,7 +17,9 @@ export default function useDeleteToken() {
         acceptClass: 'p-button-danger',
         rejectLabel: t('pages.profile.tokens.delete_dialog.cancel'),
         accept() {
-          return call(tokenId).then(resolve).catch(reject)
+          return (call(tokenId) as Promise<MessageDTO<PersonalTokenDTO> | void>)
+            .then(resolve)
+            .catch(reject)
         },
       })
     })

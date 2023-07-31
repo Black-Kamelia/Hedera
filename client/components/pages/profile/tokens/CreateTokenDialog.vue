@@ -64,7 +64,7 @@ watch(visible, (value) => {
             id="token_name"
             name="name"
             :label="t('pages.profile.tokens.create_dialog.fields.name')"
-            :placeholder="t('pages.profile.tokens.create_dialog.fields.name_placeholder')"
+            :placeholder="t('pages.profile.tokens.create_dialog.fields.name_placeholder', { name: getRandomDeveloper().firstName })"
             class="w-full"
             autofocus
             @keydown.enter="submit"

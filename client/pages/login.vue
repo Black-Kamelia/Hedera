@@ -5,7 +5,7 @@ import { object, string } from 'yup'
 const { t, m } = useI18n()
 const { login } = useAuth()
 
-const usernamePlaceholder = getRandomDeveloperName()
+const usernamePlaceholder = getRandomDeveloperUsername()
 const message = reactive<{
   content: string | null
   severity: 'success' | 'info' | 'warn' | 'error' | undefined

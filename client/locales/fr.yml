@@ -151,7 +151,7 @@ pages:
         summary: Un jeton personnel vous permet d'autoriser une application tierce à envoyer des fichiers avec votre identité. Les jetons sont strictement personnels et ne doivent pas être partagés. Si vous pensez qu'un jeton est compromis, il est vivement conseillé de le supprimer.
         fields:
           name: Nom du jeton
-          name_placeholder: ex. Ordinateur de Alan
+          name_placeholder: ex. Ordinateur de {name}
         errors:
           missing_name: Nom du jeton requis
         cancel: Annuler

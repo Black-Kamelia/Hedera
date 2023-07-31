@@ -151,7 +151,7 @@ pages:
         summary: A personal token allows you to authorize a third-party application to upload files with your identity. Tokens are strictly personal and must not be shared. If you think a token has been compromised, it is strongly recommended to delete it.
         fields:
           name: Token name
-          name_placeholder: e.g. Alan's computer
+          name_placeholder: e.g. {name}'s computer
         errors:
           missing_name: Token name is required
         cancel: Cancel

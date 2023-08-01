@@ -18,7 +18,6 @@ class SharexConfiguration {
     this.URL = `${baseURL}/{json:code}`
     this.ThumbnailURL = `${baseURL}/{json:code}`
     this.Headers = {
-      'Content-Type': 'multipart/form-data',
       'Upload-Token': token,
     }
   }

@@ -139,7 +139,7 @@ class FileTest {
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
         val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
         assertEquals(error.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.parameters!!["header"], "content-type")
+        assertEquals(error.parameters!!["header"], "Content-Type")
     }
 
     @DisplayName("Uploading a file with no file")

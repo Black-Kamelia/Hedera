@@ -35,12 +35,10 @@ const submit = handleSubmit(async (values) => {
   }).finally(() => pending.value = false)
 })
 
-watch(visible, (value) => {
-  if (!value) {
-    newToken.value = null
-    resetForm()
-  }
-})
+function onHide() {
+  newToken.value = null
+  resetForm()
+}
 </script>
 
 <template>
@@ -51,6 +49,8 @@ watch(visible, (value) => {
     :header="t('pages.profile.tokens.create_dialog.title')"
     :draggable="false"
     :dismissable-mask="newToken !== null"
+    :pt="{ content: { class: 'overflow-hidden' } }"
+    @hide="onHide"
   >
     <div class="relative">
       <Transition name="slide-left">

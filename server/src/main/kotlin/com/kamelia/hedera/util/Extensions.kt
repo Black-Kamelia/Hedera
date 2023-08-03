@@ -150,7 +150,7 @@ suspend fun ApplicationCall.doWithForm(
 ): Result<MultiPartData> {
     getHeader("Content-Type").let { contentType ->
         if (!contentType.startsWith("multipart/form-data")) {
-            throw MissingHeaderException("content-type")
+            throw MissingHeaderException("Content-Type")
         }
     }
     return runCatching {

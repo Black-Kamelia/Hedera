@@ -4,6 +4,7 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
@@ -113,6 +114,18 @@ class FileTest {
         }
     }
 
+    @DisplayName("Uploading a file with deleted token")
+    @Test
+    fun uploadFileDeletedToken() = testApplication {
+        val client = client()
+        val response = client.submitFormWithBinaryData("/api/files/upload/token", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            header("Upload-Token", "52713337ddd140e8adf8e9c10a5ccb12")
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
     @DisplayName("Uploading a file with incorrect content type")
     @Test
     fun uploadFileWithIncorrectContentType() = testApplication {
@@ -126,7 +139,7 @@ class FileTest {
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
         val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
         assertEquals(error.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.parameters!!["header"], "content-type")
+        assertEquals(error.parameters!!["header"], "Content-Type")
     }
 
     @DisplayName("Uploading a file with no file")
@@ -183,10 +196,10 @@ class FileTest {
         }
     }
 
-    @DisplayName("Editing a file")
-    @ParameterizedTest(name = "Editing {1} file as {0} is {3}")
+    @DisplayName("Editing a file''s name")
+    @ParameterizedTest(name = "Editing {1} file''s name as {0} is {3}")
     @MethodSource("editPrivateFile", "editUnlistedFile", "editPublicFile")
-    fun editFile(
+    fun editFileName(
         user: TestUser,
         fileVisibility: String,
         fileId: UUID,
@@ -194,7 +207,7 @@ class FileTest {
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
-        val response = client.patch("/api/files/$fileId") {
+        val response = client.put("/api/files/$fileId/name") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let {
@@ -203,9 +216,64 @@ class FileTest {
         }
         assertEquals(statusCode, response.status)
         if (response.status == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals("bar.txt", responseDto.name)
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals("bar.txt", responseDto.payload!!.name)
         }
+    }
+
+    @DisplayName("Editing an unknown file''s name")
+    @Test
+    fun editUnknownFileName() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.put("/api/files/00000000-0000-0000-0000-000000000000/name") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(name = "bar.txt"))
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Editing a file''s visibility")
+    @ParameterizedTest(name = "Editing {1} file''s visibility as {0} is {3}")
+    @MethodSource("editPrivateFile", "editUnlistedFile", "editPublicFile")
+    fun editFileVisibility(
+        user: TestUser,
+        fileVisibility: String,
+        fileId: UUID,
+        statusCode: HttpStatusCode,
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.put("/api/files/$fileId/visibility") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(visibility = FileVisibility.PRIVATE))
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(statusCode, response.status)
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals(FileVisibility.PRIVATE, responseDto.payload!!.visibility)
+        }
+    }
+
+    @DisplayName("Editing an unknown file''s visibility")
+    @Test
+    fun editUnknownFileVisibility() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.put("/api/files/00000000-0000-0000-0000-000000000000/visibility") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(visibility = FileVisibility.PRIVATE))
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     @DisplayName("Deleting a file")
@@ -225,6 +293,19 @@ class FileTest {
             }
         }
         assertEquals(statusCode, response.status)
+    }
+
+    @DisplayName("Deleting an unknown file")
+    @Test
+    fun deleteUnknownFile() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.delete("/api/files/00000000-0000-0000-0000-000000000000") {
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     @DisplayName("Filtering files")
@@ -423,17 +504,17 @@ class FileTest {
         @JvmStatic
         fun uploadFileToken(): Stream<Arguments> = Stream.of(
             Arguments.of(
-                "0f2577e20ca8466b89724d2cfb56e2db",
+                "d9efe80efb1745ea8a6c341e70ae36f9",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "a9b42b75a4774e41b6391e7724c05f77",
+                "bb7e6bc298ff413a904786a49c6e9719",
                 Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "8da63c40d5534a50b69e44f4b6789712",
+                "ef4e9fd691954eda8e0493b4745882e3",
                 Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
                 HttpStatusCode.Created
             ),

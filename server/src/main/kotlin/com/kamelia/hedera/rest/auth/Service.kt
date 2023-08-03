@@ -5,7 +5,7 @@ import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.database.Connection
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.User
 import java.util.*
 
 object AuthService {
@@ -24,7 +24,7 @@ object AuthService {
     }
 
     suspend fun logoutAll(userId: UUID): Response<Nothing, MessageKeyDTO> = Connection.transaction {
-        val user = Users.findById(userId) ?: return@transaction Response.notFound()
+        val user = User[userId]
         SessionManager.logoutAll(user)
         Response.ok()
     }

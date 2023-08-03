@@ -24,11 +24,11 @@ const menus = computed(() => [
   //   icon: 'i-tabler-devices',
   //   path: '/profile/sessions',
   // },
-  // {
-  //   label: t('pages.profile.menu.tokens'),
-  //   icon: 'i-tabler-key',
-  //   path: '/profile/tokens',
-  // },
+  {
+    label: t('pages.profile.menu.tokens'),
+    icon: 'i-tabler-key',
+    path: '/profile/tokens',
+  },
   {
     label: t('pages.profile.menu.settings'),
     icon: 'i-tabler-settings',
@@ -55,7 +55,7 @@ watch(currentRoute, redirect, { immediate: true })
       </div>
       <hr>
     </div>
-    <div class="adaptive-width self-center px-8 mt-5 w-full xl:w-70%">
+    <div class="adaptive-width self-center px-8 my-5 w-full xl:w-70%">
       <NuxtPage />
     </div>
   </div>

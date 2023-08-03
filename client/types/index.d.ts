@@ -136,6 +136,14 @@ declare global {
     user: UserRepresentationDTO
     userSettings: UserSettings
   }
+
+  interface PersonalTokenDTO {
+    id: string
+    token?: string
+    name: string
+    createdAt: string
+    lastUsed?: string
+  }
 }
 // END SECTION: DTO
 

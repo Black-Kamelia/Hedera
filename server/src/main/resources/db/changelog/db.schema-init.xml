@@ -3,8 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
-    <changeSet author="system" id="init-1.0">
-
+    <changeSet author="system" id="init-1.0-users">
         <createTable tableName="users">
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -28,7 +27,7 @@
                 <constraints nullable="true" unique="true"/>
             </column>
             <column name="settings" type="UUID">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
 
             <column name="created_by" type="UUID">
@@ -56,8 +55,60 @@
                                  constraintName="fk_users__updated_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
+    </changeSet>
 
+    <changeSet author="system" id="init-1.0-personal_tokens">
+        <createTable tableName="personal_tokens">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="token" type="VARCHAR(32)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deleted" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
 
+            <column name="created_by" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="UUID">
+                <constraints nullable="true"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="personal_tokens"
+                                 baseColumnNames="owner"
+                                 constraintName="fk_personal_tokens__owner__id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="personal_tokens"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_personal_tokens__created_by__id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="personal_tokens"
+                                 baseColumnNames="updated_by"
+                                 constraintName="fk_personal_tokens__updated_by__id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet author="system" id="init-1.0-files">
         <createTable tableName="files">
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -79,6 +130,9 @@
             </column>
             <column name="owner" type="UUID">
                 <constraints nullable="false"/>
+            </column>
+            <column name="upload_token" type="UUID">
+                <constraints nullable="true"/>
             </column>
 
             <column name="created_by" type="UUID">
@@ -102,6 +156,12 @@
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="files"
+                                 baseColumnNames="upload_token"
+                                 constraintName="fk_files__upload_token__id"
+                                 referencedTableName="personal_tokens"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="files"
                                  baseColumnNames="created_by"
                                  constraintName="fk_files__created_by__id"
                                  referencedTableName="users"
@@ -112,7 +172,9 @@
                                  constraintName="fk_files__updated_by__id"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
+    </changeSet>
 
+    <changeSet author="system" id="init-1.0-users_settings">
         <createTable tableName="users_settings">
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
@@ -142,6 +204,5 @@
                                  constraintName="fk_users__settings_ig__id"
                                  referencedTableName="users_settings"
                                  referencedColumnNames="id"/>
-
     </changeSet>
 </databaseChangeLog>

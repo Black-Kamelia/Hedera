@@ -39,30 +39,36 @@ const onSubmit = handleSubmit((values) => {
       {{ t('pages.profile.security.change_password') }}
     </h2>
     <form v-focus-trap @submit="onSubmit">
-      <FormInputText
-        id="oldPassword"
-        ref="oldPasswordField"
-        class="w-full"
-        name="oldPassword"
-        type="password"
-        :label="t('forms.update_password.fields.old_password')"
-      />
-      <FormInputText
-        id="newPassword"
-        ref="newPasswordField"
-        class="w-full"
-        name="newPassword"
-        type="password"
-        :label="t('forms.update_password.fields.new_password')"
-      />
-      <FormInputText
-        id="confirmNewPassword"
-        ref="confirmNewPasswordField"
-        class="w-full"
-        name="confirmNewPassword"
-        type="password"
-        :label="t('forms.update_password.fields.confirm_new_password')"
-      />
+      <div class="mb-3">
+        <FormInputText
+          id="oldPassword"
+          ref="oldPasswordField"
+          class="w-full"
+          name="oldPassword"
+          type="password"
+          :label="t('forms.update_password.fields.old_password')"
+        />
+      </div>
+      <div class="mb-3">
+        <FormInputText
+          id="newPassword"
+          ref="newPasswordField"
+          class="w-full"
+          name="newPassword"
+          type="password"
+          :label="t('forms.update_password.fields.new_password')"
+        />
+      </div>
+      <div class="mb-3">
+        <FormInputText
+          id="confirmNewPassword"
+          ref="confirmNewPasswordField"
+          class="w-full"
+          name="confirmNewPassword"
+          type="password"
+          :label="t('forms.update_password.fields.confirm_new_password')"
+        />
+      </div>
       <div class="flex flex-row-reverse items-center gap-3 pt-3">
         <PButton :label="t('forms.update_password.submit')" type="submit" />
       </div>

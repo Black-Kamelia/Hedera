@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
-import { getRandomDeveloperName } from '~/utils/developerNames'
 
 const { t } = useI18n()
 
@@ -20,7 +19,7 @@ const { handleSubmit } = useForm({
   validationSchema: schema,
 })
 
-const usernamePlaceholder = getRandomDeveloperName()
+const usernamePlaceholder = getRandomDeveloperUsername()
 const showErrorMessage = ref(false)
 
 function hideErrorMessage() {

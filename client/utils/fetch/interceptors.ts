@@ -1,4 +1,4 @@
-export const IGNORE_REFRESH_ROUTES = ['/refresh', '/login', '/users/signup', '/upload/token']
+export const IGNORE_REFRESH_ROUTES = ['/api/refresh', '/api/login', '/api/users/signup', '/api/upload/token']
 
 export const onRequestInterceptors = defineInterceptors<'onRequest'>([
   {
@@ -18,6 +18,30 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
 
 export const onResponseInterceptors = defineInterceptors<'onResponse'>([])
 
-export const onRequestErrorInterceptors = defineInterceptors<'onRequestError'>([])
+export const onRequestErrorInterceptors = defineInterceptors<'onRequestError'>([
+  {
+    route: '/api/logout',
+    fn() {
+      // act as if logout is successful anyway
+      const logoutEvent = useEventBus(LoggedOutEvent)
+      const auth = useAuth()
+      auth.setUser(null)
+      auth.setTokens(null)
+      logoutEvent.emit()
+    },
+  },
+])
 
-export const onResponseErrorInterceptors = defineInterceptors<'onResponseError'>([])
+export const onResponseErrorInterceptors = defineInterceptors<'onResponseError'>([
+  {
+    route: '/api/logout',
+    fn() {
+      // act as if logout is successful anyway
+      const logoutEvent = useEventBus(LoggedOutEvent)
+      const auth = useAuth()
+      auth.setUser(null)
+      auth.setTokens(null)
+      logoutEvent.emit()
+    },
+  },
+])

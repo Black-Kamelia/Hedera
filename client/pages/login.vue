@@ -5,7 +5,7 @@ import { object, string } from 'yup'
 const { t, m } = useI18n()
 const { login } = useAuth()
 
-const usernamePlaceholder = getRandomDeveloperName()
+const usernamePlaceholder = getRandomDeveloperUsername()
 const message = reactive<{
   content: string | null
   severity: 'success' | 'info' | 'warn' | 'error' | undefined
@@ -52,6 +52,16 @@ function hideErrorMessage() {
 useEventBus(LoggedInEvent).on((event) => {
   if (event.error) {
     const status = event.error?.response?.status
+
+    if (status === 500) {
+      resetField('username')
+      resetField('password')
+      usernameField.value?.$el.focus()
+      message.content = t('forms.login.errors.server_error')
+      message.severity = 'error'
+      return
+    }
+
     if (status === 401) {
       resetField('password')
       passwordField.value?.$el.focus()
@@ -91,30 +101,34 @@ const onSubmit = handleSubmit(async (values) => {
   </PMessage>
 
   <form v-focus-trap @submit="onSubmit">
-    <FormInputText
-      id="username"
-      ref="usernameField"
-      class="w-full"
-      name="username"
-      type="text"
-      :label="t('forms.login.fields.username')"
-      :placeholder="usernamePlaceholder"
-      :transform-value="usernameRestrict"
-      start-icon="i-tabler-user"
-      @input="hideErrorMessage"
-    />
+    <div class="mb-3">
+      <FormInputText
+        id="username"
+        ref="usernameField"
+        class="w-full"
+        name="username"
+        type="text"
+        :label="t('forms.login.fields.username')"
+        :placeholder="usernamePlaceholder"
+        :transform-value="usernameRestrict"
+        start-icon="i-tabler-user"
+        @input="hideErrorMessage"
+      />
+    </div>
 
-    <FormInputText
-      id="password"
-      ref="passwordField"
-      class="w-full"
-      name="password"
-      type="password"
-      :label="t('forms.login.fields.password')"
-      placeholder="••••••••••••••••"
-      start-icon="i-tabler-lock"
-      @input="hideErrorMessage"
-    />
+    <div class="mb-3">
+      <FormInputText
+        id="password"
+        ref="passwordField"
+        class="w-full"
+        name="password"
+        type="password"
+        :label="t('forms.login.fields.password')"
+        placeholder="••••••••••••••••"
+        start-icon="i-tabler-lock"
+        @input="hideErrorMessage"
+      />
+    </div>
 
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">

@@ -13,7 +13,6 @@ import com.kamelia.hedera.rest.user.UserEvents
 import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.Users
 import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
@@ -64,7 +63,7 @@ object SessionManager {
 
     private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role, user.enabled, user.uploadToken)
+            UserState(user.id.value, user.username, user.email, user.role, user.enabled)
         }
         val tokenData = TokenData.from(user)
         val session = Session(userState, tokenData)
@@ -80,7 +79,6 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
-            uploadToken = user.uploadToken
         }
 
         if (!user.enabled) {
@@ -96,7 +94,7 @@ object SessionManager {
 
     suspend fun login(username: String, password: String): Response<SessionOpeningDTO, MessageKeyDTO> {
         val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
-        val user = Users.findByUsername(username) ?: return unauthorized
+        val user = User.findByUsername(username) ?: return unauthorized
 
         if (!Hasher.verify(password, user.password).verified) {
             delay(Environment.loginThrottle)
@@ -115,7 +113,7 @@ object SessionManager {
     }
 
     suspend fun refresh(jwt: Payload): Response<TokenData, MessageKeyDTO> {
-        val user = Users.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
+        val user = User.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
         return Response.created(generateTokens(user))
     }
 
@@ -157,7 +155,6 @@ data class UserState(
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
-    var uploadToken: String,
 ) : Principal {
 
     fun toUserRepresentationDTO() = UserRepresentationDTO(

@@ -4,7 +4,7 @@ import type { WatchSource } from 'vue'
 
 type _FetchOptions = Parameters<typeof globalThis.$fetch>[1]
 export type FetchAPIOptions = _FetchOptions & {
-  ignoreAPIBaseURL?: boolean
+  isNotApi?: boolean
   skipAuthRefresh?: boolean
 }
 

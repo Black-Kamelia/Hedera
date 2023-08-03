@@ -71,6 +71,17 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true,
   },
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'http://localhost:8080/api',
+        changeOrigin: true,
+        ws: true,
+        secure: false,
+        prependPath: true,
+      },
+    },
+  },
 
   // plugin configs
   macros: {

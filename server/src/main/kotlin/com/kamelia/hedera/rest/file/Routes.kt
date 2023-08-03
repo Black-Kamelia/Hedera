@@ -31,7 +31,7 @@ fun Route.filesRoutes() = route("/files") {
         uploadFile()
         searchFiles()
         getFilesFormats()
-        editFile()
+        // editFile()
         editFileVisibility()
         editFileName()
         deleteFile()
@@ -78,7 +78,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     val authToken = call.getHeader("Upload-Token")
 
     call.doWithForm(onFiles = mapOf(
-        "file" to { call.respond(FileService.handleFile(it, authToken)) }
+        "file" to { call.respond(FileService.handleFileWithToken(it, authToken)) }
     ), onMissing = {
         call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })
@@ -120,12 +120,14 @@ private fun Route.getFilesFormats() = get("/formats") {
     call.respond(FileService.getFilesFormats(userId))
 }
 
+/*
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val fileId = call.getUUID("uuid")
     val userId = authenticatedUser!!.uuid
 
     call.respond(FileService.updateFile(fileId, userId, body))
 }
+ */
 
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
     val fileId = call.getUUID("uuid")

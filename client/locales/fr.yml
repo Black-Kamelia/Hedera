@@ -83,33 +83,33 @@ pages:
     rename:
       title: Renommer un fichier
       success: Le fichier a été renommé
-      error: Le fichier n'a pas pu être renommé
+      error: Le fichier n’a pas pu être renommé
       cancel: Annuler
       submit: Renommer
     change_visibility:
-      title: Modifier la visibilité d'un fichier
+      title: Modifier la visibilité d’un fichier
       success: La visibilité a été modifiée
-      error: La visibilité n'a pas pu être modifiée
+      error: La visibilité n’a pas pu être modifiée
       cancel: Annuler
       submit: Modifier
     delete:
       title: Supprimer un fichier
       success: Le fichier a été supprimé
-      error: Le fichier n'a pas pu être supprimé
+      error: Le fichier n’a pas pu être supprimé
       warning: Êtes-vous sûr(e) de vouloir supprimer ce fichier ? Cette action est irréversible.
       cancel: Annuler
       submit: Supprimer
     search_by_name: Rechercher par nom...
     empty:
       title: Ça semble vide par ici
-      description: Vous n'avez pas encore envoyé de fichiers.
+      description: Vous n’avez pas encore envoyé de fichiers.
       upload_button: Envoyer un fichier
     no_results:
-      title: Hmm, il n'y a rien par ici
+      title: Hmm, il n’y a rien par ici
       description: Vos filtres ne correspondent à aucun fichier.
       reset_filters: Réinitialiser les filtres
     error:
-      title: Quelque chose s'est mal passé
+      title: Quelque chose s’est mal passé
       description: Impossible de charger la liste des fichiers
       retry_button: Réessayer
       reset_button: Réinitialiser
@@ -133,6 +133,40 @@ pages:
       settings: Paramètres
     security:
       change_password: Modifier le mot de passe
+    tokens:
+      title: Jetons personnels
+      create: Créer un nouveau jeton
+      created_at: Créé le {date}
+      last_used: Dernière utilisation {date}
+      never_used: Jamais utilisé
+      recently_created: Créé récemment
+      copy_token: Copier
+      token_copied: Le jeton a été copié dans le presse-papier
+      empty:
+        title: Vous n’avez pas encore créé de jeton
+        description: Créez un jeton pour pouvoir envoyer des fichiers depuis une application tierce.
+        create_token: Créer un jeton
+      create_dialog:
+        title: Créer un jeton
+        summary: Un jeton personnel vous permet d’autoriser une application tierce à envoyer des fichiers avec votre identité. Les jetons sont strictement personnels et ne doivent pas être partagés. Si vous pensez qu’un jeton est compromis, il est vivement conseillé de le supprimer.
+        fields:
+          name: Nom du jeton
+          name_placeholder: ex. Ordinateur de {name}
+        errors:
+          missing_name: Nom du jeton requis
+        documentation: Documentation
+        propose_app: Proposer une application
+        cancel: Annuler
+        submit: Créer
+      generated_dialog:
+        title: Nouveau jeton généré
+        summary: Votre nouveau jeton a été généré avec succès ! Assurez-vous de copier votre jeton dès maintenant, vous ne pourrez plus le voir à nouveau.
+        download: 'Vous pouvez télécharger un fichier de configuration à importer directement pour les applications suivantes :'
+      delete_dialog:
+        title: Supprimer un jeton
+        summary: Êtes-vous sûr(e) de vouloir supprimer ce jeton ? Cette action est irréversible. Vous ne pourrez plus envoyer de fichiers en utilisant ce jeton.
+        cancel: Annuler
+        submit: Supprimer
     settings:
       headers:
         files_upload: Envoi de fichiers
@@ -141,7 +175,7 @@ pages:
       sync_failed: Échec de la synchronisation
       file_size_scale:
         title: Échelle de taille de fichier
-        description: Choisissez d'afficher les tailles de fichier en échelle binaire ou décimale. Ceci pourrait affecter la façon dont vous pourriez interpréter les quotas.
+        description: Choisissez d’afficher les tailles de fichier en échelle binaire ou décimale. Ceci pourrait affecter la façon dont vous pourriez interpréter les quotas.
         binary:
           title: Échelle binaire
           description: Les unités sont des puissances de 2
@@ -156,39 +190,40 @@ pages:
         choose: Choisissez une visibilité
       auto_delete_oldest_files:
         title: Supprimer automatiquement les fichiers les plus anciens
-        description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d'envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
+        description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d’envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
       enable_animations:
         title: Activer les animations et transitions
-        description: Hedera utilise des animations et des transitions pour rendre l'expérience utilisateur plus appréciable. Si vous rencontrez des problèmes de performance, vous pouvez les désactiver ici.
+        description: Hedera utilise des animations et des transitions pour rendre l’expérience utilisateur plus appréciable. Si vous rencontrez des problèmes de performance, vous pouvez les désactiver ici.
       preferred_theme:
         title: Thème
-        description: Choisissez votre thème parmi le thème clair, le thème sombre ou le thème système. Le thème système utilise le thème de votre système d'exploitation.
+        description: Choisissez votre thème parmi le thème clair, le thème sombre ou le thème système. Le thème système utilise le thème de votre système d’exploitation.
         choose: Choisissez un thème
       preferred_locale:
         title: Langue
-        description: Choisissez votre langue préférée. Si votre langue n'est pas disponible, ou est traduite de façon incomplète, vous pouvez contribuer à la traduction sur GitHub !
+        description: Choisissez votre langue préférée. Si votre langue n’est pas disponible, ou est traduite de façon incomplète, vous pouvez contribuer à la traduction sur GitHub !
         choose: Choisissez une langue
       contribute_to_translation: Contribuer à la traduction de Hedera
       preferred_date_time_format:
-        title: Format de date et d'heure
-        description: Choisissez le format de date et d'heure que vous préférez. Ce format sera utilisé dans la table des fichiers et dans les statistiques.
+        title: Format de date et d’heure
+        description: Choisissez le format de date et d’heure que vous préférez. Ce format sera utilisé dans la table des fichiers et dans les statistiques.
         choose: Choisissez un format
 
 forms:
   submit: Valider
   login:
     errors:
-      missing_username: Nom d'utilisateur requis
-      invalid_username: Format de nom d'utilisateur invalide
+      missing_username: Nom d’utilisateur requis
+      invalid_username: Format de nom d’utilisateur invalide
       missing_password: Mot de passe requis
+      server_error: Le serveur est indisponible
     fields:
       password: Mot de passe
       remember_me: Se souvenir de moi
-      username: Nom d'utilisateur
+      username: Nom d’utilisateur
   reset_password:
     errors:
       missing_email: Adresse e-mail requise
-      invalid_email: Format d'adresse e-mail invalide
+      invalid_email: Format d’adresse e-mail invalide
     fields:
       email: Adresse e-mail
   update_password:
@@ -227,19 +262,28 @@ actions:
           message: Votre mot de passe a été mis à jour
         failure:
           message: Impossible de mettre à jour votre mot de passe
+  tokens:
+    create:
+      success:
+        title: Jeton créé
+        message: Le jeton “{name}” a été créé
+    delete:
+      success:
+          title: Jeton supprimé
+          message: Le jeton “{name}” a été supprimé
 
 errors:
   unknown: Une erreur inattendue est survenue
   network: Connexion au serveur impossible
   auth:
-    invalid_credentials: Nom d'utilisateur ou mot de passe incorrect
+    invalid_credentials: Nom d’utilisateur ou mot de passe incorrect
     account_disabled: Votre compte est désactivé
   tokens:
     expired_or_invalid: Votre session a expiré, veuillez vous reconnecter
   parsing:
     invalid_uuid: Identifiant unique invalide
   files:
-    not_found: Ce fichier n'existe pas
+    not_found: Ce fichier n’existe pas
   users:
     password:
       incorrect_password: Mot de passe incorrect

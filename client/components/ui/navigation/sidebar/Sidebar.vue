@@ -71,7 +71,7 @@ function toggleSidebar() {
           <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
         </div>
       </div>
-      <div class="sep mx-4" />
+      <HorizontalSeparator />
       <div class="flex flex-col justify-start gap-2 p-4">
         <SidebarButton
           icon="i-tabler-user-circle" :label="user?.username ?? ''" :open="sidebar.open"
@@ -87,7 +87,7 @@ function toggleSidebar() {
   width: var(--sidebar-width-collapsed);
   min-width: var(--sidebar-width-collapsed);
   height: 100%;
-  transition: min-width 0.3s ease, width 0.3s ease;
+  transition: min-width 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   overflow: hidden;
   background-color: var(--primary-500);
   color: var(--primary-color-text);
@@ -129,7 +129,6 @@ function toggleSidebar() {
     .p-button.active {
       background-color: var(--primary-color-text);
       color: var(--primary-500);
-      font-weight: bold;
     }
   }
 

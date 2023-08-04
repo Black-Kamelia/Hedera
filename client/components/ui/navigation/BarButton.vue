@@ -63,6 +63,10 @@ const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) 
   &.active {
     background-color: var(--primary-color-text);
     color: var(--primary-500);
+
+    .dark & {
+      color: var(--primary-700);
+    }
   }
 }
 

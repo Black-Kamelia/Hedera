@@ -6,18 +6,15 @@ const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role 
 </script>
 
 <template>
-  <footer class="bottom-bar grid overflow-hidden gap-4 h-5em w-full">
+  <footer class="bottom-bar overflow-hidden gap-4 px-4 h-5em w-full">
+    <div class="main-btn relative">
+      <BarButton icon="i-tabler-menu-2" :active="route => false" />
+    </div>
     <div class="btn">
       <BarButton
         icon="i-tabler-file" :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
       />
     </div>
-    <div class="btn">
-      <BarButton
-        icon="i-tabler-star" :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
-      />
-    </div>
-    <div />
     <div class="btn">
       <BarButton
         icon="i-tabler-upload" :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
@@ -28,48 +25,53 @@ const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role 
         icon="i-tabler-timeline" :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
       />
     </div>
-
-    <div class="menu-btn">
-      <BarButton icon="i-tabler-chevrons-up" :active="route => false" />
+    <div class="btn">
+      <BarButton
+        icon="i-tabler-user-circle" :active="route => route.startsWith('/profile')" @click="navigateTo('/profile')"
+      />
     </div>
   </footer>
 </template>
 
 <style scoped lang="scss">
+.main-btn {
+  position: relative;
+  width: 3em;
+
+  > button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-70%) translateY(-50%);
+    background-color: var(--primary-600);
+    font-size: 1.25rem;
+    width: 5.625em;
+    height: 5.625em;
+    padding: 0 1.25em;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 50%;
+
+    .dark & {
+      background-color: var(--primary-700);
+    }
+  }
+}
+
 .bottom-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   background-color: var(--primary-500);
   color: var(--primary-color-text);
-  grid-template-columns: repeat(5, 1fr);
+  overflow-x: auto;
 
   .dark & {
     background-color: var(--primary-800);
-
   }
 
   > div.btn {
     padding: 1em 0;
     margin: auto;
-  }
-
-  .menu-btn {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    outline: .75em solid var(--ground);
-    background-color: var(--primary-700);
-    border-radius: 50%;
-
-    > button {
-      font-size: 1rem;
-      border-radius: 50%;
-      align-items: center;
-      justify-content: center;
-
-      &.active {
-        background-color: transparent;
-        color: var(--primary-color-text);
-      }
-    }
   }
 }
 

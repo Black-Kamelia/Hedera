@@ -19,18 +19,19 @@ const pageName = usePageName()
     <h2 class="text-3xl w-full">
       {{ pageName }}
     </h2>
-    <!-- <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" /> -->
+    <!-- <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" />
     <VerticalSeparator />
     <div class="flex flex-row gap-2">
-      <!--
+
       <ThemeSwitcher />
       <PButton v-tooltip.bottom="{ value: 'Notification', showDelay: '1000' }" icon="i-tabler-bell" text rounded />
-      -->
+      -
       <PButton
         v-tooltip.bottom="{ value: 'Log out', showDelay: '1000' }" icon="i-tabler-logout" text rounded
         @click="logout()"
       />
     </div>
+    -->
   </header>
 
   <!--
@@ -53,5 +54,9 @@ const pageName = usePageName()
 .top-bar {
   border-bottom: 1px solid var(--surface-border);
   background-color: var(--surface-overlay);
+
+  .sep {
+    border-color: red;
+  }
 }
 </style>

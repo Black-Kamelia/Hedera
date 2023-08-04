@@ -47,12 +47,12 @@ function toggleSidebar() {
             :active="route => route.startsWith('/files')" @click="navigateTo('/files')"
           />
           <SidebarButton
-            icon="i-tabler-star" :label="t('pages.favorites.title')" :open="sidebar.open"
-            :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
-          />
-          <SidebarButton
             icon="i-tabler-upload" :label="t('pages.upload.title')" :open="sidebar.open"
             :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
+          />
+          <SidebarButton
+            icon="i-tabler-star" :label="t('pages.favorites.title')" :open="sidebar.open"
+            :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
           />
           <SidebarButton
             icon="i-tabler-timeline" :label="t('pages.analytics.title')" :open="sidebar.open"

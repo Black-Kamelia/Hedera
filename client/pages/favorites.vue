@@ -3,7 +3,7 @@ const { t } = useI18n()
 
 usePageName(() => t('pages.favorites.title'))
 definePageMeta({
-  layout: 'bottombar',
+  layout: 'main',
   middleware: ['auth'],
 })
 </script>

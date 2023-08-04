@@ -3,7 +3,7 @@ const { t } = useI18n()
 const filters = useFilesFilters()
 
 usePageName(() => t('pages.files.title'))
-definePageMeta({ layout: 'sidebar', middleware: ['auth'] })
+definePageMeta({ layout: 'main', middleware: ['auth'] })
 
 const openFiltersDialog = ref(false)
 const searchQuery = ref('')

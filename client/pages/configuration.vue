@@ -3,7 +3,7 @@ const { t } = useI18n()
 
 usePageName(() => t('pages.configuration.title'))
 definePageMeta({
-  layout: 'sidebar',
+  layout: 'main',
   middleware: ['auth'],
 })
 </script>

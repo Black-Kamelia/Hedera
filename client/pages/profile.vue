@@ -4,7 +4,7 @@ const { user } = storeToRefs(useAuth())
 
 usePageName(() => t('pages.profile.title', { username: user?.value?.username }))
 definePageMeta({
-  layout: 'sidebar',
+  layout: 'main',
   middleware: ['auth'],
 })
 

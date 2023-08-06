@@ -77,18 +77,19 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             .selectAll()
             .applyFilters(definition.filters) {
                 when (it.field) {
-                    UserTable.username.name -> UserTable.username.filter(it)
-                    UserTable.email.name -> UserTable.email.filter(it)
-                    UserTable.role.name -> UserTable.role.filter(it)
-                    UserTable.enabled.name -> UserTable.enabled.filter(it)
+                    "username" -> UserTable.username.filter(it)
+                    "email" -> UserTable.email.filter(it)
+                    "role" -> UserTable.role.filter(it)
+                    "enabled" -> UserTable.enabled.filter(it)
                     else -> throw UnknownFilterFieldException(it.field)
                 }
             }.applySort(definition.sorter) {
                 when (it) {
-                    UserTable.username.name -> UserTable.username
-                    UserTable.email.name -> UserTable.email
-                    UserTable.role.name -> UserTable.role
-                    UserTable.enabled.name -> UserTable.enabled
+                    "username" -> UserTable.username
+                    "email" -> UserTable.email
+                    "role" -> UserTable.role
+                    "enabled" -> UserTable.enabled
+                    "createdAt" -> UserTable.createdAt
                     else -> throw UnknownFilterFieldException(it)
                 }
             }.let {

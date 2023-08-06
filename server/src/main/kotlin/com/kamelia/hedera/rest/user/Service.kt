@@ -37,20 +37,6 @@ object UserService {
         Response.ok(user.toRepresentationDTO())
     }
 
-    suspend fun getUsers(): Response<UserPageDTO, MessageKeyDTO> = Connection.transaction {
-        val users = User.all()
-        val total = User.count()
-        Response.ok(UserPageDTO(
-            PageDTO(
-                users.map { it.toRepresentationDTO() },
-                0,
-                -1,
-                1,
-                total
-            )
-        ))
-    }
-
     suspend fun getUsers(
         page: Long,
         pageSize: Int,

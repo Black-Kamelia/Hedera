@@ -16,6 +16,7 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
+    createdAt.toString(),
 )
 
 /**
@@ -67,6 +68,7 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
+    val createdAt: String,
 ) : DTO
 
 @Serializable

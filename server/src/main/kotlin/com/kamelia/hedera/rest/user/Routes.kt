@@ -20,7 +20,6 @@ fun Route.userRoutes() = route("/users") {
 
     authenticate(AuthJwt) {
         getUserById()
-        getAllUsers()
         searchUsers()
         updateUser()
         updateUserPassword()
@@ -38,12 +37,6 @@ private fun Route.getUserById() = get("/{uuid}") {
     ifRegular { idRestrict(uuid) }
 
     call.respond(UserService.getUserById(uuid))
-}
-
-private fun Route.getAllUsers() = get("/all") {
-    adminRestrict()
-
-    call.respond(UserService.getUsers())
 }
 
 private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->

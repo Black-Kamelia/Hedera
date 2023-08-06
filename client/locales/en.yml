@@ -121,6 +121,25 @@ pages:
     title: Analytics
   configuration:
     title: Configuration
+    menu:
+      general: General
+      users: Users
+    users:
+      title: Users
+      role:
+        regular: Regular user
+        admin: Administrator
+        owner: Super-administrator
+        unknown: Unknown
+      status:
+        enabled: Enabled
+        disabled: Disabled
+      table:
+        username: Username
+        email: E-mail address
+        role: Role
+        status: Status
+        creation_date: Creation date
   debug:
     title: Debug
   profile:

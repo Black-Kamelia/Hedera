@@ -121,6 +121,25 @@ pages:
     title: Statistiques
   configuration:
     title: Configuration
+    menu:
+      general: Général
+      users: Utilisateurs
+    users:
+      title: Utilisateurs
+      role:
+        regular: Utilisateur normal
+        admin: Administrateur
+        owner: Super-administrateur
+        unknown: Inconnu
+      status:
+        enabled: Activé
+        disabled: Désactivé
+      table:
+        username: Nom d’utilisateur
+        email: Adresse e-mail
+        role: Rôle
+        status: Statut
+        creation_date: Date de création
   debug:
     title: Débogage
   profile:

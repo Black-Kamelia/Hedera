@@ -55,8 +55,8 @@ declare global {
     totalItems: number,
   }
 
-  interface PageableDTO {
-    page: PageDTO<FileRepresentationDTO>
+  interface PageableDTO<E> {
+    page: PageDTO<E>
   }
 
   interface PageDefinitionDTO {
@@ -115,6 +115,7 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    createdAt: string
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'

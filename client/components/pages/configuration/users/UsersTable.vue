@@ -74,12 +74,22 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />
         </template>
+        <template #body="slotProps">
+          <span v-if="slotProps.data">{{ slotProps.data.username }}</span>
+          <PSkeleton v-else width="5rem" height="1rem" />
+        </template>
       </PColumn>
+
       <PColumn sortable field="email" :header="t('pages.configuration.users.table.email')">
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />
         </template>
+        <template #body="slotProps">
+          <span v-if="slotProps.data">{{ slotProps.data.email }}</span>
+          <PSkeleton v-else width="12.5rem" height="1rem" />
+        </template>
       </PColumn>
+
       <PColumn sortable field="role" :header="t('pages.configuration.users.table.role')">
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />
@@ -94,6 +104,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
           </div>
         </template>
       </PColumn>
+
       <PColumn sortable field="enabled" :header="t('pages.configuration.users.table.status')">
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />
@@ -108,6 +119,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
           </div>
         </template>
       </PColumn>
+
       <PColumn sortable field="createdAt" :header="t('pages.configuration.users.table.creation_date')">
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />

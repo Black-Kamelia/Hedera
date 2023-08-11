@@ -4,6 +4,7 @@ import type { CheckboxProps } from 'primevue/checkbox'
 import PCheckbox from 'primevue/checkbox'
 
 export interface FormCheckboxProps extends OnlyProps<CheckboxProps> {
+  id: string
   name: string
   label: string
 }
@@ -20,7 +21,7 @@ defineExpose({
 
 <template>
   <div class="flex flex-row items-center">
-    <PCheckbox :id="name" ref="el" v-bind="$attrs" v-model="value" class="mr-2" />
-    <label :for="name" class="text-gray">{{ label }}</label>
+    <PCheckbox ref="el" v-bind="$attrs" v-model="value" :input-id="id" :name="name" class="mr-2" />
+    <label :for="id">{{ label }}</label>
   </div>
 </template>

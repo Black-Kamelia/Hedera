@@ -140,6 +140,12 @@ pages:
         role: Role
         status: Status
         creation_date: Creation date
+      create_user: Create user
+      create_dialog:
+        title: Create a user
+        summary: Create a user to allow them to log in to Hedera and upload files. Users can be disabled at any time.
+        cancel: Cancel
+        submit: Create
   debug:
     title: Debug
   profile:
@@ -258,6 +264,25 @@ forms:
       old_password: Current password
       new_password: New password
       confirm_new_password: Confirm new password
+  create_user:
+    errors:
+      missing_username: Username is required
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_password: Password is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      missing_confirm_password: Password confirmation is required
+      passwords_mismatch: The passwords do not match
+      missing_role: Role is required
+    fields:
+      username: Username
+      email: Email address
+      password: Password
+      confirm_password: Password confirmation
+      role: Role
+      role_placeholder: Select a role
+      force_change_password: Force to change password on first login
 
 actions:
   files:

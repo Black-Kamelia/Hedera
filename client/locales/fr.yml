@@ -140,6 +140,12 @@ pages:
         role: Rôle
         status: Statut
         creation_date: Date de création
+      create_user: Créer un utilisateur
+      create_dialog:
+        title: Créer un utilisateur
+        summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        cancel: Annuler
+        submit: Créer
   debug:
     title: Débogage
   profile:
@@ -258,6 +264,25 @@ forms:
       old_password: Mot de passe actuel
       new_password: Nouveau mot de passe
       confirm_new_password: Confirmer le nouveau mot de passe
+  create_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+      missing_password: Mot de passe requis
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      missing_confirm_password: Confirmation du mot de passe requise
+      passwords_mismatch: Les mots de passe ne correspondent pas
+      missing_role: Rôle requis
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
+      password: Mot de passe
+      confirm_password: Confirmer le mot de passe
+      role: Rôle
+      role_placeholder: Sélectionner un rôle
+      force_change_password: Forcer la modification du mot de passe à la première connexion
 
 actions:
   files:

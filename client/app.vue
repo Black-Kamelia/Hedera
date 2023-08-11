@@ -26,7 +26,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
   navigateTo('/login?reason=expired')
 })
 useEventBus(LoggedOutEvent).on(() => {
-  navigateTo('/login')
+  navigateTo('/login', { replace: true })
 })
 
 watch(locale, value => Settings.defaultLocale = value, { immediate: true })

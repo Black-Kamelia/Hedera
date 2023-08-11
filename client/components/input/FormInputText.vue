@@ -13,7 +13,15 @@ export interface FormInputTextProps extends OnlyProps<InputTextProps> {
 }
 
 const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormInputTextProps>()
-const { errorMessage, value } = useField<Nullable<string>>(name)
+
+const { errorMessage, value, validate } = useField<Nullable<string>>(name, _ => true, {
+  validateOnValueUpdate: false,
+})
+watch(value, () => {
+  if (errorMessage.value) {
+    validate({ mode: 'force' })
+  }
+}, { immediate: true })
 
 function onInput(payload: Event) {
   const target = payload.target as HTMLInputElement | null

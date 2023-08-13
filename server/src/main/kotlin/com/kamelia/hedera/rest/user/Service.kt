@@ -18,7 +18,7 @@ private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 
 object UserService {
 
-    suspend fun signup(dto: UserDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun signup(dto: UserCreationDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         checkEmail(dto.email)?.let { return@transaction it }
         checkUsername(dto.username)?.let { return@transaction it }
         checkPassword(dto.password)?.let { return@transaction it }
@@ -27,9 +27,21 @@ object UserService {
             throw IllegalActionException()
         }
 
-        Response.created(User
-            .create(dto)
-            .toRepresentationDTO())
+        val user = User.create(dto)
+        Response.created(user.toRepresentationDTO())
+    }
+
+    suspend fun createUser(dto: UserCreationDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+        checkEmail(dto.email)?.let { return@transaction it }
+        checkUsername(dto.username)?.let { return@transaction it }
+        checkPassword(dto.password)?.let { return@transaction it }
+
+        if (dto.role == UserRole.OWNER) {
+            throw IllegalActionException()
+        }
+
+        val user = User.create(dto)
+        Response.created(user.toRepresentationDTO())
     }
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
@@ -77,9 +89,8 @@ object UserService {
             throw InsufficientPermissionsException()
         }
 
-        Response.ok(toEdit
-            .update(dto, updater)
-            .toRepresentationDTO())
+        toEdit.update(dto, updater)
+        Response.ok(toEdit.toRepresentationDTO())
     }
 
     suspend fun updateUserPassword(
@@ -94,9 +105,8 @@ object UserService {
             return@transaction Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
         }
 
-        Response.ok(toEdit
-            .updatePassword(dto)
-            .toRepresentationDTO())
+        toEdit.updatePassword(dto)
+        Response.ok(toEdit.toRepresentationDTO())
     }
 
     suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {

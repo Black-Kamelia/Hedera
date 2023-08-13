@@ -19,17 +19,23 @@ fun Route.userRoutes() = route("/users") {
     signup()
 
     authenticate(AuthJwt) {
+        createUser()
         getUserById()
         searchUsers()
         updateUser()
         updateUserPassword()
         deleteUser()
-        // regenerateUploadToken()
     }
 }
 
-private fun Route.signup() = post<UserDTO>("/signup") { body ->
+private fun Route.signup() = post<UserCreationDTO>("/signup") { body ->
     call.respond(UserService.signup(body))
+}
+
+private fun Route.createUser() = post<UserCreationDTO> { body ->
+    adminRestrict()
+
+    call.respond(UserService.createUser(body))
 }
 
 private fun Route.getUserById() = get("/{uuid}") {
@@ -69,10 +75,3 @@ private fun Route.deleteUser() = delete("/{uuid}") {
 
     call.respond(UserService.deleteUser(uuid))
 }
-
-// private fun Route.regenerateUploadToken() = post("/uploadToken") {
-//     val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
-//     idRestrict(userId)
-//
-//     call.respond(UserService.regenerateUploadToken(userId))
-// }

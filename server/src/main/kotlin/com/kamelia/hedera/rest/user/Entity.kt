@@ -97,12 +97,12 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                 rows.limit(pageSize, page * pageSize).toList() to rows.count()
             }
 
-        fun create(user: UserDTO, creator: User? = null): User = new {
+        fun create(user: UserCreationDTO, creator: User? = null): User = new {
             username = user.username
             email = user.email
             password = Hasher.hash(user.password)
             role = user.role
-            enabled = false
+            enabled = true
             settings = UserSettings.new {}
 
             onCreate(creator ?: this)

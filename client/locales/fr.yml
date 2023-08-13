@@ -306,6 +306,14 @@ actions:
           message: Votre mot de passe a été mis à jour
         failure:
           message: Impossible de mettre à jour votre mot de passe
+    create:
+      success:
+        title: Utilisateur créé
+        message: L’utilisateur “{username}” a été créé
+    delete:
+      success:
+        title: Utilisateur supprimé
+        message: L’utilisateur “{username}” a été supprimé
   tokens:
     create:
       success:
@@ -313,8 +321,8 @@ actions:
         message: Le jeton “{name}” a été créé
     delete:
       success:
-          title: Jeton supprimé
-          message: Le jeton “{name}” a été supprimé
+        title: Jeton supprimé
+        message: Le jeton “{name}” a été supprimé
 
 errors:
   unknown: Une erreur inattendue est survenue

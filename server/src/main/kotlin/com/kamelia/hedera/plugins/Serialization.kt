@@ -9,6 +9,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 
 val HederaJsonModule = Json {
+    ignoreUnknownKeys = true
     serializersModule = SerializersModule {
         contextual(UUIDSerializer)
     }

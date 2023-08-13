@@ -306,6 +306,14 @@ actions:
           message: Your password has been updated
         failure:
           message: Could not update your password
+    create:
+      success:
+        title: User created
+        message: The user “{username}” has been created
+    delete:
+      success:
+        title: User deleted
+        message: The user “{username}” has been deleted
   tokens:
     create:
       success:

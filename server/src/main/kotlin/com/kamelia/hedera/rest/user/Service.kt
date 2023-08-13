@@ -1,9 +1,11 @@
 package com.kamelia.hedera.rest.user
 
+import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UserNotFoundException
@@ -31,7 +33,7 @@ object UserService {
         Response.created(user.toRepresentationDTO())
     }
 
-    suspend fun createUser(dto: UserCreationDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun createUser(dto: UserCreationDTO): Response<MessageDTO<UserRepresentationDTO>, MessageKeyDTO> = Connection.transaction {
         checkEmail(dto.email)?.let { return@transaction it }
         checkUsername(dto.username)?.let { return@transaction it }
         checkPassword(dto.password)?.let { return@transaction it }
@@ -41,7 +43,11 @@ object UserService {
         }
 
         val user = User.create(dto)
-        Response.created(user.toRepresentationDTO())
+        Response.created(MessageDTO(
+            title = MessageKeyDTO(Actions.Users.Create.Success.TITLE),
+            message = MessageKeyDTO(Actions.Users.Create.Success.MESSAGE, mapOf("username" to user.username)),
+            payload = user.toRepresentationDTO()
+        ))
     }
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {

@@ -82,4 +82,34 @@ object Actions {
 
     }
 
+    object Users {
+
+        private const val PREFIX = "${Actions.PREFIX}.users"
+
+        object Create {
+
+            private const val PREFIX = "${Users.PREFIX}.create"
+
+            object Success {
+                private const val PREFIX = "${Create.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
+        object Delete {
+
+            private const val PREFIX = "${Users.PREFIX}.delete"
+
+            object Success {
+                private const val PREFIX = "${Delete.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
+    }
+
 }

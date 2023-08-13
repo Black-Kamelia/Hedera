@@ -10,11 +10,10 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
-// const createUser = useCreateUser()
+const createUser = useCreateUser()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
-const newToken = ref<Nullable<UserRepresentationDTO>>(null)
 
 const roles = [
   { label: t('pages.configuration.users.role.admin'), value: 'ADMIN', icon: 'i-tabler-shield' },
@@ -54,18 +53,18 @@ const { handleSubmit, resetForm } = useForm({
 })
 
 const submit = handleSubmit(async (values) => {
-  console.log(values)
-  // pending.value = true
-  // createToken(values.name).then((response) => {
-  //   if (response) {
-  //     newToken.value = response.payload
-  //     emit('completed', response.payload!)
-  //   }
-  // }).finally(() => pending.value = false)
+  pending.value = true
+  createUser(values as UserCreationDTO).then((response) => {
+    if (response) {
+      emit('completed', response.payload!)
+    }
+  }).finally(() => {
+    pending.value = false
+    visible.value = false
+  })
 })
 
 function onHide() {
-  newToken.value = null
   resetForm()
 }
 </script>
@@ -77,7 +76,7 @@ function onHide() {
     class="max-w-100% sm:max-w-75% xl:max-w-50%"
     :header="t('pages.configuration.users.create_dialog.title')"
     :draggable="false"
-    :dismissable-mask="newToken !== null"
+    :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="onHide"
   >
@@ -92,6 +91,7 @@ function onHide() {
           name="username"
           :label="t('forms.create_user.fields.username')"
           :placeholder="dev"
+          :transform-value="usernameRestrict"
           class="w-full"
           autofocus
           @keydown.enter="submit"

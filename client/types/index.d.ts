@@ -118,6 +118,14 @@ declare global {
     createdAt: string
   }
 
+  interface UserCreationDTO {
+    username: string
+    email: string
+    password: string
+    role: Role
+    forceChangePassword: boolean
+  }
+
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
   type FileSizeScale = 'BINARY' | 'DECIMAL'
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'

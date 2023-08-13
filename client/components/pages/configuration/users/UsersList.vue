@@ -36,6 +36,8 @@ const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
 const loading = computed(() => pending.value && debouncedPending.value)
 
+const createUserDialog = ref<boolean>(false)
+
 function onPage(event: DataTablePageEvent) {
   page.value = event.page
   pageSize.value = event.rows
@@ -43,6 +45,10 @@ function onPage(event: DataTablePageEvent) {
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 
+}
+
+function handleCreate() {
+  refresh()
 }
 </script>
 
@@ -131,4 +137,15 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
       </PColumn>
     </PDataTable>
   </div>
+
+  <div class="flex flex-row-reverse">
+    <PButton
+      :label="t('pages.configuration.users.create_user')"
+      icon="i-tabler-plus"
+      outlined
+      @click="createUserDialog = true"
+    />
+  </div>
+
+  <CreateUserDialog v-model:visible="createUserDialog" @completed="handleCreate" />
 </template>

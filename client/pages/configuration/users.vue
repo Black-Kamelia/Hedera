@@ -8,6 +8,6 @@ const { t } = useI18n()
       {{ t('pages.configuration.users.title') }}
     </h1>
 
-    <UsersTable />
+    <UsersList />
   </div>
 </template>

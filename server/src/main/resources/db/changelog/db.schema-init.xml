@@ -23,6 +23,9 @@
             <column name="enabled" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="forceChangePassword" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column name="upload_token" type="VARCHAR(32)">
                 <constraints nullable="true" unique="true"/>
             </column>

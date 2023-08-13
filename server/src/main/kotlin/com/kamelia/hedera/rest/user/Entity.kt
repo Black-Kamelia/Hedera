@@ -54,6 +54,7 @@ object UserTable : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
+    val forceChangePassword = bool("forceChangePassword")
     val settings = reference("settings", UserSettingsTable)
 
     override val createdBy = reference("created_by", this)
@@ -103,6 +104,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             password = Hasher.hash(user.password)
             role = user.role
             enabled = true
+            forceChangePassword = user.forceChangePassword
             settings = UserSettings.new {}
 
             onCreate(creator ?: this)
@@ -115,6 +117,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var password by UserTable.password
     var role by UserTable.role
     var enabled by UserTable.enabled
+    var forceChangePassword by UserTable.forceChangePassword
     var settings by UserSettings referencedOn UserTable.settings
 
     private val files by File referrersOn FileTable.owner

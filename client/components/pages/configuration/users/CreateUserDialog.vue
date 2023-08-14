@@ -81,7 +81,7 @@ function onHide() {
     @hide="onHide"
   >
     <div class="flex flex-col gap-3">
-      <p class="text-[--text-color-secondary]">
+      <p class="text-[--text-color-secondary] mb-3">
         {{ t('pages.configuration.users.create_dialog.summary') }}
       </p>
 

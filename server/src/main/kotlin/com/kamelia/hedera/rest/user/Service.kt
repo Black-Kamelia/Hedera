@@ -84,14 +84,13 @@ object UserService {
 
         val updater = User[updaterID]
 
-        if ((dto.role != null || dto.enabled != null) && updater.uuid == toEdit.uuid) { // can't self update role or state
+        // can't self update role or state
+        if ((dto.role != null || dto.enabled != null) && updater.uuid == toEdit.uuid) {
             throw IllegalActionException()
         }
 
-        if (
-            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) // can't change role to higher or equal if updater is lower or equal
-            // (dto.enabled != null && (toEdit.role ge updater.role)) // can't change enabled if updater is lower or equal
-        ) {
+        // can't change role to higher or equal if updater is lower or equal
+        if (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) {
             throw InsufficientPermissionsException()
         }
 

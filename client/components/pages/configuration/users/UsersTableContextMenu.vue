@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { PContextMenu } from '#components'
 
+const emit = defineEmits<{
+  (event: 'onEdit'): void
+}>()
+
 const cm = inject(UsersTableContextMenuKey)
 
 const { t } = useI18n()
 const confirm = useConfirm()
-const { selectedRow, unselectRow, refresh } = useUsersTable()
+const { selectedRow, selectedRowId, unselectRow, refresh } = useUsersTable()
 
 const { activate, deactivate } = useUpdateUserStatus()
 const deleteUser = useDeleteUser()
@@ -23,8 +27,8 @@ const statusToggle = computed(() => selectedRow.value?.enabled
           acceptClass: 'p-button-danger',
           rejectLabel: t('pages.configuration.users.deactivate_dialog.cancel'),
           accept: () => {
-            if (!selectedRow.value) return
-            deactivate(selectedRow.value.id)
+            if (!selectedRowId.value) return
+            deactivate(selectedRowId.value)
               .then(refresh)
               .finally(unselectRow)
           },
@@ -42,8 +46,8 @@ const statusToggle = computed(() => selectedRow.value?.enabled
           acceptLabel: t('pages.configuration.users.activate_dialog.submit'),
           rejectLabel: t('pages.configuration.users.activate_dialog.cancel'),
           accept: () => {
-            if (!selectedRow.value) return
-            activate(selectedRow.value.id)
+            if (!selectedRowId.value) return
+            activate(selectedRowId.value)
               .then(refresh)
               .finally(unselectRow)
           },
@@ -55,7 +59,7 @@ const menuModel = computed(() => [
   {
     label: t('pages.configuration.users.context_menu.edit'),
     icon: 'i-tabler-pencil',
-    // command: renameFile,
+    command: () => emit('onEdit'),
   },
   statusToggle.value,
   { separator: true },
@@ -71,8 +75,8 @@ const menuModel = computed(() => [
         acceptClass: 'p-button-danger',
         rejectLabel: t('pages.configuration.users.delete_dialog.cancel'),
         accept: () => {
-          if (!selectedRow.value) return
-          deleteUser(selectedRow.value.id)
+          if (!selectedRowId.value) return
+          deleteUser(selectedRowId.value)
             .then(refresh)
             .finally(unselectRow)
         },

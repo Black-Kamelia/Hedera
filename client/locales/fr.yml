@@ -151,6 +151,11 @@ pages:
         summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
         cancel: Annuler
         submit: Créer
+      edit_dialog:
+        title: Éditer un utilisateur
+        # summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        cancel: Annuler
+        submit: Sauvegarder
       activate_dialog:
         title: Activer un utilisateur
         summary: L'utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L'utilisateur pourra être désactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?

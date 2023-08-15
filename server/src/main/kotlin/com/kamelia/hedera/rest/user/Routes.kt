@@ -57,9 +57,7 @@ private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->
 
 private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
     val uuid = call.getUUID()
-    ifRegular {
-        idRestrict(uuid)
-    }
+    ifRegular { idRestrict(uuid) }
     val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(UserService.updateUser(uuid, body, updaterID))

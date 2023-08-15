@@ -151,6 +151,11 @@ pages:
         summary: Create a user to allow them to log in to Hedera and upload files. Users can be disabled at any time.
         cancel: Cancel
         submit: Create
+      edit_dialog:
+        title: Edit a user
+        # summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        cancel: Cancel
+        submit: Save
       activate_dialog:
         title: Activate a user
         summary: The user will be able to log in and upload files. Their existing files will now be visible. The user can be deactivated at any time. Are you sure you want to activate this user?

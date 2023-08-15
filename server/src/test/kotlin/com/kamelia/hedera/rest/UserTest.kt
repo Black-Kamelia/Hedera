@@ -522,9 +522,8 @@ class UserTest {
     ) = testApplication {
         val (tokens, userId) = user
         val client = client()
-        val response = client.patch("/api/users/${userId}") {
-            contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(enabled = newState))
+        val route = if (newState) "/api/users/${userId}/activate" else "/api/users/${userId}/deactivate"
+        val response = client.post(route) {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.Forbidden, response.status, response.bodyAsText())

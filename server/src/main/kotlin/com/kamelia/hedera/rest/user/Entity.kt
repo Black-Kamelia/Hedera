@@ -54,7 +54,7 @@ object UserTable : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
-    val forceChangePassword = bool("forceChangePassword")
+    val forceChangePassword = bool("force_change_password")
     val settings = reference("settings", UserSettingsTable)
 
     override val createdBy = reference("created_by", this)

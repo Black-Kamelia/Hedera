@@ -2,8 +2,13 @@ package com.kamelia.hedera.rest
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.login
-import com.kamelia.hedera.rest.user.*
+import com.kamelia.hedera.rest.user.UserCreationDTO
+import com.kamelia.hedera.rest.user.UserPasswordUpdateDTO
+import com.kamelia.hedera.rest.user.UserRepresentationDTO
+import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.rest.user.UserUpdateDTO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -26,7 +31,7 @@ class UserTest {
     @DisplayName("Signing up")
     @Test
     fun signUp() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "test.test-test_123",
             password = "Test0@aaa",
             email = "test.signup@test.com"
@@ -52,7 +57,7 @@ class UserTest {
     @DisplayName("Signing up with lowercase username")
     @Test
     fun signUpLowercaseUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "thisisatest",
             password = "password",
             email = "test.signup.lower@test.com"
@@ -74,7 +79,7 @@ class UserTest {
     @DisplayName("Signing up with username with dashes")
     @Test
     fun signUpDashesUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "this-is-a-test",
             password = "password",
             email = "test.signup.dashes@test.com"
@@ -96,7 +101,7 @@ class UserTest {
     @DisplayName("Signing up with username with underscores")
     @Test
     fun signUpUnderscoresUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "this_is_a_test",
             password = "password",
             email = "test.signup.under@test.com"
@@ -118,7 +123,7 @@ class UserTest {
     @DisplayName("Signing up with username with dots")
     @Test
     fun signUpDotsUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "this.is.a.test",
             password = "password",
             email = "test.signup.dots@test.com"
@@ -140,7 +145,7 @@ class UserTest {
     @DisplayName("Signing up with username with digits")
     @Test
     fun signUpDigitsUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "this123",
             password = "password",
             email = "test.signup.digits@test.com"
@@ -162,7 +167,7 @@ class UserTest {
     @DisplayName("Signing up with uppercase username")
     @Test
     fun signUpUppercaseUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "THISISATEST",
             password = "password",
             email = "test.signup.upper@test.com"
@@ -178,7 +183,7 @@ class UserTest {
     @DisplayName("Signing up with username with spaces")
     @Test
     fun signUpSpacesUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "this is a test",
             password = "password",
             email = "test.signup.spaces@test.com"
@@ -194,7 +199,7 @@ class UserTest {
     @DisplayName("Signing up with username with special characters")
     @Test
     fun signUpSpecialCharactersUsername() = testApplication {
-        val newUserDto = UserDTO(
+        val newUserDto = UserCreationDTO(
             username = "test\"'()[]{}/+-:;.,?!@#$%^&*|\\`~",
             password = "password",
             email = "test.signup.special@test.com"
@@ -210,7 +215,7 @@ class UserTest {
     @DisplayName("Signing up with already existing email")
     @Test
     fun signUpExistingMail() = testApplication {
-        val dto = UserDTO(
+        val dto = UserCreationDTO(
             username = "test",
             password = "Test0@aaa",
             email = "admin@test.com"
@@ -225,7 +230,7 @@ class UserTest {
     @DisplayName("Signing up with invalid email")
     @Test
     fun signUpInvalidMail() = testApplication {
-        val dto = UserDTO(
+        val dto = UserCreationDTO(
             username = "test",
             password = "Test0@aaa",
             email = "myemail"
@@ -240,7 +245,7 @@ class UserTest {
     @DisplayName("Signing up with already existing username")
     @Test
     fun signUpExistingUsername() = testApplication {
-        val dto = UserDTO(
+        val dto = UserCreationDTO(
             username = "admin1",
             password = "Test0@aaa",
             email = "test.username.exists@test.com"
@@ -255,7 +260,7 @@ class UserTest {
     @DisplayName("Signing up with invalid username")
     @Test
     fun signUpInvalidUsername() = testApplication {
-        val dto = UserDTO(
+        val dto = UserCreationDTO(
             username = "inv@lidTEST",
             password = "Test0@aaa",
             email = "test.username.invalid@test.com"
@@ -270,7 +275,7 @@ class UserTest {
     @DisplayName("Signing up with invalid role")
     @Test
     fun signUpInvalidRole() = testApplication {
-        val dto = UserDTO(
+        val dto = UserCreationDTO(
             username = "test",
             password = "Test0@aaa",
             email = "test.role.invalid@test.com",
@@ -536,16 +541,11 @@ class UserTest {
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
-        val response = client.patch("/api/users/${userId}") {
-            contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(enabled = newState))
+        val route = if (newState) "/api/users/${userId}/activate" else "/api/users/${userId}/deactivate"
+        val response = client.post(route) {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
-        if (expectedStatus == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(newState, responseDto.enabled)
-        }
     }
 
     @DisplayName("Updating password with wrong old password")

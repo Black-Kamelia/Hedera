@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import type { DataTablePageEvent, DataTableRowContextMenuEvent, DataTableSortMeta } from 'primevue/datatable'
+import type { PContextMenu } from '#components'
+import UsersTableContextMenu from '~/components/pages/configuration/users/UsersTableContextMenu.vue'
+import { UsersTableContextMenuKey } from '~/utils/symbols'
 
 const DEFAULT_PAGE = 0
 const DEFAULT_PAGE_SIZE = 10
@@ -38,13 +41,23 @@ const loading = computed(() => pending.value && debouncedPending.value)
 
 const createUserDialog = ref<boolean>(false)
 
+provide(UsersTableKey, {
+  selectedRow,
+  selectedRowId,
+  unselectRow: () => selectedRow.value = null,
+  refresh,
+})
+
+const contextMenu = ref<InstanceType<typeof PContextMenu> | null>(null)
+provide(UsersTableContextMenuKey, contextMenu)
+
 function onPage(event: DataTablePageEvent) {
   page.value = event.page
   pageSize.value = event.rows
 }
 
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
-
+  contextMenu.value?.show(event.originalEvent)
 }
 
 function handleCreate() {
@@ -53,6 +66,8 @@ function handleCreate() {
 </script>
 
 <template>
+  <UsersTableContextMenu />
+
   <div class="p-card flex flex-row items-center gap-7 w-full overflow-hidden">
     <PDataTable
       v-model:selection="selectedRows"

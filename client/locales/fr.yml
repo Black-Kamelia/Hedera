@@ -140,12 +140,32 @@ pages:
         role: Rôle
         status: Statut
         creation_date: Date de création
+      context_menu:
+        edit: Éditer
+        deactivate: Désactiver
+        activate: Activer
+        delete: Supprimer
       create_user: Créer un utilisateur
       create_dialog:
         title: Créer un utilisateur
         summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
         cancel: Annuler
         submit: Créer
+      activate_dialog:
+        title: Activer un utilisateur
+        summary: L'utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L'utilisateur pourra être désactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?
+        cancel: Annuler
+        submit: Activer l'utilisateur
+      deactivate_dialog:
+        title: Désactiver un utilisateur
+        summary: L'utilisateur ne sera plus en mesure de se connecter, ni d'envoyer des fichiers. Ses fichiers ne seront plus visibles, mais ne seront pas supprimés. L'utilisateur pourra être réactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir désactiver cet utilisateur ?
+        cancel: Annuler
+        submit: Désactiver l'utilisateur
+      delete_dialog:
+        title: Supprimer un utilisateur
+        summary: Cette action est irréversible et tous les fichiers de l'utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
+        cancel: Annuler
+        submit: Supprimer
   debug:
     title: Débogage
   profile:
@@ -310,6 +330,14 @@ actions:
       success:
         title: Utilisateur créé
         message: L’utilisateur “{username}” a été créé
+    activate:
+      success:
+        title: Utilisateur activé
+        message: L’utilisateur “{username}” a été activé
+    deactivate:
+      success:
+        title: Utilisateur désactivé
+        message: L’utilisateur “{username}” a été désactivé
     delete:
       success:
         title: Utilisateur supprimé

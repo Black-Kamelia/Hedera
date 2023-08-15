@@ -166,7 +166,14 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         dto.username?.let { username = it }
         dto.email?.let { email = it }
         dto.role?.let { role = it }
-        dto.enabled?.let { enabled = it }
+        // dto.enabled?.let { enabled = it }
+
+        SessionManager.updateSession(uuid, this)
+        onUpdate(updater)
+    }
+
+    suspend fun updateStatus(enabled: Boolean, updater: User = this): User = apply {
+        this.enabled = enabled
 
         SessionManager.updateSession(uuid, this)
         onUpdate(updater)

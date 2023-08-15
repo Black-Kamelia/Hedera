@@ -2,6 +2,7 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.adminRestrict
@@ -23,6 +24,8 @@ fun Route.userRoutes() = route("/users") {
         getUserById()
         searchUsers()
         updateUser()
+        activateUser()
+        deactivateUser()
         updateUserPassword()
         deleteUser()
     }
@@ -60,6 +63,22 @@ private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
     val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(UserService.updateUser(uuid, body, updaterID))
+}
+
+private fun Route.activateUser() = post("/{uuid}/activate") {
+    val uuid = call.getUUID()
+    val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    adminRestrict()
+
+    call.respond(UserService.updateUserStatus(uuid, true, updaterID))
+}
+
+private fun Route.deactivateUser() = post("/{uuid}/deactivate") {
+    val uuid = call.getUUID()
+    val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    adminRestrict()
+
+    call.respond(UserService.updateUserStatus(uuid, false, updaterID))
 }
 
 private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/password") { body ->

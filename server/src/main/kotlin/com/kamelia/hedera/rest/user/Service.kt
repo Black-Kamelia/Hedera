@@ -89,14 +89,41 @@ object UserService {
         }
 
         if (
-            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) || // can't change role to higher or equal if updater is lower or equal
-            (dto.enabled != null && (toEdit.role ge updater.role)) // can't change enabled if updater is lower or equal
+            (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) // can't change role to higher or equal if updater is lower or equal
+            // (dto.enabled != null && (toEdit.role ge updater.role)) // can't change enabled if updater is lower or equal
         ) {
             throw InsufficientPermissionsException()
         }
 
         toEdit.update(dto, updater)
         Response.ok(toEdit.toRepresentationDTO())
+    }
+
+    suspend fun updateUserStatus(
+        id: UUID,
+        enable: Boolean,
+        updaterID: UUID,
+    ): Response<MessageDTO<Nothing>, MessageKeyDTO> = Connection.transaction {
+        val toEdit = User.findById(id) ?: throw UserNotFoundException()
+        val updater = User[updaterID]
+
+        if (toEdit.role ge updater.role) {
+            throw InsufficientPermissionsException()
+        }
+
+        toEdit.updateStatus(enable, updater)
+
+        if (enable) {
+            Response.ok(MessageDTO(
+                title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
+                message = MessageKeyDTO(Actions.Users.Activate.Success.MESSAGE, mapOf("username" to toEdit.username)),
+            ))
+        } else {
+            Response.ok(MessageDTO(
+                title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
+                message = MessageKeyDTO(Actions.Users.Deactivate.Success.MESSAGE, mapOf("username" to toEdit.username)),
+            ))
+        }
     }
 
     suspend fun updateUserPassword(

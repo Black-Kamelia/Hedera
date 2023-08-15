@@ -5,11 +5,9 @@ export function useCreateUser() {
     return $fetchAPI<MessageDTO<UserRepresentationDTO>>('/users', { method: 'POST', body: dto })
   })
 
-  return function createToken(dto: UserCreationDTO): Promise<void | MessageDTO<UserRepresentationDTO>> {
-    return new Promise((resolve, reject) => {
-      (call(dto) as Promise<void | MessageDTO<UserRepresentationDTO>>)
-        .then(resolve)
-        .catch(reject)
-    })
-  }
+  return (dto: UserCreationDTO) => new Promise<void | MessageDTO<UserRepresentationDTO>>((resolve, reject) => {
+    (call(dto) as Promise<void | MessageDTO<UserRepresentationDTO>>)
+      .then(resolve)
+      .catch(reject)
+  })
 }

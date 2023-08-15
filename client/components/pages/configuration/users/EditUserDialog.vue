@@ -28,12 +28,6 @@ const roles = computed(() => selectedRow.value?.role === 'OWNER'
     ],
 )
 
-function roleDisabled(role: string) {
-  if (user?.role === 'OWNER') return false
-  if (user?.role === 'ADMIN' && role === 'ADMIN') return true
-  return true
-}
-
 const schema = object({
   username: string()
     .required(t('forms.create_user.errors.missing_username')),
@@ -89,6 +83,14 @@ function onHide() {
     @hide="onHide"
   >
     <div class="flex flex-col gap-3">
+      <PMessage
+        severity="info"
+        class="mb-3"
+        :closable="false" icon="i-tabler-info-circle-filled"
+        :pt="{ root: { style: { marginTop: 0 } } }"
+      >
+        {{ t('pages.configuration.users.edit_dialog.password_summary') }}
+      </PMessage>
       <!--
       <p class="text-[--text-color-secondary] mb-3">
         {{ t('pages.configuration.users.edit_dialog.summary') }}
@@ -123,10 +125,9 @@ function onHide() {
           :label="t('forms.create_user.fields.role')"
           :placeholder="t('forms.create_user.fields.role_placeholder')"
           :options="roles"
-          :disabled="selectedRow.role === 'OWNER'"
+          :disabled="selectedRow.role === 'OWNER' || user.role !== 'OWNER'"
           option-label="label"
           option-value="value"
-          :option-disabled="roleDisabled"
           class="w-full"
           @keydown.enter="submit"
         />
@@ -161,25 +162,3 @@ function onHide() {
     </template>
   </PDialog>
 </template>
-
-<style scoped>
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.slide-left-leave-active {
-  position: absolute;
-  top: 0;
-}
-
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.slide-left-leave-to {
-  opacity: 0;
-  transform: translateX(-100%);
-}
-</style>

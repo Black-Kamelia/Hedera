@@ -16,15 +16,14 @@ const roles = [
   { label: t('pages.configuration.users.role.admin'), value: 'ADMIN', icon: 'i-tabler-shield' },
   { label: t('pages.configuration.users.role.regular'), value: 'REGULAR', icon: 'i-tabler-user' },
 ]
-function roleDisabled(role: string) {
+
+function roleDisabled(role: any) {
   if (user?.role === 'OWNER') return false
-  if (user?.role === 'ADMIN' && role === 'ADMIN') return true
+  if (user?.role === 'ADMIN' && role.value === 'REGULAR') return false
   return true
 }
 
 const schema = object({
-  // name: string()
-  //  .required(t('pages.profile.tokens.create_dialog.errors.missing_name')),
   username: string()
     .required(t('forms.create_user.errors.missing_username')),
   password: string()
@@ -162,25 +161,3 @@ function onHide() {
     </template>
   </PDialog>
 </template>
-
-<style scoped>
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.slide-left-leave-active {
-  position: absolute;
-  top: 0;
-}
-
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.slide-left-leave-to {
-  opacity: 0;
-  transform: translateX(-100%);
-}
-</style>

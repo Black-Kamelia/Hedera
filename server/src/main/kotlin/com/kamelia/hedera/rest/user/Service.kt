@@ -33,22 +33,25 @@ object UserService {
         Response.created(user.toRepresentationDTO())
     }
 
-    suspend fun createUser(dto: UserCreationDTO): Response<MessageDTO<UserRepresentationDTO>, MessageKeyDTO> = Connection.transaction {
-        checkEmail(dto.email)?.let { return@transaction it }
-        checkUsername(dto.username)?.let { return@transaction it }
-        checkPassword(dto.password)?.let { return@transaction it }
+    suspend fun createUser(dto: UserCreationDTO): Response<MessageDTO<UserRepresentationDTO>, MessageKeyDTO> =
+        Connection.transaction {
+            checkEmail(dto.email)?.let { return@transaction it }
+            checkUsername(dto.username)?.let { return@transaction it }
+            checkPassword(dto.password)?.let { return@transaction it }
 
-        if (dto.role == UserRole.OWNER) {
-            throw IllegalActionException()
+            if (dto.role == UserRole.OWNER) {
+                throw IllegalActionException()
+            }
+
+            val user = User.create(dto)
+            Response.created(
+                MessageDTO(
+                    title = MessageKeyDTO(Actions.Users.Create.Success.TITLE),
+                    message = MessageKeyDTO(Actions.Users.Create.Success.MESSAGE, mapOf("username" to user.username)),
+                    payload = user.toRepresentationDTO()
+                )
+            )
         }
-
-        val user = User.create(dto)
-        Response.created(MessageDTO(
-            title = MessageKeyDTO(Actions.Users.Create.Success.TITLE),
-            message = MessageKeyDTO(Actions.Users.Create.Success.MESSAGE, mapOf("username" to user.username)),
-            payload = user.toRepresentationDTO()
-        ))
-    }
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
         val user = User.findById(id) ?: throw UserNotFoundException()
@@ -61,15 +64,17 @@ object UserService {
         definition: PageDefinitionDTO
     ): Response<UserPageDTO, String> = Connection.transaction {
         val (users, total) = User.search(page, pageSize, definition)
-        Response.ok(UserPageDTO(
-            PageDTO(
-                users.map { it.toRepresentationDTO() },
-                page,
-                pageSize,
-                ceil(total / pageSize.toDouble()).toLong(),
-                total
+        Response.ok(
+            UserPageDTO(
+                PageDTO(
+                    users.map { it.toRepresentationDTO() },
+                    page,
+                    pageSize,
+                    ceil(total / pageSize.toDouble()).toLong(),
+                    total
+                )
             )
-        ))
+        )
     }
 
     suspend fun updateUser(
@@ -84,13 +89,18 @@ object UserService {
 
         val updater = User[updaterID]
 
-        // can't self update role or state
-        if ((dto.role != null || dto.enabled != null) && updater.uuid == toEdit.uuid) {
+        // Prevent updating self state
+        if ((dto.enabled != null) && updater.id == toEdit.id) {
             throw IllegalActionException()
         }
 
-        // can't change role to higher or equal if updater is lower or equal
-        if (dto.role != null && (dto.role ge updater.role || toEdit.role ge updater.role)) {
+        // Prevent changing self role
+        if (dto.role != null && toEdit.id == updater.id && dto.role != toEdit.role) {
+            throw IllegalActionException()
+        }
+
+        // Prevent changing the role of someone else if not strictly superior
+        if (dto.role != null && toEdit.id != updater.id && (dto.role ge updater.role || toEdit.role ge updater.role)) {
             throw InsufficientPermissionsException()
         }
 
@@ -113,15 +123,25 @@ object UserService {
         toEdit.updateStatus(enable, updater)
 
         if (enable) {
-            Response.ok(MessageDTO(
-                title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
-                message = MessageKeyDTO(Actions.Users.Activate.Success.MESSAGE, mapOf("username" to toEdit.username)),
-            ))
+            Response.ok(
+                MessageDTO(
+                    title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
+                    message = MessageKeyDTO(
+                        Actions.Users.Activate.Success.MESSAGE,
+                        mapOf("username" to toEdit.username)
+                    ),
+                )
+            )
         } else {
-            Response.ok(MessageDTO(
-                title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
-                message = MessageKeyDTO(Actions.Users.Deactivate.Success.MESSAGE, mapOf("username" to toEdit.username)),
-            ))
+            Response.ok(
+                MessageDTO(
+                    title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
+                    message = MessageKeyDTO(
+                        Actions.Users.Deactivate.Success.MESSAGE,
+                        mapOf("username" to toEdit.username)
+                    ),
+                )
+            )
         }
     }
 

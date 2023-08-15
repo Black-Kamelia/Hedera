@@ -153,7 +153,7 @@ pages:
         submit: Créer
       edit_dialog:
         title: Éditer un utilisateur
-        # summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        password_summary: Par mesure de sécurité, le mot de passe d'un utilisateur ne peut être modifié que par lui-même.
         cancel: Annuler
         submit: Sauvegarder
       activate_dialog:

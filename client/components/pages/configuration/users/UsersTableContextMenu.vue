@@ -8,11 +8,17 @@ const emit = defineEmits<{
 const cm = inject(UsersTableContextMenuKey)
 
 const { t } = useI18n()
+const { user } = useAuth()
 const confirm = useConfirm()
 const { selectedRow, selectedRowId, unselectRow, refresh } = useUsersTable()
 
 const { activate, deactivate } = useUpdateUserStatus()
 const deleteUser = useDeleteUser()
+
+function disabled() {
+  if (!selectedRowId.value) return true
+  return selectedRowId.value === user?.id
+}
 
 const statusToggle = computed(() => selectedRow.value?.enabled
   ? {
@@ -34,6 +40,7 @@ const statusToggle = computed(() => selectedRow.value?.enabled
           },
         })
       },
+      disabled,
     }
   : {
       label: t('pages.configuration.users.context_menu.activate'),
@@ -53,6 +60,7 @@ const statusToggle = computed(() => selectedRow.value?.enabled
           },
         })
       },
+      disabled,
     },
 )
 const menuModel = computed(() => [
@@ -82,6 +90,7 @@ const menuModel = computed(() => [
         },
       })
     },
+    disabled,
   },
 ])
 </script>

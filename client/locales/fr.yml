@@ -325,12 +325,11 @@ actions:
           title: Fichier renommé
           message: Le fichier “{oldName}” a été renommé en “{newName}”
   users:
-    update:
-      password:
-        success:
-          message: Votre mot de passe a été mis à jour
-        failure:
-          message: Impossible de mettre à jour votre mot de passe
+    update_password:
+      success:
+        message: Votre mot de passe a été mis à jour
+      failure:
+        message: Impossible de mettre à jour votre mot de passe
     create:
       success:
         title: Utilisateur créé
@@ -343,6 +342,10 @@ actions:
       success:
         title: Utilisateur désactivé
         message: L’utilisateur “{username}” a été désactivé
+    update:
+      success:
+        title: Utilisateur édité
+        message: L’utilisateur “{username}” a été édité
     delete:
       success:
         title: Utilisateur supprimé

@@ -325,12 +325,11 @@ actions:
           title: Successfully renamed
           message: The file “{oldName}” has been renamed to “{newName}”
   users:
-    update:
-      password:
-        success:
-          message: Your password has been updated
-        failure:
-          message: Could not update your password
+    update_password:
+      success:
+        message: Your password has been updated
+      failure:
+        message: Could not update your password
     create:
       success:
         title: User created
@@ -343,6 +342,10 @@ actions:
       success:
         title: User deactivated
         message: The user “{username}” has been deactivated
+    update:
+      success:
+        title: User edited
+        message: The user “{username}” has been edited
     delete:
       success:
         title: User deleted

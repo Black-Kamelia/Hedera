@@ -81,7 +81,7 @@ object UserService {
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    ): Response<MessageDTO<UserRepresentationDTO>, MessageKeyDTO> = Connection.transaction {
         val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
         checkEmail(dto.email, toEdit)?.let { return@transaction it }
@@ -105,7 +105,11 @@ object UserService {
         }
 
         toEdit.update(dto, updater)
-        Response.ok(toEdit.toRepresentationDTO())
+        Response.ok(MessageDTO(
+            title = MessageKeyDTO(Actions.Users.Update.Success.TITLE),
+            message = MessageKeyDTO(Actions.Users.Update.Success.MESSAGE, mapOf("username" to toEdit.username)),
+            payload = toEdit.toRepresentationDTO(),
+        ))
     }
 
     suspend fun updateUserStatus(
@@ -123,25 +127,15 @@ object UserService {
         toEdit.updateStatus(enable, updater)
 
         if (enable) {
-            Response.ok(
-                MessageDTO(
-                    title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
-                    message = MessageKeyDTO(
-                        Actions.Users.Activate.Success.MESSAGE,
-                        mapOf("username" to toEdit.username)
-                    ),
-                )
-            )
+            Response.ok(MessageDTO(
+                title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
+                message = MessageKeyDTO(Actions.Users.Activate.Success.MESSAGE, mapOf("username" to toEdit.username)),
+            ))
         } else {
-            Response.ok(
-                MessageDTO(
-                    title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
-                    message = MessageKeyDTO(
-                        Actions.Users.Deactivate.Success.MESSAGE,
-                        mapOf("username" to toEdit.username)
-                    ),
-                )
-            )
+            Response.ok(MessageDTO(
+                title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
+                message = MessageKeyDTO(Actions.Users.Deactivate.Success.MESSAGE, mapOf("username" to toEdit.username)),
+            ))
         }
     }
 
@@ -161,11 +155,17 @@ object UserService {
         Response.ok(toEdit.toRepresentationDTO())
     }
 
-    suspend fun deleteUser(id: UUID): Response<UserRepresentationDTO, String> = Connection.transaction {
+    suspend fun deleteUser(
+        id: UUID
+    ): Response<MessageDTO<UserRepresentationDTO>, String> = Connection.transaction {
         val toDelete = User.findById(id) ?: throw UserNotFoundException()
 
         toDelete.delete()
-        Response.ok(toDelete.toRepresentationDTO())
+        Response.ok(MessageDTO(
+            title = MessageKeyDTO(Actions.Users.Delete.Success.TITLE),
+            message = MessageKeyDTO(Actions.Users.Delete.Success.MESSAGE, mapOf("username" to toDelete.username)),
+            payload = toDelete.toRepresentationDTO()
+        ))
     }
 }
 

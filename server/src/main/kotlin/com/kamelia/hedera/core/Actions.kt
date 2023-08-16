@@ -122,6 +122,18 @@ object Actions {
 
         }
 
+        object Update {
+
+            private const val PREFIX = "${Users.PREFIX}.update"
+
+            object Success {
+                private const val PREFIX = "${Update.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
         object Delete {
 
             private const val PREFIX = "${Users.PREFIX}.delete"

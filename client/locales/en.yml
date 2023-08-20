@@ -122,7 +122,7 @@ pages:
     select_files: Select files
     upload_files: Upload files
     clear_files: Clear files
-    completed: Completed
+    completed: Uploaded
     pending: Pending
   analytics:
     title: Analytics

@@ -122,7 +122,7 @@ pages:
     select_files: Choisir des fichiers
     upload_files: Envoyer les fichiers
     clear_files: Vider la sélection
-    completed: Succès
+    completed: En ligne
     pending: En attente
   analytics:
     title: Statistiques

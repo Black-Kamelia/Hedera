@@ -3,11 +3,8 @@ import type { FileUploadUploadEvent } from 'primevue/fileupload'
 
 const { t } = useI18n()
 const toast = useToast()
-const { format } = useHumanFileSize()
 
 const files = ref<File[]>([])
-const totalSize = computed(() => files.value.reduce((acc, file) => acc + file.size, 0))
-const areFilesChosen = computed(() => files.value.length !== 0)
 
 function onUpdate(event: { files: File[] }) {
   files.value = event.files
@@ -23,16 +20,27 @@ function onUpload(event: FileUploadUploadEvent) {
   <div class="w-full">
     <PFileUpload
       :multiple="true"
+      :choose-label="t('pages.upload.select_files')"
+      :upload-label="t('pages.upload.upload_files')"
+      :cancel-label="t('pages.upload.clear_files')"
+      choose-icon="i-tabler-file-plus"
+      upload-icon="i-tabler-cloud-upload"
+      cancel-icon="i-tabler-x"
       @upload="onUpload"
       @select="onUpdate"
       @clear="onUpdate({ files: [] })"
       @remove="onUpdate"
     >
-      <template #content="{ files: pendingFiles, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
-        <div class="flex flex-wrap p-0 sm:p-5 gap-5">
-          <FileDropFilesSection :files="pendingFiles" :completed="false" :remove-callback="removeFileCallback" />
-          <FileDropFilesSection :files="uploadedFiles" :completed="true" :remove-callback="removeUploadedFileCallback" />
-        </div>
+      <template
+        #content="{
+          files: pendingFiles,
+          uploadedFiles,
+          removeFileCallback,
+          removeUploadedFileCallback,
+        }"
+      >
+        <FileDropFilesSection :files="pendingFiles" :completed="false" @remove="removeFileCallback" />
+        <FileDropFilesSection :files="uploadedFiles" :completed="true" @remove="removeUploadedFileCallback" />
       </template>
 
       <template #empty>

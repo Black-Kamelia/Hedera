@@ -117,6 +117,13 @@ pages:
     title: Favorites
   upload:
     title: Upload
+    drag_n_drop: Drag and drop files here to upload.
+    total_size: "Total size to be uploaded: {size}"
+    select_files: Select files
+    upload_files: Upload files
+    clear_files: Clear files
+    completed: Completed
+    pending: Pending
   analytics:
     title: Analytics
   configuration:

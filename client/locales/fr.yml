@@ -117,6 +117,13 @@ pages:
     title: Favoris
   upload:
     title: Mettre en ligne
+    drag_n_drop: Déposez des fichiers ici pour les mettre en ligne.
+    total_size: "Taille totale à mettre en ligne: {size}"
+    select_files: Choisir des fichiers
+    upload_files: Envoyer les fichiers
+    clear_files: Vider la sélection
+    completed: Succès
+    pending: En attente
   analytics:
     title: Statistiques
   configuration:

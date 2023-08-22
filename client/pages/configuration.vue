@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 const { t } = useI18n()
-const { user } = storeToRefs(useAuth())
 
 usePageName(() => t('pages.configuration.title'))
 definePageMeta({

@@ -26,7 +26,7 @@ const pageDefinition = computed<PageDefinitionDTO>(() => ({
   sorter: sortDefinition.value,
 }))
 
-const { data, pending, error, refresh } = useLazyFetchAPI<PageableDTO<UserRepresentationDTO>>('/users/search', {
+const { data, pending, refresh } = useLazyFetchAPI<PageableDTO<UserRepresentationDTO>>('/users/search', {
   method: 'POST',
   body: pageDefinition,
   query: { page, pageSize },

@@ -3,14 +3,14 @@ import { object, string } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 
-const emit = defineEmits<{
+defineEmits<{
   (event: 'completed', payload: UserRepresentationDTO): void
 }>()
 
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
-const { selectedRow, selectedRowId, refresh } = useUsersTable()
+const { selectedRow, refresh } = useUsersTable()
 const updateUser = useUpdateUser()
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -125,7 +125,7 @@ function onHide() {
           :label="t('forms.create_user.fields.role')"
           :placeholder="t('forms.create_user.fields.role_placeholder')"
           :options="roles"
-          :disabled="selectedRow.role === 'OWNER' || user.role !== 'OWNER'"
+          :disabled="selectedRow?.role === 'OWNER' || user?.role !== 'OWNER'"
           option-label="label"
           option-value="value"
           class="w-full"

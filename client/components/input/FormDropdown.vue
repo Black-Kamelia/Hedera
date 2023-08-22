@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
-import type { InputTextProps } from 'primevue/inputtext'
-import PInputText from 'primevue/inputtext'
+import type PInputText from 'primevue/inputtext'
+import type { DropdownProps } from 'primevue/dropdown'
 
-export interface FormInputTextProps extends OnlyProps<InputTextProps> {
+export interface FormDropdownProps extends OnlyProps<DropdownProps> {
   id: string
   name: string
   label: string
+  options: any[]
   startIcon?: string
   endIcon?: string
   transformValue?: (value: string) => string
 }
 
-const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormInputTextProps>()
+const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormDropdownProps>()
 
 const { errorMessage, value, validate } = useField<Nullable<string>>(name, _ => true, {
   validateOnValueUpdate: false,
 })
 
-function onInput(payload: Event) {
+function onChange() {
   if (errorMessage.value) {
     validate({ mode: 'force' })
   }
+}
 
+function onInput(payload: Event) {
   const target = payload.target as HTMLInputElement | null
   value.value = transformValue(target?.value ?? '')
 }
@@ -38,13 +41,15 @@ defineExpose({
     <label v-if="label" :for="id" class="block font-900 font-medium mb-2 ml-1">{{ label }}</label>
     <span class="w-full" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText
+      <PDropdown
         :id="id"
         v-bind="$attrs"
         ref="el"
         v-model="value"
         :class="{ 'p-invalid': errorMessage }"
+        :options="options"
         @input="onInput"
+        @change="onChange"
       />
       <i v-if="endIcon" :class="endIcon" />
     </span>

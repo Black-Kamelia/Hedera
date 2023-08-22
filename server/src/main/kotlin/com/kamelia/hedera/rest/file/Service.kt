@@ -70,10 +70,14 @@ object FileService {
         code: String,
         authId: UUID? = null,
     ): Response<FileRepresentationDTO, String> = Connection.transaction {
-        val file = File.findByCode(code) ?: throw FileNotFoundException()
+        val (file, owner) = File.findByCodeWithOwner(code) ?: throw FileNotFoundException()
         val user = authId?.let { User.findById(it) }
 
-        if (file.visibility == FileVisibility.PRIVATE && user?.uuid != file.ownerId) {
+        if (!owner.enabled) {
+            throw FileNotFoundException()
+        }
+
+        if (file.visibility == FileVisibility.PRIVATE && user?.id != owner.id) {
             throw FileNotFoundException()
         }
 

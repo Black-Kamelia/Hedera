@@ -82,4 +82,67 @@ object Actions {
 
     }
 
+    object Users {
+
+        private const val PREFIX = "${Actions.PREFIX}.users"
+
+        object Create {
+
+            private const val PREFIX = "${Users.PREFIX}.create"
+
+            object Success {
+                private const val PREFIX = "${Create.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
+        object Activate {
+
+            private const val PREFIX = "${Users.PREFIX}.activate"
+
+            object Success {
+                private const val PREFIX = "${Activate.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
+        object Deactivate {
+
+            private const val PREFIX = "${Users.PREFIX}.deactivate"
+
+            object Success {
+                private const val PREFIX = "${Deactivate.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
+        object Update {
+
+            private const val PREFIX = "${Users.PREFIX}.update"
+
+            object Success {
+                private const val PREFIX = "${Update.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
+        object Delete {
+
+            private const val PREFIX = "${Users.PREFIX}.delete"
+
+            object Success {
+                private const val PREFIX = "${Delete.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+        }
+    }
 }

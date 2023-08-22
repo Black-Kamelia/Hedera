@@ -54,6 +54,7 @@ object UserTable : AuditableUUIDTable("users") {
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
+    val forceChangePassword = bool("force_change_password")
     val settings = reference("settings", UserSettingsTable)
 
     override val createdBy = reference("created_by", this)
@@ -77,18 +78,19 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             .selectAll()
             .applyFilters(definition.filters) {
                 when (it.field) {
-                    UserTable.username.name -> UserTable.username.filter(it)
-                    UserTable.email.name -> UserTable.email.filter(it)
-                    UserTable.role.name -> UserTable.role.filter(it)
-                    UserTable.enabled.name -> UserTable.enabled.filter(it)
+                    "username" -> UserTable.username.filter(it)
+                    "email" -> UserTable.email.filter(it)
+                    "role" -> UserTable.role.filter(it)
+                    "enabled" -> UserTable.enabled.filter(it)
                     else -> throw UnknownFilterFieldException(it.field)
                 }
             }.applySort(definition.sorter) {
                 when (it) {
-                    UserTable.username.name -> UserTable.username
-                    UserTable.email.name -> UserTable.email
-                    UserTable.role.name -> UserTable.role
-                    UserTable.enabled.name -> UserTable.enabled
+                    "username" -> UserTable.username
+                    "email" -> UserTable.email
+                    "role" -> UserTable.role
+                    "enabled" -> UserTable.enabled
+                    "createdAt" -> UserTable.createdAt
                     else -> throw UnknownFilterFieldException(it)
                 }
             }.let {
@@ -96,12 +98,13 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                 rows.limit(pageSize, page * pageSize).toList() to rows.count()
             }
 
-        fun create(user: UserDTO, creator: User? = null): User = new {
+        fun create(user: UserCreationDTO, creator: User? = null): User = new {
             username = user.username
             email = user.email
             password = Hasher.hash(user.password)
             role = user.role
-            enabled = false
+            enabled = true
+            forceChangePassword = user.forceChangePassword
             settings = UserSettings.new {}
 
             onCreate(creator ?: this)
@@ -114,6 +117,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var password by UserTable.password
     var role by UserTable.role
     var enabled by UserTable.enabled
+    var forceChangePassword by UserTable.forceChangePassword
     var settings by UserSettings referencedOn UserTable.settings
 
     private val files by File referrersOn FileTable.owner
@@ -162,7 +166,13 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         dto.username?.let { username = it }
         dto.email?.let { email = it }
         dto.role?.let { role = it }
-        dto.enabled?.let { enabled = it }
+
+        SessionManager.updateSession(uuid, this)
+        onUpdate(updater)
+    }
+
+    suspend fun updateStatus(enabled: Boolean, updater: User = this): User = apply {
+        this.enabled = enabled
 
         SessionManager.updateSession(uuid, this)
         onUpdate(updater)

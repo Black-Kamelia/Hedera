@@ -319,10 +319,8 @@ class AuthTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         /* Disabling the user as owner */
-        val updateResponse = client().patch("/api/users/00000000-0001-0004-0000-000000000002") {
+        val updateResponse = client().post("/api/users/00000000-0001-0004-0000-000000000002/deactivate") {
             ownerTokens?.let { bearerAuth(it.accessToken) }
-            contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(enabled = false))
         }
         assertEquals(HttpStatusCode.OK, updateResponse.status)
 

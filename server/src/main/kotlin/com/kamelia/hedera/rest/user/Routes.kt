@@ -2,6 +2,7 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.adminRestrict
@@ -19,18 +20,25 @@ fun Route.userRoutes() = route("/users") {
     signup()
 
     authenticate(AuthJwt) {
+        createUser()
         getUserById()
-        getAllUsers()
         searchUsers()
         updateUser()
+        activateUser()
+        deactivateUser()
         updateUserPassword()
         deleteUser()
-        // regenerateUploadToken()
     }
 }
 
-private fun Route.signup() = post<UserDTO>("/signup") { body ->
+private fun Route.signup() = post<UserCreationDTO>("/signup") { body ->
     call.respond(UserService.signup(body))
+}
+
+private fun Route.createUser() = post<UserCreationDTO> { body ->
+    adminRestrict()
+
+    call.respond(UserService.createUser(body))
 }
 
 private fun Route.getUserById() = get("/{uuid}") {
@@ -38,12 +46,6 @@ private fun Route.getUserById() = get("/{uuid}") {
     ifRegular { idRestrict(uuid) }
 
     call.respond(UserService.getUserById(uuid))
-}
-
-private fun Route.getAllUsers() = get("/all") {
-    adminRestrict()
-
-    call.respond(UserService.getUsers())
 }
 
 private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->
@@ -55,12 +57,26 @@ private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->
 
 private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
     val uuid = call.getUUID()
-    ifRegular {
-        idRestrict(uuid)
-    }
+    ifRegular { idRestrict(uuid) }
     val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
 
     call.respond(UserService.updateUser(uuid, body, updaterID))
+}
+
+private fun Route.activateUser() = post("/{uuid}/activate") {
+    val uuid = call.getUUID()
+    val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    adminRestrict()
+
+    call.respond(UserService.updateUserStatus(uuid, true, updaterID))
+}
+
+private fun Route.deactivateUser() = post("/{uuid}/deactivate") {
+    val uuid = call.getUUID()
+    val updaterID = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    adminRestrict()
+
+    call.respond(UserService.updateUserStatus(uuid, false, updaterID))
 }
 
 private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/password") { body ->
@@ -76,10 +92,3 @@ private fun Route.deleteUser() = delete("/{uuid}") {
 
     call.respond(UserService.deleteUser(uuid))
 }
-
-// private fun Route.regenerateUploadToken() = post("/uploadToken") {
-//     val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
-//     idRestrict(userId)
-//
-//     call.respond(UserService.regenerateUploadToken(userId))
-// }

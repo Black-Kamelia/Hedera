@@ -18,6 +18,7 @@ import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
+import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +64,7 @@ object SessionManager {
 
     private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role, user.enabled)
+            UserState(user.id.value, user.username, user.email, user.role, user.enabled, user.createdAt)
         }
         val tokenData = TokenData.from(user)
         val session = Session(userState, tokenData)
@@ -155,6 +156,7 @@ data class UserState(
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
+    val createdAt: Instant,
 ) : Principal {
 
     fun toUserRepresentationDTO() = UserRepresentationDTO(
@@ -163,6 +165,7 @@ data class UserState(
         email,
         role,
         enabled,
+        createdAt.toString(),
     )
 }
 

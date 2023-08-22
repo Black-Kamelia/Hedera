@@ -34,6 +34,7 @@ fun ApplicationTestBuilder.client() = createClient {
                 }
                 contextual(UUIDSerializer)
             }
+            ignoreUnknownKeys = true
         })
     }
 }

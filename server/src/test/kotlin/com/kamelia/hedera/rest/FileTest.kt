@@ -459,6 +459,18 @@ class FileTest {
         assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
     }
 
+    @DisplayName("Getting file from disabled user should fail")
+    @Test
+    fun getFileFromDisabledUser() = testApplication {
+        val client = client()
+
+        val control = client.get("/api/files/0000_00_01")
+        assertEquals(HttpStatusCode.OK, control.status)
+
+        val response = client.get("/api/files/0006_00_01")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
     companion object {
 
         private lateinit var superadmin: TestUser

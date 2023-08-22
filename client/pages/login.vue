@@ -75,7 +75,7 @@ useEventBus(LoggedInEvent).on((event) => {
     message.content = m(event.error.data)
     message.severity = 'error'
   } else {
-    navigateTo('/files')
+    navigateTo('/files', { replace: true })
   }
 })
 

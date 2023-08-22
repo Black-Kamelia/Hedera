@@ -89,5 +89,5 @@ const menuModel = computed(() => [
   <PContextMenu ref="cm" :model="menuModel" />
 
   <PDynamicDialog />
-  <PConfirmDialog :pt="{ rejectButton: { icon: { class: 'display-none' } } }" />
+  <ConfirmDialog />
 </template>

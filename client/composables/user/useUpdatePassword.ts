@@ -19,7 +19,7 @@ export default function useUpdatePassword() {
     }).then((response) => {
       toast.add({
         severity: 'success',
-        summary: t('actions.users.update.password.success.message'),
+        summary: t('actions.users.update_password.success.message'),
         life: 5000,
       })
       return response

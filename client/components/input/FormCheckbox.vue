@@ -11,7 +11,9 @@ export interface FormCheckboxProps extends OnlyProps<CheckboxProps> {
 
 const { name, label } = defineProps<FormCheckboxProps>()
 
-const { value } = useField<boolean>(name)
+const { value } = useField<boolean>(name, _ => true, {
+  validateOnValueUpdate: false,
+})
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PCheckbox>>>>()
 defineExpose({

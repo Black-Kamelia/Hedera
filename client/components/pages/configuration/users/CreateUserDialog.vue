@@ -141,7 +141,7 @@ function onHide() {
           id="forceChangePassword"
           name="forceChangePassword"
           :label="t('forms.create_user.fields.force_change_password')"
-          :binary="true"
+          binary
         />
       </div>
     </div>

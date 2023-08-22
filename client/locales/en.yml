@@ -300,6 +300,7 @@ forms:
       missing_confirm_password: Password confirmation is required
       passwords_mismatch: The passwords do not match
       missing_role: Role is required
+      missing_force_change_password: Choice of forcing password change is required
     fields:
       username: Username
       email: Email address

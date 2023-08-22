@@ -300,6 +300,7 @@ forms:
       missing_confirm_password: Confirmation du mot de passe requise
       passwords_mismatch: Les mots de passe ne correspondent pas
       missing_role: Rôle requis
+      missing_force_change_password: Choix sur la modification du mot de passe obligatoire requis
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail

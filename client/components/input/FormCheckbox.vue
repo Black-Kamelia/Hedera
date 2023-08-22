@@ -11,9 +11,15 @@ export interface FormCheckboxProps extends OnlyProps<CheckboxProps> {
 
 const { name, label } = defineProps<FormCheckboxProps>()
 
-const { value } = useField<boolean>(name, _ => true, {
+const { value, errorMessage, validate } = useField<boolean>(name, _ => true, {
   validateOnValueUpdate: false,
 })
+
+function onInput() {
+  if (errorMessage.value) {
+    validate({ mode: 'force' })
+  }
+}
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PCheckbox>>>>()
 defineExpose({
@@ -23,7 +29,15 @@ defineExpose({
 
 <template>
   <div class="flex flex-row items-center">
-    <PCheckbox ref="el" v-bind="$attrs" v-model="value" :input-id="id" :name="name" class="mr-2" />
+    <PCheckbox
+      ref="el"
+      v-bind="$attrs"
+      v-model="value"
+      :input-id="id"
+      :name="name"
+      class="mr-2"
+      @input="onInput"
+    />
     <label :for="id">{{ label }}</label>
   </div>
 </template>

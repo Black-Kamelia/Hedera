@@ -17,13 +17,12 @@ const { id, name, label, startIcon, endIcon, transformValue = value => value } =
 const { errorMessage, value, validate } = useField<Nullable<string>>(name, _ => true, {
   validateOnValueUpdate: false,
 })
-watch(value, () => {
+
+function onInput(payload: Event) {
   if (errorMessage.value) {
     validate({ mode: 'force' })
   }
-}, { immediate: true })
 
-function onInput(payload: Event) {
   const target = payload.target as HTMLInputElement | null
   value.value = transformValue(target?.value ?? '')
 }
@@ -39,7 +38,14 @@ defineExpose({
     <label v-if="label" :for="id" class="block font-900 font-medium mb-2 ml-1">{{ label }}</label>
     <span class="w-full" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" @input="onInput" />
+      <PInputText
+        :id="id"
+        v-bind="$attrs"
+        ref="el"
+        v-model="value"
+        :class="{ 'p-invalid': errorMessage }"
+        @input="onInput"
+      />
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>

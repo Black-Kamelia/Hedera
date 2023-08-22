@@ -305,8 +305,8 @@ class UserTest {
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(newUsername, responseDto.username)
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newUsername, responseDto.payload!!.username)
         }
     }
 
@@ -328,8 +328,8 @@ class UserTest {
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(newUsername, responseDto.username)
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newUsername, responseDto.payload!!.username)
         }
     }
 
@@ -363,8 +363,8 @@ class UserTest {
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(newEmail, responseDto.email)
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newEmail, responseDto.payload!!.email)
         }
     }
 
@@ -386,8 +386,8 @@ class UserTest {
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(newEmail, responseDto.email)
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newEmail, responseDto.payload!!.email)
         }
     }
 
@@ -507,8 +507,8 @@ class UserTest {
         }
         assertEquals(expectedStatus, response.status, response.bodyAsText())
         if (expectedStatus == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals(newRole, responseDto.role)
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newRole, responseDto.payload!!.role)
         }
     }
 
@@ -611,26 +611,6 @@ class UserTest {
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
-
-    /*
-    @DisplayName("Regenerating token gives a new token")
-    @Test
-    fun regenerateToken() = testApplication {
-        val tokens = login("regenerate_token", "password").second ?: throw Exception("Login failed")
-        val client = client()
-        val response = client.post("/api/users/uploadToken") {
-            contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(email = "newEmail"))
-            bearerAuth(tokens.accessToken)
-        }
-
-        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
-
-        val responseDto = Json.decodeFromString(UserRepresentationDTO.serializer(), response.bodyAsText())
-        //assertNotEquals("0123456789abdcef0123456789abdcef", responseDto.uploadToken)
-        assertFalse { true }
-    }
-     */
 
     companion object {
 

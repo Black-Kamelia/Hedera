@@ -39,8 +39,8 @@ const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
 const loading = computed(() => pending.value && debouncedPending.value)
 
-const createUserDialog = ref<boolean>(false)
-const editUserDialog = ref<boolean>(false)
+const createUserDialog = ref(false)
+const editUserDialog = ref(false)
 
 provide(UsersTableKey, {
   selectedRow,

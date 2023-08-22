@@ -58,10 +58,6 @@ const submit = handleSubmit(async (values) => {
       visible.value = false
     })
 })
-
-function onHide() {
-  resetForm()
-}
 </script>
 
 <template>
@@ -73,7 +69,7 @@ function onHide() {
     :draggable="false"
     :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
-    @hide="onHide"
+    @hide="resetForm()"
   >
     <div class="flex flex-col gap-3">
       <p class="text-[--text-color-secondary] mb-3">

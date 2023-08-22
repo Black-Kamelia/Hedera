@@ -2,6 +2,7 @@
 import { boolean, object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
+import { CreateUserForm } from '~/utils/forms'
 
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
@@ -28,8 +29,8 @@ const schema = object({
     .required(t('forms.create_user.errors.missing_username')),
   password: string()
     .required(t('forms.create_user.errors.missing_password'))
-    .min(8, t('forms.create_user.errors.password_too_short', { min: 8 }))
-    .max(128, t('forms.create_user.errors.password_too_long', { max: 128 })),
+    .min(CreateUserForm.username.min, t('forms.create_user.errors.password_too_short', { min: CreateUserForm.username.min }))
+    .max(CreateUserForm.username.max, t('forms.create_user.errors.password_too_long', { max: CreateUserForm.username.max })),
   confirmPassword: string()
     .required(t('forms.create_user.errors.missing_confirm_password'))
     .oneOf([yref('password')], t('forms.create_user.errors.passwords_mismatch')),

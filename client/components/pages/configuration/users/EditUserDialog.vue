@@ -36,8 +36,6 @@ const schema = object({
     .email(t('forms.create_user.errors.invalid_email')),
   role: string()
     .required(t('forms.create_user.errors.missing_role')),
-  // forceChangePassword: boolean()
-  //   .required(t('forms.create_user.errors.missing_force_change_password')),
 })
 const { handleSubmit, resetForm, setValues } = useForm({
   validationSchema: schema,
@@ -91,11 +89,6 @@ function onHide() {
       >
         {{ t('pages.configuration.users.edit_dialog.password_summary') }}
       </PMessage>
-      <!--
-      <p class="text-[--text-color-secondary] mb-3">
-        {{ t('pages.configuration.users.edit_dialog.summary') }}
-      </p>
-      -->
 
       <div class="grid grid-cols-1 gap-3 items-end">
         <FormInputText
@@ -132,17 +125,6 @@ function onHide() {
           @keydown.enter="submit"
         />
       </div>
-
-      <!--
-      <div class="mt-3">
-        <FormCheckbox
-          id="forceChangePassword"
-          name="forceChangePassword"
-          :label="t('forms.create_user.fields.force_change_password')"
-          :binary="true"
-        />
-      </div>
-      -->
     </div>
 
     <template #footer>

@@ -17,7 +17,7 @@ const roles = [
   { label: t('pages.configuration.users.role.regular'), value: 'REGULAR', icon: 'i-tabler-user' },
 ]
 
-function roleDisabled(role: any) {
+function roleDisabled(role: { value: string }) {
   if (user?.role === 'OWNER') return false
   if (user?.role === 'ADMIN' && role.value === 'REGULAR') return false
   return true

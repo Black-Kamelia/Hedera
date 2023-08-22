@@ -4,7 +4,7 @@ const { t } = useI18n()
 usePageName(() => t('pages.configuration.title'))
 definePageMeta({
   layout: 'sidebar',
-  middleware: ['auth'],
+  middleware: ['auth', 'restricted'],
 })
 
 const menus = computed(() => [

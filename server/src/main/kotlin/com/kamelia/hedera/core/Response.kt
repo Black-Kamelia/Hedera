@@ -18,16 +18,33 @@ data class MessageKeyDTO(
 }
 
 @Serializable
-data class MessageDTO<T : DTO>(
-    val title: MessageKeyDTO? = null,
-    val message: MessageKeyDTO,
-    val payload: T? = null,
-) : DTO
+sealed interface MessageDTO<T : DTO> : DTO {
 
-class Response<out S, out E> private constructor(
+    val title: MessageKeyDTO
+    val message: MessageKeyDTO?
+    val payload: T?
+
+    @Serializable
+    class Simple(
+        override val title: MessageKeyDTO,
+        override val message: MessageKeyDTO? = null,
+    ) : MessageDTO<Nothing> {
+        override val payload: Nothing? = null
+    }
+
+    @Serializable
+    class Payload<T : DTO>(
+        override val title: MessageKeyDTO,
+        override val payload: T,
+        override val message: MessageKeyDTO? = null,
+    ) : MessageDTO<T>
+
+}
+
+class Response<out T> private constructor(
     val status: HttpStatusCode,
-    private val success: ResultData<S>? = null,
-    private val error: ResultData<E>? = null,
+    private val success: ResultData<T>? = null,
+    private val error: ResultData<MessageDTO<out DTO>>? = null,
 ) {
     init {
         require(!(status.isSuccess() && success == null || !status.isSuccess() && error == null)) {
@@ -36,8 +53,8 @@ class Response<out S, out E> private constructor(
     }
 
     suspend fun ifSuccessOrElse(
-        onSuccess: suspend (ResultData<out S>) -> Unit,
-        onError: suspend (ResultData<out E>) -> Unit = {}
+        onSuccess: suspend (ResultData<out T>) -> Unit,
+        onError: suspend (ResultData<MessageDTO<out DTO>>) -> Unit = {}
     ) {
         if (status.isSuccess()) {
             checkNotNull(success) { "Success result is null but it should not be possible" }
@@ -50,10 +67,13 @@ class Response<out S, out E> private constructor(
 
     companion object {
         fun <S> success(status: HttpStatusCode, result: S? = null) =
-            Response<S, Nothing>(status, success = ResultData(result))
+            Response(status, success = ResultData(result))
 
-        fun <E> error(status: HttpStatusCode, error: E? = null) =
-            Response<Nothing, E>(status, error = ResultData(error))
+        fun error(status: HttpStatusCode, error: MessageDTO<out DTO>? = null) =
+            Response<Nothing>(status, error = ResultData(error))
+
+        fun error(status: HttpStatusCode, error: MessageKeyDTO) =
+            error(status, MessageDTO.Simple(error))
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun ok() = success<Nothing>(HttpStatusCode.OK)
@@ -71,7 +91,7 @@ class Response<out S, out E> private constructor(
 
         fun notFound(error: MessageKeyDTO) = error(HttpStatusCode.NotFound, error)
         fun notFound(error: String) = notFound(MessageKeyDTO.of(error))
-        fun notFound() = error<Nothing>(HttpStatusCode.NotFound)
+        fun notFound() = error(HttpStatusCode.NotFound)
     }
 }
 
@@ -79,7 +99,7 @@ data class ResultData<T>(
     val data: T? = null
 )
 
-suspend inline fun <reified S, reified E> ApplicationCall.respond(response: Response<S, E>) {
+suspend inline fun <reified S> ApplicationCall.respond(response: Response<S>) {
     response.ifSuccessOrElse(
         { result ->
             this.response.status(response.status)
@@ -92,7 +112,7 @@ suspend inline fun <reified S, reified E> ApplicationCall.respond(response: Resp
     )
 }
 
-suspend inline fun <reified E> ApplicationCall.respondNoSuccess(response: Response<Nothing, E>) {
+suspend inline fun ApplicationCall.respondNoSuccess(response: Response<Nothing>) {
     response.ifSuccessOrElse(
         {
             this.response.status(response.status)
@@ -104,7 +124,7 @@ suspend inline fun <reified E> ApplicationCall.respondNoSuccess(response: Respon
     )
 }
 
-suspend inline fun <reified S> ApplicationCall.respondNoError(response: Response<S, Nothing>) {
+suspend inline fun <reified S> ApplicationCall.respondNoError(response: Response<S>) {
     response.ifSuccessOrElse(
         { result ->
             this.response.status(response.status)
@@ -116,7 +136,7 @@ suspend inline fun <reified S> ApplicationCall.respondNoError(response: Response
     )
 }
 
-suspend inline fun ApplicationCall.respondNothing(response: Response<Nothing, Nothing>) {
+suspend inline fun ApplicationCall.respondNothing(response: Response<Nothing>) {
     response.ifSuccessOrElse(
         {
             this.response.status(response.status)

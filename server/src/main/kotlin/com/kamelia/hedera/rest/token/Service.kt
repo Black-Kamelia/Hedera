@@ -16,7 +16,7 @@ object PersonalTokenService {
     suspend fun createPersonalToken(
         userId: UUID,
         dto: PersonalTokenCreationDTO,
-    ): Response<MessageDTO<PersonalTokenDTO>, MessageKeyDTO> = Connection.transaction {
+    ): Response<MessageDTO.Payload<PersonalTokenDTO>> = Connection.transaction {
         val owner = User[userId]
 
         val token = PersonalToken.create(
@@ -24,17 +24,17 @@ object PersonalTokenService {
             owner = owner
         )
         Response.created(
-            MessageDTO(
+            MessageDTO.Payload(
                 title = MessageKeyDTO.of(Actions.Tokens.Create.Success.TITLE),
                 message = MessageKeyDTO.of(Actions.Tokens.Create.Success.MESSAGE, "name" to token.name),
-                token.toRepresentationDTO(token = token.token)
+                payload = token.toRepresentationDTO(token = token.token)
             )
         )
     }
 
     suspend fun getPersonalTokens(
         userId: UUID,
-    ): Response<List<PersonalTokenDTO>, String> = Connection.transaction {
+    ): Response<List<PersonalTokenDTO>> = Connection.transaction {
         val tokens = PersonalToken.allWithLastUsed(userId)
             .map { (token, lastUsed) -> token.toRepresentationDTO(lastUsed = lastUsed) }
 
@@ -44,7 +44,7 @@ object PersonalTokenService {
     suspend fun deletePersonalToken(
         userId: UUID,
         tokenId: UUID,
-    ): Response<MessageDTO<Nothing>, String> = Connection.transaction {
+    ): Response<MessageDTO.Simple> = Connection.transaction {
         val token = PersonalToken.findById(tokenId) ?: throw PersonalTokenNotFoundException()
         val user = User[userId]
 
@@ -53,7 +53,7 @@ object PersonalTokenService {
 
         token.delete(user)
         Response.ok(
-            MessageDTO(
+            MessageDTO.Simple(
                 title = MessageKeyDTO.of(Actions.Tokens.Delete.Success.TITLE),
                 message = MessageKeyDTO.of(Actions.Tokens.Delete.Success.MESSAGE, "name" to token.name)
             )

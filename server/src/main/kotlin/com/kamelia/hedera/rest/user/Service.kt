@@ -20,7 +20,7 @@ private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 
 object UserService {
 
-    suspend fun signup(dto: UserCreationDTO): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun signup(dto: UserCreationDTO): Response<UserRepresentationDTO> = Connection.transaction {
         checkEmail(dto.email)?.let { return@transaction it }
         checkUsername(dto.username)?.let { return@transaction it }
         checkPassword(dto.password)?.let { return@transaction it }
@@ -33,7 +33,7 @@ object UserService {
         Response.created(user.toRepresentationDTO())
     }
 
-    suspend fun createUser(dto: UserCreationDTO): Response<MessageDTO<UserRepresentationDTO>, MessageKeyDTO> =
+    suspend fun createUser(dto: UserCreationDTO): Response<MessageDTO.Payload<UserRepresentationDTO>> =
         Connection.transaction {
             checkEmail(dto.email)?.let { return@transaction it }
             checkUsername(dto.username)?.let { return@transaction it }
@@ -45,7 +45,7 @@ object UserService {
 
             val user = User.create(dto)
             Response.created(
-                MessageDTO(
+                MessageDTO.Payload(
                     title = MessageKeyDTO(Actions.Users.Create.Success.TITLE),
                     message = MessageKeyDTO(Actions.Users.Create.Success.MESSAGE, mapOf("username" to user.username)),
                     payload = user.toRepresentationDTO()
@@ -53,7 +53,7 @@ object UserService {
             )
         }
 
-    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    suspend fun getUserById(id: UUID): Response<UserRepresentationDTO> = Connection.transaction {
         val user = User.findById(id) ?: throw UserNotFoundException()
         Response.ok(user.toRepresentationDTO())
     }
@@ -62,7 +62,7 @@ object UserService {
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO
-    ): Response<UserPageDTO, String> = Connection.transaction {
+    ): Response<UserPageDTO> = Connection.transaction {
         val (users, total) = User.search(page, pageSize, definition)
         Response.ok(
             UserPageDTO(
@@ -81,7 +81,7 @@ object UserService {
         id: UUID,
         dto: UserUpdateDTO,
         updaterID: UUID,
-    ): Response<MessageDTO<UserRepresentationDTO>, MessageKeyDTO> = Connection.transaction {
+    ): Response<MessageDTO.Payload<UserRepresentationDTO>> = Connection.transaction {
         val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
         checkEmail(dto.email, toEdit)?.let { return@transaction it }
@@ -105,7 +105,7 @@ object UserService {
         }
 
         toEdit.update(dto, updater)
-        Response.ok(MessageDTO(
+        Response.ok(MessageDTO.Payload(
             title = MessageKeyDTO(Actions.Users.Update.Success.TITLE),
             message = MessageKeyDTO(Actions.Users.Update.Success.MESSAGE, mapOf("username" to toEdit.username)),
             payload = toEdit.toRepresentationDTO(),
@@ -116,7 +116,7 @@ object UserService {
         id: UUID,
         enable: Boolean,
         updaterID: UUID,
-    ): Response<MessageDTO<Nothing>, MessageKeyDTO> = Connection.transaction {
+    ): Response<MessageDTO.Simple> = Connection.transaction {
         val toEdit = User.findById(id) ?: throw UserNotFoundException()
         val updater = User[updaterID]
 
@@ -127,12 +127,12 @@ object UserService {
         toEdit.updateStatus(enable, updater)
 
         if (enable) {
-            Response.ok(MessageDTO(
+            Response.ok(MessageDTO.Simple(
                 title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
                 message = MessageKeyDTO(Actions.Users.Activate.Success.MESSAGE, mapOf("username" to toEdit.username)),
             ))
         } else {
-            Response.ok(MessageDTO(
+            Response.ok(MessageDTO.Simple(
                 title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
                 message = MessageKeyDTO(Actions.Users.Deactivate.Success.MESSAGE, mapOf("username" to toEdit.username)),
             ))
@@ -142,7 +142,7 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-    ): Response<UserRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    ): Response<UserRepresentationDTO> = Connection.transaction {
         checkPassword(dto.newPassword)?.let { return@transaction it }
 
         val toEdit = User.findById(id) ?: throw UserNotFoundException()
@@ -157,11 +157,11 @@ object UserService {
 
     suspend fun deleteUser(
         id: UUID
-    ): Response<MessageDTO<UserRepresentationDTO>, String> = Connection.transaction {
+    ): Response<MessageDTO.Payload<UserRepresentationDTO>> = Connection.transaction {
         val toDelete = User.findById(id) ?: throw UserNotFoundException()
 
         toDelete.delete()
-        Response.ok(MessageDTO(
+        Response.ok(MessageDTO.Payload(
             title = MessageKeyDTO(Actions.Users.Delete.Success.TITLE),
             message = MessageKeyDTO(Actions.Users.Delete.Success.MESSAGE, mapOf("username" to toDelete.username)),
             payload = toDelete.toRepresentationDTO()
@@ -169,7 +169,7 @@ object UserService {
     }
 }
 
-private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {
+private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing>? = when {
     email == null -> null
     "@" !in email -> Response.badRequest(Errors.Users.Email.INVALID_EMAIL)
     else -> User.findByEmail(email)?.let {
@@ -181,7 +181,7 @@ private fun checkEmail(email: String?, toEdit: User? = null): Response<Nothing, 
     }
 }
 
-private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing, MessageKeyDTO>? = when {
+private fun checkUsername(username: String?, toEdit: User? = null): Response<Nothing>? = when {
     username == null -> null
     !USERNAME_REGEX.matches(username) -> Response.badRequest(Errors.Users.Username.INVALID_USERNAME)
     else -> User.findByUsername(username)?.let {
@@ -193,7 +193,7 @@ private fun checkUsername(username: String?, toEdit: User? = null): Response<Not
     }
 }
 
-private fun checkPassword(password: String?): Response<Nothing, MessageKeyDTO>? = when {
+private fun checkPassword(password: String?): Response<Nothing>? = when {
     password == null -> null
     password.length < 8 -> Response.forbidden(Errors.Users.Password.TOO_SHORT)
     password.length > 128 -> Response.forbidden(Errors.Users.Password.TOO_LONG)

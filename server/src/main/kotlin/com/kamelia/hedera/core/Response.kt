@@ -11,33 +11,26 @@ data class MessageKeyDTO(
     val key: String,
     val parameters: Map<String, String>? = null,
 ) : DTO {
-    companion object {
-        fun of(key: String, template: Map<String, String>? = null) = MessageKeyDTO(key, template)
-        fun of(key: String, vararg template: Pair<String, String>) = MessageKeyDTO(key, mapOf(*template))
-    }
+    constructor(key: String, vararg parameters: Pair<String, String>) : this(key, mapOf(*parameters))
 }
 
+fun String.asMessage(parameters: Map<String, String>? = null) = MessageKeyDTO(this, parameters)
+fun String.asMessage(vararg parameters: Pair<String, String>) = MessageKeyDTO(this, mapOf(*parameters))
+
 @Serializable
-sealed interface MessageDTO<T : DTO> : DTO {
-
-    val title: MessageKeyDTO
-    val message: MessageKeyDTO?
+data class MessageDTO<T : DTO>(
+    val title: MessageKeyDTO,
+    val message: MessageKeyDTO?,
     val payload: T?
+) : DTO {
 
-    @Serializable
-    class Simple(
-        override val title: MessageKeyDTO,
-        override val message: MessageKeyDTO? = null,
-    ) : MessageDTO<Nothing> {
-        override val payload: Nothing? = null
+    companion object {
+        fun simple(title: MessageKeyDTO, message: MessageKeyDTO? = null): MessageDTO<Nothing> =
+            MessageDTO(title, message, null)
+
+        fun <T : DTO> payload(title: MessageKeyDTO, payload: T, message: MessageKeyDTO? = null): MessageDTO<T> =
+            MessageDTO(title, message, payload)
     }
-
-    @Serializable
-    class Payload<T : DTO>(
-        override val title: MessageKeyDTO,
-        override val payload: T,
-        override val message: MessageKeyDTO? = null,
-    ) : MessageDTO<T>
 
 }
 
@@ -73,7 +66,7 @@ open class Response<out T>(
             Response<Nothing>(status, error = ResultData(error))
 
         fun error(status: HttpStatusCode, error: MessageKeyDTO) =
-            error(status, MessageDTO.Simple(error))
+            error(status, MessageDTO.simple(error))
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun ok() = success<Nothing>(HttpStatusCode.OK)
@@ -81,16 +74,16 @@ open class Response<out T>(
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
         fun badRequest(error: MessageKeyDTO) = error(HttpStatusCode.BadRequest, error)
-        fun badRequest(error: String) = badRequest(MessageKeyDTO.of(error))
+        fun badRequest(error: String) = badRequest(MessageKeyDTO(error))
 
         fun unauthorized(error: MessageKeyDTO) = error(HttpStatusCode.Unauthorized, error)
-        fun unauthorized(error: String) = unauthorized(MessageKeyDTO.of(error))
+        fun unauthorized(error: String) = unauthorized(MessageKeyDTO(error))
 
         fun forbidden(error: MessageKeyDTO) = error(HttpStatusCode.Forbidden, error)
-        fun forbidden(error: String) = forbidden(MessageKeyDTO.of(error))
+        fun forbidden(error: String) = forbidden(MessageKeyDTO(error))
 
         fun notFound(error: MessageKeyDTO) = error(HttpStatusCode.NotFound, error)
-        fun notFound(error: String) = notFound(MessageKeyDTO.of(error))
+        fun notFound(error: String) = notFound(MessageKeyDTO(error))
         fun notFound() = error(HttpStatusCode.NotFound)
     }
 }
@@ -102,35 +95,19 @@ class ActionResponse<out T : DTO>(
 ) : Response<MessageDTO<out T>>(status, success, error) {
 
     companion object {
-        private fun <T : DTO> success(status: HttpStatusCode, result: MessageDTO.Payload<T>? = null) =
-            ActionResponse(status, success = ResultData(result))
+        private fun <T : DTO> success(status: HttpStatusCode, result: MessageDTO<T>? = null): ActionResponse<T> =
+            ActionResponse(status, ResultData(result))
 
-        private fun messageOf(title: MessageKeyDTO, message: MessageKeyDTO?) =
-            MessageDTO.Simple(title, message)
-        private fun messageOf(title: MessageKeyDTO, message: String?) =
-            messageOf(title, message?.let { MessageKeyDTO.of(it) })
-        private fun messageOf(title: String, message: MessageKeyDTO?) =
-            messageOf(MessageKeyDTO.of(title), message)
-        private fun messageOf(title: String, message: String?) =
-            messageOf(MessageKeyDTO.of(title), message?.let { MessageKeyDTO.of(it) })
+        private fun <T : DTO> messageOf(title: MessageKeyDTO, message: MessageKeyDTO?, payload: T?): MessageDTO<out T> =
+            if (payload == null)
+                MessageDTO.simple(title, message)
+            else
+                MessageDTO.payload(title, payload, message)
 
-        private fun <T : DTO> messageOf(payload: T, title: MessageKeyDTO, message: MessageKeyDTO?) =
-            MessageDTO.Payload(title, payload, message)
-        private fun <T : DTO> messageOf(payload: T, title: MessageKeyDTO, message: String?) =
-            MessageDTO.Payload(title, payload, message?.let { MessageKeyDTO.of(it) })
-        private fun <T : DTO> messageOf(payload: T, title: String, message: MessageKeyDTO?) =
-            MessageDTO.Payload(MessageKeyDTO.of(title), payload, message)
-        private fun <T : DTO> messageOf(payload: T, title: String, message: String?) =
-            MessageDTO.Payload(MessageKeyDTO.of(title), payload, message?.let { MessageKeyDTO.of(it) })
-
-
-        fun ok(title: String, message: String? = null) =
-            success(HttpStatusCode.OK, messageOf(title, message))
-        fun <T : DTO> ok(payload: T, title: String, message: String? = null) =
-            success(HttpStatusCode.OK, messageOf(payload, title, message))
-        fun <T : DTO> ok(payload: T, title: String, message: MessageKeyDTO? = null) =
-            success(HttpStatusCode.OK, messageOf(payload, title, message))
-
+        fun <T : DTO> ok(title: MessageKeyDTO, message: MessageKeyDTO? = null, payload: T? = null): ActionResponse<T> =
+            success(HttpStatusCode.OK, messageOf(title, message, payload))
+        fun <T : DTO> created(title: MessageKeyDTO, message: MessageKeyDTO? = null, payload: T? = null): ActionResponse<T> =
+            success(HttpStatusCode.Created, messageOf(title, message, payload))
     }
 }
 

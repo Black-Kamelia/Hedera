@@ -1,8 +1,10 @@
 package com.kamelia.hedera.plugins
 
+import com.kamelia.hedera.core.BadRequestException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.ForbiddenException
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.IllegalFilterException
@@ -13,6 +15,7 @@ import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.MultipartParseException
+import com.kamelia.hedera.core.NotFoundException
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UnknownFilterFieldException
@@ -46,17 +49,20 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is MultipartParseException,
         is IllegalFilterException,
         is UnknownSortFieldException,
-        is UnknownFilterFieldException -> badRequestMessage(call, cause)
+        is UnknownFilterFieldException,
+        is BadRequestException -> badRequestMessage(call, cause)
 
         is MissingTokenException,
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
         is IllegalActionException,
-        is InsufficientPermissionsException -> forbiddenMessage(call, cause)
+        is InsufficientPermissionsException,
+        is ForbiddenException -> forbiddenMessage(call, cause)
 
         is FileNotFoundException,
         is UserNotFoundException,
-        is PersonalTokenNotFoundException -> notFound(call, cause)
+        is PersonalTokenNotFoundException,
+        is NotFoundException -> notFound(call, cause)
 
         else -> unhandledError(call, cause)
     }
@@ -83,6 +89,6 @@ private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (ca
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO.of(Errors.UNKNOWN)))
+    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO(Errors.UNKNOWN)))
     call.application.log.error("Unexpected error", cause)
 }

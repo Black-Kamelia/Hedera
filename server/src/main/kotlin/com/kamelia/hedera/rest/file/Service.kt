@@ -7,9 +7,8 @@ import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.asMessage
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -135,7 +134,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<MessageDTO.Payload<FileRepresentationDTO>> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
@@ -143,17 +142,14 @@ object FileService {
         val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
         val payload = updatedFile.toRepresentationDTO()
 
-        Response.ok(
-            MessageDTO.Payload(
-                title = MessageKeyDTO.of(Actions.Files.Update.Visibility.Success.TITLE),
-                message = MessageKeyDTO.of(
-                    Actions.Files.Update.Visibility.Success.MESSAGE,
-                    "name" to file.name,
-                    "oldVisibility" to oldVisibility.toMessageKey(),
-                    "newVisibility" to payload.visibility.toMessageKey()
-                ),
-                payload = payload
-            )
+        ActionResponse.ok(
+            title = Actions.Files.Update.Visibility.Success.TITLE.asMessage(),
+            message = Actions.Files.Update.Visibility.Success.MESSAGE.asMessage(
+                "name" to file.name,
+                "oldVisibility" to oldVisibility.toMessageKey(),
+                "newVisibility" to payload.visibility.toMessageKey()
+            ),
+            payload = payload
         )
     }
 
@@ -171,9 +167,8 @@ object FileService {
 
         ActionResponse.ok(
             payload = payload,
-            title = Actions.Files.Update.Name.Success.TITLE,
-            message = MessageKeyDTO.of(
-                Actions.Files.Update.Name.Success.MESSAGE,
+            title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
+            message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
                 "oldName" to oldName,
                 "newName" to payload.name,
             ),
@@ -183,7 +178,7 @@ object FileService {
     suspend fun deleteFile(
         fileId: UUID,
         userId: UUID,
-    ): Response<MessageDTO.Payload<FileRepresentationDTO>> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
@@ -197,12 +192,10 @@ object FileService {
         file.delete()
         FileUtils.delete(file.ownerId, file.code)
 
-        Response.ok(
-            MessageDTO.Payload(
-                title = MessageKeyDTO.of(Actions.Files.Delete.Success.TITLE),
-                message = MessageKeyDTO.of(Actions.Files.Delete.Success.MESSAGE, "name" to file.name),
-                payload = file.toRepresentationDTO()
-            )
+        ActionResponse.ok(
+            title = Actions.Files.Delete.Success.TITLE.asMessage(),
+            message = Actions.Files.Delete.Success.MESSAGE.asMessage("name" to file.name),
+            payload = file.toRepresentationDTO()
         )
     }
 }

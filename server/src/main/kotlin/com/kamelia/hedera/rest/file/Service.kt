@@ -1,6 +1,5 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.Action
 import com.kamelia.hedera.core.ActionResponse
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.Errors
@@ -162,7 +161,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<MessageDTO.Payload<FileRepresentationDTO>> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
@@ -170,16 +169,14 @@ object FileService {
         val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
         val payload = updatedFile.toRepresentationDTO()
 
-        Response.ok(
-            MessageDTO.Payload(
-                title = MessageKeyDTO.of(Actions.Files.Update.Name.Success.TITLE),
-                message = MessageKeyDTO.of(
-                    Actions.Files.Update.Name.Success.MESSAGE,
-                    "oldName" to oldName,
-                    "newName" to payload.name,
-                ),
-                payload = payload
-            )
+        ActionResponse.ok(
+            payload = payload,
+            title = Actions.Files.Update.Name.Success.TITLE,
+            message = MessageKeyDTO.of(
+                Actions.Files.Update.Name.Success.MESSAGE,
+                "oldName" to oldName,
+                "newName" to payload.name,
+            ),
         )
     }
 

@@ -41,9 +41,9 @@ sealed interface MessageDTO<T : DTO> : DTO {
 
 }
 
-class Response<out T> private constructor(
+open class Response<out T>(
     val status: HttpStatusCode,
-    private val success: ResultData<T>? = null,
+    private val success: ResultData<out T>? = null,
     private val error: ResultData<MessageDTO<out DTO>>? = null,
 ) {
     init {
@@ -92,6 +92,45 @@ class Response<out T> private constructor(
         fun notFound(error: MessageKeyDTO) = error(HttpStatusCode.NotFound, error)
         fun notFound(error: String) = notFound(MessageKeyDTO.of(error))
         fun notFound() = error(HttpStatusCode.NotFound)
+    }
+}
+
+class ActionResponse<out T : DTO>(
+    status: HttpStatusCode,
+    success: ResultData<MessageDTO<out T>>? = null,
+    error: ResultData<MessageDTO<out DTO>>? = null,
+) : Response<MessageDTO<out T>>(status, success, error) {
+
+    companion object {
+        private fun <T : DTO> success(status: HttpStatusCode, result: MessageDTO.Payload<T>? = null) =
+            ActionResponse(status, success = ResultData(result))
+
+        private fun messageOf(title: MessageKeyDTO, message: MessageKeyDTO?) =
+            MessageDTO.Simple(title, message)
+        private fun messageOf(title: MessageKeyDTO, message: String?) =
+            messageOf(title, message?.let { MessageKeyDTO.of(it) })
+        private fun messageOf(title: String, message: MessageKeyDTO?) =
+            messageOf(MessageKeyDTO.of(title), message)
+        private fun messageOf(title: String, message: String?) =
+            messageOf(MessageKeyDTO.of(title), message?.let { MessageKeyDTO.of(it) })
+
+        private fun <T : DTO> messageOf(payload: T, title: MessageKeyDTO, message: MessageKeyDTO?) =
+            MessageDTO.Payload(title, payload, message)
+        private fun <T : DTO> messageOf(payload: T, title: MessageKeyDTO, message: String?) =
+            MessageDTO.Payload(title, payload, message?.let { MessageKeyDTO.of(it) })
+        private fun <T : DTO> messageOf(payload: T, title: String, message: MessageKeyDTO?) =
+            MessageDTO.Payload(MessageKeyDTO.of(title), payload, message)
+        private fun <T : DTO> messageOf(payload: T, title: String, message: String?) =
+            MessageDTO.Payload(MessageKeyDTO.of(title), payload, message?.let { MessageKeyDTO.of(it) })
+
+
+        fun ok(title: String, message: String? = null) =
+            success(HttpStatusCode.OK, messageOf(title, message))
+        fun <T : DTO> ok(payload: T, title: String, message: String? = null) =
+            success(HttpStatusCode.OK, messageOf(payload, title, message))
+        fun <T : DTO> ok(payload: T, title: String, message: MessageKeyDTO? = null) =
+            success(HttpStatusCode.OK, messageOf(payload, title, message))
+
     }
 }
 

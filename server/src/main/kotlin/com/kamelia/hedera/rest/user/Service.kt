@@ -158,7 +158,7 @@ object UserService {
         id: UUID,
         dto: UserPasswordUpdateDTO,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate(statusCode = HttpStatusCode.Forbidden) {
+        validate(defaultStatusCode = HttpStatusCode.Forbidden) {
             checkPassword(dto.newPassword)
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
@@ -196,7 +196,7 @@ private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null): Un
     "@" !in email -> raiseError("email", Errors.Users.Email.INVALID_EMAIL)
     else -> User.findByEmail(email)?.let {
         if (it.uuid != toEdit?.uuid) {
-            raiseError("email", Errors.Users.Email.ALREADY_EXISTS)
+            raiseError("email", Errors.Users.Email.ALREADY_EXISTS, HttpStatusCode.Forbidden)
         }
     }
 }
@@ -206,7 +206,7 @@ private fun ValidationScope.checkUsername(username: String?, toEdit: User? = nul
     !USERNAME_REGEX.matches(username) -> raiseError("username", Errors.Users.Username.INVALID_USERNAME)
     else -> User.findByUsername(username)?.let {
         if (it.uuid != toEdit?.uuid) {
-            raiseError("username", Errors.Users.Username.ALREADY_EXISTS)
+            raiseError("username", Errors.Users.Username.ALREADY_EXISTS, HttpStatusCode.Forbidden)
         }
     }
 }

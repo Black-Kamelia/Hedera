@@ -10,19 +10,20 @@ class ValidationException : Exception()
  */
 class ValidationScope {
 
-    private val errors: MutableMap<String, MessageKeyDTO> = mutableMapOf()
+    private val errors: MutableMap<String, Pair<MessageKeyDTO, HttpStatusCode?>> = mutableMapOf()
 
     /**
      * Raise an error for the given [fieldName] with the given [error].
      */
-    fun raiseError(fieldName: String, error: MessageKeyDTO) {
-        errors[fieldName] = error
+    fun raiseError(fieldName: String, error: MessageKeyDTO, statusCode: HttpStatusCode? = null) {
+        errors[fieldName] = error to statusCode
     }
 
     /**
      * Raise an error for the given [fieldName] with the given [error].
      */
-    fun raiseError(fieldName: String, error: String) = raiseError(fieldName, error.asMessage())
+    fun raiseError(fieldName: String, error: String, statusCode: HttpStatusCode? = null) =
+        raiseError(fieldName, error.asMessage(), statusCode)
 
     /**
      * Returns `true` if there are any raised errors, `false` otherwise.
@@ -45,14 +46,33 @@ class ValidationScope {
 }
 
 /**
+ * Determines the status code to use for the response based on the [errors] and the [defaultStatusCode].
+ *
+ * If all the errors have the same status code, that status code is returned.
+ * If there are no status code specified on any error, the [defaultStatusCode] is returned.
+ * If there are multiple status codes specified, [HttpStatusCode.BadRequest] is returned.
+ */
+private fun getStatusCode(
+    errors: Map<String, Pair<MessageKeyDTO, HttpStatusCode?>>,
+    defaultStatusCode: HttpStatusCode,
+): HttpStatusCode {
+    val statusCodes = errors.values.mapNotNull { it.second }.toSet()
+    if (statusCodes.size == 1) return statusCodes.first()
+    if (statusCodes.isEmpty()) return defaultStatusCode
+
+    return HttpStatusCode.BadRequest
+}
+
+/**
  * Create a [Response] of type [R] with the given [errorTemplate], [statusCode] and [errors].
  */
 private inline fun <T, reified R : Response<T>> getErrorResponse(
     errorTemplate: MessageDTO<out DTO>,
-    statusCode: HttpStatusCode,
-    errors: Map<String, MessageKeyDTO>,
+    defaultStatusCode: HttpStatusCode,
+    errors: Map<String, Pair<MessageKeyDTO, HttpStatusCode?>>,
 ): R {
-    val error = errorTemplate.copy(fields = errors)
+    val error = errorTemplate.copy(fields = errors.mapValues { it.value.first })
+    val statusCode = getStatusCode(errors, defaultStatusCode)
     return (when (R::class) {
         ActionResponse::class -> ActionResponse<Nothing>(statusCode, error = ResultData(error))
         else -> Response<T>(statusCode, error = ResultData(error))
@@ -105,17 +125,17 @@ private inline fun <T, reified R : Response<T>> getErrorResponse(
  */
 internal inline fun <T, reified R : Response<T>> validate(
     errorTemplate: MessageDTO<out DTO> = MessageDTO.simple(Errors.UNKNOWN.asMessage()),
-    statusCode: HttpStatusCode = HttpStatusCode.BadRequest,
+    defaultStatusCode: HttpStatusCode = HttpStatusCode.BadRequest,
     block: ValidationScope.() -> R
 ): R {
     val scope = ValidationScope()
     return try {
         val response = block(scope)
         if (scope.hasErrors()) {
-            getErrorResponse<T, R>(errorTemplate, statusCode, scope.getErrors())
+            getErrorResponse<T, R>(errorTemplate, defaultStatusCode, scope.getErrors())
         }
         response
     } catch (e: ValidationException) {
-        getErrorResponse<T, R>(errorTemplate, statusCode, scope.getErrors())
+        getErrorResponse<T, R>(errorTemplate, defaultStatusCode, scope.getErrors())
     }
 }

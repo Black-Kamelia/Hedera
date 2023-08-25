@@ -328,9 +328,9 @@ actions:
   users:
     update_password:
       success:
-        message: Your password has been updated
+        title: Your password has been updated
       failure:
-        message: Could not update your password
+        title: Could not update your password
     create:
       success:
         title: User created

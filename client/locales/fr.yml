@@ -328,9 +328,9 @@ actions:
   users:
     update_password:
       success:
-        message: Votre mot de passe a été mis à jour
+        title: Votre mot de passe a été mis à jour
       failure:
-        message: Impossible de mettre à jour votre mot de passe
+        title: Impossible de mettre à jour votre mot de passe
     create:
       success:
         title: Utilisateur créé

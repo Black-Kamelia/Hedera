@@ -52,12 +52,19 @@ const { handleSubmit, resetForm } = useForm({
 const submit = handleSubmit(async (values) => {
   pending.value = true
   createUser(values as UserCreationDTO)
-    .then(refresh)
+    .then(() => {
+      visible.value = false
+      refresh()
+    })
     .finally(() => {
       pending.value = false
-      visible.value = false
     })
 })
+
+function onHide() {
+  resetForm()
+  pending.value = false
+}
 </script>
 
 <template>
@@ -69,7 +76,7 @@ const submit = handleSubmit(async (values) => {
     :draggable="false"
     :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
-    @hide="resetForm()"
+    @hide="onHide"
   >
     <div class="flex flex-col gap-3">
       <p class="text-[--text-color-secondary] mb-3">

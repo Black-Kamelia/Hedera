@@ -2,16 +2,16 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.ActionResponse
 import com.kamelia.hedera.core.Actions
-import com.kamelia.hedera.core.BadRequestException
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.ForbiddenException
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UserNotFoundException
+import com.kamelia.hedera.core.ValidationScope
 import com.kamelia.hedera.core.asMessage
+import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -24,35 +24,43 @@ private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 object UserService {
 
     suspend fun signup(dto: UserCreationDTO): Response<UserRepresentationDTO> = Connection.transaction {
-        checkEmail(dto.email)
-        checkUsername(dto.username)
-        checkPassword(dto.password)
+        validate {
+            checkEmail(dto.email)
+            checkUsername(dto.username)
+            checkPassword(dto.password)
 
-        if (dto.role != UserRole.REGULAR) {
-            throw IllegalActionException()
+            if (dto.role != UserRole.REGULAR) {
+                throw IllegalActionException()
+            }
+
+            catchErrors()
+
+            val user = User.create(dto)
+            Response.created(user.toRepresentationDTO())
         }
-
-        val user = User.create(dto)
-        Response.created(user.toRepresentationDTO())
     }
 
     suspend fun createUser(
         dto: UserCreationDTO
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        checkEmail(dto.email)
-        checkUsername(dto.username)
-        checkPassword(dto.password)
+        validate {
+            checkEmail(dto.email)
+            checkUsername(dto.username)
+            checkPassword(dto.password)
 
-        if (dto.role == UserRole.OWNER) {
-            throw IllegalActionException()
+            if (dto.role == UserRole.OWNER) {
+                throw IllegalActionException()
+            }
+
+            catchErrors()
+
+            val user = User.create(dto)
+            ActionResponse.created(
+                title = Actions.Users.Create.Success.TITLE.asMessage(),
+                message = Actions.Users.Create.Success.MESSAGE.asMessage("username" to user.username),
+                payload = user.toRepresentationDTO(),
+            )
         }
-
-        val user = User.create(dto)
-        ActionResponse.created(
-            title = Actions.Users.Create.Success.TITLE.asMessage(),
-            message = Actions.Users.Create.Success.MESSAGE.asMessage("username" to user.username),
-            payload = user.toRepresentationDTO(),
-        )
     }
 
     suspend fun getUserById(id: UUID): Response<UserRepresentationDTO> = Connection.transaction {
@@ -84,34 +92,38 @@ object UserService {
         dto: UserUpdateDTO,
         updaterID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        val toEdit = User.findById(id) ?: throw UserNotFoundException()
+        validate {
+            val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
-        checkEmail(dto.email, toEdit)
-        checkUsername(dto.username, toEdit)
+            checkEmail(dto.email, toEdit)
+            checkUsername(dto.username, toEdit)
 
-        val updater = User[updaterID]
+            val updater = User[updaterID]
 
-        // Prevent updating self state
-        if ((dto.enabled != null) && updater.id == toEdit.id) {
-            throw IllegalActionException()
+            // Prevent updating self state
+            if ((dto.enabled != null) && updater.id == toEdit.id) {
+                throw IllegalActionException()
+            }
+
+            // Prevent changing self role
+            if (dto.role != null && toEdit.id == updater.id && dto.role != toEdit.role) {
+                throw IllegalActionException()
+            }
+
+            // Prevent changing the role of someone else if not strictly superior
+            if (dto.role != null && toEdit.id != updater.id && (dto.role ge updater.role || toEdit.role ge updater.role)) {
+                throw InsufficientPermissionsException()
+            }
+
+            catchErrors()
+
+            toEdit.update(dto, updater)
+            ActionResponse.ok(
+                title = Actions.Users.Update.Success.TITLE.asMessage(),
+                message = Actions.Users.Update.Success.MESSAGE.asMessage("username" to toEdit.username),
+                payload = toEdit.toRepresentationDTO(),
+            )
         }
-
-        // Prevent changing self role
-        if (dto.role != null && toEdit.id == updater.id && dto.role != toEdit.role) {
-            throw IllegalActionException()
-        }
-
-        // Prevent changing the role of someone else if not strictly superior
-        if (dto.role != null && toEdit.id != updater.id && (dto.role ge updater.role || toEdit.role ge updater.role)) {
-            throw InsufficientPermissionsException()
-        }
-
-        toEdit.update(dto, updater)
-        ActionResponse.ok(
-            title = Actions.Users.Update.Success.TITLE.asMessage(),
-            message = Actions.Users.Update.Success.MESSAGE.asMessage("username" to toEdit.username),
-            payload = toEdit.toRepresentationDTO(),
-        )
     }
 
     suspend fun updateUserStatus(
@@ -144,17 +156,24 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         dto: UserPasswordUpdateDTO,
-    ): Response<UserRepresentationDTO> = Connection.transaction {
-        checkPassword(dto.newPassword)
+    ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
+        validate {
+            checkPassword(dto.newPassword)
 
-        val toEdit = User.findById(id) ?: throw UserNotFoundException()
+            val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
-        if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-            return@transaction Response.forbidden(Errors.Users.Password.INCORRECT_PASSWORD)
+            if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
+                raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD)
+            }
+
+            catchErrors()
+
+            toEdit.updatePassword(dto)
+            ActionResponse.ok(
+                title = Actions.Users.UpdatePassword.Success.TITLE.asMessage(),
+                payload = toEdit.toRepresentationDTO()
+            )
         }
-
-        toEdit.updatePassword(dto)
-        Response.ok(toEdit.toRepresentationDTO())
     }
 
     suspend fun deleteUser(
@@ -171,29 +190,29 @@ object UserService {
     }
 }
 
-private fun checkEmail(email: String?, toEdit: User? = null): Unit? = when {
+private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null): Unit? = when {
     email == null -> null
-    "@" !in email -> throw BadRequestException(Errors.Users.Email.INVALID_EMAIL)
+    "@" !in email -> raiseError("email", Errors.Users.Email.INVALID_EMAIL)
     else -> User.findByEmail(email)?.let {
         if (it.uuid != toEdit?.uuid) {
-            throw ForbiddenException(Errors.Users.Email.ALREADY_EXISTS)
+            raiseError("email", Errors.Users.Email.ALREADY_EXISTS)
         }
     }
 }
 
-private fun checkUsername(username: String?, toEdit: User? = null): Unit? = when {
+private fun ValidationScope.checkUsername(username: String?, toEdit: User? = null): Unit? = when {
     username == null -> null
-    !USERNAME_REGEX.matches(username) -> throw BadRequestException(Errors.Users.Username.INVALID_USERNAME)
+    !USERNAME_REGEX.matches(username) -> raiseError("username", Errors.Users.Username.INVALID_USERNAME)
     else -> User.findByUsername(username)?.let {
         if (it.uuid != toEdit?.uuid) {
-            throw ForbiddenException(Errors.Users.Username.ALREADY_EXISTS)
+            raiseError("username", Errors.Users.Username.ALREADY_EXISTS)
         }
     }
 }
 
-private fun checkPassword(password: String?): Unit? = when {
+private fun ValidationScope.checkPassword(password: String?): Unit? = when {
     password == null -> null
-    password.length < 8 -> throw ForbiddenException(Errors.Users.Password.TOO_SHORT)
-    password.length > 128 -> throw ForbiddenException(Errors.Users.Password.TOO_LONG)
+    password.length < 8 -> raiseError("password", Errors.Users.Password.TOO_SHORT)
+    password.length > 128 -> raiseError("password", Errors.Users.Password.TOO_LONG)
     else -> null
 }

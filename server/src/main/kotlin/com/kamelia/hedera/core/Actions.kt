@@ -134,6 +134,22 @@ object Actions {
 
         }
 
+        object UpdatePassword {
+
+            private const val PREFIX = "${Users.PREFIX}.update_password"
+
+            object Success {
+                private const val PREFIX = "${UpdatePassword.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+            }
+
+            object Failure {
+                private const val PREFIX = "${UpdatePassword.PREFIX}.failure"
+                const val TITLE = "$PREFIX.title"
+            }
+
+        }
+
         object Delete {
 
             private const val PREFIX = "${Users.PREFIX}.delete"

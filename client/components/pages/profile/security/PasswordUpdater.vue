@@ -3,8 +3,8 @@ import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import { UpdatePasswordForm } from '~/utils/forms'
 
-const { t } = useI18n()
-const { updatePassword } = useUpdatePassword()
+const { t, m } = useI18n()
+const updatePassword = useUpdatePassword()
 
 const oldPasswordField = ref<Nullable<CompElement>>(null)
 const newPasswordField = ref<Nullable<CompElement>>(null)
@@ -28,8 +28,10 @@ const { handleSubmit, resetForm, setFieldError } = useForm({
 const onSubmit = handleSubmit((values) => {
   updatePassword(values.oldPassword, values.newPassword)
     .then(() => resetForm())
-    .catch(() => {
-      setFieldError('oldPassword', t('forms.update_password.errors.wrong_password'))
+    .catch((error) => {
+      for (const field in error.response._data.fields) {
+        setFieldError(field, m(error.response._data.fields[field]))
+      }
     })
 })
 </script>

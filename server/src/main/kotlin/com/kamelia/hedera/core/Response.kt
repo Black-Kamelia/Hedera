@@ -21,16 +21,29 @@ fun String.asMessage(vararg parameters: Pair<String, String>) = MessageKeyDTO(th
 data class MessageDTO<T : DTO>(
     val title: MessageKeyDTO,
     val message: MessageKeyDTO?,
-    val payload: T?
+    val payload: T?,
+    val fields: Map<String, MessageKeyDTO>?,
 ) : DTO {
 
     companion object {
-        fun simple(title: MessageKeyDTO, message: MessageKeyDTO? = null): MessageDTO<Nothing> =
-            MessageDTO(title, message, null)
+        fun simple(
+            title: MessageKeyDTO,
+            message: MessageKeyDTO? = null,
+            fields: Map<String, MessageKeyDTO>? = null
+        ): MessageDTO<Nothing> =
+            MessageDTO(title, message, null, fields)
 
-        fun <T : DTO> payload(title: MessageKeyDTO, payload: T, message: MessageKeyDTO? = null): MessageDTO<T> =
-            MessageDTO(title, message, payload)
+        fun <T : DTO> payload(
+            title: MessageKeyDTO,
+            payload: T,
+            message: MessageKeyDTO? = null,
+            fields: Map<String, MessageKeyDTO>? = null
+        ): MessageDTO<T> =
+            MessageDTO(title, message, payload, fields)
     }
+
+    fun withFields(vararg fields: Pair<String, MessageKeyDTO>): MessageDTO<T> =
+        copy(fields = mapOf(*fields))
 
 }
 
@@ -79,6 +92,7 @@ open class Response<out T>(
         fun unauthorized(error: MessageKeyDTO) = error(HttpStatusCode.Unauthorized, error)
         fun unauthorized(error: String) = unauthorized(MessageKeyDTO(error))
 
+        fun forbidden(error: MessageDTO<out DTO>) = error(HttpStatusCode.Forbidden, error)
         fun forbidden(error: MessageKeyDTO) = error(HttpStatusCode.Forbidden, error)
         fun forbidden(error: String) = forbidden(MessageKeyDTO(error))
 
@@ -96,18 +110,41 @@ class ActionResponse<out T : DTO>(
 
     companion object {
         private fun <T : DTO> success(status: HttpStatusCode, result: MessageDTO<T>? = null): ActionResponse<T> =
-            ActionResponse(status, ResultData(result))
+            ActionResponse(status, success = ResultData(result))
 
-        private fun <T : DTO> messageOf(title: MessageKeyDTO, message: MessageKeyDTO?, payload: T?): MessageDTO<out T> =
+        private fun error(status: HttpStatusCode, result: MessageDTO<out DTO>? = null): ActionResponse<Nothing> =
+            ActionResponse(status, error = ResultData(result))
+
+        private fun <T : DTO> messageOf(
+            title: MessageKeyDTO,
+            message: MessageKeyDTO?,
+            payload: T?,
+            fields: Map<String, MessageKeyDTO>?
+        ): MessageDTO<out T> =
             if (payload == null)
-                MessageDTO.simple(title, message)
+                MessageDTO.simple(title, message, fields)
             else
-                MessageDTO.payload(title, payload, message)
+                MessageDTO.payload(title, payload, message, fields)
 
-        fun <T : DTO> ok(title: MessageKeyDTO, message: MessageKeyDTO? = null, payload: T? = null): ActionResponse<T> =
-            success(HttpStatusCode.OK, messageOf(title, message, payload))
-        fun <T : DTO> created(title: MessageKeyDTO, message: MessageKeyDTO? = null, payload: T? = null): ActionResponse<T> =
-            success(HttpStatusCode.Created, messageOf(title, message, payload))
+        fun <T : DTO> ok(
+            title: MessageKeyDTO,
+            message: MessageKeyDTO? = null,
+            payload: T? = null,
+            fields: Map<String, MessageKeyDTO>? = null,
+        ): ActionResponse<T> = success(HttpStatusCode.OK, messageOf(title, message, payload, fields))
+        fun <T : DTO> created(
+            title: MessageKeyDTO,
+            message: MessageKeyDTO? = null,
+            payload: T? = null,
+            fields: Map<String, MessageKeyDTO>? = null,
+        ): ActionResponse<T> = success(HttpStatusCode.Created, messageOf(title, message, payload, fields))
+
+        fun <T : DTO> forbidden(
+            title: MessageKeyDTO,
+            message: MessageKeyDTO? = null,
+            payload: T? = null,
+            fields: Map<String, MessageKeyDTO>? = null,
+        ): ActionResponse<T> = error(HttpStatusCode.Forbidden, messageOf(title, message, payload, fields))
     }
 }
 

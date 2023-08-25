@@ -26,15 +26,16 @@ export default function useFeedbackCall<
             detail: { text: t('errors.network') },
             life: 5000,
           })
-          return
+          throw error
         }
         const { title, message } = error.response._data
         toast.add({
           severity: 'error',
-          summary: m(title), // TODO: get error title from backend
+          summary: m(title),
           detail: { text: message ? m(message) : null },
           life: 5000,
         })
+        throw error
       })
   }
 }

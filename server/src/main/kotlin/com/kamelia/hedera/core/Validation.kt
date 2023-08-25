@@ -2,9 +2,7 @@ package com.kamelia.hedera.core
 
 import io.ktor.http.*
 
-class ValidationException(
-    val errors: Map<String, MessageKeyDTO>
-) : Exception()
+class ValidationException : Exception()
 
 /**
  * A scope that allows to raise errors during the execution of a block of code.
@@ -42,7 +40,7 @@ class ValidationScope {
      */
     fun catchErrors() {
         if (hasErrors()) {
-            throw ValidationException(errors)
+            throw ValidationException()
         }
     }
 }

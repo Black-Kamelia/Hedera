@@ -191,29 +191,34 @@ object UserService {
     }
 }
 
-private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null): Unit? = when {
-    email == null -> null
-    "@" !in email -> raiseError("email", Errors.Users.Email.INVALID_EMAIL)
-    else -> User.findByEmail(email)?.let {
-        if (it.uuid != toEdit?.uuid) {
-            raiseError("email", Errors.Users.Email.ALREADY_EXISTS, HttpStatusCode.Forbidden)
+private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null) {
+    when {
+        email == null -> return
+        "@" !in email -> raiseError("email", Errors.Users.Email.INVALID_EMAIL)
+        else -> User.findByEmail(email)?.let {
+            if (it.uuid != toEdit?.uuid) {
+                raiseError("email", Errors.Users.Email.ALREADY_EXISTS, HttpStatusCode.Forbidden)
+            }
         }
     }
 }
 
-private fun ValidationScope.checkUsername(username: String?, toEdit: User? = null): Unit? = when {
-    username == null -> null
-    !USERNAME_REGEX.matches(username) -> raiseError("username", Errors.Users.Username.INVALID_USERNAME)
-    else -> User.findByUsername(username)?.let {
-        if (it.uuid != toEdit?.uuid) {
-            raiseError("username", Errors.Users.Username.ALREADY_EXISTS, HttpStatusCode.Forbidden)
+private fun ValidationScope.checkUsername(username: String?, toEdit: User? = null) {
+    when {
+        username == null -> return
+        !USERNAME_REGEX.matches(username) -> raiseError("username", Errors.Users.Username.INVALID_USERNAME)
+        else -> User.findByUsername(username)?.let {
+            if (it.uuid != toEdit?.uuid) {
+                raiseError("username", Errors.Users.Username.ALREADY_EXISTS, HttpStatusCode.Forbidden)
+            }
         }
     }
 }
 
-private fun ValidationScope.checkPassword(password: String?): Unit? = when {
-    password == null -> null
-    password.length < 8 -> raiseError("password", Errors.Users.Password.TOO_SHORT)
-    password.length > 128 -> raiseError("password", Errors.Users.Password.TOO_LONG)
-    else -> null
+private fun ValidationScope.checkPassword(password: String) {
+    when {
+        password.length < 8 -> raiseError("password", Errors.Users.Password.TOO_SHORT)
+        password.length > 128 -> raiseError("password", Errors.Users.Password.TOO_LONG)
+        else -> return
+    }
 }

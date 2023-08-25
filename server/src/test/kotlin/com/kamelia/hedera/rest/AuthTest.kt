@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
@@ -43,8 +44,8 @@ class AuthTest {
         assertEquals(HttpStatusCode.Unauthorized, response.status)
         assertTrue(endTime - startTime >= Environment.loginThrottle, "Login throttle not respected")
 
-        val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.key)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.title.key)
     }
 
     @DisplayName("Logging in with disabled user")
@@ -53,8 +54,8 @@ class AuthTest {
         val (response, _) = login("userDisabled", "password")
         assertEquals(HttpStatusCode.Forbidden, response.status)
 
-        val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Auth.ACCOUNT_DISABLED, error.key)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Auth.ACCOUNT_DISABLED, error.title.key)
     }
 
     @DisplayName("Performing protected request with valid access token")

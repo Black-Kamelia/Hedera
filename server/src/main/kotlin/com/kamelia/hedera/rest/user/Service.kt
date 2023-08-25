@@ -16,6 +16,7 @@ import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.uuid
+import io.ktor.http.*
 import java.util.*
 import kotlin.math.ceil
 
@@ -157,7 +158,7 @@ object UserService {
         id: UUID,
         dto: UserPasswordUpdateDTO,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate {
+        validate(statusCode = HttpStatusCode.Forbidden) {
             checkPassword(dto.newPassword)
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()

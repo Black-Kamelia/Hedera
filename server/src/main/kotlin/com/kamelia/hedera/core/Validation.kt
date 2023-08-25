@@ -1,5 +1,6 @@
 package com.kamelia.hedera.core
 
+import com.kamelia.hedera.rest.core.DTO
 import io.ktor.http.*
 
 class ValidationException : Exception()
@@ -21,9 +22,7 @@ class ValidationScope {
     /**
      * Raise an error for the given [fieldName] with the given [error].
      */
-    fun raiseError(fieldName: String, error: String) {
-        errors[fieldName] = error.asMessage()
-    }
+    fun raiseError(fieldName: String, error: String) = raiseError(fieldName, error.asMessage())
 
     /**
      * Returns `true` if there are any raised errors, `false` otherwise.
@@ -49,7 +48,7 @@ class ValidationScope {
  * Create a [Response] of type [R] with the given [errorTemplate], [statusCode] and [errors].
  */
 private inline fun <T, reified R : Response<T>> getErrorResponse(
-    errorTemplate: MessageDTO<*>,
+    errorTemplate: MessageDTO<out DTO>,
     statusCode: HttpStatusCode,
     errors: Map<String, MessageKeyDTO>,
 ): R {
@@ -105,8 +104,8 @@ private inline fun <T, reified R : Response<T>> getErrorResponse(
  * @param block The block of code to execute.
  */
 internal inline fun <T, reified R : Response<T>> validate(
-    errorTemplate: MessageDTO<*> = MessageDTO.simple(Errors.UNKNOWN.asMessage()),
-    statusCode: HttpStatusCode = HttpStatusCode.Forbidden,
+    errorTemplate: MessageDTO<out DTO> = MessageDTO.simple(Errors.UNKNOWN.asMessage()),
+    statusCode: HttpStatusCode = HttpStatusCode.BadRequest,
     block: ValidationScope.() -> R
 ): R {
     val scope = ValidationScope()

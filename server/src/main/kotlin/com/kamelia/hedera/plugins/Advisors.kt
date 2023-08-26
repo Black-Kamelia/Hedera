@@ -1,10 +1,8 @@
 package com.kamelia.hedera.plugins
 
-import com.kamelia.hedera.core.BadRequestException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
-import com.kamelia.hedera.core.ForbiddenException
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.IllegalFilterException
@@ -15,7 +13,6 @@ import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.MultipartParseException
-import com.kamelia.hedera.core.NotFoundException
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UnknownFilterFieldException
@@ -25,7 +22,6 @@ import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.*
 import io.ktor.server.plugins.statuspages.*
 import kotlinx.serialization.SerializationException
 

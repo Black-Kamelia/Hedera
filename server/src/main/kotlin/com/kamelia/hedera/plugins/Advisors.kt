@@ -25,6 +25,7 @@ import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.plugins.statuspages.*
 import kotlinx.serialization.SerializationException
 
@@ -49,20 +50,17 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is MultipartParseException,
         is IllegalFilterException,
         is UnknownSortFieldException,
-        is UnknownFilterFieldException,
-        is BadRequestException -> badRequestMessage(call, cause)
+        is UnknownFilterFieldException -> badRequestMessage(call, cause)
 
         is MissingTokenException,
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
         is IllegalActionException,
-        is InsufficientPermissionsException,
-        is ForbiddenException -> forbiddenMessage(call, cause)
+        is InsufficientPermissionsException -> forbiddenMessage(call, cause)
 
         is FileNotFoundException,
         is UserNotFoundException,
-        is PersonalTokenNotFoundException,
-        is NotFoundException -> notFound(call, cause)
+        is PersonalTokenNotFoundException -> notFound(call, cause)
 
         else -> unhandledError(call, cause)
     }

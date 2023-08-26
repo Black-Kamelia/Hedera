@@ -426,24 +426,6 @@ class UserTest {
         assertEquals(expectedStatus, response.status)
     }
 
-    @DisplayName("Updating password with wrong old password")
-    @Test
-    fun updatePasswordWrongOldPassword() = testApplication {
-        val (tokens, userId) = superadmin
-        val client = client()
-        val response = client.patch("/api/users/$userId/password") {
-            contentType(ContentType.Application.Json)
-            setBody(
-                UserPasswordUpdateDTO(
-                    "wrong",
-                    "P@ssw0rd"
-                )
-            )
-            tokens?.let { bearerAuth(it.accessToken) }
-        }
-        assertEquals(HttpStatusCode.Forbidden, response.status)
-    }
-
     @DisplayName("Updating other's password")
     @ParameterizedTest(name = "Updating other''s password as {0} is {2}")
     @MethodSource

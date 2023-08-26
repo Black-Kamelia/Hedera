@@ -12,6 +12,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const { selectedRow, refresh } = useUsersTable()
 const updateUser = useUpdateUser()
+const setFieldErrors = useFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
@@ -37,7 +38,7 @@ const schema = object({
   role: string()
     .required(t('forms.create_user.errors.missing_role')),
 })
-const { handleSubmit, resetForm, setValues } = useForm({
+const { handleSubmit, resetForm, setValues, setFieldError } = useForm({
   validationSchema: schema,
 })
 
@@ -46,10 +47,15 @@ const submit = handleSubmit(async (values) => {
 
   pending.value = true
   updateUser(selectedRow.value.id, values as UserCreationDTO)
-    .then(refresh)
+    .then(() => {
+      visible.value = false
+      refresh()
+    })
+    .catch((err) => {
+      setFieldErrors(err.response._data.fields, setFieldError)
+    })
     .finally(() => {
       pending.value = false
-      visible.value = false
     })
 })
 
@@ -90,7 +96,7 @@ function onHide() {
         {{ t('pages.configuration.users.edit_dialog.password_summary') }}
       </PMessage>
 
-      <div class="grid grid-cols-1 gap-3 items-end">
+      <div class="grid grid-cols-1 gap-3 items-start">
         <FormInputText
           id="username"
           name="username"

@@ -1,14 +1,14 @@
 package com.kamelia.hedera.rest.file
 
+import com.kamelia.hedera.core.ActionResponse
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.asMessage
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -26,7 +26,7 @@ object FileService {
     suspend fun handleFileWithToken(
         part: PartData.FileItem,
         creatorToken: String
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO> = Connection.transaction {
         val token = PersonalToken.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
 
         if (token.deleted) throw ExpiredOrInvalidTokenException()
@@ -37,7 +37,7 @@ object FileService {
     suspend fun handleFile(
         part: PartData.FileItem,
         creatorId: UUID
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO> = Connection.transaction {
         val user = User[creatorId]
 
         handleFile(part, user)
@@ -47,7 +47,7 @@ object FileService {
         part: PartData.FileItem,
         creator: User,
         uploadToken: PersonalToken? = null,
-    ): Response<FileRepresentationDTO, String> {
+    ): Response<FileRepresentationDTO> {
         val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
@@ -69,7 +69,7 @@ object FileService {
     suspend fun getFile(
         code: String,
         authId: UUID? = null,
-    ): Response<FileRepresentationDTO, String> = Connection.transaction {
+    ): Response<FileRepresentationDTO> = Connection.transaction {
         val (file, owner) = File.findByCodeWithOwner(code) ?: throw FileNotFoundException()
         val user = authId?.let { User.findById(it) }
 
@@ -90,7 +90,7 @@ object FileService {
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean = false,
-    ): Response<FilePageDTO, String> = Connection.transaction {
+    ): Response<FilePageDTO> = Connection.transaction {
         val user = User[userId]
         val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
 
@@ -109,7 +109,7 @@ object FileService {
 
     suspend fun getFilesFormats(
         userId: UUID
-    ): Response<List<String>, String> = Connection.transaction {
+    ): Response<List<String>> = Connection.transaction {
         val user = User[userId]
 
         Response.ok(user.getFilesFormats())
@@ -134,7 +134,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
@@ -142,17 +142,14 @@ object FileService {
         val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
         val payload = updatedFile.toRepresentationDTO()
 
-        Response.ok(
-            MessageDTO(
-                title = MessageKeyDTO.of(Actions.Files.Update.Visibility.Success.TITLE),
-                message = MessageKeyDTO.of(
-                    Actions.Files.Update.Visibility.Success.MESSAGE,
-                    "name" to file.name,
-                    "oldVisibility" to oldVisibility.toMessageKey(),
-                    "newVisibility" to payload.visibility.toMessageKey()
-                ),
-                payload = payload
-            )
+        ActionResponse.ok(
+            title = Actions.Files.Update.Visibility.Success.TITLE.asMessage(),
+            message = Actions.Files.Update.Visibility.Success.MESSAGE.asMessage(
+                "name" to file.name,
+                "oldVisibility" to oldVisibility.toMessageKey(),
+                "newVisibility" to payload.visibility.toMessageKey()
+            ),
+            payload = payload
         )
     }
 
@@ -160,7 +157,7 @@ object FileService {
         fileId: UUID,
         userId: UUID,
         dto: FileUpdateDTO,
-    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
@@ -168,23 +165,20 @@ object FileService {
         val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
         val payload = updatedFile.toRepresentationDTO()
 
-        Response.ok(
-            MessageDTO(
-                title = MessageKeyDTO.of(Actions.Files.Update.Name.Success.TITLE),
-                message = MessageKeyDTO.of(
-                    Actions.Files.Update.Name.Success.MESSAGE,
-                    "oldName" to oldName,
-                    "newName" to payload.name,
-                ),
-                payload = payload
-            )
+        ActionResponse.ok(
+            payload = payload,
+            title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
+            message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
+                "oldName" to oldName,
+                "newName" to payload.name,
+            ),
         )
     }
 
     suspend fun deleteFile(
         fileId: UUID,
         userId: UUID,
-    ): Response<MessageDTO<FileRepresentationDTO>, String> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
@@ -198,12 +192,10 @@ object FileService {
         file.delete()
         FileUtils.delete(file.ownerId, file.code)
 
-        Response.ok(
-            MessageDTO(
-                title = MessageKeyDTO.of(Actions.Files.Delete.Success.TITLE),
-                message = MessageKeyDTO.of(Actions.Files.Delete.Success.MESSAGE, "name" to file.name),
-                payload = file.toRepresentationDTO()
-            )
+        ActionResponse.ok(
+            title = Actions.Files.Delete.Success.TITLE.asMessage(),
+            message = Actions.Files.Delete.Success.MESSAGE.asMessage("name" to file.name),
+            payload = file.toRepresentationDTO()
         )
     }
 }

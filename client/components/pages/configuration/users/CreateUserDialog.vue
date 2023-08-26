@@ -9,6 +9,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const createUser = useCreateUser()
 const { refresh } = useUsersTable()
+const setFieldErrors = useFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
@@ -42,7 +43,7 @@ const schema = object({
   forceChangePassword: boolean()
     .required(t('forms.create_user.errors.missing_force_change_password')),
 })
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, setFieldError } = useForm({
   validationSchema: schema,
   initialValues: {
     forceChangePassword: true,
@@ -52,12 +53,22 @@ const { handleSubmit, resetForm } = useForm({
 const submit = handleSubmit(async (values) => {
   pending.value = true
   createUser(values as UserCreationDTO)
-    .then(refresh)
+    .then(() => {
+      visible.value = false
+      refresh()
+    })
+    .catch((err) => {
+      setFieldErrors(err.response._data.fields, setFieldError)
+    })
     .finally(() => {
       pending.value = false
-      visible.value = false
     })
 })
+
+function onHide() {
+  resetForm()
+  pending.value = false
+}
 </script>
 
 <template>
@@ -69,14 +80,14 @@ const submit = handleSubmit(async (values) => {
     :draggable="false"
     :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
-    @hide="resetForm()"
+    @hide="onHide"
   >
     <div class="flex flex-col gap-3">
       <p class="text-[--text-color-secondary] mb-3">
         {{ t('pages.configuration.users.create_dialog.summary') }}
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
         <FormInputText
           id="username"
           name="username"

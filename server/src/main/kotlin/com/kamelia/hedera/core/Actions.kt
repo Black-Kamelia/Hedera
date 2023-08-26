@@ -96,6 +96,11 @@ object Actions {
                 const val MESSAGE = "$PREFIX.message"
             }
 
+            object Error {
+                private const val PREFIX = "${Create.PREFIX}.error"
+                const val TITLE = "$PREFIX.title"
+            }
+
         }
 
         object Activate {
@@ -132,6 +137,11 @@ object Actions {
                 const val MESSAGE = "$PREFIX.message"
             }
 
+            object Error {
+                private const val PREFIX = "${Update.PREFIX}.error"
+                const val TITLE = "$PREFIX.title"
+            }
+
         }
 
         object UpdatePassword {
@@ -143,8 +153,8 @@ object Actions {
                 const val TITLE = "$PREFIX.title"
             }
 
-            object Failure {
-                private const val PREFIX = "${UpdatePassword.PREFIX}.failure"
+            object Error {
+                private const val PREFIX = "${UpdatePassword.PREFIX}.error"
                 const val TITLE = "$PREFIX.title"
             }
 

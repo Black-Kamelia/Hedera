@@ -57,8 +57,8 @@ private fun getStatusCode(
     defaultStatusCode: HttpStatusCode,
 ): HttpStatusCode {
     val statusCodes = errors.values.mapNotNull { it.second }.toSet()
-    if (statusCodes.size == 1) return statusCodes.first()
     if (statusCodes.isEmpty()) return defaultStatusCode
+    if (statusCodes.size == 1) return statusCodes.first()
 
     return HttpStatusCode.BadRequest
 }

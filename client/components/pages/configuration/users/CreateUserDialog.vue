@@ -9,6 +9,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const createUser = useCreateUser()
 const { refresh } = useUsersTable()
+const setFieldErrors = useFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
@@ -42,7 +43,7 @@ const schema = object({
   forceChangePassword: boolean()
     .required(t('forms.create_user.errors.missing_force_change_password')),
 })
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, setFieldError } = useForm({
   validationSchema: schema,
   initialValues: {
     forceChangePassword: true,
@@ -55,6 +56,9 @@ const submit = handleSubmit(async (values) => {
     .then(() => {
       visible.value = false
       refresh()
+    })
+    .catch((err) => {
+      setFieldErrors(err.response._data.fields, setFieldError)
     })
     .finally(() => {
       pending.value = false
@@ -83,7 +87,7 @@ function onHide() {
         {{ t('pages.configuration.users.create_dialog.summary') }}
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
         <FormInputText
           id="username"
           name="username"

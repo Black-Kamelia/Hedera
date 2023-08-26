@@ -6,6 +6,7 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UserNotFoundException
@@ -44,7 +45,7 @@ object UserService {
     suspend fun createUser(
         dto: UserCreationDTO
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate {
+        validate(MessageDTO.simple(Actions.Users.Create.Error.TITLE.asMessage())) {
             checkEmail(dto.email)
             checkUsername(dto.username)
             checkPassword(dto.password)
@@ -93,7 +94,7 @@ object UserService {
         dto: UserUpdateDTO,
         updaterID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate {
+        validate(MessageDTO.simple(Actions.Users.Update.Error.TITLE.asMessage())) {
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
             checkEmail(dto.email, toEdit)
@@ -158,13 +159,13 @@ object UserService {
         id: UUID,
         dto: UserPasswordUpdateDTO,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate(defaultStatusCode = HttpStatusCode.Forbidden) {
+        validate(MessageDTO.simple(Actions.Users.UpdatePassword.Error.TITLE.asMessage())) {
             checkPassword(dto.newPassword)
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
             if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-                raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD)
+                raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD, HttpStatusCode.Forbidden)
             }
 
             catchErrors()

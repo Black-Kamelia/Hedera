@@ -329,12 +329,14 @@ actions:
     update_password:
       success:
         title: Your password has been updated
-      failure:
+      error:
         title: Could not update your password
     create:
       success:
         title: User created
         message: The user “{username}” has been created
+      error:
+        title: Could not create user
     activate:
       success:
         title: User activated
@@ -347,6 +349,8 @@ actions:
       success:
         title: User edited
         message: The user “{username}” has been edited
+      error:
+        title: Could not edit user
     delete:
       success:
         title: User deleted
@@ -376,6 +380,10 @@ errors:
   users:
     password:
       incorrect_password: Incorrect password
+    username:
+      already_exists: This username is already taken
+    email:
+      already_exists: This email address is already taken
 
 theme:
   system: System

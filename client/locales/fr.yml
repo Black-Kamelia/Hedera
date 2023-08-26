@@ -329,12 +329,14 @@ actions:
     update_password:
       success:
         title: Votre mot de passe a été mis à jour
-      failure:
+      error:
         title: Impossible de mettre à jour votre mot de passe
     create:
       success:
         title: Utilisateur créé
         message: L’utilisateur “{username}” a été créé
+      error:
+        title: Impossible de créer l’utilisateur
     activate:
       success:
         title: Utilisateur activé
@@ -347,6 +349,8 @@ actions:
       success:
         title: Utilisateur édité
         message: L’utilisateur “{username}” a été édité
+      error:
+        title: Impossible d’éditer l’utilisateur
     delete:
       success:
         title: Utilisateur supprimé
@@ -376,6 +380,10 @@ errors:
   users:
     password:
       incorrect_password: Mot de passe incorrect
+    username:
+      already_exists: Ce nom d’utilisateur est déjà utilisé
+    email:
+      already_exists: Cette adresse e-mail est déjà utilisée
 
 theme:
   system: Système

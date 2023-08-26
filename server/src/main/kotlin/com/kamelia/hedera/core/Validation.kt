@@ -3,7 +3,10 @@ package com.kamelia.hedera.core
 import com.kamelia.hedera.rest.core.DTO
 import io.ktor.http.*
 
-class ValidationException : Exception()
+class ValidationException : Exception() {
+
+    override fun fillInStackTrace(): Throwable = this
+}
 
 /**
  * A scope that allows to raise errors during the execution of a block of code.
@@ -57,14 +60,15 @@ private fun getStatusCode(
     defaultStatusCode: HttpStatusCode,
 ): HttpStatusCode {
     val statusCodes = errors.values.mapNotNull { it.second }.toSet()
-    if (statusCodes.isEmpty()) return defaultStatusCode
-    if (statusCodes.size == 1) return statusCodes.first()
-
-    return HttpStatusCode.BadRequest
+    return when(statusCodes.size) {
+        0 -> defaultStatusCode
+        1 -> statusCodes.first()
+        else -> HttpStatusCode.BadRequest
+    }
 }
 
 /**
- * Create a [Response] of type [R] with the given [errorTemplate], [statusCode] and [errors].
+ * Create a [Response] of type [R] with the given [errorTemplate], [defaultStatusCode] and [errors].
  */
 private inline fun <T, reified R : Response<T>> getErrorResponse(
     errorTemplate: MessageDTO<out DTO>,
@@ -120,7 +124,7 @@ private inline fun <T, reified R : Response<T>> getErrorResponse(
  * **Note:** The user is responsible for catching any exception raised by the block if needed.
  *
  * @param errorTemplate The template of the error to return if the validation fails.
- * @param statusCode The status code of the response to return if the validation fails.
+ * @param defaultStatusCode The status code of the response to return if the validation fails.
  * @param block The block of code to execute.
  */
 internal inline fun <T, reified R : Response<T>> validate(

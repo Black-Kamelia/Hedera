@@ -130,19 +130,13 @@ class ActionResponse<out T : DTO>(
             payload: T? = null,
             fields: Map<String, MessageKeyDTO>? = null,
         ): ActionResponse<T> = success(HttpStatusCode.OK, messageOf(title, message, payload, fields))
+
         fun <T : DTO> created(
             title: MessageKeyDTO,
             message: MessageKeyDTO? = null,
             payload: T? = null,
             fields: Map<String, MessageKeyDTO>? = null,
         ): ActionResponse<T> = success(HttpStatusCode.Created, messageOf(title, message, payload, fields))
-
-        fun <T : DTO> forbidden(
-            title: MessageKeyDTO,
-            message: MessageKeyDTO? = null,
-            payload: T? = null,
-            fields: Map<String, MessageKeyDTO>? = null,
-        ): ActionResponse<T> = error(HttpStatusCode.Forbidden, messageOf(title, message, payload, fields))
     }
 }
 

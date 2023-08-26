@@ -8,16 +8,6 @@ open class HederaException(val error: MessageKeyDTO) : Exception() {
 
 }
 
-class BadRequestException(error: MessageKeyDTO) : HederaException(error) {
-    constructor(key: String) : this(MessageKeyDTO(key))
-}
-class ForbiddenException(error: MessageKeyDTO) : HederaException(error) {
-    constructor(key: String) : this(MessageKeyDTO(key))
-}
-class NotFoundException(error: MessageKeyDTO) : HederaException(error) {
-    constructor(key: String) : this(MessageKeyDTO(key))
-}
-
 class InvalidUUIDException : HederaException(Errors.Parsing.INVALID_UUID)
 
 class MissingParameterException(parameter: String) : HederaException(MessageKeyDTO(Errors.Parameters.MISSING_PARAMETER, "parameter" to parameter))

@@ -162,7 +162,7 @@ class AuthTest {
         val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val postLogoutResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
             bearerAuth(tokens.accessToken)
@@ -180,7 +180,7 @@ class AuthTest {
         val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val refreshResponse = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
@@ -199,7 +199,7 @@ class AuthTest {
         val response = client().post("/api/logout/all") {
             bearerAuth(tokens1.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val response1 = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
             bearerAuth(tokens1.accessToken)
@@ -223,7 +223,7 @@ class AuthTest {
         val response = client().post("/api/logout/all") {
             bearerAuth(tokens1.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val response1 = client().post("/api/refresh") {
             bearerAuth(tokens1.refreshToken)

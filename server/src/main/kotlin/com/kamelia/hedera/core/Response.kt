@@ -82,7 +82,6 @@ open class Response<out T>(
             error(status, MessageDTO.simple(error))
 
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
-        fun ok() = success<Nothing>(HttpStatusCode.OK)
         fun <S> created(value: S) = success(HttpStatusCode.Created, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
@@ -92,7 +91,6 @@ open class Response<out T>(
         fun unauthorized(error: MessageKeyDTO) = error(HttpStatusCode.Unauthorized, error)
         fun unauthorized(error: String) = unauthorized(MessageKeyDTO(error))
 
-        fun forbidden(error: MessageDTO<out DTO>) = error(HttpStatusCode.Forbidden, error)
         fun forbidden(error: MessageKeyDTO) = error(HttpStatusCode.Forbidden, error)
         fun forbidden(error: String) = forbidden(MessageKeyDTO(error))
 

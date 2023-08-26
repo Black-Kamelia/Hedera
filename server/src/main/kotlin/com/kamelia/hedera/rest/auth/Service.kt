@@ -20,12 +20,12 @@ object AuthService {
 
     suspend fun logout(token: String): Response<Boolean> = Connection.transaction {
         SessionManager.logout(token)
-        Response.ok()
+        Response.noContent()
     }
 
     suspend fun logoutAll(userId: UUID): Response<Nothing> = Connection.transaction {
         val user = User[userId]
         SessionManager.logoutAll(user)
-        Response.ok()
+        Response.noContent()
     }
 }

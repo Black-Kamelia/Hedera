@@ -3,6 +3,7 @@ import { boolean, object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 import { CreateUserForm } from '~/utils/forms'
+import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
 
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
@@ -47,7 +48,14 @@ const { handleSubmit, resetForm, setFieldError } = useForm({
   validationSchema: schema,
   initialValues: {
     forceChangePassword: true,
+    unlimitedQuota: false,
   },
+})
+
+const unlimitedQuota = ref<boolean>(false)
+const quotaPlaceholder = computed(() => {
+  if (unlimitedQuota.value) return t('forms.create_user.fields.disk_quota_placeholder_unlimited')
+  return t('forms.create_user.fields.disk_quota_placeholder')
 })
 
 const submit = handleSubmit(async (values) => {
@@ -141,13 +149,30 @@ function onHide() {
           class="w-full"
           @keydown.enter="submit"
         />
+
+        <FormInputFileSize
+          id="diskQuota"
+          name="diskQuota"
+          :label="t('forms.create_user.fields.disk_quota')"
+          :placeholder="quotaPlaceholder"
+          :disabled="unlimitedQuota"
+          class="w-full"
+          @keydown.enter="submit"
+        />
       </div>
 
-      <div class="mt-3">
+      <div class="mt-3 flex flex-col gap-3">
         <FormCheckbox
           id="forceChangePassword"
           name="forceChangePassword"
           :label="t('forms.create_user.fields.force_change_password')"
+          binary
+        />
+        <FormCheckbox
+          id="unlimitedDiskQuota"
+          v-model="unlimitedQuota"
+          name="unlimitedDiskQuota"
+          :label="t('forms.create_user.fields.unlimited_disk_quota')"
           binary
         />
       </div>

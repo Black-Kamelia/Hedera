@@ -2,6 +2,7 @@
 import { object, string } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
+import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
 
 defineEmits<{
   (event: 'completed', payload: UserRepresentationDTO): void
@@ -40,6 +41,12 @@ const schema = object({
 })
 const { handleSubmit, resetForm, setValues, setFieldError } = useForm({
   validationSchema: schema,
+})
+
+const unlimitedQuota = ref<boolean>(false)
+const quotaPlaceholder = computed(() => {
+  if (unlimitedQuota.value) return t('forms.create_user.fields.disk_quota_placeholder_unlimited')
+  return t('forms.create_user.fields.disk_quota_placeholder')
 })
 
 const submit = handleSubmit(async (values) => {
@@ -96,7 +103,7 @@ function onHide() {
         {{ t('pages.configuration.users.edit_dialog.password_summary') }}
       </PMessage>
 
-      <div class="grid grid-cols-1 gap-3 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
         <FormInputText
           id="username"
           name="username"
@@ -129,6 +136,26 @@ function onHide() {
           option-value="value"
           class="w-full"
           @keydown.enter="submit"
+        />
+
+        <FormInputFileSize
+          id="diskQuota"
+          name="diskQuota"
+          :label="t('forms.create_user.fields.disk_quota')"
+          :placeholder="quotaPlaceholder"
+          :disabled="unlimitedQuota"
+          class="w-full"
+          @keydown.enter="submit"
+        />
+      </div>
+
+      <div class="mt-3 flex flex-col gap-3">
+        <FormCheckbox
+          id="unlimitedDiskQuota"
+          v-model="unlimitedQuota"
+          name="unlimitedDiskQuota"
+          :label="t('forms.create_user.fields.unlimited_disk_quota')"
+          binary
         />
       </div>
     </div>

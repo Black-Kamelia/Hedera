@@ -308,7 +308,11 @@ forms:
       confirm_password: Confirmer le mot de passe
       role: Rôle
       role_placeholder: Sélectionner un rôle
+      disk_quota: Quota d'espace disque
+      disk_quota_placeholder: Saisir une taille
+      disk_quota_placeholder_unlimited: Illimité
       force_change_password: Forcer la modification du mot de passe à la première connexion
+      unlimited_disk_quota: Autoriser un quota d'espace disque illimité
 
 actions:
   files:

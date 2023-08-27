@@ -46,9 +46,11 @@ defineExpose({
   <PAutoComplete
     ref="el"
     v-model="model"
+    v-bind="$attrs"
     :suggestions="suggestions"
     :option-label="(item: FileSize) => `${item.value} ${t(`size_units.binary.${item.shift}`)}`"
     force-selection
+    :pt="{ input: { class: 'w-full', style: { opacity: '100%' } } }"
     @complete="searchSize"
     @item-select="model = $event.value"
   >

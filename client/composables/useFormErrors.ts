@@ -3,7 +3,7 @@ export default function useFormErrors() {
 
   function setFieldErrors(
     errors: any,
-    setFieldError: (field: string, message: string | string[] | undefined) => void,
+    setFieldError: (field: any, message: string | string[] | undefined) => void,
   ) {
     for (const field in errors) {
       setFieldError(field, m(errors[field]))

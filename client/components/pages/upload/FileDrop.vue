@@ -2,7 +2,9 @@
 import type { FileUploadUploadEvent } from 'primevue/fileupload'
 
 const { t } = useI18n()
-const toast = useToast()
+
+const uploadFile = useUploadFile()
+const instantUpload = ref(false) // TODO: implement user setting
 
 const files = ref<File[]>([])
 
@@ -11,8 +13,12 @@ function onUpdate(event: { files: File[] }) {
 }
 
 function onUpload(event: FileUploadUploadEvent) {
-  const filesToUpload = event.files
-  toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 })
+  const filesToUpload = event.files as File[]
+  const uploadPromises = filesToUpload.map(file => uploadFile(file))
+  Promise.all(uploadPromises)
+    .then(() => {
+      onUpdate({ files: [] })
+    })
 }
 </script>
 

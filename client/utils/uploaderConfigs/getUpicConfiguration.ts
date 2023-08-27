@@ -11,7 +11,7 @@ class UpicConfigurationData {
   private field = 'file'
   private headers: string
   private method = 'POST'
-  private resultPath = '["code"]'
+  private resultPath = '["payload.code"]'
   private saveKeyPath = ''
   private suffix = ''
   private url: string

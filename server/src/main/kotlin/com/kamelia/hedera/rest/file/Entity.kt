@@ -10,6 +10,9 @@ import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.leftJoin
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 enum class FileVisibility {
@@ -53,6 +56,15 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
     companion object : UUIDEntityClass<File>(FileTable) {
 
         fun findByCode(code: String): File? = find { FileTable.code eq code }.firstOrNull()
+
+        fun findByCodeWithOwner(code: String): Pair<File, User>? {
+            return FileTable.leftJoin(UserTable, { owner }, { id })
+                .select { FileTable.code eq code }
+                .firstOrNull()
+                ?.let {
+                    File.wrapRow(it) to User.wrapRow(it)
+                }
+        }
 
         fun create(
             code: String,

@@ -9,7 +9,7 @@ object UserSettingsService {
 
     suspend fun getUserSettings(
         userId: UUID
-    ): Response<UserSettingsRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    ): Response<UserSettingsRepresentationDTO> = Connection.transaction {
         val userSettings = UserSettings.getByUserId(userId)
 
         Response.ok(userSettings.toRepresentationDTO())
@@ -18,7 +18,7 @@ object UserSettingsService {
     suspend fun updateUserSettings(
         userId: UUID,
         dto: UserSettingsUpdateDTO
-    ): Response<UserSettingsRepresentationDTO, MessageKeyDTO> = Connection.transaction {
+    ): Response<UserSettingsRepresentationDTO> = Connection.transaction {
         val userSettings = UserSettings.getByUserId(userId)
         val updatedUserSettings = userSettings.update(dto)
 

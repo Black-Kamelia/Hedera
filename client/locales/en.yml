@@ -323,6 +323,10 @@ actions:
       success:
         title: Successfully deleted
         message: The file “{name}” has been deleted
+    upload:
+      success:
+        title: Successfully uploaded
+        message: The file “{name}” has been uploaded
     update:
       visibility:
         success:

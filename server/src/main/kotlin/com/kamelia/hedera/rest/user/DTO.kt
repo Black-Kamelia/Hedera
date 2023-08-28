@@ -16,6 +16,8 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
+    currentDiskQuota,
+    maximumDiskQuota,
     createdAt.toString(),
 )
 
@@ -69,6 +71,8 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
+    val currentDiskQuota: Long,
+    val maximumDiskQuota: Long,
     val createdAt: String,
 ) : DTO
 

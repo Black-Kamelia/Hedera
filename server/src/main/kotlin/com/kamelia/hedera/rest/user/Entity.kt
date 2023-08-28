@@ -56,6 +56,8 @@ object UserTable : AuditableUUIDTable("users") {
     val enabled = bool("enabled")
     val forceChangePassword = bool("force_change_password")
     val settings = reference("settings", UserSettingsTable)
+    val currentDiskQuota = long("current_disk_quota")
+    val maximumDiskQuota = long("maximum_disk_quota")
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
@@ -119,6 +121,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var enabled by UserTable.enabled
     var forceChangePassword by UserTable.forceChangePassword
     var settings by UserSettings referencedOn UserTable.settings
+    val currentDiskQuota by UserTable.currentDiskQuota
+    val maximumDiskQuota by UserTable.maximumDiskQuota
 
     private val files by File referrersOn FileTable.owner
 

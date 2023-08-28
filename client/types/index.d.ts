@@ -115,6 +115,7 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    forceChangePassword: boolean
     createdAt: string
   }
 

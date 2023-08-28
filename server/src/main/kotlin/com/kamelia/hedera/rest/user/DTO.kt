@@ -16,6 +16,7 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
+    forceChangePassword,
     createdAt.toString(),
 )
 
@@ -69,6 +70,7 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
+    val forceChangePassword: Boolean,
     val createdAt: String,
 ) : DTO
 

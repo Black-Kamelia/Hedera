@@ -8,7 +8,7 @@ export interface HederaUserConnectedPayload {
   email: string
   role: string
   enabled: boolean
-  uploadToken: string
+  forceChangePassword: boolean
 }
 
 export interface HederaUserUpdatedPayload extends HederaUserConnectedPayload {}

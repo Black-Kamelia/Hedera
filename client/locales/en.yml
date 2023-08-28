@@ -38,6 +38,8 @@ pages:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
+  change_password:
+    title: Change password
   reset_password:
     title: Reset password
     login: Back to login
@@ -270,6 +272,14 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
+  change_password:
+    errors:
+      missing_password: Password is required
+      missing_password_confirmation: Password confirmation is required
+    fields:
+      password: New password
+      confirm_password: Confirm the new password
+    submit: Change password
   reset_password:
     errors:
       missing_email: Email is required

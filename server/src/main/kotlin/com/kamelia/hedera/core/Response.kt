@@ -60,7 +60,7 @@ open class Response<out T>(
 
     suspend fun ifSuccess(
         onSuccess: suspend (ResultData<out T>) -> Unit
-    ) = ifSuccessOrElse(onSuccess) {}
+    ) = ifSuccessOrElse(onSuccess, onError = {})
 
 
     suspend fun ifSuccessOrElse(

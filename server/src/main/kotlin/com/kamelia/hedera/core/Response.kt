@@ -58,9 +58,14 @@ open class Response<out T>(
         }
     }
 
+    suspend fun ifSuccess(
+        onSuccess: suspend (ResultData<out T>) -> Unit
+    ) = ifSuccessOrElse(onSuccess) {}
+
+
     suspend fun ifSuccessOrElse(
         onSuccess: suspend (ResultData<out T>) -> Unit,
-        onError: suspend (ResultData<MessageDTO<out DTO>>) -> Unit = {}
+        onError: suspend (ResultData<MessageDTO<out DTO>>) -> Unit
     ) {
         if (status.isSuccess()) {
             checkNotNull(success) { "Success result is null but it should not be possible" }

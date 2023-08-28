@@ -8,7 +8,9 @@ export interface HederaUserConnectedPayload {
   email: string
   role: string
   enabled: boolean
-  uploadToken: string
+  currentDiskQuota: FileSize
+  currentDiskQuotaRatio: number
+  maximumDiskQuota: FileSize
 }
 
 export interface HederaUserUpdatedPayload extends HederaUserConnectedPayload {}

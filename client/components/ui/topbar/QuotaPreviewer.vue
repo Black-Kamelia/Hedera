@@ -1,7 +1,7 @@
 <script setup lang="ts">
 export interface QuotaPreviewerProps {
-  quota: FileSize
-  max: FileSize
+  quota: number
+  max: number
   ratio: number
   unlimited?: boolean
 }

@@ -15,7 +15,6 @@ import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
-import com.kamelia.hedera.util.adaptFileSize
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -142,7 +141,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             when (it.field) {
                 "name" -> FileTable.name.filter(it)
                 "mimeType" -> FileTable.mimeType.filter(it)
-                "size" -> FileTable.size.filter(it.adaptFileSize())
+                "size" -> FileTable.size.filter(it)
                 "visibility" -> FileTable.visibility.filter(it)
                 "createdAt" -> FileTable.createdAt.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)

@@ -36,11 +36,6 @@ declare global {
 declare global {
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
-
-  interface FileSize {
-    value: number
-    shift: 0 | 10 | 20 | 30 | 40 | 50
-  }
 }
 // END SECTION: Others
 
@@ -94,7 +89,7 @@ declare global {
     code: string,
     name: string,
     mimeType: string,
-    size: FileSize,
+    size: number,
     visibility: string,
     owner: FileOwnerDTO,
     createdAt: string,
@@ -115,9 +110,9 @@ declare global {
     email: string
     role: Role
     enabled: boolean
-    currentDiskQuota: FileSize,
+    currentDiskQuota: number,
     currentDiskQuotaRatio: number,
-    maximumDiskQuota: FileSize,
+    maximumDiskQuota: number,
     unlimitedDiskQuota: boolean,
     createdAt: string
   }
@@ -127,20 +122,20 @@ declare global {
     email: string
     password: string
     role: Role
-    diskQuota?: FileSize
+    diskQuota?: number
     forceChangePassword: boolean
     unlimitedDiskQuota: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
-  type FileSizeScale = 'BINARY' | 'DECIMAL'
+  type numberScale = 'BINARY' | 'DECIMAL'
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
   type Locale = 'en' | 'fr'
 
   interface UserSettings {
     defaultFileVisibility: FileVisibility
     autoRemoveFiles: boolean
-    filesSizeScale: FileSizeScale
+    filesSizeScale: numberScale
     preferredDateStyle: DateTimeStyle
     preferredTimeStyle: DateTimeStyle
     preferredLocale: Locale

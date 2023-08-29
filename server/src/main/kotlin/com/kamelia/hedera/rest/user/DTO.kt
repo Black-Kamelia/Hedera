@@ -4,8 +4,6 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.core.pageable.PageDTO
-import com.kamelia.hedera.rest.file.FileSizeDTO
-import com.kamelia.hedera.rest.file.toSizeDTO
 import com.kamelia.hedera.util.UUIDSerializer
 import com.kamelia.hedera.util.uuid
 import java.util.*
@@ -18,9 +16,9 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
-    currentDiskQuota.toSizeDTO(),
+    currentDiskQuota,
     if(maximumDiskQuota > 0.toLong()) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.toDouble(),
-    maximumDiskQuota.toSizeDTO(),
+    maximumDiskQuota,
     maximumDiskQuota == (-1).toLong(),
     createdAt.toString(),
 )
@@ -36,7 +34,7 @@ data class UserCreationDTO(
     val email: String,
     val password: String,
     val role: UserRole = UserRole.REGULAR,
-    val diskQuota: FileSizeDTO? = null,
+    val diskQuota: Long? = null,
     val forceChangePassword: Boolean = false,
     val unlimitedDiskQuota: Boolean = false,
 ) : DTO
@@ -77,9 +75,9 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
-    val currentDiskQuota: FileSizeDTO,
+    val currentDiskQuota: Long,
     val currentDiskQuotaRatio: Double,
-    val maximumDiskQuota: FileSizeDTO,
+    val maximumDiskQuota: Long,
     val unlimitedDiskQuota: Boolean,
     val createdAt: String,
 ) : DTO

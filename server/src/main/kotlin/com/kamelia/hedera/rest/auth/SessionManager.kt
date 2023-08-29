@@ -7,7 +7,6 @@ import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.TokenData
-import com.kamelia.hedera.rest.file.toSizeDTO
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserEvents
@@ -179,9 +178,9 @@ data class UserState(
         email,
         role,
         enabled,
-        currentDiskQuota.toSizeDTO(),
+        currentDiskQuota,
         if(maximumDiskQuota > 0.toLong()) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.toDouble(),
-        maximumDiskQuota.toSizeDTO(),
+        maximumDiskQuota,
         maximumDiskQuota == (-1).toLong(),
         createdAt.toString(),
     )

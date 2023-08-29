@@ -189,7 +189,9 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
 
     suspend fun increaseCurrentDiskQuota(size: Long): User = apply {
         require(size >= 0)
-        require(size <= maximumDiskQuota - currentDiskQuota)
+        if (maximumDiskQuota >= 0) {
+            require(size <= maximumDiskQuota - currentDiskQuota)
+        }
         currentDiskQuota += size
         SessionManager.updateSession(uuid, this)
     }

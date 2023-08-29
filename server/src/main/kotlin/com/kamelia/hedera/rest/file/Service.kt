@@ -18,12 +18,14 @@ import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.FileUtils
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.content.*
+import io.ktor.server.application.*
 import java.util.*
 import kotlin.math.ceil
 
 object FileService {
 
     suspend fun handleFileWithToken(
+        call: ApplicationCall,
         part: PartData.FileItem,
         creatorToken: String
     ): Response<FileRepresentationDTO> = Connection.transaction {
@@ -31,19 +33,21 @@ object FileService {
 
         if (token.deleted) throw ExpiredOrInvalidTokenException()
 
-        handleFile(part, token.owner, token)
+        handleFile(call, part, token.owner, token)
     }
 
     suspend fun handleFile(
+        call: ApplicationCall,
         part: PartData.FileItem,
         creatorId: UUID
     ): Response<FileRepresentationDTO> = Connection.transaction {
         val user = User[creatorId]
 
-        handleFile(part, user)
+        handleFile(call, part, user)
     }
 
     private suspend fun handleFile(
+        call: ApplicationCall,
         part: PartData.FileItem,
         creator: User,
         uploadToken: PersonalToken? = null,

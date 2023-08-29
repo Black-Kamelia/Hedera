@@ -22,7 +22,6 @@ import com.kamelia.hedera.util.respondFileInline
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.filesRoutes() = route("/files") {
@@ -69,7 +68,7 @@ private fun Route.uploadFile() = post("/upload") {
     val userId = authenticatedUser!!.uuid
 
     call.doWithForm(onFiles = mapOf(
-        "file" to { call.respond(FileService.handleFile(it, userId)) }
+        "file" to { call.respond(FileService.handleFile(call, it, userId)) }
     ), onMissing = {
         call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })
@@ -79,7 +78,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     val authToken = call.getHeader("Upload-Token")
 
     call.doWithForm(onFiles = mapOf(
-        "file" to { call.respond(FileService.handleFileWithToken(it, authToken)) }
+        "file" to { call.respond(FileService.handleFileWithToken(call, it, authToken)) }
     ), onMissing = {
         call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })

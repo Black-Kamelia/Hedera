@@ -1,16 +1,13 @@
 <script lang="ts" setup>
-import type { AutoCompleteCompleteEvent } from 'primevue/autocomplete'
+import type { AutoCompleteCompleteEvent, AutoCompleteItemSelectEvent } from 'primevue/autocomplete'
 import PAutoComplete from 'primevue/autocomplete'
+import type { FileSize } from '~/composables/useHumanFileSize'
 
-interface FileSize {
-  value: number
-  shift: 0 | 10 | 20 | 30 | 40
-
-  toLong(): number
-}
+const { t } = useI18n()
+const { computeShift } = useHumanFileSize()
 
 const model = defineModel<Nullable<number>>()
-const { t } = useI18n()
+const inputModel = ref<Nullable<FileSize>>(model.value ? computeShift(model.value) : null)
 
 const sizes: { name: string; shift: 0 | 10 | 20 | 30 | 40 }[] = [
   { name: t('size_units.binary.0'), shift: 0 },
@@ -18,7 +15,6 @@ const sizes: { name: string; shift: 0 | 10 | 20 | 30 | 40 }[] = [
   { name: t('size_units.binary.20'), shift: 20 },
   { name: t('size_units.binary.30'), shift: 30 },
   { name: t('size_units.binary.40'), shift: 40 },
-  // { name: t('size_units.binary.50'), shift: 50 },
 ]
 const suggestions = ref<FileSize[]>([])
 
@@ -29,9 +25,6 @@ function searchSize(event: AutoCompleteCompleteEvent) {
       .map(item => ({
         value: Number(event.query),
         shift: item.shift,
-        toLong() {
-          return Number(event.query) * 2 ** item.shift
-        },
       }))
     return
   }
@@ -40,9 +33,6 @@ function searchSize(event: AutoCompleteCompleteEvent) {
       .map(item => ({
         value: Number(event.query),
         shift: item.shift,
-        toLong() {
-          return Number(event.query) * 2 ** item.shift
-        },
       }))
     return
   }
@@ -53,24 +43,35 @@ const el = ref<Nullable<CompElement<InstanceType<typeof PAutoComplete>>>>()
 defineExpose({
   $el: computed(() => el.value?.$el),
 })
+
+function onSelect(event: AutoCompleteItemSelectEvent) {
+  inputModel.value = event.value
+  model.value = event.value ? event.value.value * 2 ** event.value.shift : null
+}
+watch(model, (val) => {
+  inputModel.value = val ? computeShift(val) : null
+})
 </script>
 
 <template>
   <PAutoComplete
     ref="el"
-    v-model="model"
+    v-model="inputModel"
     v-bind="$attrs"
     :suggestions="suggestions"
     :option-label="(item: FileSize) => `${item.value} ${t(`size_units.binary.${item.shift}`)}`"
     force-selection
     :pt="{ input: { class: 'w-full', style: { opacity: '100%' } } }"
     @complete="searchSize"
-    @item-select="model = $event.value.toLong()"
+    @item-select="onSelect"
   >
     <template #empty>
       <p class="py-3 px-5 text-[--text-color-secondary]">
         {{ t('size_units.incorrect_format') }}
       </p>
+    </template>
+    <template #content>
+      <p>coucou</p>
     </template>
   </PAutoComplete>
 </template>

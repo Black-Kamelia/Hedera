@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { boolean, object, string } from 'yup'
+import { boolean, number, object, string } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
@@ -40,7 +40,7 @@ const schema = object({
     .required(t('forms.create_user.errors.missing_role')),
   unlimitedDiskQuota: boolean()
     .required(t('forms.create_user.errors.missing_unlimited_disk_quota')),
-  diskQuota: object()
+  diskQuota: number()
     .typeError(t('forms.create_user.errors.invalid_disk_quota'))
     .when('unlimitedDiskQuota', {
       is: true,

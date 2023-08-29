@@ -58,7 +58,7 @@ const quotaPlaceholder = computed(() => {
   return t('forms.create_user.fields.disk_quota_placeholder')
 })
 watch(unlimitedQuota, (val) => {
-  if (val) setFieldValue('diskQuota', undefined)
+  if (val) setFieldValue('diskQuota', undefined, false)
 })
 
 const submit = handleSubmit(async (values) => {

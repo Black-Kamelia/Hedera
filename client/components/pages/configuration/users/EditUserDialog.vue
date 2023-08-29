@@ -48,7 +48,7 @@ const schema = object({
       otherwise: schema => schema.required(t('forms.create_user.errors.missing_disk_quota')),
     }),
 })
-const { handleSubmit, resetForm, setFieldValue, setValues, setFieldError } = useForm({
+const { handleSubmit, resetForm, setFieldValue, setValues, setFieldError, errors } = useForm({
   validationSchema: schema,
 })
 
@@ -58,7 +58,7 @@ const quotaPlaceholder = computed(() => {
   return t('forms.create_user.fields.disk_quota_placeholder')
 })
 watch(unlimitedQuota, (val) => {
-  if (val) setFieldValue('diskQuota', undefined, false)
+  if (val) setFieldValue('diskQuota', undefined, errors.value.diskQuota !== undefined)
 })
 
 const submit = handleSubmit(async (values) => {

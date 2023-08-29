@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { boolean, object, string, ref as yref } from 'yup'
+import { boolean, number, object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 import { CreateUserForm } from '~/utils/forms'
@@ -45,7 +45,7 @@ const schema = object().shape({
     .required(t('forms.create_user.errors.missing_force_change_password')),
   unlimitedDiskQuota: boolean()
     .required(t('forms.create_user.errors.missing_unlimited_disk_quota')),
-  diskQuota: object()
+  diskQuota: number()
     .typeError(t('forms.create_user.errors.invalid_disk_quota'))
     .when('unlimitedDiskQuota', {
       is: true,
@@ -53,7 +53,7 @@ const schema = object().shape({
       otherwise: schema => schema.required(t('forms.create_user.errors.missing_disk_quota')),
     }),
 })
-const { handleSubmit, resetForm, setFieldError, setFieldValue } = useForm({
+const { handleSubmit, resetForm, setFieldError, setFieldValue, errors } = useForm({
   validationSchema: schema,
   initialValues: {
     username: '',
@@ -73,7 +73,7 @@ const quotaPlaceholder = computed(() => {
   return t('forms.create_user.fields.disk_quota_placeholder')
 })
 watch(unlimitedQuota, (val) => {
-  if (val) setFieldValue('diskQuota', undefined, false)
+  if (val) setFieldValue('diskQuota', undefined, errors.value.diskQuota !== undefined)
 })
 
 const submit = handleSubmit(async (values) => {

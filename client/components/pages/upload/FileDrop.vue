@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FileUploadRemoveEvent, FileUploadUploadEvent } from 'primevue/fileupload'
+import type { FileUploadUploadEvent } from 'primevue/fileupload'
 import { PFileUpload } from '#components'
 
 const { t } = useI18n()
@@ -7,39 +7,18 @@ const { t } = useI18n()
 const uploadFile = useUploadFile()
 const instantUpload = ref(true) // TODO: implement user setting
 
-const pendingFiles = ref<File[]>([])
-const uploadedFiles = ref<File[]>([])
-
-async function doUpload() {
-  const uploadPromises = pendingFiles.value.map(file => uploadFile(file))
+async function onUpload(event: FileUploadUploadEvent) {
+  const files = event.files instanceof File ? [event.files] : event.files
+  const uploadPromises = files.map(file => uploadFile(file))
   await Promise.all(uploadPromises)
-  uploadedFiles.value = [...uploadedFiles.value, ...pendingFiles.value]
-  pendingFiles.value = []
-}
-
-function onClear() {
-  pendingFiles.value = []
-  uploadedFiles.value = []
-}
-
-function onRemove(files: FileUploadRemoveEvent) {
-  const removedFiles = files.files as File[]
-  pendingFiles.value = pendingFiles.value.filter(file => !removedFiles.includes(file))
-}
-
-async function onUpdate(event: FileUploadUploadEvent) {
-  const files = event.files as File[]
-  pendingFiles.value = files
-
-  if (instantUpload.value) {
-    await doUpload()
-  }
 }
 </script>
 
 <template>
   <div class="w-full">
     <PFileUpload
+      :auto="instantUpload"
+      :show-upload-button="!instantUpload"
       :multiple="true"
       :choose-label="t('pages.upload.select_files')"
       :upload-label="t('pages.upload.upload_files')"
@@ -47,15 +26,12 @@ async function onUpdate(event: FileUploadUploadEvent) {
       choose-icon="i-tabler-file-plus"
       upload-icon="i-tabler-cloud-upload"
       cancel-icon="i-tabler-x"
-      @upload="doUpload"
-      @select="onUpdate"
-      @clear="onClear"
-      @remove="onRemove"
-      @before-upload="null"
-      @before-send="null"
+      @upload="onUpload"
     >
       <template
         #content="{
+          files: pendingFiles,
+          uploadedFiles,
           removeFileCallback,
           removeUploadedFileCallback,
         }"

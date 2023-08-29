@@ -123,6 +123,32 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         </template>
       </PColumn>
 
+      <PColumn sortable field="currentDiskQuota" header="Quota d'espace disque">
+        <template #sorticon="slotProps">
+          <SortIcon v-bind="slotProps" />
+        </template>
+        <template #header>
+          <i
+            v-tooltip.top="'Le tri est effectué sur l\'espace disque utilisé.'"
+            class="i-tabler-help-circle-filled text-sm mr-2 text-[--text-color-secondary]"
+          />
+        </template>
+        <template #body="slotProps">
+          <Transition v-if="slotProps.data" name="fade" mode="out-in">
+            <QuotaPreviewer
+              :quota="slotProps.data.currentDiskQuota"
+              :max="slotProps.data.maximumDiskQuota"
+              :ratio="slotProps.data.currentDiskQuotaRatio"
+              :unlimited="slotProps.data.unlimitedDiskQuota"
+            />
+          </Transition>
+          <div v-else class="flex flex-row items-center gap-2">
+            <PSkeleton size="1.5rem" shape="circle" />
+            <PSkeleton width="5rem" height="1rem" />
+          </div>
+        </template>
+      </PColumn>
+
       <PColumn sortable field="enabled" :header="t('pages.configuration.users.table.status')">
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />

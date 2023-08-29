@@ -115,6 +115,10 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    currentDiskQuota: FileSize,
+    currentDiskQuotaRatio: number,
+    maximumDiskQuota: FileSize,
+    unlimitedDiskQuota: boolean,
     createdAt: string
   }
 

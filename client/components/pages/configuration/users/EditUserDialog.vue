@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { object, string } from 'yup'
+import { boolean, object, string } from 'yup'
 import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
@@ -38,8 +38,17 @@ const schema = object({
     .email(t('forms.create_user.errors.invalid_email')),
   role: string()
     .required(t('forms.create_user.errors.missing_role')),
+  unlimitedDiskQuota: boolean()
+    .required(t('forms.create_user.errors.missing_unlimited_disk_quota')),
+  diskQuota: object()
+    .typeError(t('forms.create_user.errors.invalid_disk_quota'))
+    .when('unlimitedDiskQuota', {
+      is: true,
+      then: schema => schema.notRequired(),
+      otherwise: schema => schema.required(t('forms.create_user.errors.missing_disk_quota')),
+    }),
 })
-const { handleSubmit, resetForm, setValues, setFieldError } = useForm({
+const { handleSubmit, resetForm, setFieldValue, setValues, setFieldError } = useForm({
   validationSchema: schema,
 })
 
@@ -47,6 +56,9 @@ const unlimitedQuota = ref<boolean>(false)
 const quotaPlaceholder = computed(() => {
   if (unlimitedQuota.value) return t('forms.create_user.fields.disk_quota_placeholder_unlimited')
   return t('forms.create_user.fields.disk_quota_placeholder')
+})
+watch(unlimitedQuota, (val) => {
+  if (val) setFieldValue('diskQuota', undefined)
 })
 
 const submit = handleSubmit(async (values) => {
@@ -73,7 +85,10 @@ watch(visible, (val) => {
       username: selectedRow.value.username,
       email: selectedRow.value.email,
       role: selectedRow.value.role,
+      diskQuota: selectedRow.value.unlimitedDiskQuota ? undefined : selectedRow.value.maximumDiskQuota,
+      unlimitedDiskQuota: selectedRow.value.unlimitedDiskQuota,
     })
+    unlimitedQuota.value = selectedRow.value.unlimitedDiskQuota
   }
 })
 

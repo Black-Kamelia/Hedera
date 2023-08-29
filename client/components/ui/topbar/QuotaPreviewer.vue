@@ -29,7 +29,7 @@ const severity = computed(() => {
       :pt="{ value: { style: { background: `var(${severity})` } } }"
     />
     <span v-if="!unlimited" class="text-xs mb--1">{{ quotaFormat }} / {{ maxFormat }}</span>
-    <span v-else class="text-xs mb--1">{{ t('unlimited_quota') }}</span>
+    <span v-else class="text-xs mb--1">{{ quotaFormat }} / {{ t('unlimited_quota') }}</span>
   </div>
 </template>
 

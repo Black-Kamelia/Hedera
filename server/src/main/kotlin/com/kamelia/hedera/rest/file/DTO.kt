@@ -53,7 +53,11 @@ data class FileRepresentationDTO(
 data class FileSizeDTO(
     val value: Double,
     val shift: Int,
-) : DTO
+) : DTO {
+    fun toLong(): Long {
+        return (value * (1 shl shift)).toLong()
+    }
+}
 
 @Serializable
 data class FileOwnerDTO(

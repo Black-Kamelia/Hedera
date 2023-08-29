@@ -93,6 +93,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                     "role" -> UserTable.role
                     "enabled" -> UserTable.enabled
                     "createdAt" -> UserTable.createdAt
+                    "currentDiskQuota" -> UserTable.currentDiskQuota
                     else -> throw UnknownFilterFieldException(it)
                 }
             }.let {
@@ -107,6 +108,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             role = user.role
             enabled = true
             forceChangePassword = user.forceChangePassword
+            currentDiskQuota = 0
+            maximumDiskQuota = user.diskQuota?.toLong() ?: -1
             settings = UserSettings.new {}
 
             onCreate(creator ?: this)

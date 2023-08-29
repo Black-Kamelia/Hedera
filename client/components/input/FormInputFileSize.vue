@@ -3,28 +3,24 @@ import { useField } from 'vee-validate'
 import type { InputTextProps } from 'primevue/inputtext'
 import type PInputText from 'primevue/inputtext'
 
-export interface FormInputTextProps extends OnlyProps<InputTextProps> {
+export interface FormInputFileSizeProps extends OnlyProps<InputTextProps> {
   id: string
   name: string
   label: string
   startIcon?: string
   endIcon?: string
-  transformValue?: (value: string) => string
 }
 
-const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormInputTextProps>()
+const { id, name, label, startIcon, endIcon } = defineProps<FormInputFileSizeProps>()
 
-const { errorMessage, value, validate } = useField<Nullable<string>>(name, _ => true, {
+const { errorMessage, value, validate } = useField<Nullable<FileSize>>(name, _ => true, {
   validateOnValueUpdate: false,
 })
 
-function onInput(payload: Event) {
+function onInput() {
   if (errorMessage.value) {
     validate({ mode: 'force' })
   }
-
-  const target = payload.target as HTMLInputElement | null
-  value.value = transformValue(target?.value ?? '')
 }
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
@@ -45,6 +41,7 @@ defineExpose({
         v-model="value"
         :class="{ 'p-invalid': errorMessage }"
         @input="onInput"
+        @change="onInput"
       />
       <i v-if="endIcon" :class="endIcon" />
     </span>

@@ -107,7 +107,7 @@ declare global {
     refreshTokenExpiration: number
   }
 
-  type Role = 'REGULAR' | 'ADMIN' | 'OWNER'
+  type Role = 'REGULAR' | 'ADMIN' | 'OWNER' | undefined
 
   interface UserRepresentationDTO {
     id: string
@@ -123,7 +123,9 @@ declare global {
     email: string
     password: string
     role: Role
+    diskQuota?: FileSize
     forceChangePassword: boolean
+    unlimitedDiskQuota: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'

@@ -26,7 +26,7 @@ function roleDisabled(role: { value: string }) {
   return true
 }
 
-const schema = object({
+const schema = object().shape({
   username: string()
     .required(t('forms.create_user.errors.missing_username')),
   password: string()
@@ -43,12 +43,27 @@ const schema = object({
     .required(t('forms.create_user.errors.missing_role')),
   forceChangePassword: boolean()
     .required(t('forms.create_user.errors.missing_force_change_password')),
+  unlimitedDiskQuota: boolean()
+    .required(t('forms.create_user.errors.missing_unlimited_disk_quota')),
+  diskQuota: object()
+    .typeError(t('forms.create_user.errors.invalid_disk_quota'))
+    .when('unlimitedDiskQuota', {
+      is: true,
+      then: schema => schema.notRequired(),
+      otherwise: schema => schema.required(t('forms.create_user.errors.missing_disk_quota')),
+    }),
 })
-const { handleSubmit, resetForm, setFieldError } = useForm({
+const { handleSubmit, resetForm, setFieldError, setFieldValue } = useForm({
   validationSchema: schema,
   initialValues: {
+    username: '',
+    password: '',
+    confirmPassword: '',
+    email: '',
+    role: undefined,
+    diskQuota: undefined,
     forceChangePassword: true,
-    unlimitedQuota: false,
+    unlimitedDiskQuota: false,
   },
 })
 
@@ -56,6 +71,9 @@ const unlimitedQuota = ref<boolean>(false)
 const quotaPlaceholder = computed(() => {
   if (unlimitedQuota.value) return t('forms.create_user.fields.disk_quota_placeholder_unlimited')
   return t('forms.create_user.fields.disk_quota_placeholder')
+})
+watch(unlimitedQuota, (val) => {
+  if (val) setFieldValue('diskQuota', undefined)
 })
 
 const submit = handleSubmit(async (values) => {
@@ -75,6 +93,7 @@ const submit = handleSubmit(async (values) => {
 
 function onHide() {
   resetForm()
+  unlimitedQuota.value = false
   pending.value = false
 }
 </script>

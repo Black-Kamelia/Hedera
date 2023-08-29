@@ -11,6 +11,7 @@ export interface HederaUserConnectedPayload {
   currentDiskQuota: FileSize
   currentDiskQuotaRatio: number
   maximumDiskQuota: FileSize
+  unlimitedDiskQuota: boolean
 }
 
 export interface HederaUserUpdatedPayload extends HederaUserConnectedPayload {}

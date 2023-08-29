@@ -182,6 +182,7 @@ data class UserState(
         currentDiskQuota.toSizeDTO(),
         currentDiskQuota.toDouble() / maximumDiskQuota.toDouble(),
         maximumDiskQuota.toSizeDTO(),
+        maximumDiskQuota == (-1).toLong(),
         createdAt.toString(),
     )
 }

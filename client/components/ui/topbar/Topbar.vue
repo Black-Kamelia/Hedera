@@ -10,7 +10,12 @@ const { user } = reactive(storeToRefs(useAuth()))
     <h2 class="text-3xl w-full">
       {{ pageName }}
     </h2>
-    <QuotaPreviewer :quota="user.currentDiskQuota" :max="user.maximumDiskQuota" :ratio="user.currentDiskQuotaRatio" />
+    <QuotaPreviewer
+      :quota="user.currentDiskQuota"
+      :max="user.maximumDiskQuota"
+      :ratio="user.currentDiskQuotaRatio"
+      :unlimited="user.unlimitedDiskQuota"
+    />
     <TopbarSeparator />
     <div class="flex flex-row gap-2">
       <ThemeSwitcher />

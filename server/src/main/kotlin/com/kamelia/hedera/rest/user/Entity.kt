@@ -121,8 +121,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var enabled by UserTable.enabled
     var forceChangePassword by UserTable.forceChangePassword
     var settings by UserSettings referencedOn UserTable.settings
-    val currentDiskQuota by UserTable.currentDiskQuota
-    val maximumDiskQuota by UserTable.maximumDiskQuota
+    var currentDiskQuota by UserTable.currentDiskQuota
+    var maximumDiskQuota by UserTable.maximumDiskQuota
 
     private val files by File referrersOn FileTable.owner
 
@@ -185,6 +185,20 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
         password = Hasher.hash(dto.newPassword)
         onUpdate(this)
+    }
+
+    suspend fun increaseCurrentDiskQuota(size: Long): User = apply {
+        require(size >= 0)
+        require(size <= maximumDiskQuota - currentDiskQuota)
+        currentDiskQuota += size
+        SessionManager.updateSession(uuid, this)
+    }
+
+    suspend fun decreaseCurrentDiskQuota(size: Long): User = apply {
+        require(size >= 0)
+        require(size <= currentDiskQuota)
+        currentDiskQuota -= size
+        SessionManager.updateSession(uuid, this)
     }
 
 }

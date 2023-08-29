@@ -52,6 +52,7 @@ object FileService {
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
+        creator.increaseCurrentDiskQuota(size)
 
         return Response.created(
             File.create(
@@ -189,6 +190,7 @@ object FileService {
             throw FileNotFoundException()
         }
 
+        file.owner.decreaseCurrentDiskQuota(file.size)
         file.delete()
         FileUtils.delete(file.ownerId, file.code)
 

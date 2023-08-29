@@ -180,7 +180,7 @@ data class UserState(
         role,
         enabled,
         currentDiskQuota.toSizeDTO(),
-        currentDiskQuota.toDouble() / maximumDiskQuota.toDouble(),
+        if(maximumDiskQuota > 0.toLong()) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.toDouble(),
         maximumDiskQuota.toSizeDTO(),
         maximumDiskQuota == (-1).toLong(),
         createdAt.toString(),

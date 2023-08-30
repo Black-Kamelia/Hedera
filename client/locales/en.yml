@@ -126,6 +126,7 @@ pages:
     uploading: Uploading
     completed: Uploaded
     error: Error
+    finished: Upload finished
   analytics:
     title: Analytics
   configuration:

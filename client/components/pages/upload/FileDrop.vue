@@ -3,6 +3,7 @@ import type { FileUploadUploaderEvent } from 'primevue/fileupload'
 import { PFileUpload } from '#components'
 
 const { t } = useI18n()
+const toast = useToast()
 
 const uploadFile = useUploadFile()
 const instantUpload = ref(false) // TODO: persist settings
@@ -22,6 +23,12 @@ async function uploader(event: FileUploadUploaderEvent) {
     .finally(() => uploadingFiles.value.splice(uploadingFiles.value.indexOf(file), 1)))
 
   await Promise.all(uploadPromises)
+
+  toast.add({
+    severity: 'info',
+    summary: t('pages.upload.finished'),
+    life: 5000,
+  })
 }
 </script>
 

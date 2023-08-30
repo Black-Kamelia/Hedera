@@ -126,6 +126,7 @@ pages:
     uploading: En cours d’envoi
     completed: En ligne
     error: Erreur
+    finished: Mise en ligne terminée
   analytics:
     title: Statistiques
   configuration:

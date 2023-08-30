@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { FileUploadUploadEvent } from 'primevue/fileupload'
+import type { FileUploadUploaderEvent } from 'primevue/fileupload'
 import { PFileUpload } from '#components'
 
 const { t } = useI18n()
 
 const uploadFile = useUploadFile()
-const instantUpload = ref(true) // TODO: implement user setting
 
-async function onUpload(event: FileUploadUploadEvent) {
+async function onUpload(event: FileUploadUploaderEvent) {
   const files = event.files instanceof File ? [event.files] : event.files
   const uploadPromises = files.map(file => uploadFile(file))
   await Promise.all(uploadPromises)
@@ -17,9 +16,7 @@ async function onUpload(event: FileUploadUploadEvent) {
 <template>
   <div class="w-full">
     <PFileUpload
-      :auto="instantUpload"
-      :show-upload-button="!instantUpload"
-      :multiple="true"
+      multiple
       :choose-label="t('pages.upload.select_files')"
       :upload-label="t('pages.upload.upload_files')"
       :cancel-label="t('pages.upload.clear_files')"

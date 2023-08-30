@@ -172,6 +172,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         dto.username?.let { username = it }
         dto.email?.let { email = it }
         dto.role?.let { role = it }
+        dto.diskQuota?.let { maximumDiskQuota = it }
+        dto.unlimitedDiskQuota?.let { if (it) maximumDiskQuota = -1 }
 
         SessionManager.updateSession(uuid, this)
         onUpdate(updater)

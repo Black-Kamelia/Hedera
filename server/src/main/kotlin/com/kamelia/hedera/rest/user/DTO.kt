@@ -50,6 +50,8 @@ data class UserUpdateDTO(
     val email: String? = null,
     val role: UserRole? = null,
     val enabled: Boolean? = null,
+    val diskQuota: Long? = null,
+    val unlimitedDiskQuota: Boolean? = null,
 ) : DTO
 
 /**

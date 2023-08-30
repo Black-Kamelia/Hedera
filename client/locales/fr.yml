@@ -325,9 +325,6 @@ actions:
       success:
         title: Fichier supprimé
         message: Le fichier “{name}” a été supprimé
-    uploaded:
-      title: Fichier envoyé
-      message: Le fichier “{name}” a été envoyé
     update:
       visibility:
         success:

@@ -10,20 +10,21 @@ const instantUpload = ref(false) // TODO: persist settings
 const uploadingFiles = ref<File[]>([])
 const uploadedFiles = ref<File[]>([])
 const erroredFiles = ref<File[]>([])
+const hasFiles = computed(() => uploadingFiles.value.length > 0 || uploadedFiles.value.length > 0 || erroredFiles.value.length > 0)
+
+function toIdentity(file: File): string {
+  return file.name + file.type + file.size + file.lastModified
+}
 
 async function uploader(event: FileUploadUploaderEvent) {
   const files = event.files instanceof File ? [event.files] : event.files
   uploadingFiles.value.push(...files)
+
   const uploadPromises = files.map(file => uploadFile(file)
-    .then(() => {
-      uploadedFiles.value.push(file)
-    })
-    .catch(() => {
-      erroredFiles.value.push(file)
-    })
-    .finally(() => {
-      uploadingFiles.value = uploadingFiles.value.filter(f => f.name + f.type + f.size !== file.name + file.type + file.size)
-    }))
+    .then(() => uploadedFiles.value.push(file))
+    .catch(() => erroredFiles.value.push(file))
+    .finally(() => uploadingFiles.value = uploadingFiles.value.filter(f => toIdentity(f) !== toIdentity(file))))
+
   await Promise.all(uploadPromises)
 }
 </script>
@@ -44,12 +45,7 @@ async function uploader(event: FileUploadUploaderEvent) {
       custom-upload
       @uploader="uploader"
     >
-      <template
-        #content="{
-          files: pendingFiles,
-          removeFileCallback,
-        }"
-      >
+      <template #content="{ files: pendingFiles, removeFileCallback }">
         <FileDropFilesSection :files="pendingFiles" status="pending" @remove="removeFileCallback" />
         <FileDropFilesSection :files="uploadingFiles" status="uploading" />
         <FileDropFilesSection :files="uploadedFiles" status="completed" />
@@ -57,7 +53,7 @@ async function uploader(event: FileUploadUploaderEvent) {
       </template>
 
       <template #empty>
-        <div v-if="uploadedFiles.length === 0" class="flex items-center justify-center flex-col">
+        <div v-if="!hasFiles" class="flex items-center justify-center flex-col">
           <i class="i-tabler-cloud-upload text-8xl" />
           <p class="mt-4 mb-0">
             {{ t("pages.upload.drag_n_drop") }}

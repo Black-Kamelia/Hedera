@@ -7,7 +7,7 @@ definePageMeta({ layout: 'sidebar', middleware: ['auth'] })
 
 <template>
   <div class="py-4 px-8 h-full flex flex-col gap-4">
-    <div class="flex flex-row gap-4">
+    <div class="p-card p-0 overflow-hidden flex-grow">
       <FileDrop />
     </div>
   </div>

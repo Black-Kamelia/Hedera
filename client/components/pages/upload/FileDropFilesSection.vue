@@ -47,9 +47,7 @@ function getIcon(type: string) {
       <PBadge :value="t(`pages.upload.${status}`)" :severity="{ pending: 'primary', uploading: 'warning', completed: 'success', error: 'danger' }[status]" />
     </div>
     <div v-if="status === 'pending'" class="ml-auto">
-      <PButton text rounded severity="danger" @click="$emit('remove', index)">
-        <i class="i-tabler-x" />
-      </PButton>
+      <PButton text rounded icon="i-tabler-x" severity="danger" @click="$emit('remove', index)" />
     </div>
   </div>
 </template>

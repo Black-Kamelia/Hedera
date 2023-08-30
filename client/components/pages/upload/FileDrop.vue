@@ -46,6 +46,11 @@ async function uploader(event: FileUploadUploaderEvent) {
       upload-icon="i-tabler-cloud-upload"
       cancel-icon="i-tabler-x"
       custom-upload
+      :pt="{
+        root: { class: 'max-h-full' },
+        buttonbar: { class: 'important-border-none' },
+        content: { class: 'important-border-none' },
+      }"
       @uploader="uploader"
     >
       <template #content="{ files: pendingFiles, removeFileCallback }">

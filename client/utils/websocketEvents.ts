@@ -8,9 +8,9 @@ export interface HederaUserConnectedPayload {
   email: string
   role: string
   enabled: boolean
-  currentDiskQuota: FileSize
+  currentDiskQuota: number
   currentDiskQuotaRatio: number
-  maximumDiskQuota: FileSize
+  maximumDiskQuota: number
   unlimitedDiskQuota: boolean
 }
 

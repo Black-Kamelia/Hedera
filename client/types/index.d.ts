@@ -128,14 +128,14 @@ declare global {
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
-  type numberScale = 'BINARY' | 'DECIMAL'
+  type FileSizeScale = 'BINARY' | 'DECIMAL'
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
   type Locale = 'en' | 'fr'
 
   interface UserSettings {
     defaultFileVisibility: FileVisibility
     autoRemoveFiles: boolean
-    filesSizeScale: numberScale
+    filesSizeScale: FileSizeScale
     preferredDateStyle: DateTimeStyle
     preferredTimeStyle: DateTimeStyle
     preferredLocale: Locale

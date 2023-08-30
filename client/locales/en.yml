@@ -15,14 +15,12 @@ size_units:
     20: MiB
     30: GiB
     40: TiB
-    50: PiB
   decimal:
     0: bytes
     3: KB
     6: MB
     9: GB
     12: TB
-    15: PB
 unlimited_quota: Unlimited quota
 
 sidebar:

@@ -15,14 +15,12 @@ size_units:
     20: Mio
     30: Gio
     40: Tio
-    50: Pio
   decimal:
     0: octets
     3: Ko
     6: Mo
     9: Go
     12: To
-    15: Po
 unlimited_quota: Quota illimité
 
 sidebar:

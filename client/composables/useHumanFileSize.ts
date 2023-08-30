@@ -1,9 +1,11 @@
 const MAX_BINARY_UNIT_SHIFT = 40
 const MAX_DECIMAL_UNIT_SHIFT = 12
 
+export type FileSizeShift = 0 | 3 | 6 | 9 | 12 | 10 | 20 | 30 | 40
+
 export interface FileSize {
   value: string
-  shift: 0 | 10 | 20 | 30 | 40
+  shift: FileSizeShift
 }
 
 export default function useHumanFileSize() {
@@ -39,7 +41,7 @@ export default function useHumanFileSize() {
     }
   }
 
-  function computeShift(fileSize: number): FileSize {
+  function computeShiftBinary(fileSize: number): FileSize {
     let value = fileSize
     let shift = 0
     while (value >= 1024 && shift < MAX_BINARY_UNIT_SHIFT) {
@@ -50,6 +52,27 @@ export default function useHumanFileSize() {
     return {
       value: (Math.round((value + Number.EPSILON) * 100) / 100).toFixed(2),
       shift: shift as (0 | 10 | 20 | 30 | 40),
+    }
+  }
+
+  function computeShiftDecimal(fileSize: number): FileSize {
+    let value = fileSize
+    let shift = 0
+    while (value >= 1000 && shift < MAX_DECIMAL_UNIT_SHIFT) {
+      value /= 1000
+      shift += 3
+    }
+
+    return {
+      value: (Math.round((value + Number.EPSILON) * 100) / 100).toFixed(2),
+      shift: shift as (0 | 3 | 6 | 9 | 12),
+    }
+  }
+
+  function computeShift(fileSize: number): FileSize {
+    switch (filesSizeScale.value) {
+      case 'BINARY': return computeShiftBinary(fileSize)
+      case 'DECIMAL': return computeShiftDecimal(fileSize)
     }
   }
 

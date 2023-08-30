@@ -12,10 +12,6 @@ const uploadedFiles = ref<File[]>([])
 const erroredFiles = ref<File[]>([])
 const hasFiles = computed(() => uploadingFiles.value.length > 0 || uploadedFiles.value.length > 0 || erroredFiles.value.length > 0)
 
-function toIdentity(file: File): string {
-  return file.name + file.type + file.size + file.lastModified
-}
-
 async function uploader(event: FileUploadUploaderEvent) {
   const files = event.files instanceof File ? [event.files] : event.files
   uploadingFiles.value.push(...files)
@@ -23,7 +19,7 @@ async function uploader(event: FileUploadUploaderEvent) {
   const uploadPromises = files.map(file => uploadFile(file)
     .then(() => uploadedFiles.value.push(file))
     .catch(() => erroredFiles.value.push(file))
-    .finally(() => uploadingFiles.value = uploadingFiles.value.filter(f => toIdentity(f) !== toIdentity(file))))
+    .finally(() => uploadingFiles.value.splice(uploadingFiles.value.indexOf(file), 1)))
 
   await Promise.all(uploadPromises)
 }

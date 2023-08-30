@@ -1,7 +1,7 @@
 const MAX_UNIT_SHIFT = 40
 
 export interface FileSize {
-  value: number
+  value: string
   shift: 0 | 10 | 20 | 30 | 40
 }
 
@@ -27,7 +27,10 @@ export default function useHumanFileSize() {
       shift += 10
     }
 
-    return { value, shift: shift as (0 | 10 | 20 | 30 | 40) }
+    return {
+      value: (Math.round((value + Number.EPSILON) * 100) / 100).toFixed(2),
+      shift: shift as (0 | 10 | 20 | 30 | 40),
+    }
   }
 
   return { format, computeShift }

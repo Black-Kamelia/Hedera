@@ -23,7 +23,7 @@ function searchSize(event: AutoCompleteCompleteEvent) {
     suggestions.value = sizes
       .filter(item => item.shift !== 0)
       .map(item => ({
-        value: Number(event.query),
+        value: Number(event.query).toFixed(2),
         shift: item.shift,
       }))
     return
@@ -31,7 +31,7 @@ function searchSize(event: AutoCompleteCompleteEvent) {
   if (event.query.match(/^ *[0-9]+ *$/)) {
     suggestions.value = sizes
       .map(item => ({
-        value: Number(event.query),
+        value: Number(event.query).toFixed(2),
         shift: item.shift,
       }))
     return
@@ -46,7 +46,7 @@ defineExpose({
 
 function onSelect(event: AutoCompleteItemSelectEvent) {
   inputModel.value = event.value
-  model.value = event.value ? event.value.value * 2 ** event.value.shift : null
+  model.value = event.value ? Math.ceil(event.value.value * 2 ** event.value.shift) : null
 }
 watch(model, (val) => {
   inputModel.value = val ? computeShift(val) : null

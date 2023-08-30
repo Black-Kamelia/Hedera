@@ -125,6 +125,7 @@ pages:
     pending: En attente
     uploading: En cours d’envoi
     completed: En ligne
+    error: Erreur
   analytics:
     title: Statistiques
   configuration:

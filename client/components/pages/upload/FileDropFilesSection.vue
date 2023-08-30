@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   files: File[]
-  status: 'pending' | 'uploading' | 'completed'
+  status: 'pending' | 'uploading' | 'completed' | 'error'
 }>()
 
 defineEmits<{
@@ -44,7 +44,7 @@ function getIcon(type: string) {
     <div>
       <div>{{ file.name }}</div>
       <span class="mr-2">{{ autoFormat(file.size) }}</span>
-      <PBadge :value="t(`pages.upload.${status}`)" :severity="{ pending: 'primary', uploading: 'warning', completed: 'success' }[status]" />
+      <PBadge :value="t(`pages.upload.${status}`)" :severity="{ pending: 'primary', uploading: 'warning', completed: 'success', error: 'danger' }[status]" />
     </div>
     <div v-if="status === 'pending'" class="ml-auto">
       <PButton text rounded severity="danger" @click="$emit('remove', index)">

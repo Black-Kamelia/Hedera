@@ -9,14 +9,21 @@ const instantUpload = ref(false) // TODO: persist settings
 
 const uploadingFiles = ref<File[]>([])
 const uploadedFiles = ref<File[]>([])
+const erroredFiles = ref<File[]>([])
 
 async function uploader(event: FileUploadUploaderEvent) {
   const files = event.files instanceof File ? [event.files] : event.files
   uploadingFiles.value.push(...files)
-  const uploadPromises = files.map(file => uploadFile(file).then(() => {
-    uploadingFiles.value = uploadingFiles.value.filter(f => f.name + f.type + f.size !== file.name + file.type + file.size)
-    uploadedFiles.value.push(file)
-  }))
+  const uploadPromises = files.map(file => uploadFile(file)
+    .then(() => {
+      uploadedFiles.value.push(file)
+    })
+    .catch(() => {
+      erroredFiles.value.push(file)
+    })
+    .finally(() => {
+      uploadingFiles.value = uploadingFiles.value.filter(f => f.name + f.type + f.size !== file.name + file.type + file.size)
+    }))
   await Promise.all(uploadPromises)
 }
 </script>
@@ -46,6 +53,7 @@ async function uploader(event: FileUploadUploaderEvent) {
         <FileDropFilesSection :files="pendingFiles" status="pending" @remove="removeFileCallback" />
         <FileDropFilesSection :files="uploadingFiles" status="uploading" />
         <FileDropFilesSection :files="uploadedFiles" status="completed" />
+        <FileDropFilesSection :files="erroredFiles" status="error" />
       </template>
 
       <template #empty>

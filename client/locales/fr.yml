@@ -122,8 +122,9 @@ pages:
     select_files: Choisir des fichiers
     upload_files: Envoyer les fichiers
     clear_files: Vider la sélection
-    completed: En ligne
     pending: En attente
+    uploading: En cours d’envoi
+    completed: En ligne
   analytics:
     title: Statistiques
   configuration:

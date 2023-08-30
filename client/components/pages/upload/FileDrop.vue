@@ -5,10 +5,18 @@ import { PFileUpload } from '#components'
 const { t } = useI18n()
 
 const uploadFile = useUploadFile()
+const instantUpload = ref(false) // TODO: persist settings
 
-async function onUpload(event: FileUploadUploaderEvent) {
+const uploadingFiles = ref<File[]>([])
+const uploadedFiles = ref<File[]>([])
+
+async function uploader(event: FileUploadUploaderEvent) {
   const files = event.files instanceof File ? [event.files] : event.files
-  const uploadPromises = files.map(file => uploadFile(file))
+  uploadingFiles.value.push(...files)
+  const uploadPromises = files.map(file => uploadFile(file).then(() => {
+    uploadingFiles.value = uploadingFiles.value.filter(f => f.name + f.type + f.size !== file.name + file.type + file.size)
+    uploadedFiles.value.push(file)
+  }))
   await Promise.all(uploadPromises)
 }
 </script>
@@ -17,28 +25,31 @@ async function onUpload(event: FileUploadUploaderEvent) {
   <div class="w-full">
     <PFileUpload
       multiple
+      :auto="instantUpload"
+      :show-upload-button="!instantUpload"
+      :show-cancel-button="!instantUpload"
       :choose-label="t('pages.upload.select_files')"
       :upload-label="t('pages.upload.upload_files')"
       :cancel-label="t('pages.upload.clear_files')"
       choose-icon="i-tabler-file-plus"
       upload-icon="i-tabler-cloud-upload"
       cancel-icon="i-tabler-x"
-      @upload="onUpload"
+      custom-upload
+      @uploader="uploader"
     >
       <template
         #content="{
           files: pendingFiles,
-          uploadedFiles,
           removeFileCallback,
-          removeUploadedFileCallback,
         }"
       >
-        <FileDropFilesSection :files="pendingFiles" :completed="false" @remove="removeFileCallback" />
-        <FileDropFilesSection :files="uploadedFiles" :completed="true" @remove="removeUploadedFileCallback" />
+        <FileDropFilesSection :files="pendingFiles" status="pending" @remove="removeFileCallback" />
+        <FileDropFilesSection :files="uploadingFiles" status="uploading" />
+        <FileDropFilesSection :files="uploadedFiles" status="completed" />
       </template>
 
       <template #empty>
-        <div class="flex items-center justify-center flex-col">
+        <div v-if="uploadedFiles.length === 0" class="flex items-center justify-center flex-col">
           <i class="i-tabler-cloud-upload text-8xl" />
           <p class="mt-4 mb-0">
             {{ t("pages.upload.drag_n_drop") }}

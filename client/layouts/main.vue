@@ -10,7 +10,7 @@ const isNarrow = useMediaQuery('(max-width: 640px)')
     <Sidebar v-if="!isNarrow" />
     <div class="content" :class="{ 'overflow-auto': isNarrow }">
       <Topbar :narrow="isNarrow" />
-      <div :class="{ 'overflow-auto': !isNarrow }">
+      <div class="h-full" :class="{ 'overflow-auto': !isNarrow }">
         <slot />
       </div>
     </div>

@@ -75,8 +75,8 @@ useEventBus(LoggedInEvent).on((event) => {
     message.content = m(event.error.data.title)
     message.severity = 'error'
   } else {
-    const redirectedFrom = useRoute().query.redirectedFrom?.toString()
-    const encodedTo = redirectedFrom ?? '/files'
+    const redirect = useRoute().query.redirect?.toString()
+    const encodedTo = redirect ?? '/files'
     const to = decodeURIComponent(encodedTo)
     if (useRouter().hasRoute(to)) {
       navigateTo(to, { replace: true })

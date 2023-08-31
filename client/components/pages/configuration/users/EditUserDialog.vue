@@ -11,7 +11,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const { selectedRow, refresh } = useUsersTable()
 const updateUser = useUpdateUser()
-const setFieldErrors = useIFormErrors()
+const setFieldErrors = useFeedbackFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)

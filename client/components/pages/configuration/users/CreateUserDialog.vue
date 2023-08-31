@@ -8,7 +8,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const createUser = useCreateUser()
 const { refresh } = useUsersTable()
-const setFieldErrors = useIFormErrors()
+const setFieldErrors = useFeedbackFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)

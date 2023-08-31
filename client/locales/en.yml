@@ -251,6 +251,12 @@ pages:
       auto_delete_oldest_files:
         title: Auto-delete oldest files
         description: When you are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
+      upload_behavior:
+        title: Upload behavior
+        description: Choose how you want to upload files. This is in regards to Hedera's file upload page. If the behavior is "Instant", the file(s) will be uploaded instantly upon selection; if the behavior is "Manual", you can manually trigger the upload when you want after selecting some files.
+        choose: Choose a behavior
+        instant: Instant
+        manual: Manual
       enable_animations:
         title: Enable animations and transitions
         description: Hedera uses animations and transitions to make the user experience more enjoyable. If you experience performance issues, you can disable them here.

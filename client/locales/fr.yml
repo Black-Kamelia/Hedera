@@ -251,6 +251,12 @@ pages:
       auto_delete_oldest_files:
         title: Supprimer automatiquement les fichiers les plus anciens
         description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d’envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
+      upload_behavior:
+        title: Comportement de la mise en ligne
+        description: Choisissez comment vous souhaitez mettre des fichiers en ligne. Cela concerne la page Hedera de mise en ligne de fichiers. Si le comportement est "Instantané", le(s) fichier(s) seront envoyés immédiatement dès la sélection ; si le comportement est "Manuel", vous pouvez déclencher manuellement l'envoi quand vous le souhaitez après avoir sélectionné des fichiers.
+        choose: Choisissez un comportement
+        instant: Instantané
+        manual: Manuel
       enable_animations:
         title: Activer les animations et transitions
         description: Hedera utilise des animations et des transitions pour rendre l’expérience utilisateur plus appréciable. Si vous rencontrez des problèmes de performance, vous pouvez les désactiver ici.

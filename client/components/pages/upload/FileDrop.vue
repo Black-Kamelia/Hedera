@@ -4,9 +4,10 @@ import { PFileUpload } from '#components'
 
 const { t } = useI18n()
 const toast = useToast()
+const { uploadBehavior } = storeToRefs(useUserSettings())
 
 const uploadFile = useUploadFile()
-const instantUpload = ref(false) // TODO: persist settings
+const instantUpload = computed(() => uploadBehavior.value === 'INSTANT')
 
 const uploadingFiles = ref<File[]>([])
 const uploadedFiles = ref<File[]>([])

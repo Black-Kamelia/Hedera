@@ -104,7 +104,7 @@ const onSubmit = handleSubmit(async (values) => {
     {{ message.content }}
   </PMessage>
 
-  <form v-focus-trap @submit="onSubmit">
+  <form @submit="onSubmit">
     <div class="mb-3">
       <FormInputText
         id="username"

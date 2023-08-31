@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
-import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 
 defineEmits<{
@@ -12,7 +11,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const { selectedRow, refresh } = useUsersTable()
 const updateUser = useUpdateUser()
-const setFieldErrors = useFormErrors()
+const setFieldErrors = useIFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)

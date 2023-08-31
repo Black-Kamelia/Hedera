@@ -68,10 +68,6 @@ watch(visible, (val) => {
     })
   }
 })
-
-function onHide() {
-  resetForm()
-}
 </script>
 
 <template>
@@ -83,7 +79,7 @@ function onHide() {
     :draggable="false"
     :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
-    @hide="onHide"
+    @hide="resetForm()"
   >
     <div class="flex flex-col gap-3">
       <PMessage

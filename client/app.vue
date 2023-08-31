@@ -4,6 +4,7 @@ import { Settings } from 'luxon'
 useTheme()
 useWebsocketAutoConnect()
 
+const route = useRoute()
 const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
 
@@ -17,16 +18,14 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
     case 'user-forcefully-logged-out': {
       setTokens(null)
       setUser(null)
-      const path = useRoute().path
-      const redirect = path === '/' ? '' : `&redirect=${encodeURIComponent(path)}`
+      const redirect = getRedirectParam(route.path)
       navigateTo(`/login?reason=${encodeURIComponent(payload.data.reason)}${redirect}}`)
       break
     }
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
-  const path = useRoute().path
-  const redirect = path === '/' ? '' : `&redirect=${encodeURIComponent(path)}`
+  const redirect = getRedirectParam(route.path)
   navigateTo(`/login?reason=expired${redirect}`)
 })
 useEventBus(LoggedOutEvent).on(() => {

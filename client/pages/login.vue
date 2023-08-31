@@ -76,11 +76,13 @@ useEventBus(LoggedInEvent).on((event) => {
     message.severity = 'error'
   } else {
     const redirect = useRoute().query.redirect?.toString()
-    const encodedTo = redirect ?? '/files'
-    const to = decodeURIComponent(encodedTo)
-    if (useRouter().hasRoute(to)) {
+    const to = redirect && (redirect.startsWith('%2F') || redirect.startsWith('/'))
+      ? decodeURIComponent(redirect)
+      : '/files'
+
+    try {
       navigateTo(to, { replace: true })
-    } else {
+    } catch {
       navigateTo('/files', { replace: true })
     }
   }

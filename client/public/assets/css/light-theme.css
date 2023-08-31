@@ -3187,8 +3187,9 @@ hr {
 }
 
 .p-datatable .p-paginator-bottom {
-  border-width: 0 0 1px 0;
+  border-width: 0;
   border-radius: 0;
+  border-color: var(--surface-border);
 }
 
 .p-datatable .p-datatable-header {
@@ -5091,7 +5092,7 @@ hr {
 .p-dialog .p-dialog-header {
   border-bottom: 0 none;
   background: #fff;
-  color: var(--text-color-secondary);
+  color: var(--text-color);
   padding: 1.5rem;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
@@ -5150,7 +5151,7 @@ hr {
   border-bottom-left-radius: 8px;
 }
 
-.p-dialog .p-dialog-footer button {
+.p-dialog .p-dialog-footer button:not(:last-child) {
   margin: 0 0.5rem 0 0;
   width: auto;
 }

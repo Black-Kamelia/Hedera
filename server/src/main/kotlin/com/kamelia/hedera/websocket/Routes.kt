@@ -21,15 +21,15 @@ fun Route.webSocketRoutes() = route("/") {
 
 private fun Route.getWebSocketToken() = get("/api/ws") {
     val user = authenticatedUser ?: throw ExpiredOrInvalidTokenException()
-    val token = createToken(user)
-    call.respondNoError(Response.ok(mapOf("token" to token)))
+    val token = createWebsocketToken(user)
+    call.respondNoError(Response.created(mapOf("token" to token)))
 }
 
 private fun Route.socketRoute() = webSocket("/ws") {
     val token = call.request.queryParameters["token"]
         ?: return@webSocket forcefullyClose("Missing token")
 
-    val userId = validateToken(token)
+    val userId = validateWebsocketToken(token)
         ?: return@webSocket forcefullyClose("Invalid or expired token")
 
     handleSession(userId)

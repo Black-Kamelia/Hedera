@@ -3189,6 +3189,7 @@ hr {
 .p-datatable .p-paginator-bottom {
   border-width: 0;
   border-radius: 0;
+  border-color: var(--surface-border);
 }
 
 .p-datatable .p-datatable-header {
@@ -5150,7 +5151,7 @@ hr {
   border-bottom-left-radius: 8px;
 }
 
-.p-dialog .p-dialog-footer button {
+.p-dialog .p-dialog-footer button:not(:last-child) {
   margin: 0 0.5rem 0 0;
   width: auto;
 }

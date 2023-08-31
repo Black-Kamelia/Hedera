@@ -15,7 +15,8 @@ fun Route.filesRoutes() = route("/files") {
     authenticate(AuthJwt) {
         uploadFile()
         searchFiles()
-        editFile()
+        getFilesFormats()
+        // editFile()
         editFileVisibility()
         editFileName()
         deleteFile()
@@ -27,13 +28,12 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 
-
 fun Route.rawFileRoute() = get("/{code}") {
     val authedId = authenticatedUser?.uuid
     val code = call.getParam("code")
 
-    FileService.getFile(code, authedId).ifSuccessOrElse(
-        onSuccess = { (data) ->
+    try {
+        FileService.getFile(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
             val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
@@ -42,15 +42,14 @@ fun Route.rawFileRoute() = get("/{code}") {
                 // TODO notify orphaned file
                 call.proxyRedirect("/")
             }
-        },
-        onError = {
-            call.proxyRedirect("/")
-        },
-    )
+        }
+    } catch (e: FileNotFoundException) {
+        call.proxyRedirect("/")
+    }
 }
 
 private fun Route.uploadFile() = post("/upload") {
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser!!.uuid
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, userId)) }
@@ -63,7 +62,7 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
     val authToken = call.getHeader("Upload-Token")
 
     call.doWithForm(onFiles = mapOf(
-        "file" to { call.respond(FileService.handleFile(it, authToken)) }
+        "file" to { call.respond(FileService.handleFileWithToken(it, authToken)) }
     ), onMissing = {
         call.respondNoSuccess(Response.badRequest(Errors.Uploads.MISSING_FILE))
     })
@@ -92,37 +91,45 @@ private fun Route.getFile() = get("/{code}") {
 
 private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->
     val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val jwtId = authenticatedUser!!.uuid
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val (page, pageSize) = call.getPageParameters()
 
     call.respond(FileService.getFiles(userId, page, pageSize, body, asOwner = uuid == null))
 }
 
+private fun Route.getFilesFormats() = get("/formats") {
+    val userId = authenticatedUser!!.uuid
+
+    call.respond(FileService.getFilesFormats(userId))
+}
+
+/*
 private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser!!.uuid
 
     call.respond(FileService.updateFile(fileId, userId, body))
 }
+ */
 
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser!!.uuid
 
     call.respond(FileService.updateFileVisibility(fileId, userId, body))
 }
 
 private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser!!.uuid
 
     call.respond(FileService.updateFileName(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = authenticatedUser!!.uuid
 
     call.respond(FileService.deleteFile(fileId, userId))
 }

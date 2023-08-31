@@ -8,12 +8,12 @@ services:
       - POSTGRES_PASSWORD=hedera
       - DB_NAME=hedera
       - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_EXTENSIONS=pg_trgm
     ports:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
-    restart: always
-    mem_limit: 128m
+    restart: unless-stopped
 
 volumes:
   data:

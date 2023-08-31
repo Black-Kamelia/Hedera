@@ -46,7 +46,7 @@ function onChange() {
       option-value="value"
       :model-value="color.preference"
       @change="onChange()"
-      @update:model-value="(value) => color.preference = value ?? 'system'"
+      @update:model-value="(value: string) => color.preference = value ?? 'system'"
     >
       <template #option="slotProps">
         <div class="flex flex-row items-center gap-2">

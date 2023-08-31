@@ -1,7 +1,7 @@
 package com.kamelia.hedera.rest.setting
 
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.user.Users
+import com.kamelia.hedera.rest.user.UserTable
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -25,24 +25,20 @@ object UserSettingsTable : UUIDTable("users_settings") {
     val preferredLocale = enumerationByName<Locale>("preferred_locale", 5)
         .clientDefault { Locale.en }
 
-    fun update(settings: UserSettings, dto: UserSettingsUpdateDTO): UserSettings = settings.apply {
-        dto.defaultFileVisibility?.let { defaultFileVisibility = it }
-        dto.autoRemoveFiles?.let { autoRemoveFiles = it }
-        dto.filesSizeScale?.let { filesSizeScale = it }
-        dto.preferredDateStyle?.let { preferredDateStyle = it }
-        dto.preferredTimeStyle?.let { preferredTimeStyle = it }
-        dto.preferredLocale?.let { preferredLocale = it }
-    }
-
-    fun findByUserId(userId: UUID): UserSettings =
-        Users.join(UserSettingsTable, JoinType.INNER, Users.settings, UserSettingsTable.id)
-            .select { Users.id eq userId }
-            .first()
-            .let { return UserSettings.wrapRow(it) }
 }
 
 class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
-    companion object : UUIDEntityClass<UserSettings>(UserSettingsTable)
+
+    companion object : UUIDEntityClass<UserSettings>(UserSettingsTable) {
+
+        fun getByUserId(userId: UUID): UserSettings = UserTable
+            .join(UserSettingsTable, JoinType.INNER, UserTable.settings, UserSettingsTable.id)
+            .select { UserTable.id eq userId }
+            .limit(1)
+            .first()
+            .let { return UserSettings.wrapRow(it) }
+
+    }
 
     var defaultFileVisibility by UserSettingsTable.defaultFileVisibility
     var autoRemoveFiles by UserSettingsTable.autoRemoveFiles
@@ -50,4 +46,13 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
     var preferredDateStyle by UserSettingsTable.preferredDateStyle
     var preferredTimeStyle by UserSettingsTable.preferredTimeStyle
     var preferredLocale by UserSettingsTable.preferredLocale
+
+    fun update(dto: UserSettingsUpdateDTO): UserSettings = apply {
+        dto.defaultFileVisibility?.let { defaultFileVisibility = it }
+        dto.autoRemoveFiles?.let { autoRemoveFiles = it }
+        dto.filesSizeScale?.let { filesSizeScale = it }
+        dto.preferredDateStyle?.let { preferredDateStyle = it }
+        dto.preferredTimeStyle?.let { preferredTimeStyle = it }
+        dto.preferredLocale?.let { preferredLocale = it }
+    }
 }

@@ -9,45 +9,9 @@ const visibilityOptions = [
   { name: t('pages.files.visibility.protected'), value: 'PROTECTED', disabled: true, icon: 'i-tabler-lock' },
   { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ]
-const types = [
-  {
-    name: 'Images',
-    items: [
-      { name: 'image/png' },
-      { name: 'image/jpg' },
-      { name: 'image/gif' },
-    ],
-  },
-  {
-    name: 'Vidéos',
-    items: [
-      { name: 'video/mp4' },
-      { name: 'video/avi' },
-      { name: 'video/mkv' },
-    ],
-  },
-  {
-    name: 'Documents',
-    items: [
-      { name: 'application/pdf' },
-    ],
-  },
-  {
-    name: 'Musiques',
-    items: [
-      { name: 'audio/mp3' },
-      { name: 'audio/wav' },
-      { name: 'audio/ogg' },
-    ],
-  },
-  {
-    name: 'Archives',
-    items: [
-      { name: 'application/zip' },
-      { name: 'application/x-rar-compressed' },
-    ],
-  },
-]
+
+const { data, pending } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
+const formats = computed(() => data.value?.map(type => ({ name: type })) ?? [])
 
 const filters = useFilesFilters()
 const localFilters = reactiveFilters(filters)
@@ -69,7 +33,12 @@ watch(visible, (visible) => {
 </script>
 
 <template>
-  <PDialog v-model:visible="visible" modal :header="t('pages.files.advanced_filters')" :draggable="false">
+  <PDialog
+    v-model:visible="visible"
+    modal
+    :header="t('pages.files.advanced_filters')"
+    :draggable="false"
+  >
     <div class="grid grid-cols-1 xl:grid-cols-2 grid-gap-6 justify-items-stretch">
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.visibility') }}</h2>
@@ -90,16 +59,30 @@ watch(visible, (visible) => {
         <h2>{{ t('pages.files.table.creation_date') }}</h2>
         <div class="flex flex-row gap-3">
           <PCalendar
-            v-model="localFilters.startingDate" class="w-full" :placeholder="t('pages.files.filters.start_date')" show-button-bar show-time
-            hour-format="24" show-icon :show-on-focus="false"
+            v-model="localFilters.startingDate"
+            class="w-full"
+            :placeholder="t('pages.files.filters.start_date')"
+            show-button-bar
+            show-time
+            show-seconds
+            show-icon
+            hour-format="24"
+            :show-on-focus="false"
           >
             <template #dropdownicon>
               <i class="i-tabler-calendar-event" />
             </template>
           </PCalendar>
           <PCalendar
-            v-model="localFilters.endingDate" class="w-full" :placeholder="t('pages.files.filters.end_date')" show-button-bar show-time
-            hour-format="24" show-icon :show-on-focus="false"
+            v-model="localFilters.endingDate"
+            class="w-full"
+            :placeholder="t('pages.files.filters.end_date')"
+            show-button-bar
+            show-time
+            show-seconds
+            show-icon
+            hour-format="24"
+            :show-on-focus="false"
           >
             <template #dropdownicon>
               <i class="i-tabler-calendar-event" />
@@ -119,17 +102,30 @@ watch(visible, (visible) => {
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.views') }}</h2>
         <div class="flex flex-row gap-3">
-          <PInputNumber v-model="localFilters.minimalViews" class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
-          <PInputNumber v-model="localFilters.maximalViews" class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
+          <PInputNumber v-model="localFilters.minimalViews" disabled class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
+          <PInputNumber v-model="localFilters.maximalViews" disabled class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
         </div>
       </div>
 
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.format') }}</h2>
         <PMultiSelect
-          v-model="localFilters.formats" :options="types" option-label="name" option-group-label="name" option-group-children="items" :placeholder="t('pages.files.filters.all_formats')"
-          :max-selected-labels="3" class="w-full" filter :selected-items-label="t('pages.files.filters.formats')"
-        />
+          v-model="localFilters.formats"
+          :options="formats"
+          option-label="name"
+          option-value="name"
+          :placeholder="t('pages.files.filters.all_formats')"
+          class="min-w-0"
+          filter
+          :loading="pending"
+          :selected-items-label="t('pages.files.filters.formats')"
+        >
+          <template #value="slotOptions">
+            <span v-if="pending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
+            <span v-else-if="slotOptions.value.length === 0">{{ slotOptions.placeholder }}</span>
+            <span v-else>{{ t('pages.files.filters.formats', { count: slotOptions.value.length }) }}</span>
+          </template>
+        </PMultiSelect>
       </div>
     </div>
 

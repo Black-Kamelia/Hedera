@@ -4,6 +4,7 @@ import com.kamelia.hedera.rest.auth.authRoutes
 import com.kamelia.hedera.rest.file.filesRoutes
 import com.kamelia.hedera.rest.file.rawFileRoute
 import com.kamelia.hedera.rest.setting.userSettingsRoutes
+import com.kamelia.hedera.rest.token.personalTokensRoutes
 import com.kamelia.hedera.rest.user.userRoutes
 import com.kamelia.hedera.util.Environment.isDev
 import com.kamelia.hedera.util.Environment.isProd
@@ -19,6 +20,7 @@ fun Application.configureRouting() {
             userRoutes()
             userSettingsRoutes()
             filesRoutes()
+            personalTokensRoutes()
         }
 
         rawFileRoute()

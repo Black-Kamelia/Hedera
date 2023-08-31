@@ -68,6 +68,14 @@ object Errors {
 
     }
 
+    object PersonalTokens {
+
+        private const val PREFIX = "${Errors.PREFIX}.personal_tokens"
+
+        const val NOT_FOUND = "$PREFIX.not_found"
+
+    }
+
     object Sorts {
 
         private const val PREFIX = "${Errors.PREFIX}.sorts"
@@ -100,6 +108,8 @@ object Errors {
 
         private const val PREFIX = "${Errors.PREFIX}.users"
 
+        const val NOT_FOUND = "$PREFIX.not_found"
+
         object Email {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.email"
@@ -114,6 +124,7 @@ object Errors {
             private const val PREFIX = "${Errors.Users.PREFIX}.password"
 
             const val TOO_SHORT = "$PREFIX.too_short"
+            const val TOO_LONG = "$PREFIX.too_long"
             const val INCORRECT_PASSWORD = "$PREFIX.incorrect_password"
 
         }

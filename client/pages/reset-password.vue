@@ -22,7 +22,7 @@ const { handleSubmit } = useForm<ResetPasswordForm>({
   validationSchema: schema,
 })
 
-const usernamePlaceholder = getRandomDeveloperName()
+const usernamePlaceholder = getRandomDeveloperUsername()
 const showErrorMessage = ref(false)
 
 function hideErrorMessage() {

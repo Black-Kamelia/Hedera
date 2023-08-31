@@ -13,9 +13,16 @@ export interface FormInputTextProps extends OnlyProps<InputTextProps> {
 }
 
 const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormInputTextProps>()
-const { errorMessage, value } = useField<Nullable<string>>(name)
+
+const { errorMessage, value, validate } = useField<Nullable<string>>(name, _ => true, {
+  validateOnValueUpdate: false,
+})
 
 function onInput(payload: Event) {
+  if (errorMessage.value) {
+    validate({ mode: 'force' })
+  }
+
   const target = payload.target as HTMLInputElement | null
   value.value = transformValue(target?.value ?? '')
 }
@@ -27,15 +34,22 @@ defineExpose({
 </script>
 
 <template>
-  <label :for="id" class="block font-900 font-medium mb-2">{{ label }}</label>
-  <div class="mb-3">
-    <span class="w-full mb-1" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
+  <div>
+    <label v-if="label" :for="id" class="block font-900 font-medium mb-2 ml-1">{{ label }}</label>
+    <span class="w-full" :class="{ 'p-input-icon-left': startIcon, 'p-input-icon-right': endIcon }">
       <i v-if="startIcon" :class="startIcon" />
-      <PInputText :id="id" v-bind="$attrs" ref="el" v-model="value" :class="{ 'p-invalid': errorMessage }" @input="onInput" />
+      <PInputText
+        :id="id"
+        v-bind="$attrs"
+        ref="el"
+        v-model="value"
+        :class="{ 'p-invalid': errorMessage }"
+        @input="onInput"
+      />
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>
-      <small v-if="errorMessage" :id="`${id}-error`" class="block p-error">{{ errorMessage }}</small>
+      <small v-if="errorMessage" :id="`${id}-error`" class="mt-1 block p-error">{{ errorMessage }}</small>
     </Transition>
   </div>
 </template>

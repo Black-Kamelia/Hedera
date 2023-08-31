@@ -12,9 +12,10 @@ import com.kamelia.hedera.rest.core.pageable.applySort
 import com.kamelia.hedera.rest.core.pageable.filter
 import com.kamelia.hedera.rest.file.File
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.file.Files
+import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
+import com.kamelia.hedera.util.adaptFileSize
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -46,146 +47,140 @@ enum class UserRole(private val power: Int) {
     infix fun ne(other: UserRole): Boolean = power != other.power
 }
 
-object Users : AuditableUUIDTable("users") {
+object UserTable : AuditableUUIDTable("users") {
 
     val email = varchar("email", 255).uniqueIndex()
     val username = varchar("username", 128).uniqueIndex()
     val password = varchar("password", 255)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
-    val uploadToken = varchar("upload_token", 32).uniqueIndex()
+    val forceChangePassword = bool("force_change_password")
     val settings = reference("settings", UserSettingsTable)
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
 
-    fun countAll(): Long = User.count()
-
-    fun getAll(): List<User> = User.all().toList()
-
-    fun getAll(
-        page: Long,
-        pageSize: Int,
-        definition: PageDefinitionDTO
-    ): Pair<List<User>, Long> = Users
-        .selectAll()
-        .applyFilters(definition.filters) {
-            when (it.field) {
-                username.name -> username.filter(it)
-                email.name -> email.filter(it)
-                role.name -> role.filter(it)
-                enabled.name -> enabled.filter(it)
-                else -> throw UnknownFilterFieldException(it.field)
-            }
-        }.applySort(definition.sorter) {
-            when (it) {
-                username.name -> username
-                email.name -> email
-                role.name -> role
-                enabled.name -> enabled
-                else -> throw UnknownFilterFieldException(it)
-            }
-        }.let {
-            val rows = User.wrapRows(it)
-            rows.limit(pageSize, page * pageSize).toList() to rows.count()
-        }
-
-    fun findById(uuid: UUID): User? = User.findById(uuid)
-
-    fun findByUsername(username: String): User? = User
-        .find { Users.username eq username }
-        .firstOrNull()
-
-    fun findByEmail(email: String): User? = User
-        .find { Users.email eq email }
-        .firstOrNull()
-
-    fun findByUploadToken(uploadToken: String): User? = User
-        .find { Users.uploadToken eq uploadToken }
-        .firstOrNull()
-
-    fun create(user: UserDTO, creator: User? = null): User = User.new {
-        username = user.username
-        email = user.email
-        password = Hasher.hash(user.password)
-        role = user.role
-        enabled = false
-        uploadToken = UUID.randomUUID().toString().replace("-", "")
-        settings = UserSettings.new {}
-
-        onCreate(creator ?: this)
-    }
-
-    suspend fun update(user: User, dto: UserUpdateDTO, updater: User): User = user.apply {
-        dto.username?.let { username = it }
-        dto.email?.let { email = it }
-        dto.role?.let { role = it }
-        dto.enabled?.let { enabled = it }
-
-        SessionManager.updateSession(uuid, this)
-        onUpdate(updater)
-    }
-
-    fun updatePassword(user: User, dto: UserPasswordUpdateDTO): User = user.apply {
-        password = Hasher.hash(dto.newPassword)
-        onUpdate(user)
-    }
-
-    fun delete(id: UUID): User? = User
-        .findById(id)
-        ?.apply { delete() }
-
-    suspend fun regenerateUploadToken(user: User): User = user.apply {
-        uploadToken = UUID.randomUUID().toString().replace("-", "")
-        SessionManager.updateSession(uuid, this)
-    }
 }
 
-class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, Users) {
-    companion object : UUIDEntityClass<User>(Users)
+class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
 
-    var username by Users.username
-    var email by Users.email
-    var password by Users.password
-    var role by Users.role
-    var enabled by Users.enabled
-    var uploadToken by Users.uploadToken
-    var settings by UserSettings referencedOn Users.settings
+    companion object : UUIDEntityClass<User>(UserTable) {
 
-    private val files by File referrersOn Files.owner
+        fun findByUsername(username: String): User? = find { UserTable.username eq username }.firstOrNull()
 
-    fun countFiles(): Long = files.count()
+        fun findByEmail(email: String): User? = find { UserTable.email eq email }.firstOrNull()
 
-    fun getFiles(): List<File> = files.toList()
+        fun search(
+            page: Long,
+            pageSize: Int,
+            definition: PageDefinitionDTO
+        ): Pair<List<User>, Long> = UserTable
+            .selectAll()
+            .applyFilters(definition.filters) {
+                when (it.field) {
+                    "username" -> UserTable.username.filter(it)
+                    "email" -> UserTable.email.filter(it)
+                    "role" -> UserTable.role.filter(it)
+                    "enabled" -> UserTable.enabled.filter(it)
+                    else -> throw UnknownFilterFieldException(it.field)
+                }
+            }.applySort(definition.sorter) {
+                when (it) {
+                    "username" -> UserTable.username
+                    "email" -> UserTable.email
+                    "role" -> UserTable.role
+                    "enabled" -> UserTable.enabled
+                    "createdAt" -> UserTable.createdAt
+                    else -> throw UnknownFilterFieldException(it)
+                }
+            }.let {
+                val rows = User.wrapRows(it)
+                rows.limit(pageSize, page * pageSize).toList() to rows.count()
+            }
+
+        fun create(user: UserCreationDTO, creator: User? = null): User = new {
+            username = user.username
+            email = user.email
+            password = Hasher.hash(user.password)
+            role = user.role
+            enabled = true
+            forceChangePassword = user.forceChangePassword
+            settings = UserSettings.new {}
+
+            onCreate(creator ?: this)
+        }
+
+    }
+
+    var username by UserTable.username
+    var email by UserTable.email
+    var password by UserTable.password
+    var role by UserTable.role
+    var enabled by UserTable.enabled
+    var forceChangePassword by UserTable.forceChangePassword
+    var settings by UserSettings referencedOn UserTable.settings
+
+    private val files by File referrersOn FileTable.owner
 
     fun getFiles(
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
         asOwner: Boolean
-    ): Pair<List<File>, Long> = Files
+    ): Pair<List<File>, Long> = FileTable
         .selectAll()
-        .andWhere { Files.owner eq uuid }
-        .apply { if (!asOwner) andWhere { Files.visibility eq FileVisibility.PUBLIC } }
+        .andWhere { FileTable.owner eq uuid }
+        .apply { if (!asOwner) andWhere { FileTable.visibility eq FileVisibility.PUBLIC } }
         .applyFilters(definition.filters) {
             when (it.field) {
-                Files.name.name -> Files.name.filter(it)
-                Files.mimeType.name -> Files.mimeType.filter(it)
-                Files.size.name -> Files.size.filter(it)
-                Files.visibility.name -> Files.visibility.filter(it)
+                "name" -> FileTable.name.filter(it)
+                "mimeType" -> FileTable.mimeType.filter(it)
+                "size" -> FileTable.size.filter(it.adaptFileSize())
+                "visibility" -> FileTable.visibility.filter(it)
+                "createdAt" -> FileTable.createdAt.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)
             }
-        }.applySort(definition.sorter) {
+        }
+        .applySort(definition.sorter) {
             when (it) {
-                "name" -> Files.name
-                "mimeType" -> Files.mimeType
-                "size" -> Files.size
-                "visibility" -> Files.visibility
-                "createdAt" -> Files.createdAt
+                "name" -> FileTable.name
+                "mimeType" -> FileTable.mimeType
+                "size" -> FileTable.size
+                "visibility" -> FileTable.visibility
+                "createdAt" -> FileTable.createdAt
                 else -> throw UnknownSortFieldException(it)
             }
-        }.let {
-            val rows = File.wrapRows(it)
-            rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
+        .limit(pageSize, page * pageSize)
+        .let {
+            val rows = File.wrapRows(it)
+            rows.toList() to rows.count()
+        }
+
+    fun getFilesFormats(): List<String> = files
+        .map { it.mimeType }
+        .distinct()
+        .sorted()
+
+    suspend fun update(dto: UserUpdateDTO, updater: User = this): User = apply {
+        dto.username?.let { username = it }
+        dto.email?.let { email = it }
+        dto.role?.let { role = it }
+
+        SessionManager.updateSession(uuid, this)
+        onUpdate(updater)
+    }
+
+    suspend fun updateStatus(enabled: Boolean, updater: User = this): User = apply {
+        this.enabled = enabled
+
+        SessionManager.updateSession(uuid, this)
+        onUpdate(updater)
+    }
+
+    fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
+        password = Hasher.hash(dto.newPassword)
+        onUpdate(this)
+    }
+
 }

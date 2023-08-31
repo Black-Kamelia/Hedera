@@ -4,6 +4,7 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
@@ -12,26 +13,31 @@ import com.kamelia.hedera.rest.core.pageable.SortDirection
 import com.kamelia.hedera.rest.core.pageable.SortObject
 import com.kamelia.hedera.rest.file.FilePageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
+import com.kamelia.hedera.rest.file.FileSizeDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
+import com.kamelia.hedera.rest.file.toSizeDTO
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.time.Instant
+import java.util.*
+import java.util.stream.Stream
+import kotlin.test.assertContains
+import kotlin.test.assertContentEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util.*
-import java.util.stream.Stream
-import kotlin.test.assertContains
-import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {
@@ -80,7 +86,9 @@ class FileTest {
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
             assertEquals(userId, responseDto.owner.id)
+            assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)
+            assertEquals(20L.toSizeDTO(), responseDto.size)
         }
     }
 
@@ -106,6 +114,18 @@ class FileTest {
         }
     }
 
+    @DisplayName("Uploading a file with deleted token")
+    @Test
+    fun uploadFileDeletedToken() = testApplication {
+        val client = client()
+        val response = client.submitFormWithBinaryData("/api/files/upload/token", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            header("Upload-Token", "52713337ddd140e8adf8e9c10a5ccb12")
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
     @DisplayName("Uploading a file with incorrect content type")
     @Test
     fun uploadFileWithIncorrectContentType() = testApplication {
@@ -117,9 +137,9 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
-        assertEquals(error.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.parameters!!["header"], "content-type")
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(error.title.key, Errors.Headers.MISSING_HEADER)
+        assertEquals(error.title.parameters!!["header"], "Content-Type")
     }
 
     @DisplayName("Uploading a file with no file")
@@ -133,8 +153,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
-        assertContains(error.key, Errors.Uploads.MISSING_FILE)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Uploads.MISSING_FILE, error.title.key)
     }
 
     @DisplayName("Uploading a file with an empty name")
@@ -150,8 +170,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
-        assertContains(error.key, Errors.Uploads.EMPTY_FILE_NAME)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Uploads.EMPTY_FILE_NAME, error.title.key)
     }
 
     @DisplayName("Downloading a file")
@@ -176,10 +196,10 @@ class FileTest {
         }
     }
 
-    @DisplayName("Editing a file")
-    @ParameterizedTest(name = "Editing {1} file as {0} is {3}")
+    @DisplayName("Editing a file''s name")
+    @ParameterizedTest(name = "Editing {1} file''s name as {0} is {3}")
     @MethodSource("editPrivateFile", "editUnlistedFile", "editPublicFile")
-    fun editFile(
+    fun editFileName(
         user: TestUser,
         fileVisibility: String,
         fileId: UUID,
@@ -187,7 +207,7 @@ class FileTest {
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
-        val response = client.patch("/api/files/$fileId") {
+        val response = client.put("/api/files/$fileId/name") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let {
@@ -196,9 +216,64 @@ class FileTest {
         }
         assertEquals(statusCode, response.status)
         if (response.status == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
-            assertEquals("bar.txt", responseDto.name)
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals("bar.txt", responseDto.payload!!.name)
         }
+    }
+
+    @DisplayName("Editing an unknown file''s name")
+    @Test
+    fun editUnknownFileName() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.put("/api/files/00000000-0000-0000-0000-000000000000/name") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(name = "bar.txt"))
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Editing a file''s visibility")
+    @ParameterizedTest(name = "Editing {1} file''s visibility as {0} is {3}")
+    @MethodSource("editPrivateFile", "editUnlistedFile", "editPublicFile")
+    fun editFileVisibility(
+        user: TestUser,
+        fileVisibility: String,
+        fileId: UUID,
+        statusCode: HttpStatusCode,
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.put("/api/files/$fileId/visibility") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(visibility = FileVisibility.PRIVATE))
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(statusCode, response.status)
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals(FileVisibility.PRIVATE, responseDto.payload!!.visibility)
+        }
+    }
+
+    @DisplayName("Editing an unknown file''s visibility")
+    @Test
+    fun editUnknownFileVisibility() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+        val response = client.put("/api/files/00000000-0000-0000-0000-000000000000/visibility") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(visibility = FileVisibility.PRIVATE))
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     @DisplayName("Deleting a file")
@@ -220,80 +295,96 @@ class FileTest {
         assertEquals(statusCode, response.status)
     }
 
-    @DisplayName("Filtering files by name and sort by size descending")
+    @DisplayName("Deleting an unknown file")
     @Test
-    fun filesFiltering1() = testApplication {
+    fun deleteUnknownFile() = testApplication {
         val (tokens, _) = user1
         val client = client()
-        val response = client.post("/api/files/search") {
-            contentType(ContentType.Application.Json)
-            setBody(
-                PageDefinitionDTO(
-                    filters = listOf(
-                        listOf(
-                            FilterObject(
-                                field = "name",
-                                operator = "like",
-                                value = "%filtering1%"
-                            )
-                        )
-                    ),
-                    sorter = listOf(
-                        SortObject(
-                            field = "size",
-                            direction = SortDirection.DESC
-                        )
-                    )
-                )
-            )
+        val response = client.delete("/api/files/00000000-0000-0000-0000-000000000000") {
             tokens?.let {
                 bearerAuth(it.accessToken)
             }
         }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
-        assertEquals(2, responseDto.page.items.size)
-        assertTrue(responseDto.page.items.all { it.name.contains("filtering1") })
-        assertEquals("filtering1_2.png", responseDto.page.items[0].name)
-        assertEquals("filtering1_1.png", responseDto.page.items[1].name)
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
-    @DisplayName("Filtering files by name and type")
-    @Test
-    fun filesFiltering2() = testApplication {
-        val (tokens, _) = user1
+    @DisplayName("Filtering files")
+    @ParameterizedTest(name = "Filtering files by {0} (operator: {1})")
+    @MethodSource
+    fun filteringFiles(
+        field: String,
+        operator: String,
+        value: String,
+        expectedResult: (FilePageDTO) -> Unit,
+    ) = testApplication {
+        val (tokens, _) = userFilters
         val client = client()
+
         val response = client.post("/api/files/search") {
             contentType(ContentType.Application.Json)
-            setBody(
-                PageDefinitionDTO(
-                    filters = listOf(
-                        listOf(
-                            FilterObject(
-                                field = "name",
-                                operator = "like",
-                                value = "%filtering2%"
-                            )
-                        ),
-                        listOf(
-                            FilterObject(
-                                field = "mime_type",
-                                operator = "eq",
-                                value = "application/pdf"
-                            )
-                        )
-                    )
-                )
-            )
-            tokens?.let {
-                bearerAuth(it.accessToken)
-            }
+            setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject(field, operator, value)))))
+            tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.OK, response.status)
+
         val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
-        assertEquals(1, responseDto.page.items.size)
-        assertTrue(responseDto.page.items.all { it.name.contains("filtering2") })
-        assertEquals("filtering2_2.pdf", responseDto.page.items[0].name)
+        expectedResult(responseDto)
+    }
+
+    @DisplayName("Sorting files")
+    @ParameterizedTest(name = "Sorting files by {0} (direction: {1})")
+    @MethodSource
+    fun sortingFiles(
+        field: String,
+        direction: SortDirection,
+        expectedResult: (FilePageDTO) -> Unit,
+    ) = testApplication {
+        val (tokens, _) = userFilters
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(sorter = listOf(SortObject(field, direction))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val responseDto = Json.decodeFromString(FilePageDTO.serializer(), response.bodyAsText())
+        expectedResult(responseDto)
+    }
+
+    @DisplayName("Filtering files on unknown field")
+    @Test
+    fun filteringFilesUnknownField() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject("unknown", "eq", "fail")))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val messageKeyDTO = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Filters.UNKNOWN_FIELD, messageKeyDTO.title.key)
+    }
+
+    @DisplayName("Filtering files with unknown operator")
+    @Test
+    fun filteringFilesUnknownOperator() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO(filters = listOf(listOf(FilterObject("name", "unknown", "fail")))))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val messageKeyDTO = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Filters.ILLEGAL_FILTER, messageKeyDTO.title.key)
     }
 
     @DisplayName("Filtering files with negative page number should fail")
@@ -310,8 +401,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.title.key)
     }
 
     @DisplayName("Filtering files with malformed page number should fail")
@@ -328,8 +419,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.title.key)
     }
 
     @DisplayName("Filtering files with negative page size should fail")
@@ -346,8 +437,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.title.key)
     }
 
     @DisplayName("Filtering files with malformed page size should fail")
@@ -364,8 +455,20 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.title.key)
+    }
+
+    @DisplayName("Getting file from disabled user should fail")
+    @Test
+    fun getFileFromDisabledUser() = testApplication {
+        val client = client()
+
+        val control = client.get("/api/files/0000_00_01")
+        assertEquals(HttpStatusCode.OK, control.status)
+
+        val response = client.get("/api/files/0006_00_01")
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     companion object {
@@ -374,6 +477,7 @@ class FileTest {
         private lateinit var admin: TestUser
         private lateinit var user1: TestUser
         private lateinit var user2: TestUser
+        private lateinit var userFilters: TestUser
         private val guest: TestUser = Pair(null, UUID(0, 0))
 
         init {
@@ -394,6 +498,10 @@ class FileTest {
                     login("user2", "password").second ?: throw Exception("Login failed"),
                     UUID.fromString("00000000-0000-0000-0000-000000000004")
                 )
+                userFilters = Pair(
+                    login("user_filters", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0000-0000-000000000010")
+                )
             }
         }
 
@@ -408,17 +516,17 @@ class FileTest {
         @JvmStatic
         fun uploadFileToken(): Stream<Arguments> = Stream.of(
             Arguments.of(
-                "0f2577e20ca8466b89724d2cfb56e2db",
+                "d9efe80efb1745ea8a6c341e70ae36f9",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "a9b42b75a4774e41b6391e7724c05f77",
+                "bb7e6bc298ff413a904786a49c6e9719",
                 Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "8da63c40d5534a50b69e44f4b6789712",
+                "ef4e9fd691954eda8e0493b4745882e3",
                 Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
                 HttpStatusCode.Created
             ),
@@ -733,6 +841,183 @@ class FileTest {
                 UUID.fromString("00000000-0000-0004-0003-000000000005"),
                 HttpStatusCode.Unauthorized
             ),
+        )
+
+        @JvmStatic
+        fun filteringFiles(): Stream<Arguments> {
+            val date = Instant.parse("1970-01-05T00:00:00.00000Z")
+
+            return Stream.of(
+                Arguments.of("name", "like", "filtering1_1.png", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.name == "filtering1_1.png" })
+                }),
+                Arguments.of("name", "nlike", "filtering1_1.png", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.name != "filtering1_1.png" })
+                }),
+                Arguments.of("name", "fuzzy", "filtering", { dto: FilePageDTO ->
+                    assertFalse(dto.page.items.isEmpty())
+                    assertTrue(dto.page.items.all { it.name.contains("filtering") })
+                }),
+
+                Arguments.of("mimeType", "like", "image/png", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.mimeType == "image/png" })
+                }),
+                Arguments.of("mimeType", "nlike", "image/png", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.mimeType != "image/png" })
+                }),
+
+                Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.size == FileSizeDTO(1000.0, 0) })
+                }),
+                Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.size != FileSizeDTO(1000.0, 0) })
+                }),
+                Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.size.value > 800 })
+                }),
+                Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.size.value < 800 })
+                }),
+                Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.size.value >= 800 })
+                }),
+                Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.size.value <= 800 })
+                }),
+
+                Arguments.of("visibility", "eq", FileVisibility.PRIVATE.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all { it.visibility == FileVisibility.PRIVATE })
+                }),
+                Arguments.of("visibility", "ne", FileVisibility.PRIVATE.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all { it.visibility != FileVisibility.PRIVATE })
+                }),
+
+                Arguments.of("createdAt", "eq", "1970-01-05T00:00:00.000000Z", { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.equals(date)
+                    })
+                }),
+                Arguments.of("createdAt", "ne", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.none {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.equals(date)
+                    })
+                }),
+                Arguments.of("createdAt", "gt", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isAfter(date)
+                    })
+                }),
+                Arguments.of("createdAt", "lt", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 1)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isBefore(date)
+                    })
+                }),
+                Arguments.of("createdAt", "ge", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isAfter(date) || createdAt.equals(date)
+                    })
+                }),
+                Arguments.of("createdAt", "le", date.toString(), { dto: FilePageDTO ->
+                    assertTrue(dto.page.items.size == 2)
+                    assertTrue(dto.page.items.all {
+                        val createdAt = Instant.parse(it.createdAt)
+                        createdAt.isBefore(date) || createdAt.equals(date)
+                    })
+                }),
+            )
+        }
+
+        @JvmStatic
+        fun sortingFiles(): Stream<Arguments> = Stream.of(
+            Arguments.of("name", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("filtering1_1.png", "filtering1_2.pdf", "filtering1_3.png"),
+                    dto.page.items.map { it.name }
+                )
+            }),
+            Arguments.of("name", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("filtering1_3.png", "filtering1_2.pdf", "filtering1_1.png"),
+                    dto.page.items.map { it.name }
+                )
+            }),
+
+            Arguments.of("mimeType", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("application/pdf", "image/png", "image/png"),
+                    dto.page.items.map { it.mimeType }
+                )
+            }),
+            Arguments.of("mimeType", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf("image/png", "image/png", "application/pdf"),
+                    dto.page.items.map { it.mimeType }
+                )
+            }),
+
+            Arguments.of("size", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(FileSizeDTO(500.0, 0), FileSizeDTO(800.0, 0), FileSizeDTO(1000.0, 0)),
+                    dto.page.items.map { it.size }
+                )
+            }),
+            Arguments.of("size", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(FileSizeDTO(1000.0, 0), FileSizeDTO(800.0, 0), FileSizeDTO(500.0, 0)),
+                    dto.page.items.map { it.size }
+                )
+            }),
+
+            Arguments.of("createdAt", SortDirection.ASC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(
+                        Instant.parse("1970-01-01T00:00:00.000000Z"),
+                        Instant.parse("1970-01-05T00:00:00.000000Z"),
+                        Instant.parse("1970-01-10T00:00:00.000000Z"),
+                    ),
+                    dto.page.items.map { Instant.parse(it.createdAt) }
+                )
+            }),
+            Arguments.of("createdAt", SortDirection.DESC, { dto: FilePageDTO ->
+                assertTrue(dto.page.items.size == 3)
+                assertContentEquals(
+                    listOf(
+                        Instant.parse("1970-01-10T00:00:00.000000Z"),
+                        Instant.parse("1970-01-05T00:00:00.000000Z"),
+                        Instant.parse("1970-01-01T00:00:00.000000Z"),
+                    ),
+                    dto.page.items.map { Instant.parse(it.createdAt) }
+                )
+            }),
         )
     }
 }

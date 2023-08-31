@@ -35,6 +35,9 @@ devDependencies:
   '@pinia/nuxt':
     specifier: ^0.4.11
     version: 0.4.11(typescript@4.9.5)(vue@3.3.4)
+  '@types/luxon':
+    specifier: ^3.3.1
+    version: 3.3.1
   '@unocss/nuxt':
     specifier: ^0.53.5
     version: 0.53.5(postcss@8.4.24)(vite@4.3.9)(webpack@5.75.0)
@@ -68,6 +71,9 @@ devDependencies:
   eslint:
     specifier: ^8.45.0
     version: 8.45.0
+  luxon:
+    specifier: ^3.3.0
+    version: 3.3.0
   nitropack:
     specifier: ^2.5.2
     version: 2.5.2
@@ -2063,6 +2069,10 @@ packages:
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+    dev: true
+
+  /@types/luxon@3.3.1:
+    resolution: {integrity: sha512-XOS5nBcgEeP2PpcqJHjCWhUCAzGfXIU8ILOSLpx2FhxqMW9KdxgCGXNOEKGVBfveKtIpztHzKK5vSRVLyW/NqA==}
     dev: true
 
   /@types/mdast@3.0.10:
@@ -6614,6 +6624,11 @@ packages:
 
   /lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
+    engines: {node: '>=12'}
+    dev: true
+
+  /luxon@3.3.0:
+    resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
     engines: {node: '>=12'}
     dev: true
 

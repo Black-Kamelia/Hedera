@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import { defineStore } from 'pinia'
 
 export interface FileFilters {
   visibility: string[]

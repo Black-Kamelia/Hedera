@@ -11,6 +11,7 @@ import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.jwt
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.authRoutes() = route("/") {

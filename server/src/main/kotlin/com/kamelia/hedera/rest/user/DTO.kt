@@ -16,19 +16,21 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
+    createdAt.toString(),
 )
 
 /**
- * DTO used to transfer user signup details.
+ * DTO used to transfer user creation details.
  *
  * **Front -> Back**
  */
 @Serializable
-data class UserDTO(
+data class UserCreationDTO(
     val username: String,
     val email: String,
     val password: String,
     val role: UserRole = UserRole.REGULAR,
+    val forceChangePassword: Boolean = false,
 ) : DTO
 
 /**
@@ -67,6 +69,7 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
+    val createdAt: String,
 ) : DTO
 
 @Serializable

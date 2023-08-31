@@ -55,8 +55,8 @@ declare global {
     totalItems: number,
   }
 
-  interface PageableDTO {
-    page: PageDTO<FileRepresentationDTO>
+  interface PageableDTO<E> {
+    page: PageDTO<E>
   }
 
   interface PageDefinitionDTO {
@@ -115,6 +115,15 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    createdAt: string
+  }
+
+  interface UserCreationDTO {
+    username: string
+    email: string
+    password: string
+    role: Role
+    forceChangePassword: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
@@ -135,6 +144,14 @@ declare global {
     tokens: TokenData
     user: UserRepresentationDTO
     userSettings: UserSettings
+  }
+
+  interface PersonalTokenDTO {
+    id: string
+    token?: string
+    name: string
+    createdAt: string
+    lastUsed?: string
   }
 }
 // END SECTION: DTO

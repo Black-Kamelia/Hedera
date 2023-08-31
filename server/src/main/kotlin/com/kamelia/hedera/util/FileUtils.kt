@@ -1,11 +1,12 @@
 package com.kamelia.hedera.util
 
 import com.kamelia.hedera.core.UploadCodeGenerationException
-import com.kamelia.hedera.rest.file.Files
+import com.kamelia.hedera.rest.file.File as HederaFile
 import io.ktor.http.content.*
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -14,7 +15,7 @@ object FileUtils {
     private val UPLOAD_PATH = Path.of(Environment.uploadFolder)
 
     init {
-        java.nio.file.Files.createDirectories(UPLOAD_PATH)
+        Files.createDirectories(UPLOAD_PATH)
     }
 
     /**
@@ -48,11 +49,11 @@ object FileUtils {
         val fileBytes = file.streamProvider().readBytes()
         val fileCode = generateUniqueCode()
         val directory = UPLOAD_PATH.resolve(owner.toString())
-        java.nio.file.Files.createDirectories(directory)
+        Files.createDirectories(directory)
         val filePath = directory.resolve(fileCode)
-        java.nio.file.Files.write(filePath, fileBytes)
+        Files.write(filePath, fileBytes)
         val fileMimeType = MimeTypes.typeFromFile(filename)
-        val fileSize = java.nio.file.Files.size(filePath)
+        val fileSize = Files.size(filePath)
         Triple(fileCode, fileMimeType, fileSize)
     }
 
@@ -70,7 +71,7 @@ object FileUtils {
     private fun generateUniqueCode(): String {
         repeat(10) {
             val code = String.random(10)
-            if (Files.findByCode(code) == null) {
+            if (HederaFile.findByCode(code) == null) {
                 return code
             }
         }

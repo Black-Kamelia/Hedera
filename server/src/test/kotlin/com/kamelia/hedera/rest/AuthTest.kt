@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
@@ -10,6 +11,7 @@ import com.kamelia.hedera.loginBlocking
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.UserUpdateDTO
+import com.kamelia.hedera.util.Environment
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,6 +21,7 @@ import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -35,11 +38,14 @@ class AuthTest {
     @DisplayName("Logging in with incorrect password")
     @Test
     fun loggingInIncorrectPassword() = testApplication {
+        val startTime = System.currentTimeMillis()
         val (response, _) = login("user1", "wrongPassword")
+        val endTime = System.currentTimeMillis()
         assertEquals(HttpStatusCode.Unauthorized, response.status)
+        assertTrue(endTime - startTime >= Environment.loginThrottle, "Login throttle not respected")
 
-        val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.key)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Auth.INVALID_CREDENTIALS, error.title.key)
     }
 
     @DisplayName("Logging in with disabled user")
@@ -48,8 +54,8 @@ class AuthTest {
         val (response, _) = login("userDisabled", "password")
         assertEquals(HttpStatusCode.Forbidden, response.status)
 
-        val error = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Auth.ACCOUNT_DISABLED, error.key)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Auth.ACCOUNT_DISABLED, error.title.key)
     }
 
     @DisplayName("Performing protected request with valid access token")
@@ -156,7 +162,7 @@ class AuthTest {
         val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val postLogoutResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
             bearerAuth(tokens.accessToken)
@@ -174,7 +180,7 @@ class AuthTest {
         val response = client().post("/api/logout") {
             bearerAuth(tokens.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val refreshResponse = client().post("/api/refresh") {
             bearerAuth(tokens.refreshToken)
@@ -193,7 +199,7 @@ class AuthTest {
         val response = client().post("/api/logout/all") {
             bearerAuth(tokens1.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val response1 = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
             bearerAuth(tokens1.accessToken)
@@ -217,7 +223,7 @@ class AuthTest {
         val response = client().post("/api/logout/all") {
             bearerAuth(tokens1.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.NoContent, response.status)
 
         val response1 = client().post("/api/refresh") {
             bearerAuth(tokens1.refreshToken)
@@ -314,10 +320,8 @@ class AuthTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         /* Disabling the user as owner */
-        val updateResponse = client().patch("/api/users/00000000-0001-0004-0000-000000000002") {
+        val updateResponse = client().post("/api/users/00000000-0001-0004-0000-000000000002/deactivate") {
             ownerTokens?.let { bearerAuth(it.accessToken) }
-            contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(enabled = false))
         }
         assertEquals(HttpStatusCode.OK, updateResponse.status)
 

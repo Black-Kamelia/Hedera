@@ -13,6 +13,7 @@ liquibase:
 
 hedera:
   uploadFolder: ./_tests/upload
+  loginThrottle: "0"
 
   jwt:
     secretAccess: $HEDERA_JWT_SECRET

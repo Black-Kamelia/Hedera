@@ -6,6 +6,7 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.asMessage
@@ -56,6 +57,12 @@ object FileService {
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
+
+        // TODO: Find a way to determine size BEFORE writing to disk...
+        if (creator.currentDiskQuota + size > creator.maximumDiskQuota) {
+            throw InsufficientDiskQuotaException()
+        }
+
         creator.increaseCurrentDiskQuota(size)
 
         return Response.created(

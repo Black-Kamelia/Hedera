@@ -109,6 +109,7 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.users"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+        const val INSUFFICIENT_DISK_QUOTA = "$PREFIX.insufficient_disk_quota"
 
         object Email {
 

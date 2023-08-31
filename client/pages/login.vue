@@ -75,7 +75,8 @@ useEventBus(LoggedInEvent).on((event) => {
     message.content = m(event.error.data.title)
     message.severity = 'error'
   } else {
-    navigateTo('/files', { replace: true })
+    const redirectedFrom = useRoute().query.redirectedFrom?.toString() ?? '/files'
+    navigateTo(redirectedFrom, { replace: true })
   }
 })
 

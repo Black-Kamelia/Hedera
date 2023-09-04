@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FileUploadUploaderEvent } from 'primevue/fileupload'
-import { PFileUpload } from '#components'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -38,21 +37,27 @@ async function uploader(event: FileUploadUploaderEvent) {
     <PFileUpload
       multiple
       :auto="instantUpload"
-      :show-upload-button="!instantUpload"
-      :show-cancel-button="!instantUpload"
-      :choose-label="t('pages.upload.select_files')"
-      :upload-label="t('pages.upload.upload_files')"
-      :cancel-label="t('pages.upload.clear_files')"
-      choose-icon="i-tabler-file-plus"
-      upload-icon="i-tabler-cloud-upload"
-      cancel-icon="i-tabler-x"
       custom-upload
       :pt="{
-        buttonbar: { class: 'important-border-none' },
-        content: { class: 'important-border-none' },
+        buttonbar: { class: 'important-border-none important-bg-[--surface-overlay]' },
+        content: { class: 'important-border-none flex-grow' },
+        empty: { class: 'h-full' },
+        root: { class: 'flex flex-col h-full max-h-full' },
       }"
       @uploader="uploader"
     >
+      <template #header="{ chooseCallback, clearCallback, uploadCallback }">
+        <div class="flex flex-row justify-between w-full">
+          <div class="flex flex-row gap-3">
+            <PButton icon="i-tabler-file-plus" :label="t('pages.upload.select_files')" @click="chooseCallback" />
+            <PButton v-if="!instantUpload" icon="i-tabler-x" :label="t('pages.upload.clear_files')" @click="clearCallback" />
+          </div>
+          <div class="flex flex-row gap-3">
+            <PButton v-if="!instantUpload" icon="i-tabler-upload" :label="t('pages.upload.upload_files')" @click="uploadCallback" />
+          </div>
+        </div>
+      </template>
+
       <template #content="{ files: pendingFiles, removeFileCallback }">
         <FileDropFilesSection :files="pendingFiles" status="pending" @remove="removeFileCallback" />
         <FileDropFilesSection :files="uploadingFiles" status="uploading" />
@@ -61,7 +66,7 @@ async function uploader(event: FileUploadUploaderEvent) {
       </template>
 
       <template #empty>
-        <div v-if="!hasFiles" class="flex items-center justify-center flex-col">
+        <div v-if="!hasFiles" class="b-2 b-[--surface-border] b-dashed rounded-lg p-10 flex items-center justify-center flex-col h-full">
           <i class="i-tabler-cloud-upload text-8xl" />
           <p class="mt-4 mb-0">
             {{ t("pages.upload.drag_n_drop") }}

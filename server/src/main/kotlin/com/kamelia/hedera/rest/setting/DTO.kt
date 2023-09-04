@@ -15,6 +15,7 @@ fun UserSettings.toRepresentationDTO() = UserSettingsRepresentationDTO(
     preferredDateStyle = preferredDateStyle,
     preferredTimeStyle = preferredTimeStyle,
     preferredLocale = preferredLocale,
+    uploadBehavior = uploadBehavior,
 )
 
 /**
@@ -30,6 +31,7 @@ data class UserSettingsUpdateDTO(
     val preferredDateStyle: DateStyle? = null,
     val preferredTimeStyle: TimeStyle? = null,
     val preferredLocale: Locale? = null,
+    val uploadBehavior: UploadBehavior? = null,
 ) : DTO
 
 /**
@@ -45,4 +47,5 @@ data class UserSettingsRepresentationDTO(
     val preferredDateStyle: DateStyle,
     val preferredTimeStyle: TimeStyle,
     val preferredLocale: Locale,
+    val uploadBehavior: UploadBehavior,
 ) : DTO

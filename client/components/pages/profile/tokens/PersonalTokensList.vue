@@ -50,10 +50,5 @@ function handleDelete(tokenId: string) {
   </div>
 
   <CreateTokenDialog v-model:visible="createTokenDialog" @completed="handleCreate" />
-  <PConfirmDialog
-    :pt="{
-      root: { class: 'max-w-75% xl:max-w-50%' },
-      rejectButton: { icon: { class: 'display-none' } },
-    }"
-  />
+  <ConfirmDialog />
 </template>

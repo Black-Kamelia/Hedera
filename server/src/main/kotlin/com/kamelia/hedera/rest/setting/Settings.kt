@@ -24,3 +24,8 @@ enum class FilesSizeScale {
     BINARY,
     DECIMAL,
 }
+
+enum class UploadBehavior {
+    INSTANT,
+    MANUAL,
+}

@@ -23,6 +23,9 @@
             <column name="enabled" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="force_change_password" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column name="upload_token" type="VARCHAR(32)">
                 <constraints nullable="true" unique="true"/>
             </column>
@@ -195,6 +198,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="preferred_locale" type="VARCHAR(5)" defaultValue="en">
+                <constraints nullable="false"/>
+            </column>
+            <column name="upload_behavior" type="VARCHAR(16)" defaultValue="INSTANT">
                 <constraints nullable="false"/>
             </column>
         </createTable>

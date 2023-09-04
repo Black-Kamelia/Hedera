@@ -9,5 +9,9 @@ definePageMeta({
 </script>
 
 <template>
-  <p>TODO</p>
+  <div class="py-4 px-8 h-full flex flex-col gap-4">
+    <div class="flex flex-row gap-4 h-full">
+      <FileDrop />
+    </div>
+  </div>
 </template>

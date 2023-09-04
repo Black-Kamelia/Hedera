@@ -83,6 +83,6 @@ private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (ca
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO.of(Errors.UNKNOWN)))
+    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO(Errors.UNKNOWN)))
     call.application.log.error("Unexpected error", cause)
 }

@@ -10,6 +10,7 @@ const preferredDateTimeFormat = computed(() => ({
   timeStyle: settings.preferredTimeStyle as DateTimeStyle,
 }))
 const preferredLocale = computed(() => settings.preferredLocale)
+const uploadBehavior = computed(() => settings.uploadBehavior)
 
 // Local settings
 const color = useColorMode()
@@ -23,6 +24,7 @@ const animations = useLocalStorage('animations', true)
     </h1>
     <DefaultFileVisibility :value="defaultFileVisibility" />
     <AutoRemoveFiles :value="autoRemoveFiles" />
+    <UploadBehavior :value="uploadBehavior" />
 
     <h1 class="text-2xl mt-6">
       {{ t('pages.profile.settings.headers.display_and_animations') }}

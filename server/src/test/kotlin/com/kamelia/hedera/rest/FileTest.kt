@@ -137,9 +137,9 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
-        assertEquals(error.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.parameters!!["header"], "Content-Type")
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(error.title.key, Errors.Headers.MISSING_HEADER)
+        assertEquals(error.title.parameters!!["header"], "Content-Type")
     }
 
     @DisplayName("Uploading a file with no file")
@@ -153,8 +153,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
-        assertContains(error.key, Errors.Uploads.MISSING_FILE)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Uploads.MISSING_FILE, error.title.key)
     }
 
     @DisplayName("Uploading a file with an empty name")
@@ -170,8 +170,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
-        val error = Json.decodeFromString<MessageKeyDTO>(response.bodyAsText())
-        assertContains(error.key, Errors.Uploads.EMPTY_FILE_NAME)
+        val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Uploads.EMPTY_FILE_NAME, error.title.key)
     }
 
     @DisplayName("Downloading a file")
@@ -366,8 +366,8 @@ class FileTest {
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
 
-        val messageKeyDTO = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Filters.UNKNOWN_FIELD, messageKeyDTO.key)
+        val messageKeyDTO = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Filters.UNKNOWN_FIELD, messageKeyDTO.title.key)
     }
 
     @DisplayName("Filtering files with unknown operator")
@@ -383,8 +383,8 @@ class FileTest {
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
 
-        val messageKeyDTO = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Filters.ILLEGAL_FILTER, messageKeyDTO.key)
+        val messageKeyDTO = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Filters.ILLEGAL_FILTER, messageKeyDTO.title.key)
     }
 
     @DisplayName("Filtering files with negative page number should fail")
@@ -401,8 +401,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.title.key)
     }
 
     @DisplayName("Filtering files with malformed page number should fail")
@@ -419,8 +419,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_NUMBER, responseDto.title.key)
     }
 
     @DisplayName("Filtering files with negative page size should fail")
@@ -437,8 +437,8 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.title.key)
     }
 
     @DisplayName("Filtering files with malformed page size should fail")
@@ -455,8 +455,20 @@ class FileTest {
             }
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        val responseDto = Json.decodeFromString(MessageKeyDTO.serializer(), response.bodyAsText())
-        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.key)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Pagination.INVALID_PAGE_SIZE, responseDto.title.key)
+    }
+
+    @DisplayName("Getting file from disabled user should fail")
+    @Test
+    fun getFileFromDisabledUser() = testApplication {
+        val client = client()
+
+        val control = client.get("/api/files/0000_00_01")
+        assertEquals(HttpStatusCode.OK, control.status)
+
+        val response = client.get("/api/files/0006_00_01")
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     companion object {

@@ -117,10 +117,70 @@ pages:
     title: Favoris
   upload:
     title: Mettre en ligne
+    drag_n_drop: Déposez des fichiers ici pour les mettre en ligne.
+    total_size: "Taille totale à mettre en ligne: {size}"
+    select_files: Choisir des fichiers
+    upload_files: Envoyer les fichiers
+    clear_files: Vider la sélection
+    pending: En attente
+    uploading: En cours d’envoi
+    completed: En ligne
+    error: Erreur
+    finished: Mise en ligne terminée
   analytics:
     title: Statistiques
   configuration:
     title: Configuration
+    menu:
+      general: Général
+      users: Utilisateurs
+    users:
+      title: Utilisateurs
+      role:
+        regular: Utilisateur normal
+        admin: Administrateur
+        owner: Super-administrateur
+        unknown: Inconnu
+      status:
+        enabled: Activé
+        disabled: Désactivé
+      table:
+        username: Nom d’utilisateur
+        email: Adresse e-mail
+        role: Rôle
+        status: Statut
+        creation_date: Date de création
+      context_menu:
+        edit: Éditer
+        deactivate: Désactiver
+        activate: Activer
+        delete: Supprimer
+      create_user: Créer un utilisateur
+      create_dialog:
+        title: Créer un utilisateur
+        summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        cancel: Annuler
+        submit: Créer
+      edit_dialog:
+        title: Éditer un utilisateur
+        password_summary: Par mesure de sécurité, le mot de passe d'un utilisateur ne peut être modifié que par lui-même.
+        cancel: Annuler
+        submit: Sauvegarder
+      activate_dialog:
+        title: Activer un utilisateur
+        summary: L'utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L'utilisateur pourra être désactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?
+        cancel: Annuler
+        submit: Activer l'utilisateur
+      deactivate_dialog:
+        title: Désactiver un utilisateur
+        summary: L'utilisateur ne sera plus en mesure de se connecter, ni d'envoyer des fichiers. Ses fichiers ne seront plus visibles, mais ne seront pas supprimés. L'utilisateur pourra être réactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir désactiver cet utilisateur ?
+        cancel: Annuler
+        submit: Désactiver l'utilisateur
+      delete_dialog:
+        title: Supprimer un utilisateur
+        summary: Cette action est irréversible et tous les fichiers de l'utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
+        cancel: Annuler
+        submit: Supprimer
   debug:
     title: Débogage
   profile:
@@ -191,6 +251,12 @@ pages:
       auto_delete_oldest_files:
         title: Supprimer automatiquement les fichiers les plus anciens
         description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d’envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
+      upload_behavior:
+        title: Comportement de la mise en ligne
+        description: Définir si les fichiers sont envoyés immédiatement à la sélection, ou manuellement en cliquant sur un bouton, sur la page de mise en ligne de fichiers.
+        choose: Choisissez un comportement
+        instant: Instantané
+        manual: Manuel
       enable_animations:
         title: Activer les animations et transitions
         description: Hedera utilise des animations et des transitions pour rendre l’expérience utilisateur plus appréciable. Si vous rencontrez des problèmes de performance, vous pouvez les désactiver ici.
@@ -239,6 +305,26 @@ forms:
       old_password: Mot de passe actuel
       new_password: Nouveau mot de passe
       confirm_new_password: Confirmer le nouveau mot de passe
+  create_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+      missing_password: Mot de passe requis
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      missing_confirm_password: Confirmation du mot de passe requise
+      passwords_mismatch: Les mots de passe ne correspondent pas
+      missing_role: Rôle requis
+      missing_force_change_password: Choix sur la modification du mot de passe obligatoire requis
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
+      password: Mot de passe
+      confirm_password: Confirmer le mot de passe
+      role: Rôle
+      role_placeholder: Sélectionner un rôle
+      force_change_password: Forcer la modification du mot de passe à la première connexion
 
 actions:
   files:
@@ -256,12 +342,35 @@ actions:
           title: Fichier renommé
           message: Le fichier “{oldName}” a été renommé en “{newName}”
   users:
+    update_password:
+      success:
+        title: Votre mot de passe a été mis à jour
+      error:
+        title: Impossible de mettre à jour votre mot de passe
+    create:
+      success:
+        title: Utilisateur créé
+        message: L’utilisateur “{username}” a été créé
+      error:
+        title: Impossible de créer l’utilisateur
+    activate:
+      success:
+        title: Utilisateur activé
+        message: L’utilisateur “{username}” a été activé
+    deactivate:
+      success:
+        title: Utilisateur désactivé
+        message: L’utilisateur “{username}” a été désactivé
     update:
-      password:
-        success:
-          message: Votre mot de passe a été mis à jour
-        failure:
-          message: Impossible de mettre à jour votre mot de passe
+      success:
+        title: Utilisateur édité
+        message: L’utilisateur “{username}” a été édité
+      error:
+        title: Impossible d’éditer l’utilisateur
+    delete:
+      success:
+        title: Utilisateur supprimé
+        message: L’utilisateur “{username}” a été supprimé
   tokens:
     create:
       success:
@@ -269,8 +378,8 @@ actions:
         message: Le jeton “{name}” a été créé
     delete:
       success:
-          title: Jeton supprimé
-          message: Le jeton “{name}” a été supprimé
+        title: Jeton supprimé
+        message: Le jeton “{name}” a été supprimé
 
 errors:
   unknown: Une erreur inattendue est survenue
@@ -287,6 +396,10 @@ errors:
   users:
     password:
       incorrect_password: Mot de passe incorrect
+    username:
+      already_exists: Ce nom d’utilisateur est déjà utilisé
+    email:
+      already_exists: Cette adresse e-mail est déjà utilisée
 
 theme:
   system: Système

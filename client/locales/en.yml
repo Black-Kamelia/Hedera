@@ -117,10 +117,70 @@ pages:
     title: Favorites
   upload:
     title: Upload
+    drag_n_drop: Drag and drop files here to upload.
+    total_size: "Total size to be uploaded: {size}"
+    select_files: Select files
+    upload_files: Upload files
+    clear_files: Clear pending files
+    pending: Pending
+    uploading: Uploading
+    completed: Uploaded
+    error: Error
+    finished: Upload finished
   analytics:
     title: Analytics
   configuration:
     title: Configuration
+    menu:
+      general: General
+      users: Users
+    users:
+      title: Users
+      role:
+        regular: Regular user
+        admin: Administrator
+        owner: Super-administrator
+        unknown: Unknown
+      status:
+        enabled: Enabled
+        disabled: Disabled
+      table:
+        username: Username
+        email: E-mail address
+        role: Role
+        status: Status
+        creation_date: Creation date
+      context_menu:
+        edit: Edit
+        deactivate: Deactivate
+        activate: Activate
+        delete: Delete
+      create_user: Create user
+      create_dialog:
+        title: Create a user
+        summary: Create a user to allow them to log in to Hedera and upload files. Users can be disabled at any time.
+        cancel: Cancel
+        submit: Create
+      edit_dialog:
+        title: Edit a user
+        password_summary: For security reasons, a user's password can only be changed by themselves.
+        cancel: Cancel
+        submit: Save
+      activate_dialog:
+        title: Activate a user
+        summary: The user will be able to log in and upload files. Their existing files will now be visible. The user can be deactivated at any time. Are you sure you want to activate this user?
+        cancel: Cancel
+        submit: Activate the user
+      deactivate_dialog:
+        title: Deactivate a user
+        summary: The user will no longer be able to log in or upload files. Their files will no longer be visible, but will not be deleted. The user can be reactivated at any time. Are you sure you want to deactivate this user?
+        cancel: Cancel
+        submit: Deactivate the user
+      delete_dialog:
+        title: Delete a user
+        summary: This action is irreversible and all the user's files will be permanently deleted. Are you sure you want to delete this user?
+        cancel: Cancel
+        submit: Delete
   debug:
     title: Debug
   profile:
@@ -189,8 +249,14 @@ pages:
         description: Choose the default visibility of the files you upload. You can change the visibility of each file individually at any time.
         choose: Choose a visibility
       auto_delete_oldest_files:
-        title: Auto-delete oldest files
+        title: Automatically delete oldest files
         description: When you are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
+      upload_behavior:
+        title: Upload behavior
+        description: Define whether files are uploaded immediately when selected, or manually by clicking on a button, on the upload page.
+        choose: Choose a behavior
+        instant: Instant
+        manual: Manual
       enable_animations:
         title: Enable animations and transitions
         description: Hedera uses animations and transitions to make the user experience more enjoyable. If you experience performance issues, you can disable them here.
@@ -239,6 +305,26 @@ forms:
       old_password: Current password
       new_password: New password
       confirm_new_password: Confirm new password
+  create_user:
+    errors:
+      missing_username: Username is required
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_password: Password is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      missing_confirm_password: Password confirmation is required
+      passwords_mismatch: The passwords do not match
+      missing_role: Role is required
+      missing_force_change_password: Choice of forcing password change is required
+    fields:
+      username: Username
+      email: Email address
+      password: Password
+      confirm_password: Password confirmation
+      role: Role
+      role_placeholder: Select a role
+      force_change_password: Force to change password on first login
 
 actions:
   files:
@@ -256,12 +342,35 @@ actions:
           title: Successfully renamed
           message: The file “{oldName}” has been renamed to “{newName}”
   users:
+    update_password:
+      success:
+        title: Your password has been updated
+      error:
+        title: Could not update your password
+    create:
+      success:
+        title: User created
+        message: The user “{username}” has been created
+      error:
+        title: Could not create user
+    activate:
+      success:
+        title: User activated
+        message: The user “{username}” has been activated
+    deactivate:
+      success:
+        title: User deactivated
+        message: The user “{username}” has been deactivated
     update:
-      password:
-        success:
-          message: Your password has been updated
-        failure:
-          message: Could not update your password
+      success:
+        title: User edited
+        message: The user “{username}” has been edited
+      error:
+        title: Could not edit user
+    delete:
+      success:
+        title: User deleted
+        message: The user “{username}” has been deleted
   tokens:
     create:
       success:
@@ -287,6 +396,10 @@ errors:
   users:
     password:
       incorrect_password: Incorrect password
+    username:
+      already_exists: This username is already taken
+    email:
+      already_exists: This email address is already taken
 
 theme:
   system: System

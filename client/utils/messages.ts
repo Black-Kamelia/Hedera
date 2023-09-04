@@ -7,4 +7,5 @@ export interface MessageDTO<T> {
   title?: MessageKeyDTO
   message: MessageKeyDTO
   payload?: T
+  fields: Map<string, MessageKeyDTO>
 }

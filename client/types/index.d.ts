@@ -55,8 +55,8 @@ declare global {
     totalItems: number,
   }
 
-  interface PageableDTO {
-    page: PageDTO<FileRepresentationDTO>
+  interface PageableDTO<E> {
+    page: PageDTO<E>
   }
 
   interface PageDefinitionDTO {
@@ -115,12 +115,22 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    createdAt: string
+  }
+
+  interface UserCreationDTO {
+    username: string
+    email: string
+    password: string
+    role: Role
+    forceChangePassword: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
   type FileSizeScale = 'BINARY' | 'DECIMAL'
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
   type Locale = 'en' | 'fr'
+  type UploadBehavior = 'INSTANT' | 'MANUAL'
 
   interface UserSettings {
     defaultFileVisibility: FileVisibility
@@ -129,6 +139,7 @@ declare global {
     preferredDateStyle: DateTimeStyle
     preferredTimeStyle: DateTimeStyle
     preferredLocale: Locale
+    uploadBehavior: UploadBehavior
   }
 
   interface SessionOpeningDTO {

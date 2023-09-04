@@ -29,7 +29,7 @@ object FileService {
         call: ApplicationCall,
         part: PartData.FileItem,
         creatorToken: String
-    ): Response<FileRepresentationDTO> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val token = PersonalToken.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
 
         if (token.deleted) throw ExpiredOrInvalidTokenException()
@@ -41,7 +41,7 @@ object FileService {
         call: ApplicationCall,
         part: PartData.FileItem,
         creatorId: UUID
-    ): Response<FileRepresentationDTO> = Connection.transaction {
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val user = User[creatorId]
 
         handleFile(call, part, user)
@@ -52,7 +52,7 @@ object FileService {
         part: PartData.FileItem,
         creator: User,
         uploadToken: PersonalToken? = null,
-    ): Response<FileRepresentationDTO> {
+    ): ActionResponse<FileRepresentationDTO> {
         val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
@@ -65,16 +65,20 @@ object FileService {
 
         creator.increaseCurrentDiskQuota(size)
 
-        return Response.created(
-            File.create(
-                code = code,
-                name = filename,
-                mimeType = type,
-                size = size,
-                visibility = creator.settings.defaultFileVisibility,
-                creator = creator,
-                uploadToken = uploadToken,
-            ).toRepresentationDTO()
+        val file = File.create(
+            code = code,
+            name = filename,
+            mimeType = type,
+            size = size,
+            visibility = creator.settings.defaultFileVisibility,
+            creator = creator,
+            uploadToken = uploadToken,
+        ).toRepresentationDTO()
+
+        return ActionResponse.created(
+            title = Actions.Files.Upload.Success.TITLE.asMessage(),
+            message = Actions.Files.Upload.Success.MESSAGE.asMessage("name" to filename),
+            payload = file
         )
     }
 

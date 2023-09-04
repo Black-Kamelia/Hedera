@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { boolean, number, object, string } from 'yup'
-import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
 
@@ -13,7 +12,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const { selectedRow, refresh } = useUsersTable()
 const updateUser = useUpdateUser()
-const setFieldErrors = useFormErrors()
+const setFieldErrors = useFeedbackFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)
@@ -91,10 +90,6 @@ watch(visible, (val) => {
     unlimitedQuota.value = selectedRow.value.unlimitedDiskQuota
   }
 })
-
-function onHide() {
-  resetForm()
-}
 </script>
 
 <template>
@@ -106,7 +101,7 @@ function onHide() {
     :draggable="false"
     :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
-    @hide="onHide"
+    @hide="resetForm()"
   >
     <div class="flex flex-col gap-3">
       <PMessage

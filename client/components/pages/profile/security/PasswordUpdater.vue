@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { object, string, ref as yref } from 'yup'
-import { useForm } from 'vee-validate'
 import { UpdatePasswordForm } from '~/utils/forms'
 
 const { t, m } = useI18n()

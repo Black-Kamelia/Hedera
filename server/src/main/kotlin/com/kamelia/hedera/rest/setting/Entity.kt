@@ -24,7 +24,8 @@ object UserSettingsTable : UUIDTable("users_settings") {
         .clientDefault { TimeStyle.MEDIUM }
     val preferredLocale = enumerationByName<Locale>("preferred_locale", 5)
         .clientDefault { Locale.en }
-
+    val uploadBehavior = enumerationByName<UploadBehavior>("upload_behavior", 16)
+        .clientDefault { UploadBehavior.INSTANT }
 }
 
 class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -46,6 +47,7 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
     var preferredDateStyle by UserSettingsTable.preferredDateStyle
     var preferredTimeStyle by UserSettingsTable.preferredTimeStyle
     var preferredLocale by UserSettingsTable.preferredLocale
+    var uploadBehavior by UserSettingsTable.uploadBehavior
 
     fun update(dto: UserSettingsUpdateDTO): UserSettings = apply {
         dto.defaultFileVisibility?.let { defaultFileVisibility = it }
@@ -54,5 +56,6 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
         dto.preferredDateStyle?.let { preferredDateStyle = it }
         dto.preferredTimeStyle?.let { preferredTimeStyle = it }
         dto.preferredLocale?.let { preferredLocale = it }
+        dto.uploadBehavior?.let { uploadBehavior = it }
     }
 }

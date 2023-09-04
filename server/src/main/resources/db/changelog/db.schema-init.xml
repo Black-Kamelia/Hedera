@@ -206,6 +206,9 @@
             <column name="preferred_locale" type="VARCHAR(5)" defaultValue="en">
                 <constraints nullable="false"/>
             </column>
+            <column name="upload_behavior" type="VARCHAR(16)" defaultValue="INSTANT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="users"

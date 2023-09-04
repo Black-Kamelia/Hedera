@@ -1,4 +1,4 @@
-export default function useFormErrors() {
+export function useFeedbackFormErrors() {
   const { m } = useI18n()
 
   function setFieldErrors<T extends string>(

@@ -115,6 +115,16 @@ pages:
     title: Favorites
   upload:
     title: Upload
+    drag_n_drop: Drag and drop files here to upload.
+    total_size: "Total size to be uploaded: {size}"
+    select_files: Select files
+    upload_files: Upload files
+    clear_files: Clear pending files
+    pending: Pending
+    uploading: Uploading
+    completed: Uploaded
+    error: Error
+    finished: Upload finished
   analytics:
     title: Analytics
   configuration:
@@ -237,8 +247,14 @@ pages:
         description: Choose the default visibility of the files you upload. You can change the visibility of each file individually at any time.
         choose: Choose a visibility
       auto_delete_oldest_files:
-        title: Auto-delete oldest files
+        title: Automatically delete oldest files
         description: When you are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
+      upload_behavior:
+        title: Upload behavior
+        description: Define whether files are uploaded immediately when selected, or manually by clicking on a button, on the upload page.
+        choose: Choose a behavior
+        instant: Instant
+        manual: Manual
       enable_animations:
         title: Enable animations and transitions
         description: Hedera uses animations and transitions to make the user experience more enjoyable. If you experience performance issues, you can disable them here.

@@ -15,8 +15,8 @@ class SharexConfiguration {
   constructor(name: string, baseURL: string, token: string) {
     this.Name = name
     this.RequestURL = `${baseURL}/api/files/upload/token`
-    this.URL = `${baseURL}/{json:code}`
-    this.ThumbnailURL = `${baseURL}/{json:code}`
+    this.URL = `${baseURL}/{json:payload.code}`
+    this.ThumbnailURL = `${baseURL}/{json:payload.code}`
     this.Headers = {
       'Upload-Token': token,
     }

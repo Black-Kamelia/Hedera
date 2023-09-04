@@ -131,6 +131,7 @@ declare global {
   type FileSizeScale = 'BINARY' | 'DECIMAL'
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
   type Locale = 'en' | 'fr'
+  type UploadBehavior = 'INSTANT' | 'MANUAL'
 
   interface UserSettings {
     defaultFileVisibility: FileVisibility
@@ -139,6 +140,7 @@ declare global {
     preferredDateStyle: DateTimeStyle
     preferredTimeStyle: DateTimeStyle
     preferredLocale: Locale
+    uploadBehavior: UploadBehavior
   }
 
   interface SessionOpeningDTO {

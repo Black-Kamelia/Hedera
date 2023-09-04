@@ -1,24 +1,9 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respond
-import com.kamelia.hedera.core.respondNoSuccess
-import com.kamelia.hedera.core.respondNothing
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.util.FileUtils
-import com.kamelia.hedera.util.adminRestrict
-import com.kamelia.hedera.util.authenticatedUser
-import com.kamelia.hedera.util.doWithForm
-import com.kamelia.hedera.util.getHeader
-import com.kamelia.hedera.util.getPageParameters
-import com.kamelia.hedera.util.getParam
-import com.kamelia.hedera.util.getUUID
-import com.kamelia.hedera.util.getUUIDOrNull
-import com.kamelia.hedera.util.proxyRedirect
-import com.kamelia.hedera.util.respondFile
-import com.kamelia.hedera.util.respondFileInline
+import com.kamelia.hedera.util.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -47,8 +32,8 @@ fun Route.rawFileRoute() = get("/{code}") {
     val authedId = authenticatedUser?.uuid
     val code = call.getParam("code")
 
-    FileService.getFile(code, authedId).ifSuccessOrElse(
-        onSuccess = { (data) ->
+    try {
+        FileService.getFile(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
             val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
@@ -57,11 +42,10 @@ fun Route.rawFileRoute() = get("/{code}") {
                 // TODO notify orphaned file
                 call.proxyRedirect("/")
             }
-        },
-        onError = {
-            call.proxyRedirect("/")
-        },
-    )
+        }
+    } catch (e: FileNotFoundException) {
+        call.proxyRedirect("/")
+    }
 }
 
 private fun Route.uploadFile() = post("/upload") {

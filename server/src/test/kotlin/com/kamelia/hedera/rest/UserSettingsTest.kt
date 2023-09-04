@@ -4,12 +4,8 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.setting.DateStyle
-import com.kamelia.hedera.rest.setting.FilesSizeScale
+import com.kamelia.hedera.rest.setting.*
 import com.kamelia.hedera.rest.setting.Locale
-import com.kamelia.hedera.rest.setting.TimeStyle
-import com.kamelia.hedera.rest.setting.UserSettingsRepresentationDTO
-import com.kamelia.hedera.rest.setting.UserSettingsUpdateDTO
 import com.kamelia.hedera.rest.user.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -52,6 +48,7 @@ class UserSettingsTest {
             assertEquals(DateStyle.SHORT, responseDto.preferredDateStyle)
             assertEquals(TimeStyle.MEDIUM, responseDto.preferredTimeStyle)
             assertEquals(Locale.en, responseDto.preferredLocale)
+            assertEquals(UploadBehavior.INSTANT, responseDto.uploadBehavior)
         }
     }
 
@@ -123,6 +120,10 @@ class UserSettingsTest {
         newSettingsDTO.preferredLocale?.let {
             assertEquals(it, updateResponseDto.preferredLocale)
             assertNotEquals(responseDto.preferredLocale, updateResponseDto.preferredLocale)
+        }
+        newSettingsDTO.uploadBehavior?.let {
+            assertEquals(it, updateResponseDto.uploadBehavior)
+            assertNotEquals(responseDto.uploadBehavior, updateResponseDto.uploadBehavior)
         }
     }
 
@@ -211,6 +212,7 @@ class UserSettingsTest {
                 Arguments.of(user, "preferredDateStyle", UserSettingsUpdateDTO(preferredDateStyle = DateStyle.FULL)),
                 Arguments.of(user, "preferredTimeStyle", UserSettingsUpdateDTO(preferredTimeStyle = TimeStyle.FULL)),
                 Arguments.of(user, "preferredLocale", UserSettingsUpdateDTO(preferredLocale = Locale.fr)),
+                Arguments.of(user, "uploadBehavior", UserSettingsUpdateDTO(uploadBehavior = UploadBehavior.MANUAL)),
             )
         }
     }

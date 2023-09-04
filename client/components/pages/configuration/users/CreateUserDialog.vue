@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { boolean, number, object, string, ref as yref } from 'yup'
-import { useForm } from 'vee-validate'
 import FormDropdown from '~/components/input/FormDropdown.vue'
 import { CreateUserForm } from '~/utils/forms'
 import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
@@ -10,7 +9,7 @@ const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
 const createUser = useCreateUser()
 const { refresh } = useUsersTable()
-const setFieldErrors = useFormErrors()
+const setFieldErrors = useFeedbackFormErrors()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const pending = ref(false)

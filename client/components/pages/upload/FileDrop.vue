@@ -46,14 +46,14 @@ async function uploader(event: FileUploadUploaderEvent) {
       }"
       @uploader="uploader"
     >
-      <template #header="{ chooseCallback, clearCallback, uploadCallback }">
+      <template #header="{ chooseCallback, clearCallback, uploadCallback, files }">
         <div class="flex flex-row justify-between w-full">
           <div class="flex flex-row gap-3">
             <PButton icon="i-tabler-file-plus" :label="t('pages.upload.select_files')" @click="chooseCallback" />
-            <PButton v-if="!instantUpload" icon="i-tabler-x" :label="t('pages.upload.clear_files')" :disabled="!hasFiles" @click="clearCallback" />
+            <PButton v-if="!instantUpload" icon="i-tabler-x" :label="t('pages.upload.clear_files')" :disabled="files.length === 0" @click="clearCallback" />
           </div>
           <div class="flex flex-row gap-3">
-            <PButton v-if="!instantUpload" icon="i-tabler-upload" :label="t('pages.upload.upload_files')" :disabled="!hasFiles" @click="uploadCallback" />
+            <PButton v-if="!instantUpload" icon="i-tabler-upload" :label="t('pages.upload.upload_files')" :disabled="files.length === 0" @click="uploadCallback" />
           </div>
         </div>
       </template>

@@ -253,7 +253,7 @@ pages:
         description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d’envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
       upload_behavior:
         title: Comportement de la mise en ligne
-        description: Choisissez comment vous souhaitez mettre des fichiers en ligne. Cela concerne la page Hedera de mise en ligne de fichiers. Si le comportement est "Instantané", le(s) fichier(s) seront envoyés immédiatement dès la sélection ; si le comportement est "Manuel", vous pouvez déclencher manuellement l'envoi quand vous le souhaitez après avoir sélectionné des fichiers.
+        description: Définir si les fichiers sont envoyés immédiatement à la sélection ou manuellement en cliquant sur un bouton, sur la page de mise en ligne de fichiers.
         choose: Choisissez un comportement
         instant: Instantané
         manual: Manuel

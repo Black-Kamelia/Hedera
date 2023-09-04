@@ -249,11 +249,11 @@ pages:
         description: Choose the default visibility of the files you upload. You can change the visibility of each file individually at any time.
         choose: Choose a visibility
       auto_delete_oldest_files:
-        title: Auto-delete oldest files
+        title: Automatically delete oldest files
         description: When you are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
       upload_behavior:
         title: Upload behavior
-        description: Choose how you want to upload files. This is in regards to Hedera's file upload page. If the behavior is "Instant", the file(s) will be uploaded instantly upon selection; if the behavior is "Manual", you can manually trigger the upload when you want after selecting some files.
+        description: Define whether files are uploaded immediately when selected or manually by clicking on a button, on the upload page.
         choose: Choose a behavior
         instant: Instant
         manual: Manual

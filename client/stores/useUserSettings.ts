@@ -8,6 +8,7 @@ export interface UserSettingsStore {
   preferredDateStyle: Ref<DateTimeStyle>
   preferredTimeStyle: Ref<DateTimeStyle>
   preferredLocale: Ref<Locale>
+  uploadBehavior: Ref<UploadBehavior>
   updateSettings: (filters: Partial<UserSettings>) => void
 }
 
@@ -20,6 +21,7 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
   const preferredDateStyle = ref<DateTimeStyle>('SHORT')
   const preferredTimeStyle = ref<DateTimeStyle>('MEDIUM')
   const preferredLocale = ref<Locale>('en')
+  const uploadBehavior = ref<UploadBehavior>('INSTANT')
 
   function updateSettings(settings: Partial<UserSettings>) {
     if (settings.defaultFileVisibility !== undefined) defaultFileVisibility.value = settings.defaultFileVisibility
@@ -28,6 +30,7 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
     if (settings.preferredDateStyle !== undefined) preferredDateStyle.value = settings.preferredDateStyle
     if (settings.preferredTimeStyle !== undefined) preferredTimeStyle.value = settings.preferredTimeStyle
     if (settings.preferredLocale !== undefined) locale.value = preferredLocale.value = settings.preferredLocale
+    if (settings.uploadBehavior !== undefined) uploadBehavior.value = settings.uploadBehavior
   }
 
   return {
@@ -37,6 +40,7 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
     preferredDateStyle,
     preferredTimeStyle,
     preferredLocale,
+    uploadBehavior,
     updateSettings,
   }
 }, {

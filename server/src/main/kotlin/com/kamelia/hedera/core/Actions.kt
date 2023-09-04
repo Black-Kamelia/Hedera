@@ -38,6 +38,18 @@ object Actions {
 
         }
 
+        object Upload {
+
+            private const val PREFIX = "${Files.PREFIX}.upload"
+
+             object Success {
+                 private const val PREFIX = "${Upload.PREFIX}.success"
+                 const val TITLE = "$PREFIX.title"
+                 const val MESSAGE = "$PREFIX.message"
+             }
+
+        }
+
         object Delete {
 
             private const val PREFIX = "${Files.PREFIX}.delete"

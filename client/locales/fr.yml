@@ -117,6 +117,16 @@ pages:
     title: Favoris
   upload:
     title: Mettre en ligne
+    drag_n_drop: Déposez des fichiers ici pour les mettre en ligne.
+    total_size: "Taille totale à mettre en ligne: {size}"
+    select_files: Choisir des fichiers
+    upload_files: Envoyer les fichiers
+    clear_files: Vider la sélection
+    pending: En attente
+    uploading: En cours d’envoi
+    completed: En ligne
+    error: Erreur
+    finished: Mise en ligne terminée
   analytics:
     title: Statistiques
   configuration:
@@ -241,6 +251,12 @@ pages:
       auto_delete_oldest_files:
         title: Supprimer automatiquement les fichiers les plus anciens
         description: Lorsque vous êtes sur le point de dépasser votre quota, Hedera supprimera certains de vos plus anciens fichiers pour faire de la place. Notez que si vous tentez d’envoyer un fichier qui dépasse votre quota, il sera rejeté sans supprimer de fichiers.
+      upload_behavior:
+        title: Comportement de la mise en ligne
+        description: Définir si les fichiers sont envoyés immédiatement à la sélection, ou manuellement en cliquant sur un bouton, sur la page de mise en ligne de fichiers.
+        choose: Choisissez un comportement
+        instant: Instantané
+        manual: Manuel
       enable_animations:
         title: Activer les animations et transitions
         description: Hedera utilise des animations et des transitions pour rendre l’expérience utilisateur plus appréciable. Si vous rencontrez des problèmes de performance, vous pouvez les désactiver ici.

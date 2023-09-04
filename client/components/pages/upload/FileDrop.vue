@@ -50,10 +50,10 @@ async function uploader(event: FileUploadUploaderEvent) {
         <div class="flex flex-row justify-between w-full">
           <div class="flex flex-row gap-3">
             <PButton icon="i-tabler-file-plus" :label="t('pages.upload.select_files')" @click="chooseCallback" />
-            <PButton v-if="!instantUpload" icon="i-tabler-x" :label="t('pages.upload.clear_files')" @click="clearCallback" />
+            <PButton v-if="!instantUpload" icon="i-tabler-x" :label="t('pages.upload.clear_files')" :disabled="!hasFiles" @click="clearCallback" />
           </div>
           <div class="flex flex-row gap-3">
-            <PButton v-if="!instantUpload" icon="i-tabler-upload" :label="t('pages.upload.upload_files')" @click="uploadCallback" />
+            <PButton v-if="!instantUpload" icon="i-tabler-upload" :label="t('pages.upload.upload_files')" :disabled="!hasFiles" @click="uploadCallback" />
           </div>
         </div>
       </template>

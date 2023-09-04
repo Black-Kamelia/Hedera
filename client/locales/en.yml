@@ -253,7 +253,7 @@ pages:
         description: When you are about to exceed your quota, Hedera will delete some of your oldest files to make some space. Please note that if you try to upload a file that is bigger than your quota, it will be rejected without deleting any file.
       upload_behavior:
         title: Upload behavior
-        description: Define whether files are uploaded immediately when selected or manually by clicking on a button, on the upload page.
+        description: Define whether files are uploaded immediately when selected, or manually by clicking on a button, on the upload page.
         choose: Choose a behavior
         instant: Instant
         manual: Manual

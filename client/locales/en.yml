@@ -121,7 +121,7 @@ pages:
     total_size: "Total size to be uploaded: {size}"
     select_files: Select files
     upload_files: Upload files
-    clear_files: Clear files
+    clear_files: Clear pending files
     pending: Pending
     uploading: Uploading
     completed: Uploaded

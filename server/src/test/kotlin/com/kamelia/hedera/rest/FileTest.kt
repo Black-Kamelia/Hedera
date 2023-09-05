@@ -467,6 +467,25 @@ class FileTest {
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
+    @DisplayName("Uploading file when quota is reached")
+    @Test
+    fun uploadFileOnReachedQuota() = testApplication {
+        val (_, tokens) = login("upload_exceed_quota", "password")
+        val client = client()
+
+        val response = client.submitFormWithBinaryData("/api/files/upload", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.INSUFFICIENT_DISK_QUOTA, responseDto.title.key)
+    }
+
     companion object {
 
         private lateinit var superadmin: TestUser

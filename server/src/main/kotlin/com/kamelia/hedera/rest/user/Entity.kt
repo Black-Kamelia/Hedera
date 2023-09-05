@@ -126,6 +126,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var currentDiskQuota by UserTable.currentDiskQuota
     var maximumDiskQuota by UserTable.maximumDiskQuota
 
+    val unlimitedDiskQuota: Boolean get() = maximumDiskQuota == -1L
+
     private val files by File referrersOn FileTable.owner
 
     fun getFiles(

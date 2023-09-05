@@ -14,6 +14,7 @@ import com.kamelia.hedera.rest.file.FilePageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
+import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -484,6 +485,56 @@ class FileTest {
         assertEquals(HttpStatusCode.Forbidden, response.status)
         val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
         assertEquals(Errors.Users.INSUFFICIENT_DISK_QUOTA, responseDto.title.key)
+    }
+
+    @DisplayName("Uploading a file increases disk quota")
+    @Test
+    fun uploadFileIncreasesQuota() = testApplication {
+        val (_, tokens) = login("upload_increase_quota", "password")
+        val client = client()
+
+        val userBeforeUpload = client.get("/api/users/00000000-0000-0017-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userBeforeDto = Json.decodeFromString<UserRepresentationDTO>(userBeforeUpload.bodyAsText())
+        assertEquals(1000, userBeforeDto.currentDiskQuota)
+
+        val response = client.submitFormWithBinaryData("/api/files/upload", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Created, response.status)
+
+        val userAfterUpload = client.get("/api/users/00000000-0000-0017-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userAfterDto = Json.decodeFromString<UserRepresentationDTO>(userAfterUpload.bodyAsText())
+        assertTrue(1000 <= userAfterDto.currentDiskQuota)
+    }
+
+    @DisplayName("Deleting a file decreases disk quota")
+    @Test
+    fun deleteFileDecreasesQuota() = testApplication {
+        val (_, tokens) = login("delete_decrease_quota", "password")
+        val client = client()
+
+        val userBeforeDelete = client.get("/api/users/00000000-0000-0018-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userBeforeDto = Json.decodeFromString<UserRepresentationDTO>(userBeforeDelete.bodyAsText())
+        assertEquals(1000, userBeforeDto.currentDiskQuota)
+
+        val response = client.delete("/api/files/00000000-0000-0007-0000-000000000001") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val userAfterDelete = client.get("/api/users/00000000-0000-0018-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userAfterDto = Json.decodeFromString<UserRepresentationDTO>(userAfterDelete.bodyAsText())
+        assertTrue(1000 >= userAfterDto.currentDiskQuota)
     }
 
     companion object {

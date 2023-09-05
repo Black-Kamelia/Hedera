@@ -59,7 +59,7 @@ object FileService {
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
 
         // TODO: Find a way to determine size BEFORE writing to disk...
-        if (creator.currentDiskQuota + size > creator.maximumDiskQuota) {
+        if (!creator.unlimitedDiskQuota && creator.currentDiskQuota + size > creator.maximumDiskQuota) {
             throw InsufficientDiskQuotaException()
         }
 

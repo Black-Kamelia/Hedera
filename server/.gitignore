@@ -17,4 +17,3 @@ gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
 src/main/resources/static/
-upload/

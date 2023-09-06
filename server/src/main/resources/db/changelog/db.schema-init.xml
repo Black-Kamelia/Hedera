@@ -116,7 +116,7 @@
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="code" type="VARCHAR(10)">
+            <column name="code" type="VARCHAR(11)">
                 <constraints unique="true" nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(255)">

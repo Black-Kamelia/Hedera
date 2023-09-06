@@ -32,8 +32,6 @@ fun Route.rawFileRoute() = get("""/(?<code>\$[a-zA-Z0-9]{10})""".toRegex()) {
     val authedId = authenticatedUser?.uuid
     val code = call.getParam("code")
 
-    println("coucou")
-
     try {
         FileService.getFile(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }

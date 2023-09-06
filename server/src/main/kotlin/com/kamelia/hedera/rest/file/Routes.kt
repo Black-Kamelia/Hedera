@@ -74,8 +74,6 @@ private fun Route.getFile() = get("/{code}") {
     val authedId = authenticatedUser?.uuid
     val code = call.getParam("code")
 
-    println("allo")
-
     FileService.getFile(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }

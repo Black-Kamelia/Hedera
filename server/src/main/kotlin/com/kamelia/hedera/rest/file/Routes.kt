@@ -28,9 +28,11 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 
-fun Route.rawFileRoute() = get("/{code}") {
+fun Route.rawFileRoute() = get("""/(?<code>\$[a-zA-Z0-9]{10})""".toRegex()) {
     val authedId = authenticatedUser?.uuid
     val code = call.getParam("code")
+
+    println("coucou")
 
     try {
         FileService.getFile(code, authedId).ifSuccess { (data) ->
@@ -72,6 +74,8 @@ private fun Route.getFile() = get("/{code}") {
     val authedId = authenticatedUser?.uuid
     val code = call.getParam("code")
 
+    println("allo")
+
     FileService.getFile(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
@@ -103,15 +107,6 @@ private fun Route.getFilesFormats() = get("/formats") {
 
     call.respond(FileService.getFilesFormats(userId))
 }
-
-/*
-private fun Route.editFile() = patch<FileUpdateDTO>("/{uuid}") { body ->
-    val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser!!.uuid
-
-    call.respond(FileService.updateFile(fileId, userId, body))
-}
- */
 
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
     val fileId = call.getUUID("uuid")

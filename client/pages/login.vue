@@ -13,10 +13,7 @@ const { isAuthenticated } = storeToRefs(useAuth())
 
 function parseState(value: string): State {
   try {
-    if (!isAuthenticated.value) {
-      navigateTo('/login', { replace: true })
-      return 'LOGIN'
-    }
+    if (!isAuthenticated.value) return 'LOGIN'
     return value.toUpperCase().replace('-', '_') as State
   } catch (e) {
     return 'LOGIN'
@@ -29,6 +26,22 @@ const subtitle = computed(() => {
     case 'LOGIN': return t('pages.login.title')
     case 'CHANGE_PASSWORD': return t('pages.change_password.title')
     case 'COMPLETE_OTP': return t('pages.two_factor_authentication.title')
+  }
+})
+const message = reactive<{
+  content: string | null
+  severity: 'success' | 'info' | 'warn' | 'error' | undefined
+}>({
+  content: null,
+  severity: undefined,
+})
+
+onMounted(() => {
+  const query = currentRoute.value.query
+  const params = Object.keys(query)
+  if (params.includes('reason')) {
+    message.content = t(`pages.login.reasons.${query.reason}`)
+    message.severity = 'warn'
   }
 })
 
@@ -50,7 +63,8 @@ useEventBus(LoggedOutEvent).on((event) => {
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
   state.value = 'LOGIN'
-  navigateTo('/login?reason=expired', { replace: true })
+  message.content = t('pages.login.reasons.expired')
+  message.severity = 'warn'
 })
 </script>
 
@@ -70,7 +84,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 
   <div class="relative w-full">
     <Transition name="slide-left">
-      <LoginForm v-if="state === 'LOGIN'" />
+      <LoginForm v-if="state === 'LOGIN'" v-model:message="message" />
       <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
     </Transition>
   </div>

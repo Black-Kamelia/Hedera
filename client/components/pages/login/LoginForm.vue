@@ -6,27 +6,19 @@ const { t, m } = useI18n()
 const { login } = useAuth()
 
 const usernamePlaceholder = getRandomDeveloperUsername()
-const message = reactive<{
+const message = defineModel<{
   content: string | null
   severity: 'success' | 'info' | 'warn' | 'error' | undefined
-}>({
-  content: null,
-  severity: undefined,
+}>('message', {
+  default: reactive({
+    content: null,
+    severity: undefined,
+  }),
 })
 
 const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
-
-const { currentRoute } = useRouter()
-onMounted(() => {
-  const query = currentRoute.value.query
-  const params = Object.keys(query)
-  if (params.includes('reason')) {
-    message.content = t(`pages.login.reasons.${query.reason}`)
-    message.severity = 'warn'
-  }
-})
 
 const schema = object({
   username: string()
@@ -45,7 +37,7 @@ const onSubmit = handleSubmit(async (values) => {
 })
 
 function hideErrorMessage() {
-  message.content = null
+  message.value.content = null
 }
 
 useEventBus(LoggedInEvent).on((event) => {
@@ -56,8 +48,8 @@ useEventBus(LoggedInEvent).on((event) => {
       resetField('username')
       resetField('password')
       usernameField.value?.$el.focus()
-      message.content = t('forms.login.errors.server_error')
-      message.severity = 'error'
+      message.value.content = t('forms.login.errors.server_error')
+      message.value.severity = 'error'
       return
     }
 
@@ -71,8 +63,8 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.content = m(event.error.data.title)
-    message.severity = 'error'
+    message.value.content = m(event.error.data.title)
+    message.value.severity = 'error'
   }
 })
 </script>

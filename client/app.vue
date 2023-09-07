@@ -6,6 +6,7 @@ useWebsocketAutoConnect()
 
 const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
+const { currentRoute } = useRouter()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
@@ -23,6 +24,7 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
+  if (currentRoute.value.path === '/login') return
   navigateTo('/login?reason=expired')
 })
 useEventBus(LoggedOutEvent).on((event) => {

@@ -180,6 +180,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
 
     fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
         password = Hasher.hash(dto.newPassword)
+        forceChangePassword = false
         onUpdate(this)
     }
 

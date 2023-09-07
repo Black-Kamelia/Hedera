@@ -12,12 +12,12 @@ const loading = ref(false)
 
 const schema = object({
   password: string()
-    .required(t('forms.update_password.errors.missing_new_password'))
-    .min(UpdatePasswordForm.password.min, t('forms.update_password.errors.password_too_short', { min: UpdatePasswordForm.password.min }))
-    .max(UpdatePasswordForm.password.max, t('forms.update_password.errors.password_too_long', { max: UpdatePasswordForm.password.max })),
+    .required(t('forms.change_password.errors.missing_password'))
+    .min(UpdatePasswordForm.password.min, t('forms.change_password.errors.password_too_short', { min: UpdatePasswordForm.password.min }))
+    .max(UpdatePasswordForm.password.max, t('forms.change_password.errors.password_too_long', { max: UpdatePasswordForm.password.max })),
   confirmPassword: string()
-    .required(t('forms.update_password.errors.missing_new_password'))
-    .oneOf([yref('password')], t('forms.update_password.errors.passwords_mismatch')),
+    .required(t('forms.change_password.errors.missing_password_confirmation'))
+    .oneOf([yref('password')], t('forms.change_password.errors.passwords_mismatch')),
 })
 const { handleSubmit } = useForm({
   validationSchema: schema,
@@ -37,7 +37,7 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <form v-focus-trap @submit="onSubmit">
     <PMessage severity="info" icon="i-tabler-shield-lock-filled" :closable="false">
-      You must change your password before continuing
+      {{ t('pages.change_password.message') }}
     </PMessage>
 
     <div class="mb-3">

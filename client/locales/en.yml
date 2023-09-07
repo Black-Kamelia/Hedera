@@ -40,6 +40,7 @@ pages:
       disabled: Your account has been disabled
   change_password:
     title: Change password
+    message: You must change your password before continuing
   reset_password:
     title: Reset password
     login: Back to login
@@ -273,13 +274,16 @@ forms:
       remember_me: Remember me
       username: Username
   change_password:
+    submit: Continue
     errors:
       missing_password: Password is required
       missing_password_confirmation: Password confirmation is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      passwords_mismatch: The passwords do not match
     fields:
       password: New password
       confirm_password: Confirm the new password
-    submit: Change password
   reset_password:
     errors:
       missing_email: Email is required

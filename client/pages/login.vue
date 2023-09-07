@@ -21,6 +21,16 @@ function parseState(value: string): State {
 }
 
 const state = ref<State>(parseState(currentRoute.value.query.state as string))
+const stateHistory = useRefHistory(state, { capacity: 2 })
+const stateTransition = computed(() => {
+  const history = stateHistory.history.value
+  if (history.length < 2) return 'slide-left'
+  const [next, prev] = history
+  if (prev.snapshot === 'LOGIN' && next.snapshot === 'CHANGE_PASSWORD') return 'slide-left'
+  if (prev.snapshot === 'CHANGE_PASSWORD' && next.snapshot === 'LOGIN') return 'slide-right'
+  return 'slide-left'
+})
+
 const subtitle = computed(() => {
   switch (state.value) {
     case 'LOGIN': return t('pages.login.title')
@@ -40,6 +50,7 @@ onMounted(() => {
   const query = currentRoute.value.query
   const params = Object.keys(query)
   if (params.includes('reason')) {
+    console.log('tf')
     message.content = t(`pages.login.reasons.${query.reason}`)
     message.severity = 'warn'
   }
@@ -48,6 +59,8 @@ onMounted(() => {
 useEventBus(LoggedInEvent).on((event) => {
   if (!event.error) {
     const user = event.user
+    message.content = null
+    message.severity = undefined
     if (user?.forceChangePassword) {
       state.value = 'CHANGE_PASSWORD'
     } else {
@@ -63,6 +76,7 @@ useEventBus(LoggedOutEvent).on((event) => {
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
   state.value = 'LOGIN'
+  console.log('probleme')
   message.content = t('pages.login.reasons.expired')
   message.severity = 'warn'
 })
@@ -74,7 +88,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
       {{ t('app_name') }}
     </h1>
     <div class="relative">
-      <Transition name="slide-left">
+      <Transition :name="stateTransition">
         <h2 :key="subtitle" class="font-600 text-3xl mb-3">
           {{ subtitle }}
         </h2>
@@ -83,7 +97,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
   </div>
 
   <div class="relative w-full">
-    <Transition name="slide-left">
+    <Transition :name="stateTransition">
       <LoginForm v-if="state === 'LOGIN'" v-model:message="message" />
       <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
     </Transition>
@@ -92,12 +106,15 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 
 <style scoped>
 .slide-left-enter-active,
-.slide-left-leave-active {
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
   transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
   width: 100%;
 }
 
-.slide-left-leave-active {
+.slide-left-leave-active,
+.slide-right-leave-active {
   position: absolute;
   top: 0;
 }
@@ -110,5 +127,15 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
 .slide-left-leave-to {
   opacity: 0;
   transform: translateX(-100%);
+}
+
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
 }
 </style>

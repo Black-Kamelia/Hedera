@@ -88,6 +88,7 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
+            forceChangePassword = user.forceChangePassword
         }
 
         if (!user.enabled) {
@@ -159,12 +160,12 @@ object SessionManager {
 }
 
 data class UserState(
-    var uuid: UUID,
+    val uuid: UUID,
     var username: String,
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
-    val forceChangePassword: Boolean,
+    var forceChangePassword: Boolean,
     val createdAt: Instant,
 ) : Principal {
 

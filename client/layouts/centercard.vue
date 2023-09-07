@@ -6,7 +6,7 @@ const color = useColorMode()
   <div class="flex items-center justify-center w-screen h-screen">
     <div class="background" :class="color.value" />
 
-    <div class="p-card p-10 w-100 sm:w-125 lg:w-150 test overflow-hidden">
+    <div class="p-card p-10 w-100 sm:w-125 lg:w-150 overflow-hidden">
       <slot />
     </div>
   </div>

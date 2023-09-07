@@ -54,7 +54,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
       setTokens(tokens)
       setUser(user)
       updateSettings(userSettings)
-      loggedInEvent.emit({ tokens })
+      loggedInEvent.emit({ tokens, user })
     } catch (error) {
       if (error instanceof FetchError) {
         loggedInEvent.emit({ error })
@@ -64,15 +64,15 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
     }
   }
 
-  async function logout() {
+  async function logout(abortLogin = false) {
     try {
       await $fetchAPI('/logout', { method: 'POST' })
       setTokens(null)
       setUser(null)
-      loggedOutEvent.emit()
+      loggedOutEvent.emit({ abortLogin })
     } catch (error) {
       if (error instanceof FetchError) {
-        loggedOutEvent.emit({ error })
+        loggedOutEvent.emit({ abortLogin, error })
         return
       }
       throw error

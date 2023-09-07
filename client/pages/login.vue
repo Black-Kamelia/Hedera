@@ -1,17 +1,52 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
+type State = 'LOGIN' | 'CHANGE_PASSWORD' | 'COMPLETE_OTP'
+
 usePageName(() => t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
 })
+const { currentRoute } = useRouter()
+const { isAuthenticated } = storeToRefs(useAuth())
 
-const state = ref(0)
+function parseState(value: string): State {
+  try {
+    if (!isAuthenticated.value) {
+      navigateTo('/login', { replace: true })
+      return 'LOGIN'
+    }
+    return value.toUpperCase().replace('-', '_') as State
+  } catch (e) {
+    return 'LOGIN'
+  }
+}
+
+const state = ref<State>(parseState(currentRoute.value.query.state as string))
 const subtitle = computed(() => {
-  if (state.value === 0) return t('pages.login.title')
-  if (state.value === 1) return t('pages.change_password.title')
-  return t('pages.two_factor_authentication.title')
+  switch (state.value) {
+    case 'LOGIN': return t('pages.login.title')
+    case 'CHANGE_PASSWORD': return t('pages.change_password.title')
+    case 'COMPLETE_OTP': return t('pages.two_factor_authentication.title')
+  }
+})
+
+useEventBus(LoggedInEvent).on((event) => {
+  if (!event.error) {
+    const user = event.user
+    if (user?.forceChangePassword) {
+      state.value = 'CHANGE_PASSWORD'
+    } else {
+      navigateTo('/files', { replace: true })
+    }
+  }
+})
+useEventBus(LoggedOutEvent).on((event) => {
+  if (event.abortLogin) {
+    state.value = 'LOGIN'
+    navigateTo('/login', { replace: true })
+  }
 })
 </script>
 
@@ -31,12 +66,10 @@ const subtitle = computed(() => {
 
   <div class="relative w-full">
     <Transition name="slide-left">
-      <LoginForm v-if="state === 0" />
-      <PasswordEditionForm v-else-if="state === 1" />
+      <LoginForm v-if="state === 'LOGIN'" />
+      <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
     </Transition>
   </div>
-
-  <PButton class="absolute top-10 left-10" text @click="state = (state + 1) % 2" />
 </template>
 
 <style scoped>

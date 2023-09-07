@@ -25,7 +25,8 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
 useEventBus(RefreshTokenExpiredEvent).on(() => {
   navigateTo('/login?reason=expired')
 })
-useEventBus(LoggedOutEvent).on(() => {
+useEventBus(LoggedOutEvent).on((event) => {
+  if (event.abortLogin) return
   navigateTo('/login', { replace: true })
 })
 

@@ -31,9 +31,11 @@ const $fetchRefresh = configureRefreshFetch({
     })
   },
   shouldRefreshToken(e) {
+    const { isAuthenticated } = useAuth()
     const request = e.request
     if (!request) return false
-    return request.toString().startsWith('/api') // is API request
+    return isAuthenticated // user is authenticated
+      && request.toString().startsWith('/api') // is API request
       && !IGNORE_REFRESH_ROUTES.includes(request.toString()) // is not ignored route
       && e.response?.status === 401 // is unauthorized
   },

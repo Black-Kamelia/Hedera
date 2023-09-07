@@ -9,6 +9,9 @@ const updatePassword = useUpdatePassword()
 const { setUser } = useAuth()
 
 const loading = ref(false)
+const passwordField = ref<Nullable<CompElement>>(null)
+
+onMounted(() => passwordField.value?.$el.focus({ preventScroll: true }))
 
 const schema = object({
   password: string()
@@ -35,7 +38,7 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <form v-focus-trap @submit="onSubmit">
+  <form @submit="onSubmit">
     <PMessage severity="info" icon="i-tabler-shield-lock-filled" :closable="false">
       {{ t('pages.change_password.message') }}
     </PMessage>
@@ -43,6 +46,7 @@ const onSubmit = handleSubmit(async (values) => {
     <div class="mb-3">
       <FormInputText
         id="password"
+        ref="passwordField"
         class="w-full"
         name="password"
         type="password"
@@ -62,9 +66,9 @@ const onSubmit = handleSubmit(async (values) => {
       />
     </div>
 
-    <div class="flex flex-row gap-3">
-      <PButton :label="t('global.logout')" class="mt-6 w-full" :disabled="loading" outlined @click="logout(true)" />
-      <PButton :label="t('forms.change_password.submit')" class="mt-6 w-full" type="submit" :loading="loading" />
+    <div class="mt-6 flex flex-col-reverse md:flex-row gap-3">
+      <PButton :label="t('global.logout')" class="w-full" :disabled="loading" outlined @click="logout(true)" />
+      <PButton :label="t('forms.change_password.submit')" class="w-full" type="submit" :loading="loading" />
     </div>
   </form>
 </template>

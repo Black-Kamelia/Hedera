@@ -50,7 +50,9 @@ const loginFormRef = ref()
 const changePasswordFormRef = ref()
 const { height: loginHeight } = useElementSize(loginFormRef)
 const { height: changePasswordHeight } = useElementSize(changePasswordFormRef)
+const cardTransition = ref(false)
 const cardHeight = computed(() => Math.max(loginHeight.value, changePasswordHeight.value))
+watch([state], () => cardTransition.value = true)
 
 onMounted(() => {
   const query = currentRoute.value.query
@@ -100,7 +102,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
     </div>
   </div>
 
-  <div class="relative w-full h-transition" :style="{ height: `${cardHeight}px` }">
+  <div class="relative w-full" :class="{ 'h-transition': cardTransition }" :style="{ height: `${cardHeight}px` }">
     <Transition :name="stateTransition">
       <LoginForm v-if="state === 'LOGIN'" ref="loginFormRef" v-model:message="message" />
       <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" ref="changePasswordFormRef" />

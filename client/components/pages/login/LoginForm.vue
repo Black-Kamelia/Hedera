@@ -70,7 +70,7 @@ useEventBus(LoggedInEvent).on((event) => {
 </script>
 
 <template>
-  <form v-focus-trap @submit="onSubmit">
+  <form @submit="onSubmit">
     <PMessage v-show="message.content" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
       {{ message.content }}
     </PMessage>
@@ -110,6 +110,6 @@ useEventBus(LoggedInEvent).on((event) => {
       </NuxtLink>
     </div>
 
-    <PButton tabindex="10" :label="t('forms.submit')" class="w-full" type="submit" :loading="loading" />
+    <PButton :label="t('forms.submit')" class="w-full" type="submit" :loading="loading" />
   </form>
 </template>

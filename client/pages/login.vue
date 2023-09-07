@@ -103,7 +103,7 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
   </div>
 
   <div class="relative w-full" :class="{ 'h-transition': cardTransition }" :style="{ height: `${cardHeight}px` }">
-    <Transition :name="stateTransition">
+    <Transition :name="stateTransition" @after-enter="cardTransition = false">
       <LoginForm v-if="state === 'LOGIN'" ref="loginFormRef" v-model:message="message" />
       <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" ref="changePasswordFormRef" />
     </Transition>

@@ -39,7 +39,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <form @submit="onSubmit">
-    <PMessage severity="info" icon="i-tabler-shield-lock-filled" :closable="false">
+    <PMessage :pt="{ root: { class: 'important-mt-0' } }" severity="info" icon="i-tabler-shield-lock-filled" :closable="false">
       {{ t('pages.change_password.message') }}
     </PMessage>
 
@@ -66,7 +66,7 @@ const onSubmit = handleSubmit(async (values) => {
       />
     </div>
 
-    <div class="mt-6 flex flex-col-reverse md:flex-row gap-3">
+    <div class="mt-6 flex flex-col-reverse sm:flex-row gap-3">
       <PButton :label="t('global.logout')" class="w-full" :disabled="loading" outlined @click="logout(true)" />
       <PButton :label="t('forms.change_password.submit')" class="w-full" type="submit" :loading="loading" />
     </div>

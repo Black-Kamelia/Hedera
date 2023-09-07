@@ -71,7 +71,7 @@ useEventBus(LoggedInEvent).on((event) => {
 
 <template>
   <form @submit="onSubmit">
-    <PMessage v-show="message.content" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
+    <PMessage v-show="message.content" :pt="{ root: { class: 'important-mt-0' } }" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
       {{ message.content }}
     </PMessage>
 

@@ -46,11 +46,16 @@ const message = reactive<{
   severity: undefined,
 })
 
+const loginFormRef = ref()
+const changePasswordFormRef = ref()
+const { height: loginHeight } = useElementSize(loginFormRef)
+const { height: changePasswordHeight } = useElementSize(changePasswordFormRef)
+const cardHeight = computed(() => Math.max(loginHeight.value, changePasswordHeight.value))
+
 onMounted(() => {
   const query = currentRoute.value.query
   const params = Object.keys(query)
   if (params.includes('reason')) {
-    console.log('tf')
     message.content = t(`pages.login.reasons.${query.reason}`)
     message.severity = 'warn'
   }
@@ -76,7 +81,6 @@ useEventBus(LoggedOutEvent).on((event) => {
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
   state.value = 'LOGIN'
-  console.log('probleme')
   message.content = t('pages.login.reasons.expired')
   message.severity = 'warn'
 })
@@ -96,15 +100,19 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
     </div>
   </div>
 
-  <div class="relative w-full">
+  <div class="relative w-full h-transition" :style="{ height: `${cardHeight}px` }">
     <Transition :name="stateTransition">
-      <LoginForm v-if="state === 'LOGIN'" v-model:message="message" />
-      <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
+      <LoginForm v-if="state === 'LOGIN'" ref="loginFormRef" v-model:message="message" />
+      <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" ref="changePasswordFormRef" />
     </Transition>
   </div>
 </template>
 
 <style scoped>
+.h-transition {
+  transition: height .4s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
 .slide-left-enter-active,
 .slide-left-leave-active,
 .slide-right-enter-active,

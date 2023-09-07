@@ -41,8 +41,7 @@ const { handleSubmit, resetField } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
-  await login(values)
-  loading.value = false
+  login(values).catch(() => loading.value = false)
 })
 
 function hideErrorMessage() {

@@ -48,6 +48,10 @@ useEventBus(LoggedOutEvent).on((event) => {
     navigateTo('/login', { replace: true })
   }
 })
+useEventBus(RefreshTokenExpiredEvent).on(() => {
+  state.value = 'LOGIN'
+  navigateTo('/login?reason=expired', { replace: true })
+})
 </script>
 
 <template>

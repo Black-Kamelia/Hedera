@@ -54,7 +54,7 @@ data class UserUpdateDTO(
  */
 @Serializable
 data class UserPasswordUpdateDTO(
-    val oldPassword: String,
+    val oldPassword: String? = null,
     val newPassword: String,
 ) : DTO
 

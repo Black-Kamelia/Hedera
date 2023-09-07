@@ -17,7 +17,7 @@ export interface UseAuthComposer {
   setUser: (newUser: Nullable<Partial<User>>) => void
   setTokens: (newTokens: Nullable<Tokens>) => void
   login: (values: Record<string, any>) => Promise<void>
-  logout: () => Promise<void>
+  logout: (abortLogin?: boolean) => Promise<void>
 }
 
 export const useAuth = defineStore('auth', (): UseAuthComposer => {
@@ -58,7 +58,6 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
     } catch (error) {
       if (error instanceof FetchError) {
         loggedInEvent.emit({ error })
-        return
       }
       throw error
     }

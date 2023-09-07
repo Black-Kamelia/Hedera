@@ -1,17 +1,23 @@
 <script lang="ts" setup>
-import { object, string } from 'yup'
+import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
+import { UpdatePasswordForm } from '~/utils/forms'
 
 const { t } = useI18n()
 const { logout } = useAuth()
+const updatePassword = useUpdatePassword()
+const { setUser } = useAuth()
 
 const loading = ref(false)
 
 const schema = object({
   password: string()
-    .required(t('forms.change_password.errors.missing_password')),
+    .required(t('forms.update_password.errors.missing_new_password'))
+    .min(UpdatePasswordForm.password.min, t('forms.update_password.errors.password_too_short', { min: UpdatePasswordForm.password.min }))
+    .max(UpdatePasswordForm.password.max, t('forms.update_password.errors.password_too_long', { max: UpdatePasswordForm.password.max })),
   confirmPassword: string()
-    .required(t('forms.change_password.errors.missing_password_confirmation')),
+    .required(t('forms.update_password.errors.missing_new_password'))
+    .oneOf([yref('password')], t('forms.update_password.errors.passwords_mismatch')),
 })
 const { handleSubmit } = useForm({
   validationSchema: schema,
@@ -19,8 +25,12 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
-  // await login(values)
-  loading.value = false
+  updatePassword(null, values.password)
+    .then(() => {
+      setUser({ forceChangePassword: false })
+      navigateTo('/files')
+    })
+    .catch(() => loading.value = false)
 })
 </script>
 
@@ -53,7 +63,7 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
 
     <div class="flex flex-row gap-3">
-      <PButton :label="t('global.logout')" class="mt-6 w-full" :loading="loading" outlined @click="logout(true)" />
+      <PButton :label="t('global.logout')" class="mt-6 w-full" :disabled="loading" outlined @click="logout(true)" />
       <PButton :label="t('forms.change_password.submit')" class="mt-6 w-full" type="submit" :loading="loading" />
     </div>
   </form>

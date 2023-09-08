@@ -31,20 +31,20 @@ const roles = computed(() => selectedRow.value?.role === 'OWNER'
 
 const schema = object({
   username: string()
-    .required(t('forms.create_user.errors.missing_username')),
+    .required(t('forms.edit_user.errors.missing_username')),
   email: string()
-    .required(t('forms.create_user.errors.missing_email'))
-    .email(t('forms.create_user.errors.invalid_email')),
+    .required(t('forms.edit_user.errors.missing_email'))
+    .email(t('forms.edit_user.errors.invalid_email')),
   role: string()
-    .required(t('forms.create_user.errors.missing_role')),
+    .required(t('forms.edit_user.errors.missing_role')),
   unlimitedDiskQuota: boolean()
-    .required(t('forms.create_user.errors.missing_unlimited_disk_quota')),
+    .required(t('forms.edit_user.errors.missing_unlimited_disk_quota')),
   diskQuota: number()
-    .typeError(t('forms.create_user.errors.invalid_disk_quota'))
+    .typeError(t('forms.edit_user.errors.invalid_disk_quota'))
     .when('unlimitedDiskQuota', {
       is: true,
       then: schema => schema.notRequired(),
-      otherwise: schema => schema.required(t('forms.create_user.errors.missing_disk_quota')),
+      otherwise: schema => schema.required(t('forms.edit_user.errors.missing_disk_quota')),
     }),
 })
 const { handleSubmit, resetForm, setFieldValue, setValues, setFieldError, errors } = useForm({
@@ -53,8 +53,8 @@ const { handleSubmit, resetForm, setFieldValue, setValues, setFieldError, errors
 
 const unlimitedQuota = ref<boolean>(false)
 const quotaPlaceholder = computed(() => {
-  if (unlimitedQuota.value) return t('forms.create_user.fields.disk_quota_placeholder_unlimited')
-  return t('forms.create_user.fields.disk_quota_placeholder')
+  if (unlimitedQuota.value) return t('forms.edit_user.fields.disk_quota_placeholder_unlimited')
+  return t('forms.edit_user.fields.disk_quota_placeholder')
 })
 watch(unlimitedQuota, (val) => {
   if (val) setFieldValue('diskQuota', null, errors.value.diskQuota !== undefined)

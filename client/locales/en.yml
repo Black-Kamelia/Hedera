@@ -315,6 +315,7 @@ forms:
       passwords_mismatch: The passwords do not match
       missing_role: Role is required
       missing_force_change_password: Choice of forcing password change is required
+      missing_disk_quota: Disk space quota is required
     fields:
       username: Username
       email: Email address
@@ -326,6 +327,22 @@ forms:
       disk_quota_placeholder: Type a size
       disk_quota_placeholder_unlimited: Unlimited
       force_change_password: Force to change password on first login
+      unlimited_disk_quota: Allow for unlimited disk space quota
+  edit_user:
+    errors:
+      missing_username: Username is required
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_role: Role is required
+      missing_disk_quota: Disk space quota is required
+    fields:
+      username: Username
+      email: Email address
+      role: Role
+      role_placeholder: Select a role
+      disk_quota: Disk space quota
+      disk_quota_placeholder: Type a size
+      disk_quota_placeholder_unlimited: Unlimited
       unlimited_disk_quota: Allow for unlimited disk space quota
 
 actions:

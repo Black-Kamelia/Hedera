@@ -315,6 +315,7 @@ forms:
       passwords_mismatch: Les mots de passe ne correspondent pas
       missing_role: Rôle requis
       missing_force_change_password: Choix sur la modification du mot de passe obligatoire requis
+      missing_disk_quota: Quota d’espace disque requis
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail
@@ -326,6 +327,22 @@ forms:
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
       force_change_password: Forcer la modification du mot de passe à la première connexion
+      unlimited_disk_quota: Autoriser un quota d'espace disque illimité
+  edit_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+      missing_role: Rôle requis
+      missing_disk_quota: Quota d’espace disque requis
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
+      role: Rôle
+      role_placeholder: Sélectionner un rôle
+      disk_quota: Quota d'espace disque
+      disk_quota_placeholder: Saisir une taille
+      disk_quota_placeholder_unlimited: Illimité
       unlimited_disk_quota: Autoriser un quota d'espace disque illimité
 
 actions:

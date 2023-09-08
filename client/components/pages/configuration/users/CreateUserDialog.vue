@@ -109,7 +109,6 @@ function onHide() {
     class="max-w-100% sm:max-w-75% xl:max-w-50%"
     :header="t('pages.configuration.users.create_dialog.title')"
     :draggable="false"
-    :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="onHide"
   >

@@ -14,7 +14,6 @@ const { user } = reactive(storeToRefs(useAuth()))
       :quota="user.currentDiskQuota"
       :max="user.maximumDiskQuota"
       :ratio="user.currentDiskQuotaRatio"
-      :unlimited="user.unlimitedDiskQuota"
     />
     <TopbarSeparator />
     <div class="flex flex-row gap-2">

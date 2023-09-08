@@ -113,7 +113,6 @@ declare global {
     currentDiskQuota: number,
     currentDiskQuotaRatio: number,
     maximumDiskQuota: number,
-    unlimitedDiskQuota: boolean,
     createdAt: string
   }
 

@@ -3,15 +3,15 @@ export interface QuotaPreviewerProps {
   quota: number
   max: number
   ratio: number
-  unlimited?: boolean
 }
 
-const { quota, max, ratio, unlimited = false } = defineProps<QuotaPreviewerProps>()
+const { quota, max, ratio } = defineProps<QuotaPreviewerProps>()
 const { t } = useI18n()
 const { format } = useHumanFileSize()
 
 const quotaFormat = computed(() => format(quota))
 const maxFormat = computed(() => format(max))
+const unlimited = computed(() => max === -1)
 const severity = computed(() => {
   if (unlimited) return '--green-500'
   if (ratio >= 0.9) return '--red-500'

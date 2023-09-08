@@ -139,7 +139,6 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
               :quota="slotProps.data.currentDiskQuota"
               :max="slotProps.data.maximumDiskQuota"
               :ratio="slotProps.data.currentDiskQuotaRatio"
-              :unlimited="slotProps.data.unlimitedDiskQuota"
             />
           </Transition>
           <div v-else class="flex flex-row items-center gap-2">

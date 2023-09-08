@@ -19,7 +19,6 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     currentDiskQuota,
     if(maximumDiskQuota > 0.toLong()) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.toDouble(),
     maximumDiskQuota,
-    maximumDiskQuota == (-1).toLong(),
     createdAt.toString(),
 )
 
@@ -78,7 +77,6 @@ data class UserRepresentationDTO(
     val currentDiskQuota: Long,
     val currentDiskQuotaRatio: Double,
     val maximumDiskQuota: Long,
-    val unlimitedDiskQuota: Boolean,
     val createdAt: String,
 ) : DTO
 

@@ -84,14 +84,16 @@ const submit = handleSubmit(async (values) => {
 watch(visible, (val) => {
   if (val) {
     if (!selectedRow.value) return
+
+    const unlimited = selectedRow.value.maximumDiskQuota === -1
     setValues({
       username: selectedRow.value.username,
       email: selectedRow.value.email,
       role: selectedRow.value.role,
-      diskQuota: selectedRow.value.unlimitedDiskQuota ? undefined : selectedRow.value.maximumDiskQuota,
-      unlimitedDiskQuota: selectedRow.value.unlimitedDiskQuota,
+      diskQuota: unlimited ? null : selectedRow.value.maximumDiskQuota,
+      unlimitedDiskQuota: unlimited,
     })
-    unlimitedQuota.value = selectedRow.value.unlimitedDiskQuota
+    unlimitedQuota.value = unlimited
   }
 })
 </script>
@@ -103,7 +105,6 @@ watch(visible, (val) => {
     class="max-w-100% sm:max-w-75% xl:max-w-50% min-w-90% md:min-w-35em"
     :header="t('pages.configuration.users.edit_dialog.title')"
     :draggable="false"
-    :dismissable-mask="true"
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="resetForm()"
   >

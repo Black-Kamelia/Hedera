@@ -2,6 +2,7 @@
 import { useField } from 'vee-validate'
 import type { InputTextProps } from 'primevue/inputtext'
 import type PInputText from 'primevue/inputtext'
+import type { FileSize } from '~/composables/useHumanFileSize'
 
 export interface FormInputFileSizeProps extends OnlyProps<InputTextProps> {
   id: string

@@ -84,6 +84,7 @@ watch(model, (val) => {
     force-selection
     :pt="{ input: { class: 'w-full', style: { opacity: '100%' } } }"
     @complete="searchSize"
+    @clear="model = null"
     @item-select="onSelect"
   >
     <template #empty>

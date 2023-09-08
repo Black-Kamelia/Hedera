@@ -12,67 +12,42 @@ export default function useHumanFileSize() {
   const { t, n } = useI18n()
   const { filesSizeScale } = storeToRefs(useUserSettings())
 
-  function formatBinary(fileSize: number) {
+  function _format(fileSize: number, scale: string, scaleValue: number, scaleShift: number, maxScaleUnitShift: number) {
     let value = fileSize
     let shift = 0
-    while (value >= 1024 && shift < MAX_BINARY_UNIT_SHIFT) {
-      value /= 1024
-      shift += 10
+    while (value >= scaleValue && shift < maxScaleUnitShift) {
+      value /= scaleValue
+      shift += scaleShift
     }
 
-    return `${n(value, { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${t(`size_units.binary.${shift}`)}`
-  }
-
-  function formatDecimal(fileSize: number) {
-    let value = fileSize
-    let shift = 0
-    while (value >= 1000 && shift < MAX_DECIMAL_UNIT_SHIFT) {
-      value /= 1000
-      shift += 3
-    }
-
-    return `${n(value, { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${t(`size_units.decimal.${shift}`)}`
+    return `${n(value, { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${t(`size_units.${scale}.${shift}`)}`
   }
 
   function format(fileSize: number) {
     switch (filesSizeScale.value) {
-      case 'BINARY': return formatBinary(fileSize)
-      case 'DECIMAL': return formatDecimal(fileSize)
+      case 'BINARY': return _format(fileSize, 'binary', 1024, 10, MAX_BINARY_UNIT_SHIFT)
+      case 'DECIMAL': return _format(fileSize, 'decimal', 1000, 3, MAX_DECIMAL_UNIT_SHIFT)
     }
   }
 
-  function computeShiftBinary(fileSize: number): FileSize {
+  function _computeShift(fileSize: number, scaleValue: number, scaleShift: number, maxScaleUnitShift: number): FileSize {
     let value = fileSize
     let shift = 0
-    while (value >= 1024 && shift < MAX_BINARY_UNIT_SHIFT) {
-      value /= 1024
-      shift += 10
+    while (value >= scaleValue && shift < maxScaleUnitShift) {
+      value /= scaleValue
+      shift += scaleShift
     }
 
     return {
       value: (Math.round((value + Number.EPSILON) * 100) / 100).toFixed(2),
-      shift: shift as (0 | 10 | 20 | 30 | 40),
-    }
-  }
-
-  function computeShiftDecimal(fileSize: number): FileSize {
-    let value = fileSize
-    let shift = 0
-    while (value >= 1000 && shift < MAX_DECIMAL_UNIT_SHIFT) {
-      value /= 1000
-      shift += 3
-    }
-
-    return {
-      value: (Math.round((value + Number.EPSILON) * 100) / 100).toFixed(2),
-      shift: shift as (0 | 3 | 6 | 9 | 12),
+      shift: shift as FileSizeShift,
     }
   }
 
   function computeShift(fileSize: number): FileSize {
     switch (filesSizeScale.value) {
-      case 'BINARY': return computeShiftBinary(fileSize)
-      case 'DECIMAL': return computeShiftDecimal(fileSize)
+      case 'BINARY': return _computeShift(fileSize, 1024, 10, MAX_BINARY_UNIT_SHIFT)
+      case 'DECIMAL': return _computeShift(fileSize, 1000, 3, MAX_DECIMAL_UNIT_SHIFT)
     }
   }
 

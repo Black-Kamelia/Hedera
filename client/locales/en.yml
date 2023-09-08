@@ -324,7 +324,7 @@ forms:
       role: Role
       role_placeholder: Select a role
       disk_quota: Disk space quota
-      disk_quota_placeholder: Type a size
+      disk_quota_placeholder: Enter a size
       disk_quota_placeholder_unlimited: Unlimited
       force_change_password: Force to change password on first login
       unlimited_disk_quota: Allow for unlimited disk space quota
@@ -341,7 +341,7 @@ forms:
       role: Role
       role_placeholder: Select a role
       disk_quota: Disk space quota
-      disk_quota_placeholder: Type a size
+      disk_quota_placeholder: Enter a size
       disk_quota_placeholder_unlimited: Unlimited
       unlimited_disk_quota: Allow for unlimited disk space quota
 

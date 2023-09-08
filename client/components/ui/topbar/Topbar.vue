@@ -2,7 +2,7 @@
 const { logout } = useAuth()
 
 const pageName = usePageName()
-const { user } = reactive(storeToRefs(useAuth()))
+const { user } = storeToRefs(useAuth())
 </script>
 
 <template>
@@ -11,6 +11,7 @@ const { user } = reactive(storeToRefs(useAuth()))
       {{ pageName }}
     </h2>
     <QuotaPreviewer
+      v-if="user"
       :quota="user.currentDiskQuota"
       :max="user.maximumDiskQuota"
       :ratio="user.currentDiskQuotaRatio"

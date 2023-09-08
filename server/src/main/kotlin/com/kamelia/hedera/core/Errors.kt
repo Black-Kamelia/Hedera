@@ -139,6 +139,13 @@ object Errors {
 
         }
 
+        object DiskQuota {
+
+            private const val PREFIX = "${Errors.Users.PREFIX}.disk_quota"
+
+            const val INVALID_DISK_QUOTA = "$PREFIX.invalid_disk_quota"
+        }
+
     }
 
 }

@@ -108,7 +108,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             enabled = true
             forceChangePassword = user.forceChangePassword
             currentDiskQuota = 0
-            maximumDiskQuota = user.diskQuota?.toLong() ?: -1
+            maximumDiskQuota = user.diskQuota
             settings = UserSettings.new {}
 
             onCreate(creator ?: this)
@@ -175,7 +175,6 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         dto.email?.let { email = it }
         dto.role?.let { role = it }
         dto.diskQuota?.let { maximumDiskQuota = it }
-        dto.unlimitedDiskQuota?.let { if (it) maximumDiskQuota = -1 }
 
         SessionManager.updateSession(uuid, this)
         onUpdate(updater)

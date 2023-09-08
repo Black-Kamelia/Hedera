@@ -402,6 +402,8 @@ errors:
       already_exists: Ce nom d’utilisateur est déjà utilisé
     email:
       already_exists: Cette adresse e-mail est déjà utilisée
+    disk_quota:
+      invalid_disk_quota: Quota d’espace disque invalide
 
 theme:
   system: Système

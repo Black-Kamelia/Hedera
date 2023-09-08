@@ -59,8 +59,8 @@ const { handleSubmit, resetForm, setFieldError, setFieldValue, errors } = useFor
     password: '',
     confirmPassword: '',
     email: '',
-    role: undefined,
-    diskQuota: undefined,
+    role: null as Nullable<Role>,
+    diskQuota: null as Nullable<number>,
     forceChangePassword: true,
     unlimitedDiskQuota: false,
   },
@@ -72,11 +72,16 @@ const quotaPlaceholder = computed(() => {
   return t('forms.create_user.fields.disk_quota_placeholder')
 })
 watch(unlimitedQuota, (val) => {
-  if (val) setFieldValue('diskQuota', undefined, errors.value.diskQuota !== undefined)
+  if (val) setFieldValue('diskQuota', null, errors.value.diskQuota !== undefined)
 })
 
 const submit = handleSubmit(async (values) => {
   pending.value = true
+
+  if (values.unlimitedDiskQuota) {
+    values.diskQuota = -1
+  }
+
   createUser(values as UserCreationDTO)
     .then(() => {
       visible.value = false

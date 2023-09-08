@@ -123,8 +123,7 @@ declare global {
     password: string
     role: Role
     diskQuota?: number
-    forceChangePassword: boolean
-    unlimitedDiskQuota: boolean
+    forceChangePassword?: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'

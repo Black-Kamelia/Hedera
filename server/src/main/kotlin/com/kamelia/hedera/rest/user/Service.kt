@@ -117,6 +117,10 @@ object UserService {
                 throw InsufficientPermissionsException()
             }
 
+            if (dto.diskQuota != null && dto.diskQuota < -1) {
+                raiseError("diskQuota", Errors.Users.DiskQuota.INVALID_DISK_QUOTA, HttpStatusCode.BadRequest)
+            }
+
             catchErrors()
 
             toEdit.update(dto, updater)

@@ -57,13 +57,17 @@ const quotaPlaceholder = computed(() => {
   return t('forms.create_user.fields.disk_quota_placeholder')
 })
 watch(unlimitedQuota, (val) => {
-  if (val) setFieldValue('diskQuota', undefined, errors.value.diskQuota !== undefined)
+  if (val) setFieldValue('diskQuota', null, errors.value.diskQuota !== undefined)
 })
 
 const submit = handleSubmit(async (values) => {
   if (!selectedRow.value) return
-
   pending.value = true
+
+  if (values.unlimitedDiskQuota) {
+    values.diskQuota = -1
+  }
+
   updateUser(selectedRow.value.id, values as UserCreationDTO)
     .then(() => {
       visible.value = false

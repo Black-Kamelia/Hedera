@@ -34,9 +34,8 @@ data class UserCreationDTO(
     val email: String,
     val password: String,
     val role: UserRole = UserRole.REGULAR,
-    val diskQuota: Long? = null,
+    val diskQuota: Long = -1,
     val forceChangePassword: Boolean = false,
-    val unlimitedDiskQuota: Boolean = false,
 ) : DTO
 
 /**
@@ -51,7 +50,6 @@ data class UserUpdateDTO(
     val role: UserRole? = null,
     val enabled: Boolean? = null,
     val diskQuota: Long? = null,
-    val unlimitedDiskQuota: Boolean? = null,
 ) : DTO
 
 /**

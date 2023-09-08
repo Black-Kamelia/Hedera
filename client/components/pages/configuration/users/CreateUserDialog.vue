@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { boolean, number, object, string, ref as yref } from 'yup'
-import FormDropdown from '~/components/input/FormDropdown.vue'
 import { CreateUserForm } from '~/utils/forms'
-import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
 
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()

@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import { boolean, number, object, string } from 'yup'
-import FormDropdown from '~/components/input/FormDropdown.vue'
-import FormInputFileSize from '~/components/input/FormInputFileSize.vue'
 
 defineEmits<{
   (event: 'completed', payload: UserRepresentationDTO): void
@@ -51,7 +49,7 @@ const { handleSubmit, resetForm, setFieldValue, setValues, setFieldError, errors
   validationSchema: schema,
 })
 
-const unlimitedQuota = ref<boolean>(false)
+const unlimitedQuota = ref(false)
 const quotaPlaceholder = computed(() => {
   if (unlimitedQuota.value) return t('forms.edit_user.fields.disk_quota_placeholder_unlimited')
   return t('forms.edit_user.fields.disk_quota_placeholder')

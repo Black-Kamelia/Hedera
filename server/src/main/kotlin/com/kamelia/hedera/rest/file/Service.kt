@@ -26,7 +26,6 @@ import kotlin.math.ceil
 object FileService {
 
     suspend fun handleFileWithToken(
-        call: ApplicationCall,
         part: PartData.FileItem,
         creatorToken: String
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
@@ -34,21 +33,19 @@ object FileService {
 
         if (token.deleted) throw ExpiredOrInvalidTokenException()
 
-        handleFile(call, part, token.owner, token)
+        handleFile(part, token.owner, token)
     }
 
     suspend fun handleFile(
-        call: ApplicationCall,
         part: PartData.FileItem,
         creatorId: UUID
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val user = User[creatorId]
 
-        handleFile(call, part, user)
+        handleFile(part, user)
     }
 
     private suspend fun handleFile(
-        call: ApplicationCall,
         part: PartData.FileItem,
         creator: User,
         uploadToken: PersonalToken? = null,

@@ -146,6 +146,8 @@ pages:
         username: Nom d’utilisateur
         email: Adresse e-mail
         role: Rôle
+        quota: Quota d'espace disque
+        quota_help: Le tri est effectué sur l'espace disque utilisé.
         status: Statut
         creation_date: Date de création
       context_menu:

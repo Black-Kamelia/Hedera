@@ -123,13 +123,13 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         </template>
       </PColumn>
 
-      <PColumn sortable field="currentDiskQuota" header="Quota d'espace disque">
+      <PColumn sortable field="currentDiskQuota" :header="t('pages.configuration.users.table.quota')">
         <template #sorticon="slotProps">
           <SortIcon v-bind="slotProps" />
         </template>
         <template #header>
           <i
-            v-tooltip.top="'Le tri est effectué sur l\'espace disque utilisé.'"
+            v-tooltip.top="t('pages.configuration.users.table.quota_help')"
             class="i-tabler-help-circle-filled text-sm mr-2 text-[--text-color-secondary]"
           />
         </template>

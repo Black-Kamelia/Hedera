@@ -146,6 +146,8 @@ pages:
         username: Username
         email: E-mail address
         role: Role
+        quota: Disk space quota
+        quota_help: Sorting is done on the used disk space.
         status: Status
         creation_date: Creation date
       context_menu:

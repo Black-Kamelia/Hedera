@@ -23,7 +23,7 @@ function roleDisabled(role: { value: string }) {
   return true
 }
 
-const schema = object().shape({
+const schema = object({
   username: string()
     .required(t('forms.create_user.errors.missing_username')),
   password: string()

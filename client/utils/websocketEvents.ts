@@ -2,15 +2,7 @@ import type { EventBusKey } from '@vueuse/core'
 
 export interface HederaUnknownPayload {}
 
-export interface HederaUserConnectedPayload {
-  id: string
-  username: string
-  email: string
-  role: string
-  enabled: boolean
-  currentDiskQuota: number
-  currentDiskQuotaRatio: number
-  maximumDiskQuota: number
+export type HederaUserConnectedPayload = Omit<UserRepresentationDTO, 'createdAt'> & {
   unlimitedDiskQuota: boolean
 }
 

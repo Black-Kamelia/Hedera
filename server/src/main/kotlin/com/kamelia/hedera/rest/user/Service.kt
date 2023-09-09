@@ -49,6 +49,7 @@ object UserService {
             checkEmail(dto.email)
             checkUsername(dto.username)
             checkPassword(dto.password)
+            checkDiskQuota(dto.diskQuota)
 
             if (dto.role == UserRole.OWNER) {
                 throw IllegalActionException()
@@ -117,9 +118,7 @@ object UserService {
                 throw InsufficientPermissionsException()
             }
 
-            if (dto.diskQuota != null && dto.diskQuota < -1) {
-                raiseError("diskQuota", Errors.Users.DiskQuota.INVALID_DISK_QUOTA, HttpStatusCode.BadRequest)
-            }
+            checkDiskQuota(dto.diskQuota)
 
             catchErrors()
 
@@ -225,5 +224,11 @@ private fun ValidationScope.checkPassword(password: String) {
         password.length < 8 -> raiseError("password", Errors.Users.Password.TOO_SHORT)
         password.length > 128 -> raiseError("password", Errors.Users.Password.TOO_LONG)
         else -> return
+    }
+}
+
+private fun ValidationScope.checkDiskQuota(diskQuota: Long?) {
+    if (diskQuota != null && diskQuota < -1) {
+        raiseError("diskQuota", Errors.Users.DiskQuota.INVALID_DISK_QUOTA, HttpStatusCode.BadRequest)
     }
 }

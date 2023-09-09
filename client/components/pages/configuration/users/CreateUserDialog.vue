@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { boolean, number, object, string, ref as yref } from 'yup'
-import { CreateUserForm } from '~/utils/forms'
+import { CREATE_USER_FORM } from '~/utils/forms'
 
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
@@ -28,8 +28,8 @@ const schema = object({
     .required(t('forms.create_user.errors.missing_username')),
   password: string()
     .required(t('forms.create_user.errors.missing_password'))
-    .min(CreateUserForm.username.min, t('forms.create_user.errors.password_too_short', { min: CreateUserForm.username.min }))
-    .max(CreateUserForm.username.max, t('forms.create_user.errors.password_too_long', { max: CreateUserForm.username.max })),
+    .min(CREATE_USER_FORM.password.min, t('forms.create_user.errors.password_too_short', { min: CREATE_USER_FORM.password.min }))
+    .max(CREATE_USER_FORM.password.max, t('forms.create_user.errors.password_too_long', { max: CREATE_USER_FORM.password.max })),
   confirmPassword: string()
     .required(t('forms.create_user.errors.missing_confirm_password'))
     .oneOf([yref('password')], t('forms.create_user.errors.passwords_mismatch')),

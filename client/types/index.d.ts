@@ -110,9 +110,9 @@ declare global {
     email: string
     role: Role
     enabled: boolean
-    currentDiskQuota: number,
-    currentDiskQuotaRatio: number,
-    maximumDiskQuota: number,
+    currentDiskQuota: number
+    currentDiskQuotaRatio: number
+    maximumDiskQuota: number
     createdAt: string
   }
 

@@ -11,8 +11,8 @@ import com.kamelia.hedera.rest.core.pageable.applyFilters
 import com.kamelia.hedera.rest.core.pageable.applySort
 import com.kamelia.hedera.rest.core.pageable.filter
 import com.kamelia.hedera.rest.file.File
-import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.FileTable
+import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
 import com.kamelia.hedera.util.uuid
@@ -127,6 +127,10 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var maximumDiskQuota by UserTable.maximumDiskQuota
 
     val unlimitedDiskQuota: Boolean get() = maximumDiskQuota == -1L
+    val diskQuotaRatio: Double
+        get() = if (maximumDiskQuota > 0L)
+            currentDiskQuota.toDouble() / maximumDiskQuota.toDouble()
+        else 0.toDouble()
 
     private val files by File referrersOn FileTable.owner
 

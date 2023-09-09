@@ -17,7 +17,7 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     role,
     enabled,
     currentDiskQuota,
-    if (maximumDiskQuota > 0L) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.0,
+    diskQuotaRatio,
     maximumDiskQuota,
     createdAt.toString(),
 )

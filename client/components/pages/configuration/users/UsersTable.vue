@@ -33,7 +33,7 @@ const { data, pending, refresh } = useLazyFetchAPI<PageableDTO<UserRepresentatio
 })
 const debouncedPending = useDebounce(pending, 500)
 
-const files = computed(() => data.value?.page.items ?? [])
+const users = computed(() => data.value?.page.items ?? [])
 const rows = computed(() => data.value?.page.pageSize ?? pageSize.value)
 const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
@@ -60,6 +60,16 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+
+useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
+  switch (payload.type) {
+    case 'file-uploaded':
+      users.value
+        .filter(user => user.id === payload.data.userId)
+        .forEach(user => user.currentDiskQuota = payload.data.newCurrentDiskQuota)
+      break
+  }
+})
 </script>
 
 <template>
@@ -73,7 +83,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
       class="w-full"
       data-key="id"
       lazy
-      :value="loading ? Array.from({ length: rows }) : files"
+      :value="loading ? Array.from({ length: rows }) : users"
       scrollable
       scroll-height="flex"
       paginator

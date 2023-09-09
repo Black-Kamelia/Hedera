@@ -19,7 +19,6 @@ import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.FileUtils
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.content.*
-import io.ktor.server.application.*
 import java.util.*
 import kotlin.math.ceil
 

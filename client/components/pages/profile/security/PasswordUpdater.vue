@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { object, string, ref as yref } from 'yup'
-import { UpdatePasswordForm } from '~/utils/forms'
+import { UPDATE_PASSWORD_FORM } from '~/utils/forms'
 
 const { t, m } = useI18n()
 const updatePassword = useUpdatePassword()
@@ -14,8 +14,8 @@ const schema = object({
     .required(t('forms.update_password.errors.missing_old_password')),
   newPassword: string()
     .required(t('forms.update_password.errors.missing_new_password'))
-    .min(UpdatePasswordForm.password.min, t('forms.update_password.errors.password_too_short', { min: UpdatePasswordForm.password.min }))
-    .max(UpdatePasswordForm.password.max, t('forms.update_password.errors.password_too_long', { max: UpdatePasswordForm.password.max })),
+    .min(UPDATE_PASSWORD_FORM.password.min, t('forms.update_password.errors.password_too_short', { min: UPDATE_PASSWORD_FORM.password.min }))
+    .max(UPDATE_PASSWORD_FORM.password.max, t('forms.update_password.errors.password_too_long', { max: UPDATE_PASSWORD_FORM.password.max })),
   confirmNewPassword: string()
     .required(t('forms.update_password.errors.missing_new_password'))
     .oneOf([yref('newPassword')], t('forms.update_password.errors.passwords_mismatch')),

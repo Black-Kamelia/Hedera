@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+const { logout } = useAuth()
 </script>
 
 <template>
   <footer class="bottom-bar overflow-hidden gap-4 px-4 h-5em w-full">
-    <div class="main-btn relative">
+    <div class="main-btn-left relative">
       <BarButton icon="i-tabler-menu-2" :active="_ => false" />
     </div>
     <div class="btn">
@@ -16,21 +17,26 @@
         icon="i-tabler-upload" :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
       />
     </div>
+    <!--
     <div class="btn">
       <BarButton
         icon="i-tabler-timeline" :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
       />
     </div>
+    -->
     <div class="btn">
       <BarButton
         icon="i-tabler-user-circle" :active="route => route.startsWith('/profile')" @click="navigateTo('/profile')"
       />
     </div>
+    <div class="main-btn-right relative">
+      <BarButton icon="i-tabler-logout" :active="_ => false" @click="logout" />
+    </div>
   </footer>
 </template>
 
 <style scoped lang="scss">
-.main-btn {
+.main-btn-left {
   position: relative;
   width: 3em;
 
@@ -54,12 +60,35 @@
   }
 }
 
+.main-btn-right {
+  position: relative;
+  width: 3em;
+
+  > button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-20%) translateY(-50%);
+    background-color: var(--primary-600);
+    font-size: 1.25rem;
+    width: 5.625em;
+    height: 5.625em;
+    padding: 0 1.25em;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 50%;
+
+    .dark & {
+      background-color: var(--primary-700);
+    }
+  }
+}
+
 .bottom-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   background-color: var(--primary-500);
   color: var(--primary-color-text);
-  overflow-x: auto;
 
   .dark & {
     background-color: var(--primary-800);

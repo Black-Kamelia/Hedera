@@ -50,6 +50,7 @@ function toggleSidebar() {
             icon="i-tabler-upload" :label="t('pages.upload.title')" :open="sidebar.open"
             :active="route => route.startsWith('/upload')" @click="navigateTo('/upload')"
           />
+          <!--
           <SidebarButton
             icon="i-tabler-star" :label="t('pages.favorites.title')" :open="sidebar.open"
             :active="route => route.startsWith('/favorites')" @click="navigateTo('/favorites')"
@@ -58,6 +59,7 @@ function toggleSidebar() {
             icon="i-tabler-timeline" :label="t('pages.analytics.title')" :open="sidebar.open"
             :active="route => route.startsWith('/analytics')" @click="navigateTo('/analytics')"
           />
+          -->
           <SidebarButton
             v-if="isAdmin" icon="i-tabler-tool" :label="t('pages.configuration.title')" :open="sidebar.open"
             :active="route => route.startsWith('/configuration')" @click="navigateTo('/configuration')"
@@ -68,7 +70,13 @@ function toggleSidebar() {
           />
         </div>
         <div class="flex flex-col p-4 gap-2">
-          <SidebarButton icon="i-tabler-help-circle" :label="t('sidebar.docs')" :open="sidebar.open" />
+          <SidebarButton
+            icon="i-tabler-help-circle"
+            end-icon="i-tabler-external-link"
+            :label="t('sidebar.docs')"
+            :open="sidebar.open"
+            @click="navigateTo('https://github.com/Black-Kamelia/Hedera', { external: true, open: { target: '_blank' } })"
+          />
         </div>
       </div>
       <HorizontalSeparator />

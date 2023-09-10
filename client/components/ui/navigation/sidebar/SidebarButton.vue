@@ -2,6 +2,7 @@
 export interface SidebarButtonProps {
   open: boolean
   icon: string
+  endIcon?: string
   label: string
   active?: (route: any) => boolean
 }
@@ -9,6 +10,7 @@ export interface SidebarButtonProps {
 const {
   open,
   icon,
+  endIcon = undefined,
   label,
   active,
 } = defineProps<SidebarButtonProps>()
@@ -24,9 +26,12 @@ const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) 
       <i :class="icon" />
     </div>
     <Transition>
-      <span v-show="open" class="flex-grow overflow-hidden text-left whitespace-nowrap">
-        {{ label }}
-      </span>
+      <div v-show="open" class="flex flex-row gap-1 justify-between items-center flex-grow overflow-hidden">
+        <span class="overflow-hidden text-left whitespace-nowrap">
+          {{ label }}
+        </span>
+        <i v-if="endIcon" class="text-3 opacity-50%" :class="endIcon" />
+      </div>
     </Transition>
   </PButton>
 </template>

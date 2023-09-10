@@ -23,6 +23,7 @@ export default defineConfig({
       extraProperties: {
         'background-color': 'currentColor',
         'color': 'inherit',
+        'flex-shrink': '0',
       },
       collections: {
         tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default),

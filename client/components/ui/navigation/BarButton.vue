@@ -1,15 +1,15 @@
 <script setup lang="ts">
 export interface BarButtonProps {
-  open: boolean
+  open?: boolean
   icon: string
-  label: string
-  active?: (route: any) => boolean
+  label?: string
+  active?: (route: string) => boolean
 }
 
 const {
-  open,
+  open = false,
   icon,
-  label,
+  label = '',
   active,
 } = defineProps<BarButtonProps>()
 

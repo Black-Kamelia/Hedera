@@ -1,14 +1,10 @@
 <script lang="ts" setup>
-const { t } = useI18n()
-const { user } = storeToRefs(useAuth())
-
-const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role === 'OWNER')
 </script>
 
 <template>
   <footer class="bottom-bar overflow-hidden gap-4 px-4 h-5em w-full">
     <div class="main-btn relative">
-      <BarButton icon="i-tabler-menu-2" :active="route => false" />
+      <BarButton icon="i-tabler-menu-2" :active="_ => false" />
     </div>
     <div class="btn">
       <BarButton

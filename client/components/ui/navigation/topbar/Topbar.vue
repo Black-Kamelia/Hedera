@@ -13,41 +13,25 @@ const pageName = usePageName()
 
 <template>
   <header
-    class="top-bar flex items-center overflow-hidden gap-4 h-5em w-full"
+    class="top-bar flex items-center overflow-hidden gap-4 py-5 h-5em w-full"
     :class="{ 'px-8': !narrow, 'px-4': narrow }"
   >
-    <h2 class="text-3xl w-full">
+    <h2 class="text-3xl w-full text-ellipsis overflow-hidden whitespace-nowrap">
       {{ pageName }}
     </h2>
-    <!-- <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" />
-    <VerticalSeparator />
-    <div class="flex flex-row gap-2">
 
-      <ThemeSwitcher />
-      <PButton v-tooltip.bottom="{ value: 'Notification', showDelay: '1000' }" icon="i-tabler-bell" text rounded />
-      -
-      <PButton
-        v-tooltip.bottom="{ value: 'Log out', showDelay: '1000' }" icon="i-tabler-logout" text rounded
-        @click="logout()"
-      />
-    </div>
-    -->
-  </header>
-
-  <!--
-  <header class="top-bar flex items-center overflow-hidden overflow-x-auto gap-4 px-8 py-5 h-20 w-full bg-[var(--surface-overlay)]">
-    <h2 class="text-3xl w-full">
-      {{ pageName }}
-    </h2>
-    <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" />
-    <TopbarSeparator />
-    <div class="flex flex-row gap-2">
-      <ThemeSwitcher />
-      <PButton v-tooltip.bottom="{ value: 'Notification', showDelay: '1000' }" icon="i-tabler-bell" text rounded />
-      <PButton v-tooltip.bottom="{ value: 'Log out', showDelay: '1000' }" icon="i-tabler-logout" text rounded @click="logout()" />
+    <div v-if="!narrow" class="flex flex-row items-center gap-8 h-full">
+      <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" />
+      <div class="sep" />
+      <div class="flex flex-row gap-2">
+        <ThemeSwitcher />
+        <PButton
+          v-tooltip.bottom="{ value: 'Log out', showDelay: '1000' }" icon="i-tabler-logout" text rounded
+          @click="logout()"
+        />
+      </div>
     </div>
   </header>
-  -->
 </template>
 
 <style scoped>
@@ -56,7 +40,8 @@ const pageName = usePageName()
   background-color: var(--surface-overlay);
 
   .sep {
-    border-color: red;
+    height: 100%;
+    border-left: 1px solid var(--surface-border);
   }
 }
 </style>

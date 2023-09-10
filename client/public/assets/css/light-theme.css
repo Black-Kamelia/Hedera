@@ -5300,7 +5300,7 @@ hr {
 
 .p-fileupload .p-fileupload-content {
   background: #fff;
-  padding: 2rem 1rem;
+  padding: 0 1rem 1rem 1rem;
   border: 1px solid var(--surface-border);
   color: var(--text-color);
   border-bottom-right-radius: 8px;

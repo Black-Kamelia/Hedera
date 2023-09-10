@@ -17,6 +17,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     }
   } else if (!isAuthenticated.value) {
     if (ANONYMOUS_ROUTES.includes(from.path)) return abortNavigation()
-    return navigateTo('/login', { replace: true })
+    const redirect = getRedirectParam(to.path, true)
+    return navigateTo(`/login${redirect}`, { replace: true })
   }
 })

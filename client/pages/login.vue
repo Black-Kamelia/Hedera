@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ForcePasswordChangeDoneEvent } from '~/utils/events'
+
 const { t } = useI18n()
 
 type State = 'LOGIN' | 'CHANGE_PASSWORD' | 'COMPLETE_OTP'
@@ -63,6 +65,19 @@ onMounted(() => {
   }
 })
 
+function redirectToApplication() {
+  const redirect = useRoute().query.redirect?.toString()
+  const to = redirect && (redirect.startsWith('%2F') || redirect.startsWith('/'))
+    ? decodeURIComponent(redirect)
+    : '/files'
+
+  try {
+    navigateTo(to, { replace: true })
+  } catch {
+    navigateTo('/files', { replace: true })
+  }
+}
+
 useEventBus(LoggedInEvent).on((event) => {
   if (!event.error) {
     const user = event.user
@@ -71,9 +86,12 @@ useEventBus(LoggedInEvent).on((event) => {
     if (user?.forceChangePassword) {
       state.value = 'CHANGE_PASSWORD'
     } else {
-      navigateTo('/files', { replace: true })
+      redirectToApplication()
     }
   }
+})
+useEventBus(ForcePasswordChangeDoneEvent).on(() => {
+  redirectToApplication()
 })
 useEventBus(LoggedOutEvent).on((event) => {
   if (event.abortLogin) {

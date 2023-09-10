@@ -2,6 +2,7 @@
 import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import { UpdatePasswordForm } from '~/utils/forms'
+import { ForcePasswordChangeDoneEvent } from '~/utils/events'
 
 const { t } = useI18n()
 const { logout } = useAuth()
@@ -31,7 +32,7 @@ const onSubmit = handleSubmit(async (values) => {
   updatePassword(null, values.password)
     .then(() => {
       setUser({ forceChangePassword: false })
-      navigateTo('/files')
+      useEventBus(ForcePasswordChangeDoneEvent).emit()
     })
     .catch(() => loading.value = false)
 })

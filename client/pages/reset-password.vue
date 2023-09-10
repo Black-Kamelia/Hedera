@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { useForm } from 'vee-validate'
 import { object, string } from 'yup'
+
+interface ResetPasswordForm {
+  email: string
+}
 
 const { t } = useI18n()
 
@@ -15,7 +18,7 @@ const schema = object({
     .email(t('forms.reset_password.errors.invalid_email'))
     .required(t('forms.reset_password.errors.missing_email')),
 })
-const { handleSubmit } = useForm({
+const { handleSubmit } = useForm<ResetPasswordForm>({
   validationSchema: schema,
 })
 

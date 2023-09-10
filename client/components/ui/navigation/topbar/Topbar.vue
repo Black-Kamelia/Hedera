@@ -16,7 +16,7 @@ const pageName = usePageName()
     class="top-bar flex items-center overflow-hidden gap-4 py-5 h-5em w-full"
     :class="{ 'px-8': !narrow, 'px-4': narrow }"
   >
-    <h2 class="text-3xl w-full text-ellipsis overflow-hidden whitespace-nowrap">
+    <h2 class="text-3xl w-full truncate">
       {{ pageName }}
     </h2>
 

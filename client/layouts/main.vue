@@ -15,9 +15,8 @@ const isNarrow = useMediaQuery('(max-width: 640px)')
       </div>
     </div>
     <BottomBar v-if="isNarrow" />
+    <MainToast />
   </div>
-
-  <MainToast />
 </template>
 
 <style lang="scss">

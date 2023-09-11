@@ -93,17 +93,17 @@ fun ApplicationCall.getUUIDOrNull(name: String = "uuid"): UUID? = getParamOrNull
 
 fun ApplicationCall.getUUID(name: String = "uuid"): UUID = getUUIDOrNull(name) ?: throw InvalidUUIDException()
 
-fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
+fun ApplicationCall.jwtOrNull(): Payload? = this.principal<JWTPrincipal>()?.payload
 
-fun PipelineContext<*, ApplicationCall>.userOrNull(): UserPrincipal? = this.call.principal()
+fun ApplicationCall.userOrNull(): UserPrincipal? = this.principal()
 
-val PipelineContext<*, ApplicationCall>.jwt: Payload
+val ApplicationCall.jwt: Payload
     get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
-val PipelineContext<*, ApplicationCall>.authenticatedUser: UserState?
+val ApplicationCall.authenticatedUser: UserState?
     get() = userOrNull()?.state
 
-val PipelineContext<*, ApplicationCall>.accessToken: String?
+val ApplicationCall.accessToken: String?
     get() = userOrNull()?.accessToken
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
@@ -111,11 +111,11 @@ operator fun Payload.get(key: String): Claim = this.getClaim(key)
 val Payload.uuid get() = this["id"].asString().toUUID()
 
 inline fun PipelineContext<*, ApplicationCall>.ifRegular(block: () -> Unit) {
-    if (authenticatedUser?.role == UserRole.REGULAR) block()
+    if (call.authenticatedUser?.role == UserRole.REGULAR) block()
 }
 
 inline fun PipelineContext<*, ApplicationCall>.ifNotRegular(block: () -> Unit) {
-    if (authenticatedUser?.role != UserRole.REGULAR) block()
+    if (call.authenticatedUser?.role != UserRole.REGULAR) block()
 }
 
 fun PipelineContext<*, ApplicationCall>.adminRestrict() {
@@ -123,7 +123,7 @@ fun PipelineContext<*, ApplicationCall>.adminRestrict() {
 }
 
 fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
-    if (authenticatedUser?.uuid != uuid) throw IllegalActionException()
+    if (call.authenticatedUser?.uuid != uuid) throw IllegalActionException()
 }
 
 fun ApplicationCall.getPageParameters(): Pair<Long, Int> {

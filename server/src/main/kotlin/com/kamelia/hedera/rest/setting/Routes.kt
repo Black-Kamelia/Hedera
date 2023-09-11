@@ -15,11 +15,11 @@ fun Route.userSettingsRoutes() = route("/users/settings") {
 }
 
 private fun Route.getSettings() = get {
-    val uuid = authenticatedUser!!.uuid
+    val uuid = call.authenticatedUser!!.uuid
     call.respond(UserSettingsService.getUserSettings(uuid))
 }
 
 private fun Route.updateSettings() = patch<UserSettingsUpdateDTO> { body ->
-    val uuid = authenticatedUser!!.uuid
+    val uuid = call.authenticatedUser!!.uuid
     call.respond(UserSettingsService.updateUserSettings(uuid, body))
 }

@@ -5,6 +5,17 @@ const { t } = useI18n()
 
 type State = 'LOGIN' | 'CHANGE_PASSWORD' | 'COMPLETE_OTP'
 
+function stateToIndex(state: State) {
+  switch (state) {
+    case 'LOGIN':
+      return 0
+    case 'CHANGE_PASSWORD':
+      return 1
+    case 'COMPLETE_OTP':
+      return 2
+  }
+}
+
 usePageName(() => t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
@@ -28,9 +39,7 @@ const stateTransition = computed(() => {
   const history = stateHistory.history.value
   if (history.length < 2) return 'slide-left'
   const [next, prev] = history
-  if (prev.snapshot === 'LOGIN' && next.snapshot === 'CHANGE_PASSWORD') return 'slide-left'
-  if (prev.snapshot === 'CHANGE_PASSWORD' && next.snapshot === 'LOGIN') return 'slide-right'
-  return 'slide-left'
+  return stateToIndex(prev.snapshot) < stateToIndex(next.snapshot) ? 'slide-left' : 'slide-right'
 })
 
 const subtitle = computed(() => {

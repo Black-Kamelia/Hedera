@@ -109,6 +109,7 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.users"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+        const val FORCE_CHANGE_PASSWORD = "$PREFIX.force_change_password"
 
         object Email {
 

@@ -128,9 +128,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
 
     val unlimitedDiskQuota: Boolean get() = maximumDiskQuota == -1L
     val diskQuotaRatio: Double
-        get() = if (maximumDiskQuota > 0L)
-            currentDiskQuota.toDouble() / maximumDiskQuota.toDouble()
-        else 0.toDouble()
+        get() = if (maximumDiskQuota > 0L) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.0
 
     private val files by File referrersOn FileTable.owner
 

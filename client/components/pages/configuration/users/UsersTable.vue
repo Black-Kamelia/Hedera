@@ -60,16 +60,6 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
-
-useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
-  switch (payload.type) {
-    case 'file-uploaded':
-      users.value
-        .filter(user => user.id === payload.data.userId)
-        .forEach(user => user.currentDiskQuota = payload.data.newCurrentDiskQuota)
-      break
-  }
-})
 </script>
 
 <template>

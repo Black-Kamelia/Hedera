@@ -64,7 +64,16 @@ object SessionManager {
 
     private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role, user.enabled, user.createdAt)
+            UserState(
+                user.id.value,
+                user.username,
+                user.email,
+                user.role,
+                user.enabled,
+                user.currentDiskQuota,
+                user.maximumDiskQuota,
+                user.createdAt
+            )
         }
         val tokenData = TokenData.from(user)
         val session = Session(userState, tokenData)
@@ -80,6 +89,8 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
+            currentDiskQuota = user.currentDiskQuota
+            maximumDiskQuota = user.maximumDiskQuota
         }
 
         if (!user.enabled) {
@@ -156,6 +167,8 @@ data class UserState(
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
+    var currentDiskQuota: Long,
+    var maximumDiskQuota: Long,
     val createdAt: Instant,
 ) : Principal {
 
@@ -165,6 +178,9 @@ data class UserState(
         email,
         role,
         enabled,
+        currentDiskQuota,
+        if(maximumDiskQuota > 0L) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.0,
+        maximumDiskQuota,
         createdAt.toString(),
     )
 }

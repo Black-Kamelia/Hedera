@@ -109,6 +109,7 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.users"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+        const val INSUFFICIENT_DISK_QUOTA = "$PREFIX.insufficient_disk_quota"
 
         object Email {
 
@@ -136,6 +137,13 @@ object Errors {
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_USERNAME = "$PREFIX.invalid_username"
 
+        }
+
+        object DiskQuota {
+
+            private const val PREFIX = "${Errors.Users.PREFIX}.disk_quota"
+
+            const val INVALID_DISK_QUOTA = "$PREFIX.invalid_disk_quota"
         }
 
     }

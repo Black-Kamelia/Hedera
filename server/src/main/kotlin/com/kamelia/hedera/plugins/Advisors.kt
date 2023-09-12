@@ -6,6 +6,7 @@ import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.IllegalFilterException
+import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.InvalidUUIDException
 import com.kamelia.hedera.core.MessageKeyDTO
@@ -52,6 +53,7 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
         is IllegalActionException,
+        is InsufficientDiskQuotaException,
         is InsufficientPermissionsException -> forbiddenMessage(call, cause)
 
         is FileNotFoundException,

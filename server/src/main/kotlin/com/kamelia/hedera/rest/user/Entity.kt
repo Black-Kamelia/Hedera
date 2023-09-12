@@ -11,11 +11,10 @@ import com.kamelia.hedera.rest.core.pageable.applyFilters
 import com.kamelia.hedera.rest.core.pageable.applySort
 import com.kamelia.hedera.rest.core.pageable.filter
 import com.kamelia.hedera.rest.file.File
-import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.file.FileTable
+import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
-import com.kamelia.hedera.util.adaptFileSize
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -56,6 +55,8 @@ object UserTable : AuditableUUIDTable("users") {
     val enabled = bool("enabled")
     val forceChangePassword = bool("force_change_password")
     val settings = reference("settings", UserSettingsTable)
+    val currentDiskQuota = long("current_disk_quota")
+    val maximumDiskQuota = long("maximum_disk_quota")
 
     override val createdBy = reference("created_by", this)
     override val updatedBy = reference("updated_by", this).nullable()
@@ -91,6 +92,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                     "role" -> UserTable.role
                     "enabled" -> UserTable.enabled
                     "createdAt" -> UserTable.createdAt
+                    "currentDiskQuota" -> UserTable.currentDiskQuota
                     else -> throw UnknownFilterFieldException(it)
                 }
             }.let {
@@ -105,6 +107,8 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             role = user.role
             enabled = true
             forceChangePassword = user.forceChangePassword
+            currentDiskQuota = 0
+            maximumDiskQuota = user.diskQuota
             settings = UserSettings.new {}
 
             onCreate(creator ?: this)
@@ -119,6 +123,12 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     var enabled by UserTable.enabled
     var forceChangePassword by UserTable.forceChangePassword
     var settings by UserSettings referencedOn UserTable.settings
+    var currentDiskQuota by UserTable.currentDiskQuota
+    var maximumDiskQuota by UserTable.maximumDiskQuota
+
+    val unlimitedDiskQuota: Boolean get() = maximumDiskQuota == -1L
+    val diskQuotaRatio: Double
+        get() = if (maximumDiskQuota > 0L) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.0
 
     private val files by File referrersOn FileTable.owner
 
@@ -135,7 +145,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             when (it.field) {
                 "name" -> FileTable.name.filter(it)
                 "mimeType" -> FileTable.mimeType.filter(it)
-                "size" -> FileTable.size.filter(it.adaptFileSize())
+                "size" -> FileTable.size.filter(it)
                 "visibility" -> FileTable.visibility.filter(it)
                 "createdAt" -> FileTable.createdAt.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)
@@ -166,6 +176,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         dto.username?.let { username = it }
         dto.email?.let { email = it }
         dto.role?.let { role = it }
+        dto.diskQuota?.let { maximumDiskQuota = it }
 
         SessionManager.updateSession(uuid, this)
         onUpdate(updater)
@@ -181,6 +192,20 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
         password = Hasher.hash(dto.newPassword)
         onUpdate(this)
+    }
+
+    suspend fun increaseCurrentDiskQuota(size: Long): User = apply {
+        require(size >= 0)
+        require(maximumDiskQuota < 0 || currentDiskQuota + size <= maximumDiskQuota)
+        currentDiskQuota += size
+        SessionManager.updateSession(uuid, this)
+    }
+
+    suspend fun decreaseCurrentDiskQuota(size: Long): User = apply {
+        require(size >= 0)
+        require(size <= currentDiskQuota)
+        currentDiskQuota -= size
+        SessionManager.updateSession(uuid, this)
     }
 
 }

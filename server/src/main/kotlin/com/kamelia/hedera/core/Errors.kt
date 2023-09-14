@@ -7,6 +7,8 @@ object Errors {
     const val INSUFFICIENT_PERMISSIONS = "$PREFIX.insufficient_permissions"
     const val ILLEGAL_ACTION = "$PREFIX.illegal_action"
 
+    const val BAD_REQUEST_RAW = "$PREFIX.bad_request_raw"
+    const val NOT_FOUND_RAW = "$PREFIX.not_found_raw"
     const val UNKNOWN = "$PREFIX.unknown"
 
     object Auth {

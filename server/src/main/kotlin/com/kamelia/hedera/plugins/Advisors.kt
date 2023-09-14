@@ -9,6 +9,7 @@ import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.InvalidUUIDException
+import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
@@ -19,10 +20,12 @@ import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
 import com.kamelia.hedera.core.UserNotFoundException
+import com.kamelia.hedera.core.asMessage
 import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.plugins.statuspages.*
 import kotlinx.serialization.SerializationException
 
@@ -47,7 +50,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is MultipartParseException,
         is IllegalFilterException,
         is UnknownSortFieldException,
-        is UnknownFilterFieldException -> badRequestMessage(call, cause)
+        is UnknownFilterFieldException,
+        is BadRequestException -> badRequestMessage(call, cause)
 
         is MissingTokenException,
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
@@ -58,7 +62,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
 
         is FileNotFoundException,
         is UserNotFoundException,
-        is PersonalTokenNotFoundException -> notFound(call, cause)
+        is PersonalTokenNotFoundException,
+        is NotFoundException -> notFound(call, cause)
 
         else -> unhandledError(call, cause)
     }
@@ -66,7 +71,10 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
 
 private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.badRequest(cause.error))
-    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.badRequest(MessageDTO.simple(
+        title = Errors.BAD_REQUEST_RAW.asMessage(),
+        message = (cause.message ?: cause.javaClass.name).asMessage(),
+    )))
 }
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
@@ -81,7 +89,10 @@ private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = 
 
 private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.notFound(cause.error))
-    else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.notFound(MessageDTO.simple(
+        title = Errors.BAD_REQUEST_RAW.asMessage(),
+        message = (cause.message ?: cause.javaClass.name).asMessage(),
+    )))
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {

@@ -8,6 +8,7 @@ const { t } = useI18n()
 const { logout } = useAuth()
 const updatePassword = useUpdatePassword()
 const { setUser } = useAuth()
+const dialog = useConfirm()
 
 const loading = ref(false)
 const passwordField = ref<Nullable<CompElement>>(null)
@@ -29,12 +30,28 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
-  updatePassword(null, values.password)
+  updatePassword(null, values.password, true)
     .then(() => {
       setUser({ forceChangePassword: false })
       useEventBus(ForcePasswordChangeDoneEvent).emit()
     })
-    .catch(() => loading.value = false)
+    .catch((error) => {
+      const status = error?.response?.status
+      const errorKey = error?.response?._data?.title?.key
+      if (status === 500) {
+        console.log('server error')
+      } else if (status === 403 && errorKey === 'errors.users.force_change_password_conflict') {
+        dialog.require({
+          header: 'Password change conflict',
+          message: 'It appears that you have already changed your password somewhere else. You will need to reconnect.',
+          rejectClass: 'hidden',
+          acceptLabel: 'Back to login',
+          acceptIcon: 'i-tabler-arrow-left',
+          accept: () => logout(true),
+        })
+      }
+      loading.value = false
+    })
 })
 </script>
 
@@ -71,5 +88,11 @@ const onSubmit = handleSubmit(async (values) => {
       <PButton :label="t('global.logout')" class="w-full" :disabled="loading" outlined @click="logout(true)" />
       <PButton :label="t('forms.change_password.submit')" class="w-full" type="submit" :loading="loading" />
     </div>
+
+    <ConfirmDialog
+      :pt="{
+        closeButton: { class: 'hidden' },
+      }"
+    />
   </form>
 </template>

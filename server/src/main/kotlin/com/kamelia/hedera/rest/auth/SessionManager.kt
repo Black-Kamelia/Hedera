@@ -49,9 +49,11 @@ object SessionManager {
                     it.value.tokenData.accessTokenExpiration < now
                 }
                 loggedUsers.entries.removeIf {
-                    !sessions.values.any { session -> session.user.uuid == it.key }
+                    sessions.values.none { session -> session.user.uuid == it.key }
                 }
-                refreshTokens.entries.removeIf { it.value.refreshTokenExpiration < now }
+                refreshTokens.entries.removeIf {
+                    it.value.refreshTokenExpiration < now
+                }
             }
         }
     }
@@ -156,6 +158,23 @@ object SessionManager {
             sessions.remove(it.key)
         }
         loggedUsers.remove(user.id.value)
+    }
+
+    suspend fun logoutAllExceptCurrent(user: User, token: String, reason: String) = mutex.withReentrantLock {
+        UserEvents.userForcefullyLoggedOutEvent(
+            UserForcefullyLoggedOutDTO(
+                userId = user.id.value,
+                reason = reason,
+            )
+        )
+        sessions.entries.filter {
+            it.value.user.uuid == user.id.value && it.key != token
+        }.forEach {
+            refreshTokens.entries.removeIf { refreshEntry ->
+                refreshEntry.value.accessToken == it.key
+            }
+            sessions.remove(it.key)
+        }
     }
 }
 

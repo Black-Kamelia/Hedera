@@ -103,7 +103,7 @@ useEventBus(ForcePasswordChangeDoneEvent).on(() => {
   redirectToApplication()
 })
 useEventBus(LoggedOutEvent).on((event) => {
-  if (event.abortLogin) {
+  if (event?.abortLogin) {
     state.value = 'LOGIN'
     navigateTo('/login', { replace: true })
   }

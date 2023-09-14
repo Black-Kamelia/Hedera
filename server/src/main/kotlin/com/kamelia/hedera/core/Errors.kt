@@ -110,6 +110,7 @@ object Errors {
 
         const val NOT_FOUND = "$PREFIX.not_found"
         const val FORCE_CHANGE_PASSWORD = "$PREFIX.force_change_password"
+        const val FORCE_CHANGE_PASSWORD_CONFLICT = "$PREFIX.force_change_password_conflict"
 
         object Email {
 

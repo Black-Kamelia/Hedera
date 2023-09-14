@@ -80,9 +80,10 @@ private fun Route.deactivateUser() = post("/{uuid}/deactivate") {
 
 private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/password") { body ->
     val uuid = call.getUUID()
+    val forced = call.parameters["forced"].toBoolean()
     idRestrict(uuid)
 
-    call.respond(UserService.updateUserPassword(uuid, body))
+    call.respond(UserService.updateUserPassword(uuid, body, forced))
 }
 
 private fun Route.deleteUser() = delete("/{uuid}") {

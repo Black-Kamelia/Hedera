@@ -71,10 +71,11 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
 
 private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.badRequest(cause.error))
-    else -> call.respondNoSuccess(Response.badRequest(MessageDTO.simple(
+    is BadRequestException -> call.respondNoSuccess(Response.badRequest(MessageDTO.simple(
         title = Errors.BAD_REQUEST_RAW.asMessage(),
         message = (cause.message ?: cause.javaClass.name).asMessage(),
     )))
+    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
 }
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
@@ -89,10 +90,11 @@ private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = 
 
 private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.notFound(cause.error))
-    else -> call.respondNoSuccess(Response.notFound(MessageDTO.simple(
+    is NotFoundException -> call.respondNoSuccess(Response.notFound(MessageDTO.simple(
         title = Errors.BAD_REQUEST_RAW.asMessage(),
         message = (cause.message ?: cause.javaClass.name).asMessage(),
     )))
+    else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {

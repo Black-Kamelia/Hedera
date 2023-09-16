@@ -3,8 +3,8 @@ const { logout } = useAuth()
 </script>
 
 <template>
-  <footer class="bottom-bar overflow-hidden gap-4 px-4 h-5em w-full">
-    <div class="main-btn-left relative">
+  <footer class="bottom-bar overflow-hidden gap-4 px-4 h-5em w-full relative">
+    <div class="main-btn-left">
       <BarButton icon="i-tabler-menu-2" :active="_ => false" />
     </div>
     <div class="btn">
@@ -29,7 +29,7 @@ const { logout } = useAuth()
         icon="i-tabler-user-circle" :active="route => route.startsWith('/profile')" @click="navigateTo('/profile')"
       />
     </div>
-    <div class="main-btn-right relative">
+    <div class="main-btn-right">
       <BarButton icon="i-tabler-logout" :active="_ => false" @click="logout" />
     </div>
   </footer>
@@ -37,14 +37,13 @@ const { logout } = useAuth()
 
 <style scoped lang="scss">
 .main-btn-left {
-  position: relative;
   width: 3em;
 
   > button {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translateX(-70%) translateY(-50%);
+    left: 0;
+    transform: translateX(-35%) translateY(-50%);
     background-color: var(--primary-600);
     font-size: 1.25rem;
     width: 5.625em;
@@ -61,14 +60,13 @@ const { logout } = useAuth()
 }
 
 .main-btn-right {
-  position: relative;
   width: 3em;
 
   > button {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translateX(-20%) translateY(-50%);
+    right: 0;
+    transform: translateX(35%) translateY(-50%);
     background-color: var(--primary-600);
     font-size: 1.25rem;
     width: 5.625em;

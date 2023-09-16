@@ -137,11 +137,6 @@ function toggleSidebar() {
   }
 }
 
-.sep {
-  border-top: 1px solid var(--primary-400);
-  border-left: 1px solid var(--primary-400);
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.15s ease;

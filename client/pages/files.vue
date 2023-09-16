@@ -13,8 +13,8 @@ const selecting = computed(() => selectedRows.value.length > 0)
 </script>
 
 <template>
-  <div class="py-4 px-8 h-full flex flex-col gap-4">
-    <div class="flex flex-row gap-4">
+  <div class="py-4 px-4 sm:px-8 h-full flex flex-col gap-4">
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
       <span class="flex-grow p-input-icon-left">
         <i class="i-tabler-search" />
         <PInputText v-model="searchQuery" class="w-full p-inputtext-lg" :placeholder="t('pages.files.search_by_name')" />

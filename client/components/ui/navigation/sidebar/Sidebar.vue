@@ -10,6 +10,16 @@ const isSidebarHovered = useElementHover(sidebarRef)
 const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role === 'OWNER')
 const { isDebugEnabled } = useDebug()
 
+const menuIcon = computed(() => {
+  if (sidebar.open) {
+    return 'i-tabler-indent-decrease'
+  } else if (isSidebarHovered.value) {
+    return 'i-tabler-menu-2'
+  } else {
+    return 'i-hedera-logo'
+  }
+})
+
 function toggleSidebar() {
   sidebar.open = !sidebar.open
 }
@@ -30,13 +40,20 @@ function toggleSidebar() {
         </Transition>
       </div>
       <div>
-        <PButton rounded @click="toggleSidebar()">
-          <Transition mode="out-in" name="fade">
-            <i v-if="isSidebarHovered && !sidebar.open" class="i-tabler-menu-2" />
-            <i v-else-if="sidebar.open" class="i-tabler-indent-decrease" />
-            <i v-else class="i-hedera-logo" />
-          </Transition>
-        </PButton>
+        <SidebarButton
+          icon=""
+          label=""
+          :open="false"
+          @click="toggleSidebar()"
+        >
+          <template #icon>
+            <Transition mode="out-in" name="fade">
+              <i v-if="isSidebarHovered && !sidebar.open" class="i-tabler-menu-2" />
+              <i v-else-if="sidebar.open" class="i-tabler-indent-decrease" />
+              <i v-else class="i-hedera-logo" />
+            </Transition>
+          </template>
+        </SidebarButton>
       </div>
     </div>
     <div class="items flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden">
@@ -105,97 +122,18 @@ function toggleSidebar() {
     min-width: var(--sidebar-width-open);
   }
 
-  .p-button {
-    background-color: transparent;
-  }
-
   > .header {
     display: flex;
     padding: 1rem;
     background-color: var(--primary-600);
 
-    .p-button {
-      &:hover {
-        background-color: rgba(29, 30, 39, 0.1);
-      }
-
-      &:active {
-        background-color: rgba(29, 30, 39, 0.2);
-      }
+    .dark & {
+      background-color: var(--primary-900);
     }
-  }
-
-  > .items {
-    .p-button:hover {
-      background-color: rgba(29, 30, 39, 0.1);
-    }
-
-    .p-button:active {
-      background-color: rgba(29, 30, 39, 0.2);
-    }
-
-    .p-button.active {
-      background-color: var(--primary-color-text);
-      color: var(--primary-500);
-    }
-  }
-
-  .p-button {
-    padding: .75rem;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, padding .3s ease;
-
-    &.open {
-      padding: .75rem 1.25rem;
-    }
-  }
-
-  .p-button, .p-button:active, .p-button:hover {
-    border: none;
-    outline: none;
-    box-shadow: none;
   }
 
   &.dark {
     background-color: var(--primary-800);
-
-    *, *:hover, *:active {
-      color: var(--text-color);
-    }
-
-    > .header {
-      background-color: var(--primary-900);
-
-      .p-button {
-        &:hover {
-          background-color: rgba(232, 233, 233, 0.05);
-        }
-
-        &:active {
-          background-color: rgba(232, 233, 233, 0.15);
-        }
-      }
-    }
-
-    > .items {
-      .p-button:hover {
-        background-color: rgba(232, 233, 233, 0.05);
-      }
-
-      .p-button:active {
-        background-color: rgba(232, 233, 233, 0.15);
-      }
-
-      .p-button.active {
-        background-color: var(--text-color);
-        color: var(--primary-800);
-        font-weight: bold;
-      }
-    }
-
-    .sep {
-      border-top: 1px solid var(--primary-700);
-      border-left: 1px solid var(--primary-700);
-    }
   }
 }
 

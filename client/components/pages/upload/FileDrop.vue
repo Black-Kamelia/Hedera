@@ -41,7 +41,7 @@ async function uploader(event: FileUploadUploaderEvent) {
       :pt="{
         buttonbar: { class: 'important-border-none important-bg-[--surface-overlay]' },
         content: { class: 'important-border-none flex-grow' },
-        empty: { class: 'h-full' },
+        //empty: { class: 'h-full' },
         root: { class: 'flex flex-col h-full max-h-full' },
       }"
       @uploader="uploader"

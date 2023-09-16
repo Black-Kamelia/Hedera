@@ -95,7 +95,7 @@ function toggleSidebar() {
   width: var(--sidebar-width-collapsed);
   min-width: var(--sidebar-width-collapsed);
   height: 100%;
-  transition: min-width 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: min-width 0.3s ease, width 0.3s ease;
   overflow: hidden;
   background-color: var(--primary-500);
   color: var(--primary-color-text);
@@ -142,7 +142,7 @@ function toggleSidebar() {
 
   .p-button {
     padding: .75rem;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, padding 0.3s ease;
+    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, padding .3s ease;
 
     &.open {
       padding: .75rem 1.25rem;

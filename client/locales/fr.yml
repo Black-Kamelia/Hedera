@@ -15,14 +15,12 @@ size_units:
     20: Mio
     30: Gio
     40: Tio
-    50: Pio
   decimal:
     0: octets
     3: Ko
     6: Mo
     9: Go
     12: To
-    15: Po
 unlimited_quota: Quota illimité
 
 sidebar:
@@ -148,6 +146,8 @@ pages:
         username: Nom d’utilisateur
         email: Adresse e-mail
         role: Rôle
+        quota: Quota d'espace disque
+        quota_help: Le tri est effectué sur l'espace disque utilisé.
         status: Statut
         creation_date: Date de création
       context_menu:
@@ -317,6 +317,7 @@ forms:
       passwords_mismatch: Les mots de passe ne correspondent pas
       missing_role: Rôle requis
       missing_force_change_password: Choix sur la modification du mot de passe obligatoire requis
+      missing_disk_quota: Quota d’espace disque requis
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail
@@ -324,7 +325,27 @@ forms:
       confirm_password: Confirmer le mot de passe
       role: Rôle
       role_placeholder: Sélectionner un rôle
+      disk_quota: Quota d'espace disque
+      disk_quota_placeholder: Saisir une taille
+      disk_quota_placeholder_unlimited: Illimité
       force_change_password: Forcer la modification du mot de passe à la première connexion
+      unlimited_disk_quota: Autoriser un quota d'espace disque illimité
+  edit_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+      missing_role: Rôle requis
+      missing_disk_quota: Quota d’espace disque requis
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
+      role: Rôle
+      role_placeholder: Sélectionner un rôle
+      disk_quota: Quota d'espace disque
+      disk_quota_placeholder: Saisir une taille
+      disk_quota_placeholder_unlimited: Illimité
+      unlimited_disk_quota: Autoriser un quota d'espace disque illimité
 
 actions:
   files:
@@ -400,6 +421,8 @@ errors:
       already_exists: Ce nom d’utilisateur est déjà utilisé
     email:
       already_exists: Cette adresse e-mail est déjà utilisée
+    disk_quota:
+      invalid_disk_quota: Quota d’espace disque invalide
 
 theme:
   system: Système

@@ -3,12 +3,11 @@ export interface TopBarProps {
   narrow?: boolean
 }
 
-const {
-  narrow,
-} = defineProps<TopBarProps>()
+const { narrow } = defineProps<TopBarProps>()
 
 const { logout } = useAuth()
 const pageName = usePageName()
+const { user } = storeToRefs(useAuth())
 </script>
 
 <template>
@@ -21,7 +20,12 @@ const pageName = usePageName()
     </h2>
 
     <div v-if="!narrow" class="flex flex-row items-center gap-8 h-full">
-      <QuotaPreviewer :quota="{ value: 10, shift: 20 }" :max="{ value: 20, shift: 20 }" :ratio="0.5" />
+      <QuotaPreviewer
+        v-if="user"
+        :quota="user.currentDiskQuota"
+        :max="user.maximumDiskQuota"
+        :ratio="user.currentDiskQuotaRatio"
+      />
       <div class="sep" />
       <div class="flex flex-row gap-2">
         <ThemeSwitcher />

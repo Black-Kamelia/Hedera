@@ -33,7 +33,7 @@ const { data, pending, refresh } = useLazyFetchAPI<PageableDTO<UserRepresentatio
 })
 const debouncedPending = useDebounce(pending, 500)
 
-const files = computed(() => data.value?.page.items ?? [])
+const users = computed(() => data.value?.page.items ?? [])
 const rows = computed(() => data.value?.page.pageSize ?? pageSize.value)
 const totalRecords = computed(() => data.value?.page.totalItems ?? 0)
 const selectedRowId = computed(() => selectedRow.value?.id)
@@ -73,7 +73,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
       class="w-full"
       data-key="id"
       lazy
-      :value="loading ? Array.from({ length: rows }) : files"
+      :value="loading ? Array.from({ length: rows }) : users"
       scrollable
       scroll-height="flex"
       paginator
@@ -115,6 +115,31 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         <template #body="slotProps">
           <Transition v-if="slotProps.data" name="fade" mode="out-in">
             <RoleDisplayer :key="slotProps.data.role" :role="slotProps.data.role" />
+          </Transition>
+          <div v-else class="flex flex-row items-center gap-2">
+            <PSkeleton size="1.5rem" shape="circle" />
+            <PSkeleton width="5rem" height="1rem" />
+          </div>
+        </template>
+      </PColumn>
+
+      <PColumn sortable field="currentDiskQuota" :header="t('pages.configuration.users.table.quota')">
+        <template #sorticon="slotProps">
+          <SortIcon v-bind="slotProps" />
+        </template>
+        <template #header>
+          <i
+            v-tooltip.top="t('pages.configuration.users.table.quota_help')"
+            class="i-tabler-help-circle-filled text-sm mr-2 text-[--text-color-secondary]"
+          />
+        </template>
+        <template #body="slotProps">
+          <Transition v-if="slotProps.data" name="fade" mode="out-in">
+            <QuotaPreviewer
+              :quota="slotProps.data.currentDiskQuota"
+              :max="slotProps.data.maximumDiskQuota"
+              :ratio="slotProps.data.currentDiskQuotaRatio"
+            />
           </Transition>
           <div v-else class="flex flex-row items-center gap-2">
             <PSkeleton size="1.5rem" shape="circle" />

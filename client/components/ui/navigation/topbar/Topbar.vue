@@ -5,9 +5,11 @@ export interface TopBarProps {
 
 const { narrow } = defineProps<TopBarProps>()
 
-const { logout } = useAuth()
 const pageName = usePageName()
-const { user } = storeToRefs(useAuth())
+
+const auth = useAuth()
+const { logout } = auth
+const { user } = storeToRefs(auth)
 </script>
 
 <template>

@@ -10,16 +10,6 @@ const isSidebarHovered = useElementHover(sidebarRef)
 const isAdmin = computed(() => user.value?.role === 'ADMIN' || user.value?.role === 'OWNER')
 const { isDebugEnabled } = useDebug()
 
-const menuIcon = computed(() => {
-  if (sidebar.open) {
-    return 'i-tabler-indent-decrease'
-  } else if (isSidebarHovered.value) {
-    return 'i-tabler-menu-2'
-  } else {
-    return 'i-hedera-logo'
-  }
-})
-
 function toggleSidebar() {
   sidebar.open = !sidebar.open
 }

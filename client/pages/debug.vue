@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 usePageName(() => 'Debug')
 definePageMeta({
-  layout: 'sidebar',
+  layout: 'main',
   middleware: ['auth'],
 })
 

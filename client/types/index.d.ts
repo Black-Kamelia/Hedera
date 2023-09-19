@@ -36,11 +36,6 @@ declare global {
 declare global {
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
-
-  interface FileSize {
-    value: number
-    shift: 0 | 10 | 20 | 30 | 40 | 50
-  }
 }
 // END SECTION: Others
 
@@ -94,7 +89,7 @@ declare global {
     code: string,
     name: string,
     mimeType: string,
-    size: FileSize,
+    size: number,
     visibility: string,
     owner: FileOwnerDTO,
     createdAt: string,
@@ -107,7 +102,7 @@ declare global {
     refreshTokenExpiration: number
   }
 
-  type Role = 'REGULAR' | 'ADMIN' | 'OWNER'
+  type Role = 'REGULAR' | 'ADMIN' | 'OWNER' | undefined
 
   interface UserRepresentationDTO {
     id: string
@@ -116,6 +111,9 @@ declare global {
     role: Role
     enabled: boolean
     forceChangePassword: boolean
+    currentDiskQuota: number
+    currentDiskQuotaRatio: number
+    maximumDiskQuota: number
     createdAt: string
   }
 
@@ -124,7 +122,8 @@ declare global {
     email: string
     password: string
     role: Role
-    forceChangePassword: boolean
+    diskQuota?: number
+    forceChangePassword?: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'

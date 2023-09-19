@@ -3,7 +3,7 @@ const { isAuthenticated } = storeToRefs(useAuth())
 
 usePageName(() => '404')
 watch(isAuthenticated, (val) => {
-  setPageLayout(val ? 'sidebar' : 'centercard')
+  setPageLayout(val ? 'main' : 'centercard')
 }, { immediate: true })
 
 // definePageMeta({ layout })

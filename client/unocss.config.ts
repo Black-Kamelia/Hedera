@@ -11,8 +11,6 @@ import {
 
 export default defineConfig({
   shortcuts: [
-    ['btn', 'px-4 py-1 rounded inline-block hover:violet-500 dark:hover:emerald-500 text-white cursor-pointer disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
-    ['icon-btn', 'hover:text-violet-500 dark:hover:text-emerald-500 inline-block cursor-pointer select-none opacity-75 transition duration-200 ease-in-out hover:opacity-100'],
     ['flex-center', 'flex items-center justify-center'],
     ['grid-center', 'grid place-items-center'],
   ],
@@ -25,6 +23,7 @@ export default defineConfig({
       extraProperties: {
         'background-color': 'currentColor',
         'color': 'inherit',
+        'flex-shrink': '0',
       },
       collections: {
         tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default),

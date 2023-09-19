@@ -15,14 +15,12 @@ size_units:
     20: MiB
     30: GiB
     40: TiB
-    50: PiB
   decimal:
     0: bytes
     3: KB
     6: MB
     9: GB
     12: TB
-    15: PB
 unlimited_quota: Unlimited quota
 
 sidebar:
@@ -151,6 +149,8 @@ pages:
         username: Username
         email: E-mail address
         role: Role
+        quota: Disk space quota
+        quota_help: Sorting is done based on the used disk space.
         status: Status
         creation_date: Creation date
       context_menu:
@@ -331,6 +331,7 @@ forms:
       passwords_mismatch: The passwords do not match
       missing_role: Role is required
       missing_force_change_password: Choice of forcing password change is required
+      missing_disk_quota: Disk space quota is required
     fields:
       username: Username
       email: Email address
@@ -338,7 +339,27 @@ forms:
       confirm_password: Password confirmation
       role: Role
       role_placeholder: Select a role
+      disk_quota: Disk space quota
+      disk_quota_placeholder: Enter a size
+      disk_quota_placeholder_unlimited: Unlimited
       force_change_password: Force to change password on first login
+      unlimited_disk_quota: Allow for unlimited disk space quota
+  edit_user:
+    errors:
+      missing_username: Username is required
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_role: Role is required
+      missing_disk_quota: Disk space quota is required
+    fields:
+      username: Username
+      email: Email address
+      role: Role
+      role_placeholder: Select a role
+      disk_quota: Disk space quota
+      disk_quota_placeholder: Enter a size
+      disk_quota_placeholder_unlimited: Unlimited
+      unlimited_disk_quota: Allow for unlimited disk space quota
 
 actions:
   files:
@@ -414,6 +435,8 @@ errors:
       already_exists: This username is already taken
     email:
       already_exists: This email address is already taken
+    disk_quota:
+      invalid_disk_quota: Invalid disk quota
 
 theme:
   system: System

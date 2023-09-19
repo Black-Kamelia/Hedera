@@ -49,6 +49,7 @@ object UserService {
             checkEmail(dto.email)
             checkUsername(dto.username)
             checkPassword(dto.password)
+            checkDiskQuota(dto.diskQuota)
 
             if (dto.role == UserRole.OWNER) {
                 throw IllegalActionException()
@@ -102,20 +103,27 @@ object UserService {
 
             val updater = User[updaterID]
 
-            // Prevent updating self state
-            if ((dto.enabled != null) && updater.id == toEdit.id) {
-                throw IllegalActionException()
+            // Self updating
+            if (updater.id == toEdit.id) {
+                dto.enabled?.let { throw IllegalActionException() }
+                dto.role?.let { if (it != toEdit.role) throw IllegalActionException() }
+                dto.diskQuota?.let { if (it != toEdit.maximumDiskQuota && toEdit.role !== UserRole.OWNER) throw IllegalActionException() }
             }
 
-            // Prevent changing self role
-            if (dto.role != null && toEdit.id == updater.id && dto.role != toEdit.role) {
-                throw IllegalActionException()
-            }
-
-            // Prevent changing the role of someone else if not strictly superior
-            if (dto.role != null && toEdit.id != updater.id && (dto.role ge updater.role || toEdit.role ge updater.role)) {
+            // Updating someone with greater or equal role
+            if (updater.id != toEdit.id && toEdit.role ge updater.role && updater.role !== UserRole.OWNER) {
                 throw InsufficientPermissionsException()
             }
+
+            // Updating someone with lower role
+            if (updater.id != toEdit.id) {
+                dto.role?.let { if (it ge updater.role) throw IllegalActionException() }
+            }
+
+            // Demoting owner
+            dto.role?.let { if (it lt toEdit.role && toEdit.role == UserRole.OWNER) throw IllegalActionException() }
+
+            checkDiskQuota(dto.diskQuota)
 
             catchErrors()
 
@@ -225,5 +233,11 @@ private fun ValidationScope.checkPassword(password: String) {
         password.length < 8 -> raiseError("password", Errors.Users.Password.TOO_SHORT)
         password.length > 128 -> raiseError("password", Errors.Users.Password.TOO_LONG)
         else -> return
+    }
+}
+
+private fun ValidationScope.checkDiskQuota(diskQuota: Long?) {
+    if (diskQuota != null && diskQuota < -1) {
+        raiseError("diskQuota", Errors.Users.DiskQuota.INVALID_DISK_QUOTA, HttpStatusCode.BadRequest)
     }
 }

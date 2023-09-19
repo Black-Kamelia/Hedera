@@ -7,6 +7,8 @@ object Errors {
     const val INSUFFICIENT_PERMISSIONS = "$PREFIX.insufficient_permissions"
     const val ILLEGAL_ACTION = "$PREFIX.illegal_action"
 
+    const val BAD_REQUEST_RAW = "$PREFIX.bad_request_raw"
+    const val NOT_FOUND_RAW = "$PREFIX.not_found_raw"
     const val UNKNOWN = "$PREFIX.unknown"
 
     object Auth {
@@ -110,6 +112,7 @@ object Errors {
 
         const val NOT_FOUND = "$PREFIX.not_found"
         const val FORCE_CHANGE_PASSWORD = "$PREFIX.force_change_password"
+        const val INSUFFICIENT_DISK_QUOTA = "$PREFIX.insufficient_disk_quota"
 
         object Email {
 
@@ -138,6 +141,13 @@ object Errors {
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_USERNAME = "$PREFIX.invalid_username"
 
+        }
+
+        object DiskQuota {
+
+            private const val PREFIX = "${Errors.Users.PREFIX}.disk_quota"
+
+            const val INVALID_DISK_QUOTA = "$PREFIX.invalid_disk_quota"
         }
 
     }

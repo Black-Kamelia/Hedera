@@ -189,14 +189,6 @@ fun String.Companion.random(size: Int) = (1..size)
     .map { CHARSET.random() }
     .joinToString("")
 
-fun FilterObject.adaptFileSize(): FilterObject {
-    val (value, unit) = value.split(";")
-    val size = value.toDoubleOrNull() ?: throw IllegalFilterException(this)
-    val shift = unit.toIntOrNull() ?: throw IllegalFilterException(this)
-    val bytes = size * (1 shl shift)
-    return copy(value = bytes.roundToLong().toString())
-}
-
 /** Checks if this expression fuzzy matches the specified [pattern]. */
 infix fun <T : String?> Expression<T>.fuzzy(pattern: String) = fuzzy(LikePattern(pattern))
 

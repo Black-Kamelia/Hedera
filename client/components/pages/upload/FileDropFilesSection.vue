@@ -9,7 +9,7 @@ defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { autoFormat } = useHumanFileSize()
+const { format } = useHumanFileSize()
 
 function getImageData(file: File) {
   return (file as any).objectURL
@@ -43,7 +43,7 @@ function getIcon(type: string) {
 
     <div>
       <div>{{ file.name }}</div>
-      <span class="mr-2">{{ autoFormat(file.size) }}</span>
+      <span class="mr-2">{{ format(file.size) }}</span>
       <PBadge :value="t(`pages.upload.${status}`)" :severity="{ pending: 'primary', uploading: 'warning', completed: 'success', error: 'danger' }[status]" />
     </div>
     <div v-if="status === 'pending'" class="ml-auto">

@@ -32,6 +32,12 @@
             <column name="settings" type="UUID">
                 <constraints nullable="false"/>
             </column>
+            <column name="current_disk_quota" type="BIGINT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="maximum_disk_quota" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
 
             <column name="created_by" type="UUID">
                 <constraints nullable="false"/>

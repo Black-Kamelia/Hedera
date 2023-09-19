@@ -20,7 +20,7 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
       setTokens(null)
       setUser(null)
       const redirect = getRedirectParam(route.path)
-      navigateTo(`/login?reason=${encodeURIComponent(payload.data.reason)}${redirect}}`)
+      navigateTo(`/login?reason=${encodeURIComponent(payload.data.reason)}${redirect}`)
       break
     }
   }

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
-import { UpdatePasswordForm } from '~/utils/forms'
+import { UPDATE_PASSWORD_FORM } from '~/utils/forms'
 import { ForcePasswordChangeDoneEvent } from '~/utils/events'
 
 const { t } = useI18n()
@@ -17,8 +17,8 @@ onMounted(() => passwordField.value?.$el.focus({ preventScroll: true }))
 const schema = object({
   password: string()
     .required(t('forms.change_password.errors.missing_password'))
-    .min(UpdatePasswordForm.password.min, t('forms.change_password.errors.password_too_short', { min: UpdatePasswordForm.password.min }))
-    .max(UpdatePasswordForm.password.max, t('forms.change_password.errors.password_too_long', { max: UpdatePasswordForm.password.max })),
+    .min(UPDATE_PASSWORD_FORM.password.min, t('forms.change_password.errors.password_too_short', { min: UPDATE_PASSWORD_FORM.password.min }))
+    .max(UPDATE_PASSWORD_FORM.password.max, t('forms.change_password.errors.password_too_long', { max: UPDATE_PASSWORD_FORM.password.max })),
   confirmPassword: string()
     .required(t('forms.change_password.errors.missing_password_confirmation'))
     .oneOf([yref('password')], t('forms.change_password.errors.passwords_mismatch')),

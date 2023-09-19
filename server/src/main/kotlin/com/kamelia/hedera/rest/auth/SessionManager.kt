@@ -26,7 +26,6 @@ object SessionManager {
     private val sessions = mutableMapOf<String, Session>()
     private val refreshTokens = mutableMapOf<String, TokenData>()
     private val loggedUsers = mutableMapOf<UUID, UserState>()
-    private val websocketSessions = mutableMapOf<String, Pair<Date, UUID>>() // token to (issuedAt, userId)
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var pruneJob: Job? = null
 
@@ -43,10 +42,6 @@ object SessionManager {
                 }
                 refreshTokens.entries.removeIf {
                     it.value.refreshTokenExpiration < now
-                }
-                websocketSessions.entries.removeIf {
-                    // remove if token is older than a day
-                    it.value.first.time < now - DAY_IN_MILLIS
                 }
             }
         }
@@ -129,16 +124,6 @@ object SessionManager {
 
     suspend fun verifyRefresh(token: String): Unit = mutex.withReentrantLock {
         refreshTokens[token] ?: throw ExpiredOrInvalidTokenException()
-    }
-
-    suspend fun addWebsocketSession(token: String): UUID? = mutex.withReentrantLock {
-        val (issuedAt, userId) = validateWebsocketToken(token) ?: return@withReentrantLock null
-        websocketSessions[token] = issuedAt to userId
-        userId
-    }
-
-    suspend fun removeWebsocketSession(token: String) = mutex.withReentrantLock {
-        websocketSessions.remove(token)
     }
 
     suspend fun logout(token: String): Unit = mutex.withReentrantLock {

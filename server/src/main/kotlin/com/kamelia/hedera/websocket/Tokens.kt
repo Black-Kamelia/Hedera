@@ -7,7 +7,7 @@ import com.kamelia.hedera.rest.auth.UserState
 import com.kamelia.hedera.util.Environment
 import java.util.*
 
-fun validateWebsocketToken(token: String): Pair<Date, UUID>? {
+fun validateWebsocketToken(token: String): UUID? {
     val secret = Environment.secretWSToken
     val verifier = JWT.require(Algorithm.HMAC256(secret)).build()
     val decoded = try {
@@ -16,7 +16,7 @@ fun validateWebsocketToken(token: String): Pair<Date, UUID>? {
         return null
     }
 
-    return decoded.issuedAt to UUID.fromString(decoded.subject)
+    return UUID.fromString(decoded.subject)
 }
 
 fun createWebsocketToken(user: UserState): String {

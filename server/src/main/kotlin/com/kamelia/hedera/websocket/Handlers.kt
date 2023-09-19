@@ -25,10 +25,11 @@ private suspend fun WebSocketServerSession.onUserUpdate(currentId: UUID, user: U
     sendEvent(USER_UPDATED, user)
 }
 
+data class UserForcefullyLoggedOutPayload(val userId: UUID, val reason: String, val exceptedSessions: List<String> = emptyList())
 private const val USER_FORCEFULLY_LOGGED_OUT = "user-forcefully-logged-out"
-private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: UUID, session: String, payload: UserForcefullyLoggedOutDTO) {
+private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: UUID, session: String, payload: UserForcefullyLoggedOutPayload) {
     if (payload.userId != currentId || session in payload.exceptedSessions) return
-    sendEvent(USER_FORCEFULLY_LOGGED_OUT, payload)
+    sendEvent(USER_FORCEFULLY_LOGGED_OUT, UserForcefullyLoggedOutDTO(currentId, payload.reason))
     forcefullyClose(USER_FORCEFULLY_LOGGED_OUT)
 }
 

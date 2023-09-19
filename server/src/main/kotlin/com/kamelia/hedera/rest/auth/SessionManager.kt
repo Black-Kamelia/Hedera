@@ -17,6 +17,7 @@ import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
+import com.kamelia.hedera.websocket.UserForcefullyLoggedOutPayload
 import io.ktor.server.auth.*
 import java.time.Instant
 import java.util.*
@@ -144,7 +145,7 @@ object SessionManager {
 
     suspend fun logoutAll(user: User, reason: String = "logout_all") = mutex.withReentrantLock {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutDTO(
+            UserForcefullyLoggedOutPayload(
                 userId = user.id.value,
                 reason = reason,
             )
@@ -162,7 +163,7 @@ object SessionManager {
 
     suspend fun logoutAllExceptCurrent(user: User, token: String, reason: String) = mutex.withReentrantLock {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutDTO(
+            UserForcefullyLoggedOutPayload(
                 userId = user.id.value,
                 reason = reason,
                 exceptedSessions = listOf(token),

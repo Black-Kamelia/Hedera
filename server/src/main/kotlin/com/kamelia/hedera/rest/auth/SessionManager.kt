@@ -165,6 +165,7 @@ object SessionManager {
             UserForcefullyLoggedOutDTO(
                 userId = user.id.value,
                 reason = reason,
+                exceptedSessions = listOf(token),
             )
         )
         sessions.entries.filter {

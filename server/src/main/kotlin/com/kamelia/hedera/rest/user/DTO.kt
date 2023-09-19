@@ -83,4 +83,5 @@ data class UserPageDTO(
 data class UserForcefullyLoggedOutDTO(
     val userId: UUID,
     val reason: String,
+    val exceptedSessions: List<String> = emptyList(),
 )

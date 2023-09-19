@@ -6,12 +6,12 @@ export default function useWebsocketAutoConnect() {
   const appConfig = useRuntimeConfig()
   const host = appConfig.public.websocketUrl || `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
 
-  const { isAuthenticated, tokens } = storeToRefs(useAuth())
+  const { isAuthenticated } = storeToRefs(useAuth())
 
   // will redirect to /login if not authenticated
   const { data: tokenResponse, execute } = useLazyFetchAPI<{ token: string }>('/ws', { immediate: false })
-  const webSocketUrl = computed(() => tokenResponse.value && isAuthenticated.value
-    ? `${host}/ws?token=${tokenResponse.value.token}&session=${tokens.value?.accessToken}`
+  const webSocketUrl = computed(() => tokenResponse.value
+    ? `${host}/ws?token=${tokenResponse.value.token}`
     : undefined)
 
   const { open, close } = useWebSocket(webSocketUrl, {
@@ -49,4 +49,6 @@ export default function useWebsocketAutoConnect() {
       close()
     }
   })
+
+  useLocalStorage('websocketSession', tokenResponse)
 }

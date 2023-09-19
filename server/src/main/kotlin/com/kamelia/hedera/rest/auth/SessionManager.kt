@@ -1,36 +1,24 @@
 package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.MessageKeyDTO
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.TokenData
+import com.kamelia.hedera.core.*
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
-import com.kamelia.hedera.rest.user.User
-import com.kamelia.hedera.rest.user.UserEvents
-import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
-import com.kamelia.hedera.rest.user.UserRepresentationDTO
-import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.toRepresentationDTO
+import com.kamelia.hedera.rest.user.*
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
-import com.kamelia.hedera.websocket.UserForcefullyLoggedOutPayload
+import com.kamelia.hedera.websocket.validateWebsocketToken
 import io.ktor.server.auth.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
 import java.time.Instant
 import java.util.*
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 
 object SessionManager {
 
+    private val DAY_IN_MILLIS = 1.days.inWholeMilliseconds
     private val PURGE_INTERVAL = 5.minutes
 
     private val mutex = Mutex()
@@ -38,6 +26,7 @@ object SessionManager {
     private val sessions = mutableMapOf<String, Session>()
     private val refreshTokens = mutableMapOf<String, TokenData>()
     private val loggedUsers = mutableMapOf<UUID, UserState>()
+    private val websocketSessions = mutableMapOf<String, Pair<Date, UUID>>() // token to (issuedAt, userId)
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var pruneJob: Job? = null
 
@@ -54,6 +43,10 @@ object SessionManager {
                 }
                 refreshTokens.entries.removeIf {
                     it.value.refreshTokenExpiration < now
+                }
+                websocketSessions.entries.removeIf {
+                    // remove if token is older than a day
+                    it.value.first.time < now - DAY_IN_MILLIS
                 }
             }
         }
@@ -138,6 +131,16 @@ object SessionManager {
         refreshTokens[token] ?: throw ExpiredOrInvalidTokenException()
     }
 
+    suspend fun addWebsocketSession(token: String): UUID? = mutex.withReentrantLock {
+        val (issuedAt, userId) = validateWebsocketToken(token) ?: return@withReentrantLock null
+        websocketSessions[token] = issuedAt to userId
+        userId
+    }
+
+    suspend fun removeWebsocketSession(token: String) = mutex.withReentrantLock {
+        websocketSessions.remove(token)
+    }
+
     suspend fun logout(token: String): Unit = mutex.withReentrantLock {
         val session = sessions.remove(token) ?: throw ExpiredOrInvalidTokenException()
         refreshTokens.remove(session.tokenData.refreshToken)
@@ -145,7 +148,7 @@ object SessionManager {
 
     suspend fun logoutAll(user: User, reason: String = "logout_all") = mutex.withReentrantLock {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutPayload(
+            UserForcefullyLoggedOutDTO(
                 userId = user.id.value,
                 reason = reason,
             )
@@ -161,13 +164,13 @@ object SessionManager {
         loggedUsers.remove(user.id.value)
     }
 
-    suspend fun logoutAllExceptCurrent(user: User, token: String, reason: String) = mutex.withReentrantLock {
+    suspend fun logoutAllExceptCurrent(user: User, token: String, session: String, reason: String) = mutex.withReentrantLock {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutPayload(
+            UserForcefullyLoggedOutDTO(
                 userId = user.id.value,
                 reason = reason,
-                exceptedSessions = listOf(token),
-            )
+            ),
+            exceptedSessions = listOf(session)
         )
         sessions.entries.filter {
             it.value.user.uuid == user.id.value && it.key != token

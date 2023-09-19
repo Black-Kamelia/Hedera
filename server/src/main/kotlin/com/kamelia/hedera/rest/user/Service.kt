@@ -162,6 +162,7 @@ object UserService {
     suspend fun updateUserPassword(
         id: UUID,
         authToken: String,
+        session: String,
         dto: UserPasswordUpdateDTO,
         forced: Boolean,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
@@ -187,7 +188,7 @@ object UserService {
             toEdit.updatePassword(dto)
 
             if (forced) {
-                SessionManager.logoutAllExceptCurrent(toEdit, authToken, "password_changed")
+                SessionManager.logoutAllExceptCurrent(toEdit, authToken, session, "password_changed")
             }
 
             ActionResponse.ok(

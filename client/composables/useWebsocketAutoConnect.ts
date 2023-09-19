@@ -50,5 +50,8 @@ export default function useWebsocketAutoConnect() {
     }
   })
 
-  useLocalStorage('websocketSession', tokenResponse)
+  watch(tokenResponse, (value) => {
+    if (!value) localStorage.removeItem('websocketSession')
+    else localStorage.setItem('websocketSession', value.token)
+  })
 }

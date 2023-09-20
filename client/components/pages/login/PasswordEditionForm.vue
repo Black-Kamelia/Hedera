@@ -27,7 +27,7 @@ const { handleSubmit } = useForm({
   validationSchema: schema,
 })
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit((values) => {
   loading.value = true
   updatePassword(null, values.password)
     .then(() => {

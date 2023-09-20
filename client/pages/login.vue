@@ -25,12 +25,8 @@ const { currentRoute } = useRouter()
 const { isAuthenticated } = storeToRefs(useAuth())
 
 function parseState(value: string): State {
-  try {
-    if (!isAuthenticated.value) return 'LOGIN'
-    return value.toUpperCase().replace('-', '_') as State
-  } catch (e) {
-    return 'LOGIN'
-  }
+  if (!isAuthenticated.value) return 'LOGIN'
+  return value.toUpperCase().replace('-', '_') as State
 }
 
 const state = ref<State>(parseState(currentRoute.value.query.state as string))

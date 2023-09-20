@@ -10,10 +10,10 @@ const message = defineModel<{
   content: string | null
   severity: 'success' | 'info' | 'warn' | 'error' | undefined
 }>('message', {
-  default: reactive({
+  default: {
     content: null,
     severity: undefined,
-  }),
+  },
 })
 
 const loading = ref(false)
@@ -31,7 +31,7 @@ const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
 })
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit((values) => {
   loading.value = true
   login(values).catch(() => loading.value = false)
 })

@@ -109,6 +109,14 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
   message.content = t('pages.login.reasons.expired')
   message.severity = 'warn'
 })
+useWebsocketEvent('user-forcefully-logged-out', (event) => {
+  state.value = 'LOGIN'
+  message.content = t('pages.login.reasons.forcefully_logged_out')
+  message.severity = 'warn'
+  if (event.reason) {
+    message.content = t(`pages.login.reasons.${event.reason}`)
+  }
+})
 </script>
 
 <template>

@@ -36,6 +36,7 @@ pages:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
+      password_changed: Your password has been changed, please log in again
   change_password:
     title: Change password
     message: You must change your password before continuing

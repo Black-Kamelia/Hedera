@@ -102,7 +102,7 @@ declare global {
     refreshTokenExpiration: number
   }
 
-  type Role = 'REGULAR' | 'ADMIN' | 'OWNER' | undefined
+  type Role = 'REGULAR' | 'ADMIN' | 'OWNER'
 
   interface UserRepresentationDTO {
     id: string

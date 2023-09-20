@@ -4,8 +4,9 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const { isAuthenticated, user } = storeToRefs(useAuth())
 
   if (isAuthenticated.value && user.value!.forceChangePassword) {
-    if (to.fullPath !== '/login?state=change-password') {
-      return navigateTo('/login?state=change-password', { replace: true })
+    if (!to.fullPath.startsWith('/login?state=change-password')) {
+      const redirect = getRedirectParam(to.path, false)
+      return navigateTo(`/login?state=change-password${redirect}`, { replace: true })
     }
     return
   }

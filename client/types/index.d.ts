@@ -102,7 +102,7 @@ declare global {
     refreshTokenExpiration: number
   }
 
-  type Role = 'REGULAR' | 'ADMIN' | 'OWNER' | undefined
+  type Role = 'REGULAR' | 'ADMIN' | 'OWNER'
 
   interface UserRepresentationDTO {
     id: string
@@ -110,6 +110,7 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    forceChangePassword: boolean
     currentDiskQuota: number
     currentDiskQuotaRatio: number
     maximumDiskQuota: number

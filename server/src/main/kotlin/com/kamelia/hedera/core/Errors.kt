@@ -111,6 +111,7 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.users"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+        const val FORCE_CHANGE_PASSWORD = "$PREFIX.force_change_password"
         const val INSUFFICIENT_DISK_QUOTA = "$PREFIX.insufficient_disk_quota"
 
         object Email {
@@ -129,6 +130,7 @@ object Errors {
             const val TOO_SHORT = "$PREFIX.too_short"
             const val TOO_LONG = "$PREFIX.too_long"
             const val INCORRECT_PASSWORD = "$PREFIX.incorrect_password"
+            const val MISSING_OLD_PASSWORD = "$PREFIX.missing_old_password"
 
         }
 

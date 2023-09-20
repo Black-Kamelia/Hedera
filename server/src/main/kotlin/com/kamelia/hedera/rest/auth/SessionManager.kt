@@ -70,6 +70,7 @@ object SessionManager {
                 user.email,
                 user.role,
                 user.enabled,
+                user.forceChangePassword,
                 user.currentDiskQuota,
                 user.maximumDiskQuota,
                 user.createdAt
@@ -89,6 +90,7 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
+            forceChangePassword = user.forceChangePassword
             currentDiskQuota = user.currentDiskQuota
             maximumDiskQuota = user.maximumDiskQuota
         }
@@ -162,11 +164,12 @@ object SessionManager {
 }
 
 data class UserState(
-    var uuid: UUID,
+    val uuid: UUID,
     var username: String,
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
+    var forceChangePassword: Boolean,
     var currentDiskQuota: Long,
     var maximumDiskQuota: Long,
     val createdAt: Instant,
@@ -178,6 +181,7 @@ data class UserState(
         email,
         role,
         enabled,
+        forceChangePassword,
         currentDiskQuota,
         if(maximumDiskQuota > 0L) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.0,
         maximumDiskQuota,

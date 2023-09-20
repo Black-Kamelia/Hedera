@@ -1,15 +1,50 @@
 <script setup lang="ts">
-import { object, string } from 'yup'
+import { ForcePasswordChangeDoneEvent } from '~/utils/events'
 
-interface LoginForm {
-  username: string
-  password: string
+const { t } = useI18n()
+
+type State = 'LOGIN' | 'CHANGE_PASSWORD' | 'COMPLETE_OTP'
+
+function stateToIndex(state: State) {
+  switch (state) {
+    case 'LOGIN':
+      return 0
+    case 'CHANGE_PASSWORD':
+      return 1
+    case 'COMPLETE_OTP':
+      return 2
+  }
 }
 
-const { t, m } = useI18n()
-const { login } = useAuth()
+usePageName(() => t('pages.login.title'))
+definePageMeta({
+  layout: 'centercard',
+  middleware: ['auth'],
+})
+const { currentRoute } = useRouter()
+const { isAuthenticated } = storeToRefs(useAuth())
 
-const usernamePlaceholder = getRandomDeveloperUsername()
+function parseState(value: string): State {
+  if (!isAuthenticated.value) return 'LOGIN'
+  return value.toUpperCase().replace('-', '_') as State
+}
+
+const state = ref<State>(parseState(currentRoute.value.query.state as string))
+const stateHistory = useRefHistory(state, { capacity: 2 })
+const stateTransition = computed(() => {
+  const history = stateHistory.history.value
+  if (history.length < 2) return 'slide-left'
+  const [next, prev] = history
+  return stateToIndex(prev.snapshot) < stateToIndex(next.snapshot) ? 'slide-left' : 'slide-right'
+})
+
+const subtitle = computed(() => {
+  switch (state.value) {
+    case 'LOGIN': return t('pages.login.title')
+    case 'CHANGE_PASSWORD': return t('pages.change_password.title')
+    case 'COMPLETE_OTP': return t('pages.two_factor_authentication.title')
+  }
+})
 const message = reactive<{
   content: string | null
   severity: 'success' | 'info' | 'warn' | 'error' | undefined
@@ -18,16 +53,13 @@ const message = reactive<{
   severity: undefined,
 })
 
-const loading = ref(false)
-const usernameField = ref<Nullable<CompElement>>(null)
-const passwordField = ref<Nullable<CompElement>>(null)
-
-usePageName(() => t('pages.login.title'))
-definePageMeta({
-  layout: 'centercard',
-  middleware: ['auth'],
-})
-const { currentRoute } = useRouter()
+const loginFormRef = ref()
+const changePasswordFormRef = ref()
+const { height: loginHeight } = useElementSize(loginFormRef)
+const { height: changePasswordHeight } = useElementSize(changePasswordFormRef)
+const cardTransition = ref(false)
+const cardHeight = computed(() => Math.max(loginHeight.value, changePasswordHeight.value))
+watch([state], () => cardTransition.value = true)
 
 onMounted(() => {
   const query = currentRoute.value.query
@@ -38,64 +70,44 @@ onMounted(() => {
   }
 })
 
-const schema = object({
-  username: string()
-    .required(t('forms.login.errors.missing_username'))
-    .matches(/^[a-z0-9_\-.]+$/, t('forms.login.errors.invalid_username')),
-  password: string()
-    .required(t('forms.login.errors.missing_password')),
-})
-const { handleSubmit, resetField } = useForm<LoginForm>({
-  validationSchema: schema,
-})
+function redirectToApplication() {
+  const redirect = useRoute().query.redirect?.toString()
+  const to = redirect && (redirect.startsWith('%2F') || redirect.startsWith('/'))
+    ? decodeURIComponent(redirect)
+    : '/files'
 
-function hideErrorMessage() {
-  message.content = null
+  try {
+    navigateTo(to, { replace: true })
+  } catch {
+    navigateTo('/files', { replace: true })
+  }
 }
 
 useEventBus(LoggedInEvent).on((event) => {
-  if (event.error) {
-    const status = event.error?.response?.status
-
-    if (status === 500) {
-      resetField('username')
-      resetField('password')
-      usernameField.value?.$el.focus()
-      message.content = t('forms.login.errors.server_error')
-      message.severity = 'error'
-      return
-    }
-
-    if (status === 401) {
-      resetField('password')
-      passwordField.value?.$el.focus()
-    }
-    if (status === 403) {
-      resetField('username')
-      resetField('password')
-      usernameField.value?.$el.focus()
-    }
-
-    message.content = m(event.error.data.title)
-    message.severity = 'error'
-  } else {
-    const redirect = useRoute().query.redirect?.toString()
-    const to = redirect && (redirect.startsWith('%2F') || redirect.startsWith('/'))
-      ? decodeURIComponent(redirect)
-      : '/files'
-
-    try {
-      navigateTo(to, { replace: true })
-    } catch {
-      navigateTo('/files', { replace: true })
+  if (!event.error) {
+    const user = event.user
+    message.content = null
+    message.severity = undefined
+    if (user?.forceChangePassword) {
+      state.value = 'CHANGE_PASSWORD'
+    } else {
+      redirectToApplication()
     }
   }
 })
-
-const onSubmit = handleSubmit(async (values) => {
-  loading.value = true
-  await login(values)
-  loading.value = false
+useEventBus(ForcePasswordChangeDoneEvent).on(() => {
+  redirectToApplication()
+})
+useEventBus(LoggedOutEvent).on((event) => {
+  if (event?.abortLogin) {
+    state.value = 'LOGIN'
+    navigateTo('/login', { replace: true })
+  }
+})
+useEventBus(RefreshTokenExpiredEvent).on(() => {
+  state.value = 'LOGIN'
+  message.content = t('pages.login.reasons.expired')
+  message.severity = 'warn'
 })
 </script>
 
@@ -104,51 +116,59 @@ const onSubmit = handleSubmit(async (values) => {
     <h1 class="font-600 text-5xl mb-1">
       {{ t('app_name') }}
     </h1>
-    <h2 class="font-600 text-3xl mb-3">
-      {{ t('pages.login.title') }}
-    </h2>
+    <div class="relative">
+      <Transition :name="stateTransition">
+        <h2 :key="subtitle" class="font-600 text-3xl mb-3">
+          {{ subtitle }}
+        </h2>
+      </Transition>
+    </div>
   </div>
 
-  <PMessage v-show="message.content" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
-    {{ message.content }}
-  </PMessage>
-
-  <form @submit="onSubmit">
-    <div class="mb-3">
-      <FormInputText
-        id="username"
-        ref="usernameField"
-        class="w-full"
-        name="username"
-        type="text"
-        :label="t('forms.login.fields.username')"
-        :placeholder="usernamePlaceholder"
-        :transform-value="usernameRestrict"
-        start-icon="i-tabler-user"
-        @input="hideErrorMessage"
-      />
-    </div>
-
-    <div class="mb-3">
-      <FormInputText
-        id="password"
-        ref="passwordField"
-        class="w-full"
-        name="password"
-        type="password"
-        :label="t('forms.login.fields.password')"
-        placeholder="••••••••••••••••"
-        start-icon="i-tabler-lock"
-        @input="hideErrorMessage"
-      />
-    </div>
-
-    <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-        {{ t('pages.login.forgot_password') }}
-      </NuxtLink>
-    </div>
-
-    <PButton :label="t('forms.submit')" class="w-full" type="submit" :loading="loading" />
-  </form>
+  <div class="relative w-full" :class="{ 'h-transition': cardTransition }" :style="{ height: `${cardHeight}px` }">
+    <Transition :name="stateTransition" @after-enter="cardTransition = false">
+      <LoginForm v-if="state === 'LOGIN'" ref="loginFormRef" v-model:message="message" />
+      <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" ref="changePasswordFormRef" />
+    </Transition>
+  </div>
 </template>
+
+<style scoped>
+.h-transition {
+  transition: height .4s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
+  width: 100%;
+}
+
+.slide-left-leave-active,
+.slide-right-leave-active {
+  position: absolute;
+  top: 0;
+}
+
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+</style>

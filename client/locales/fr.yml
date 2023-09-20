@@ -36,6 +36,9 @@ pages:
       expired: Votre session a expiré, veuillez vous reconnecter
       logout_all: Vous avez été déconnecté de tous les appareils
       disabled: Votre compte a été désactivé
+  change_password:
+    title: Modifier le mot de passe
+    message: Vous devez modifier votre mot de passe pour continuer
   reset_password:
     title: Réinitialiser le mot de passe
     login: Retour à la connexion
@@ -286,6 +289,17 @@ forms:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d’utilisateur
+  change_password:
+    submit: Continuer
+    errors:
+      missing_password: Mot de passe requis
+      missing_password_confirmation: Confirmation du mot de passe requise
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      passwords_mismatch: Les mots de passe ne correspondent pas
+    fields:
+      password: Nouveau mot de passe
+      confirm_password: Confirmer le nouveau mot de passe
   reset_password:
     errors:
       missing_email: Adresse e-mail requise

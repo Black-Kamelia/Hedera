@@ -16,6 +16,7 @@ fun User.toRepresentationDTO() = UserRepresentationDTO(
     email,
     role,
     enabled,
+    forceChangePassword,
     currentDiskQuota,
     diskQuotaRatio,
     maximumDiskQuota,
@@ -58,7 +59,7 @@ data class UserUpdateDTO(
  */
 @Serializable
 data class UserPasswordUpdateDTO(
-    val oldPassword: String,
+    val oldPassword: String? = null,
     val newPassword: String,
 ) : DTO
 
@@ -74,6 +75,7 @@ data class UserRepresentationDTO(
     val email: String,
     val role: UserRole,
     val enabled: Boolean,
+    val forceChangePassword: Boolean,
     val currentDiskQuota: Long,
     val currentDiskQuotaRatio: Double,
     val maximumDiskQuota: Long,

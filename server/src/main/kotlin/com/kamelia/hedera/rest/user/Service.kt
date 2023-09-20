@@ -172,8 +172,12 @@ object UserService {
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
-            if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-                raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD, HttpStatusCode.Forbidden)
+            if (!toEdit.forceChangePassword) {
+                if (dto.oldPassword == null) {
+                    raiseError("oldPassword", Errors.Users.Password.MISSING_OLD_PASSWORD, HttpStatusCode.BadRequest)
+                } else if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
+                    raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD, HttpStatusCode.Forbidden)
+                }
             }
 
             catchErrors()

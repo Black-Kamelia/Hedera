@@ -17,7 +17,7 @@ export interface UseAuthComposer {
   setUser: (newUser: Nullable<Partial<User>>) => void
   setTokens: (newTokens: Nullable<Tokens>) => void
   login: (values: Record<string, any>) => Promise<void>
-  logout: () => Promise<void>
+  logout: (abortLogin?: boolean) => Promise<void>
 }
 
 export const useAuth = defineStore('auth', (): UseAuthComposer => {
@@ -54,25 +54,24 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
       setTokens(tokens)
       setUser(user)
       updateSettings(userSettings)
-      loggedInEvent.emit({ tokens })
+      loggedInEvent.emit({ tokens, user })
     } catch (error) {
       if (error instanceof FetchError) {
         loggedInEvent.emit({ error })
-        return
       }
       throw error
     }
   }
 
-  async function logout() {
+  async function logout(abortLogin = false) {
     try {
       await $fetchAPI('/logout', { method: 'POST' })
       setTokens(null)
       setUser(null)
-      loggedOutEvent.emit()
+      loggedOutEvent.emit({ abortLogin })
     } catch (error) {
       if (error instanceof FetchError) {
-        loggedOutEvent.emit({ error })
+        loggedOutEvent.emit({ abortLogin, error })
         return
       }
       throw error

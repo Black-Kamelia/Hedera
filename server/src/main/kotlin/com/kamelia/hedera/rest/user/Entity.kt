@@ -189,8 +189,11 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         onUpdate(updater)
     }
 
-    fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
+    suspend fun updatePassword(dto: UserPasswordUpdateDTO): User = apply {
         password = Hasher.hash(dto.newPassword)
+        forceChangePassword = false
+
+        SessionManager.updateSession(uuid, this)
         onUpdate(this)
     }
 

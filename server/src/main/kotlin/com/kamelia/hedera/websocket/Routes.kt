@@ -20,7 +20,7 @@ fun Route.webSocketRoutes() = route("/") {
 }
 
 private fun Route.getWebSocketToken() = get("/api/ws") {
-    val user = authenticatedUser ?: throw ExpiredOrInvalidTokenException()
+    val user = call.authenticatedUser ?: throw ExpiredOrInvalidTokenException()
     val token = createWebsocketToken(user)
     call.respondNoError(Response.created(mapOf("token" to token)))
 }

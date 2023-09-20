@@ -36,6 +36,8 @@ class IllegalActionException(error: MessageKeyDTO = MessageKeyDTO(Errors.ILLEGAL
 
 class InsufficientPermissionsException : HederaException(Errors.INSUFFICIENT_PERMISSIONS)
 
+class InsufficientDiskQuotaException : HederaException(Errors.Users.INSUFFICIENT_DISK_QUOTA)
+
 class FileNotFoundException : HederaException(Errors.Files.NOT_FOUND)
 
 class UserNotFoundException : HederaException(Errors.Users.NOT_FOUND)

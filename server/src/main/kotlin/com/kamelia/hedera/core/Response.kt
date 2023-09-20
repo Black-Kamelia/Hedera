@@ -90,6 +90,7 @@ open class Response<out T>(
         fun <S> created(value: S) = success(HttpStatusCode.Created, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)
 
+        fun badRequest(error: MessageDTO<out DTO>) = error(HttpStatusCode.BadRequest, error)
         fun badRequest(error: MessageKeyDTO) = error(HttpStatusCode.BadRequest, error)
         fun badRequest(error: String) = badRequest(MessageKeyDTO(error))
 
@@ -99,6 +100,7 @@ open class Response<out T>(
         fun forbidden(error: MessageKeyDTO) = error(HttpStatusCode.Forbidden, error)
         fun forbidden(error: String) = forbidden(MessageKeyDTO(error))
 
+        fun notFound(error: MessageDTO<out DTO>) = error(HttpStatusCode.NotFound, error)
         fun notFound(error: MessageKeyDTO) = error(HttpStatusCode.NotFound, error)
         fun notFound(error: String) = notFound(MessageKeyDTO(error))
         fun notFound() = error(HttpStatusCode.NotFound)

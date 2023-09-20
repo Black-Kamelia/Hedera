@@ -15,7 +15,7 @@ fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
     code,
     name,
     mimeType,
-    size.toSizeDTO(),
+    size,
     visibility,
     FileOwnerDTO(owner.uuid, owner.username),
     createdAt.toString(),
@@ -43,16 +43,10 @@ data class FileRepresentationDTO(
     val code: String,
     val name: String,
     val mimeType: String,
-    val size: FileSizeDTO,
+    val size: Long,
     val visibility: FileVisibility,
     val owner: FileOwnerDTO,
     val createdAt: String,
-) : DTO
-
-@Serializable
-data class FileSizeDTO(
-    val value: Double,
-    val shift: Int,
 ) : DTO
 
 @Serializable
@@ -65,13 +59,3 @@ data class FileOwnerDTO(
 data class FilePageDTO(
     val page: PageDTO<FileRepresentationDTO>,
 ) : DTO
-
-fun Long.toSizeDTO(): FileSizeDTO {
-    var size = toDouble()
-    var shift = 0
-    while (size >= 1024) {
-        size /= 1024
-        shift += 10
-    }
-    return FileSizeDTO(size, shift)
-}

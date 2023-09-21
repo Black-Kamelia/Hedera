@@ -19,13 +19,14 @@ fun validateWebsocketToken(token: String): UUID? {
     return UUID.fromString(decoded.subject)
 }
 
-fun createWebsocketToken(user: UserState): String {
+fun createWebsocketToken(user: UserState, sessionId: UUID): String {
     val now = System.currentTimeMillis()
     val expiration = now + Environment.expirationWSToken
     val secret = Environment.secretWSToken
 
     return JWT.create()
         .withSubject(user.uuid.toString())
+        .withClaim("sessionId", sessionId.toString())
         .withExpiresAt(Date(expiration))
         .withIssuedAt(Date(now))
         .sign(Algorithm.HMAC256(secret))

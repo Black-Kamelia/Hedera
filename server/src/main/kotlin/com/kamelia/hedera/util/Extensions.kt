@@ -109,6 +109,7 @@ val ApplicationCall.authenticatedUser: UserState?
 val ApplicationCall.accessToken: String?
     get() = userOrNull()?.accessToken
 
+
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 
 val Payload.uuid get() = this["id"].asString().toUUID()

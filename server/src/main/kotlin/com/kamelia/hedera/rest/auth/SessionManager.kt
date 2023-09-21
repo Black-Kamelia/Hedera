@@ -150,8 +150,8 @@ object SessionManager {
         return Response.created(generateTokens(user, refreshToken = token))
     }
 
-    suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
-        sessions[token]?.user
+    suspend fun verify(token: String): Session? = mutex.withReentrantLock {
+        sessions[token]
     }
 
     suspend fun verifyRefresh(token: String): Unit = mutex.withReentrantLock {

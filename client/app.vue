@@ -19,16 +19,22 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
     case 'user-forcefully-logged-out': {
       setTokens(null)
       setUser(null)
-      const redirect = getRedirectParam(route.path)
-      navigateTo(`/login?reason=${encodeURIComponent(payload.data.reason)}${redirect}`)
+      const redirect = currentRoute.value.query.redirect ?? route.path
+      navigateTo({
+        path: '/login',
+        query: { reason: payload.data.reason, redirect },
+      })
       break
     }
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
   if (currentRoute.value.path === '/login') return
-  const redirect = getRedirectParam(route.path)
-  navigateTo(`/login?reason=expired${redirect}`)
+  const redirect = currentRoute.value.query.redirect ?? route.path
+  navigateTo({
+    path: '/login',
+    query: { reason: 'expired', redirect },
+  })
 })
 useEventBus(LoggedOutEvent).on((event) => {
   if (event && event.abortLogin) return

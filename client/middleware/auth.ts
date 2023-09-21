@@ -5,8 +5,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   if (isAuthenticated.value && user.value!.forceChangePassword) {
     if (to.path !== '/login' || to.query.state !== 'change-password') {
-      const redirect = getRedirectParam(to.path, false)
-      return navigateTo(`/login?state=change-password${redirect}`, { replace: true })
+      const redirect = to.query.redirect ?? to.path
+      return navigateTo({
+        path: '/login',
+        query: { state: 'change-password', redirect },
+      }, { replace: true })
     }
     return
   }
@@ -18,7 +21,10 @@ export default defineNuxtRouteMiddleware((to, from) => {
     }
   } else if (!isAuthenticated.value) {
     if (ANONYMOUS_ROUTES.includes(from.path)) return abortNavigation()
-    const redirect = getRedirectParam(to.path, true)
-    return navigateTo(`/login${redirect}`, { replace: true })
+    const redirect = to.query.redirect ?? to.path
+    return navigateTo({
+      path: '/login',
+      query: { redirect },
+    }, { replace: true })
   }
 })

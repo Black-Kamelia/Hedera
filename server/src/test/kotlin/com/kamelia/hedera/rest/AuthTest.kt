@@ -250,7 +250,7 @@ class AuthTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         val userState = SessionManager.verify(tokens!!.accessToken) ?: fail("User state should not be null")
-        assertEquals("new_username", userState.username)
+        assertEquals("new_username", userState.user.username)
     }
 
     @DisplayName("Session updates role when promoting user")

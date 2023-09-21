@@ -181,13 +181,13 @@ object SessionManager {
         loggedUsers.remove(user.id.value)
     }
 
-    suspend fun logoutAllExceptCurrent(user: User, token: String, session: String, reason: String) = mutex.withReentrantLock {
+    suspend fun logoutAllExceptCurrent(user: User, token: String, sessionId: UUID, reason: String) = mutex.withReentrantLock {
         UserEvents.userForcefullyLoggedOutEvent(
             UserForcefullyLoggedOutDTO(
                 userId = user.id.value,
                 reason = reason,
             ),
-            ignoredSessions = listOf(session)
+            ignoredSessions = listOf(sessionId)
         )
         sessions.entries.filter {
             it.value.user.uuid == user.id.value && it.key != token

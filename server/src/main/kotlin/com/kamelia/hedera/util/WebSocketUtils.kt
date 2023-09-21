@@ -5,12 +5,13 @@ import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.DTO
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
-suspend fun <E> WebSocketServerSession.defineEventListener(event: Event<E>, session: String, listener: suspend (E) -> Unit): () -> Unit {
+suspend fun <E> WebSocketServerSession.defineEventListener(event: Event<E>, sessionId: UUID, listener: suspend (E) -> Unit): () -> Unit {
     var closer: (() -> Unit)? = null
     runCatching {
-        closer = event.subscribe(listener, session)
+        closer = event.subscribe(listener, sessionId)
     }.onFailure {
         violentlyClose("An error occurred on the server", closer)
     }

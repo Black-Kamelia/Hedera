@@ -1,5 +1,6 @@
 package com.kamelia.hedera.websocket
 
+import com.auth0.jwt.JWT
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.respondNoError
@@ -10,6 +11,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import java.util.*
 
 fun Route.webSocketRoutes() = route("/") {
     authenticate(AuthJwt) {
@@ -29,8 +31,11 @@ private fun Route.socketRoute() = webSocket("/ws") {
     val token = call.request.queryParameters["token"]
         ?: return@webSocket forcefullyClose("Missing token")
 
+    val sessionId = UUID.fromString(JWT.decode(token).getClaim("sessionId").asString())
+        ?: return@webSocket forcefullyClose("Invalid token")
+
     val userId = validateWebsocketToken(token)
         ?: return@webSocket forcefullyClose("Invalid or expired token")
 
-    handleSession(userId, token)
+    handleSession(userId, sessionId)
 }

@@ -13,10 +13,10 @@ import io.ktor.util.*
 import io.ktor.websocket.*
 import java.util.*
 
-suspend fun WebSocketServerSession.handleSession(userId: UUID, session: String) = keepAlive(userId,
+suspend fun WebSocketServerSession.handleSession(userId: UUID, sessionId: UUID) = keepAlive(userId,
     // Define event listeners here
-    defineEventListener(UserEvents.userUpdatedEvent, session) { onUserUpdate(userId, it) },
-    defineEventListener(UserEvents.userForcefullyLoggedOutEvent, session) { onUserForcefullyLoggedOut(userId, it) },
+    defineEventListener(UserEvents.userUpdatedEvent, sessionId) { onUserUpdate(userId, it) },
+    defineEventListener(UserEvents.userForcefullyLoggedOutEvent, sessionId) { onUserForcefullyLoggedOut(userId, it) },
 )
 
 private const val USER_UPDATED = "user-updated"

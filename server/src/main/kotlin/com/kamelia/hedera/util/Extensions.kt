@@ -109,6 +109,9 @@ val ApplicationCall.authenticatedUser: UserState?
 val ApplicationCall.accessToken: String?
     get() = userOrNull()?.accessToken
 
+val ApplicationCall.sessionId: UUID?
+    get() = userOrNull()?.sessionId
+
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 

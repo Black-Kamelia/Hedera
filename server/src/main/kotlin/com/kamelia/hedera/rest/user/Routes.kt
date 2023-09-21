@@ -1,7 +1,6 @@
 package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.respond
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -77,10 +76,10 @@ private fun Route.deactivateUser() = post("/{uuid}/deactivate") {
 private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/password") { body ->
     val uuid = call.getUUID()
     val forced = call.parameters["forced"].toBoolean()
-    val session = call.parameters["session"] ?: throw MissingParameterException("session")
+    val sessionId = call.sessionId ?: throw ExpiredOrInvalidTokenException()
     idRestrict(uuid)
 
-    call.respond(UserService.updateUserPassword(uuid, call.authToken, session, body, forced))
+    call.respond(UserService.updateUserPassword(uuid, call.authToken, sessionId, body, forced))
 }
 
 private fun Route.deleteUser() = delete("/{uuid}") {

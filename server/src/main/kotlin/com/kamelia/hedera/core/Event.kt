@@ -1,5 +1,7 @@
 package com.kamelia.hedera.core
 
+import java.util.UUID
+
 
 /**
  * Represents a key that can be used to restrict the ability to emit an event.
@@ -25,7 +27,7 @@ interface Event<E> {
      * @param event The event data to emit.
      * @param owner The event owner key of this event, or null. If the event was created with an event owner key, then the owner must be the same as the key.
      */
-    suspend fun emit(event: E, owner: EventOwnerKey? = null, exceptedSessions: List<String> = emptyList())
+    suspend fun emit(event: E, owner: EventOwnerKey? = null, ignoredSessions: List<UUID> = emptyList())
 
     /**
      * Emits an event.
@@ -33,7 +35,7 @@ interface Event<E> {
      * @param event The event data to emit.
      * @param owner The event owner key of this event, or null. If the event was created with an event owner key, then the owner must be the same as the key.
      */
-    suspend operator fun invoke(event: E, owner: EventOwnerKey? = null, exceptedSessions: List<String> = emptyList()) = emit(event, owner, exceptedSessions)
+    suspend operator fun invoke(event: E, owner: EventOwnerKey? = null, ignoredSessions: List<UUID> = emptyList()) = emit(event, owner, ignoredSessions)
 
     /**
      * Subscribes to this event.
@@ -41,7 +43,7 @@ interface Event<E> {
      * @param listener The listener to subscribe.
      * @return A function that can be called to unsubscribe the listener.
      */
-    fun subscribe(listener: suspend (E) -> Unit, session: String): () -> Unit
+    fun subscribe(listener: suspend (E) -> Unit, sessionId: UUID): () -> Unit
 
     /**
      * Subscribes to this event, but only once. That is to say, the listener will automatically be unsubscribed after one emit.
@@ -49,7 +51,7 @@ interface Event<E> {
      * @param listener The listener to subscribe.
      * @return A function that can be called to unsubscribe the listener.
      */
-    fun subscribeOnce(listener: suspend (E) -> Unit, session: String): () -> Unit
+    fun subscribeOnce(listener: suspend (E) -> Unit, sessionId: UUID): () -> Unit
 
 
 /**
@@ -69,25 +71,25 @@ interface Event<E> {
  */
 fun <E> event(key: EventOwnerKey? = null): Event<E> = object : Event<E> {
 
-    private val listeners = mutableMapOf<suspend (E) -> Unit, String>()
+    private val listeners = mutableMapOf<suspend (E) -> Unit, UUID>()
 
-    override suspend fun emit(event: E, owner: EventOwnerKey?, exceptedSessions: List<String>) {
+    override suspend fun emit(event: E, owner: EventOwnerKey?, ignoredSessions: List<UUID>) {
         if (key != owner) throw IllegalStateException("Event key mismatch")
-        listeners.filter { it.value !in exceptedSessions }.forEach { it.key(event) }
+        listeners.filter { it.value !in ignoredSessions }.forEach { it.key(event) }
     }
 
-    override fun subscribe(listener: suspend (E) -> Unit, session: String): () -> Unit {
-        listeners[listener] = listener.toString()
+    override fun subscribe(listener: suspend (E) -> Unit, sessionId: UUID): () -> Unit {
+        listeners[listener] = sessionId
         return { unsubscribe(listener) }
     }
 
-    override fun subscribeOnce(listener: suspend (E) -> Unit, session: String): () -> Unit {
+    override fun subscribeOnce(listener: suspend (E) -> Unit, sessionId: UUID): () -> Unit {
         lateinit var onceListener: suspend (E) -> Unit
         onceListener = { event ->
             listener(event)
             listeners.remove(onceListener)
         }
-        return subscribe(onceListener, session)
+        return subscribe(onceListener, sessionId)
     }
 
     override fun unsubscribe(listener: suspend (E) -> Unit) {

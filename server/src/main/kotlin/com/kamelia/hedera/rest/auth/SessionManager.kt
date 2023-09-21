@@ -1,24 +1,34 @@
 package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
-import com.kamelia.hedera.rest.user.*
+import com.kamelia.hedera.rest.user.User
+import com.kamelia.hedera.rest.user.UserEvents
+import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
+import com.kamelia.hedera.rest.user.UserRepresentationDTO
+import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
-import com.kamelia.hedera.websocket.validateWebsocketToken
 import io.ktor.server.auth.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
 import java.time.Instant
 import java.util.*
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 object SessionManager {
 
-    private val DAY_IN_MILLIS = 1.days.inWholeMilliseconds
     private val PURGE_INTERVAL = 5.minutes
 
     private val mutex = Mutex()
@@ -53,7 +63,14 @@ object SessionManager {
         pruneJob = null
     }
 
-    private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
+    private suspend fun generateTokens(
+        user: User,
+        sessionId: UUID? = null,
+        refreshToken: String? = null
+    ): TokenData = mutex.withReentrantLock {
+        require(sessionId != null || refreshToken != null) { "Either sessionId or token must be provided" }
+        require(sessionId == null || refreshToken == null) { "Either sessionId or token must be provided" }
+
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
             UserState(
                 user.id.value,
@@ -68,9 +85,18 @@ object SessionManager {
             )
         }
         val tokenData = TokenData.from(user)
-        val session = Session(userState, tokenData)
 
-        sessions[tokenData.accessToken] = session
+        if (sessionId == null) {
+            val oldTokens = refreshTokens[refreshToken] ?: throw ExpiredOrInvalidTokenException()
+            val session = sessions[oldTokens.accessToken] ?: throw ExpiredOrInvalidTokenException()
+            sessions[tokenData.accessToken] = session.copy(user = userState, tokenData = tokenData)
+        } else {
+            val session = Session(sessionId, userState, tokenData)
+            sessions[tokenData.accessToken] = session
+        }
+
+        println("Generating tokens for session ${sessions[tokenData.accessToken]!!.sessionId}")
+
         refreshTokens[tokenData.refreshToken] = tokenData
         tokenData
     }
@@ -100,6 +126,7 @@ object SessionManager {
     suspend fun login(username: String, password: String): Response<SessionOpeningDTO> {
         val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
         val user = User.findByUsername(username) ?: return unauthorized
+        val sessionId = UUID.randomUUID()
 
         if (!Hasher.verify(password, user.password).verified) {
             delay(Environment.loginThrottle)
@@ -111,15 +138,16 @@ object SessionManager {
         }
 
         return Response.created(SessionOpeningDTO(
-            tokens = generateTokens(user),
+            sessionId = sessionId,
+            tokens = generateTokens(user, sessionId = sessionId),
             user = user.toRepresentationDTO(),
             userSettings = user.settings.toRepresentationDTO()
         ))
     }
 
-    suspend fun refresh(jwt: Payload): Response<TokenData> {
+    suspend fun refresh(jwt: Payload, token: String): Response<TokenData> {
         val user = User.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
-        return Response.created(generateTokens(user))
+        return Response.created(generateTokens(user, refreshToken = token))
     }
 
     suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
@@ -159,7 +187,7 @@ object SessionManager {
                 userId = user.id.value,
                 reason = reason,
             ),
-            exceptedSessions = listOf(session)
+            ignoredSessions = listOf(session)
         )
         sessions.entries.filter {
             it.value.user.uuid == user.id.value && it.key != token
@@ -199,6 +227,7 @@ data class UserState(
 }
 
 data class Session(
+    val sessionId: UUID,
     val user: UserState,
     val tokenData: TokenData,
 )

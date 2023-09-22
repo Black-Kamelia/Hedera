@@ -141,10 +141,30 @@ class AuthTest {
         }
         assertEquals(HttpStatusCode.Created, response.status)
 
+        val newTokens = Json.decodeFromString<TokenData>(response.bodyAsText())
+
+        val testResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
+            bearerAuth(newTokens.accessToken)
+        }
+        assertEquals(HttpStatusCode.OK, testResponse.status)
+    }
+
+    @DisplayName("Refreshing session invalidates old tokens")
+    @Test
+    fun refreshSessionInvalidatesOldTokens() = testApplication {
+        val (loginResponse, tokens) = loginBlocking("user1", "password")
+        check(tokens != null) { "Tokens should not be null" }
+        assertEquals(HttpStatusCode.Created, loginResponse.status)
+
+        val response = client().post("/api/refresh") {
+            bearerAuth(tokens.refreshToken)
+        }
+        assertEquals(HttpStatusCode.Created, response.status)
+
         val testResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
             bearerAuth(tokens.accessToken)
         }
-        assertEquals(HttpStatusCode.OK, testResponse.status)
+        assertEquals(HttpStatusCode.Unauthorized, testResponse.status)
     }
 
     @DisplayName("Logging out invalidates access token")

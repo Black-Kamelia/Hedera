@@ -37,6 +37,7 @@ pages:
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
       password_changed: Your password has been changed, please log in again
+      session_terminated: Your session has been terminated
   change_password:
     title: Change password
     message: You must change your password before continuing
@@ -298,6 +299,7 @@ forms:
       password_too_short: The password must be at least {min} characters long
       password_too_long: The password must be at most {max} characters long
       passwords_mismatch: The passwords do not match
+      server_error: Server is unreachable
     fields:
       password: New password
       confirm_password: Confirm the new password

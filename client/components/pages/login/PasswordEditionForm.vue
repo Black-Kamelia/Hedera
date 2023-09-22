@@ -13,6 +13,14 @@ const dialog = useConfirm()
 const loading = ref(false)
 const passwordField = ref<Nullable<CompElement>>(null)
 
+const message = reactive<{
+  content: string | null
+  severity: 'success' | 'info' | 'warn' | 'error' | undefined
+}>({
+  content: null,
+  severity: undefined,
+})
+
 onMounted(() => passwordField.value?.$el.focus({ preventScroll: true }))
 
 const schema = object({
@@ -24,9 +32,13 @@ const schema = object({
     .required(t('forms.change_password.errors.missing_password_confirmation'))
     .oneOf([yref('password')], t('forms.change_password.errors.passwords_mismatch')),
 })
-const { handleSubmit } = useForm({
+const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
 })
+
+function hideErrorMessage() {
+  message.content = null
+}
 
 const onSubmit = handleSubmit((values) => {
   loading.value = true
@@ -39,7 +51,11 @@ const onSubmit = handleSubmit((values) => {
       const status = error?.response?.status
       const errorKey = error?.response?._data?.title?.key
       if (status === 500) {
-        console.log('server error')
+        resetField('password')
+        resetField('confirmPassword')
+        passwordField.value?.$el.focus()
+        message.content = t('forms.change_password.errors.server_error')
+        message.severity = 'error'
       } else if (status === 403 && errorKey === 'errors.users.force_change_password_conflict') {
         dialog.require({
           header: 'Password change conflict',
@@ -57,9 +73,14 @@ const onSubmit = handleSubmit((values) => {
 
 <template>
   <form @submit="onSubmit">
-    <PMessage :pt="{ root: { class: 'important-mt-0' } }" severity="info" icon="i-tabler-shield-lock-filled" :closable="false">
-      {{ t('pages.change_password.message') }}
-    </PMessage>
+    <Transition name="fade" mode="out-in">
+      <PMessage v-if="!message.content" :pt="{ root: { class: 'important-mt-0' } }" severity="info" icon="i-tabler-shield-lock-filled" :closable="false">
+        {{ t('pages.change_password.message') }}
+      </PMessage>
+      <PMessage v-else :pt="{ root: { class: 'important-mt-0' } }" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
+        {{ message.content }}
+      </PMessage>
+    </Transition>
 
     <div class="mb-3">
       <FormInputText
@@ -70,6 +91,7 @@ const onSubmit = handleSubmit((values) => {
         type="password"
         :label="t('forms.change_password.fields.password')"
         placeholder="••••••••••••••••"
+        @input="hideErrorMessage"
       />
     </div>
 
@@ -81,6 +103,7 @@ const onSubmit = handleSubmit((values) => {
         type="password"
         :label="t('forms.change_password.fields.confirm_password')"
         placeholder="••••••••••••••••"
+        @input="hideErrorMessage"
       />
     </div>
 
@@ -96,3 +119,15 @@ const onSubmit = handleSubmit((values) => {
     />
   </form>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

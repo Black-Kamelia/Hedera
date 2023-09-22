@@ -31,10 +31,7 @@ private fun Route.socketRoute() = webSocket("/ws") {
     val token = call.request.queryParameters["token"]
         ?: return@webSocket forcefullyClose("Missing token")
 
-    val sessionId = UUID.fromString(JWT.decode(token).getClaim("sessionId").asString())
-        ?: return@webSocket forcefullyClose("Invalid token")
-
-    val userId = validateWebsocketToken(token)
+    val (userId, sessionId) = validateWebsocketToken(token)
         ?: return@webSocket forcefullyClose("Invalid or expired token")
 
     handleSession(userId, sessionId)

@@ -68,8 +68,7 @@ object SessionManager {
         sessionId: UUID? = null,
         refreshToken: String? = null
     ): TokenData = mutex.withReentrantLock {
-        require(sessionId != null || refreshToken != null) { "Either sessionId or token must be provided" }
-        require(sessionId == null || refreshToken == null) { "Either sessionId or token must be provided" }
+        require((sessionId == null) xor (refreshToken == null)) { "Either sessionId or token must be provided" }
 
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
             UserState(
@@ -90,12 +89,12 @@ object SessionManager {
             val oldTokens = refreshTokens[refreshToken] ?: throw ExpiredOrInvalidTokenException()
             val session = sessions[oldTokens.accessToken] ?: throw ExpiredOrInvalidTokenException()
             sessions[tokenData.accessToken] = session.copy(user = userState, tokenData = tokenData)
+            sessions.remove(oldTokens.accessToken)
+            refreshTokens.remove(refreshToken)
         } else {
             val session = Session(sessionId, userState, tokenData)
             sessions[tokenData.accessToken] = session
         }
-
-        println("Generating tokens for session ${sessions[tokenData.accessToken]!!.sessionId}")
 
         refreshTokens[tokenData.refreshToken] = tokenData
         tokenData

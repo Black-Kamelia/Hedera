@@ -37,6 +37,7 @@ pages:
       logout_all: Vous avez été déconnecté de tous les appareils
       disabled: Votre compte a été désactivé
       password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
+      session_terminated: Votre session a été terminée
   change_password:
     title: Modifier le mot de passe
     message: Vous devez modifier votre mot de passe pour continuer
@@ -298,6 +299,7 @@ forms:
       password_too_short: Le mot de passe doit contenir au moins {min} caractères
       password_too_long: Le mot de passe doit contenir au plus {max} caractères
       passwords_mismatch: Les mots de passe ne correspondent pas
+      server_error: Le serveur est indisponible
     fields:
       password: Nouveau mot de passe
       confirm_password: Confirmer le nouveau mot de passe

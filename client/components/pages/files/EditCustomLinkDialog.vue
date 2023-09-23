@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
-import { useEditFileCustomLink } from '~/composables/fileTable/useEditFileCustomLink'
 
 defineEmits<{
   (event: 'completed', payload: UserRepresentationDTO): void
@@ -9,17 +8,18 @@ defineEmits<{
 const { t } = useI18n()
 const setFieldErrors = useFeedbackFormErrors()
 const editFileCustomLink = useEditFileCustomLink()
-const { selectedRow } = useFilesTable()
+const { selectedRow, updateSelectedRow } = useFilesTable()
 
 const visible = defineModel<boolean>('visible', { default: false })
-const pending = ref(false)
+const savePending = ref(false)
+const removePending = ref(false)
 
 const schema = object({
   customLink: string()
     .required(t('forms.edit_custom_link.errors.missing_slug'))
     .matches(/^[a-z0-9\-]+$/, t('forms.edit_custom_link.errors.invalid_slug')),
 })
-const { handleSubmit, resetForm, setFieldError } = useForm({
+const { handleSubmit, resetForm, setFieldValue, setFieldError } = useForm({
   validationSchema: schema,
 })
 
@@ -29,14 +29,46 @@ const originalLink = computed(() => `${location.origin}/${selectedRow.value?.cod
 
 const submit = handleSubmit((values) => {
   if (!selectedRow.value) return
-  pending.value = true
+  savePending.value = true
 
-  editFileCustomLink(selectedRow.value?.id, { slug: values.customLink })
-    .then(() => visible.value = false)
+  editFileCustomLink(selectedRow.value?.id, values.customLink)
+    .then((response) => {
+      if (response) {
+        visible.value = false
+        updateSelectedRow(response.payload!)
+      }
+    })
     .catch((error) => {
       setFieldErrors(error.response._data.fields, setFieldError)
-      pending.value = false
+      savePending.value = false
     })
+    .finally(() => savePending.value = false)
+})
+
+function removeLink() {
+  if (!selectedRow.value) return
+  removePending.value = true
+
+  editFileCustomLink(selectedRow.value?.id, '')
+    .then((response) => {
+      if (response) {
+        visible.value = false
+        updateSelectedRow({ ...response.payload!, customLink: null })
+      }
+    })
+    .catch((error) => {
+      setFieldErrors(error.response._data.fields, setFieldError)
+      removePending.value = false
+    })
+    .finally(() => removePending.value = false)
+}
+
+watch(visible, (val) => {
+  if (val) {
+    if (!selectedRow.value) return
+
+    setFieldValue('customLink', selectedRow.value.customLink, false)
+  }
 })
 </script>
 
@@ -75,26 +107,37 @@ const submit = handleSubmit((values) => {
         </div>
 
         <p class="text-[--text-color-secondary]">
-          Un lien personnalisé est préfixé par un symbole deux-points (:), contrairement à un lien original qui est préfixé par un symbole dollar ($).
+          Un lien personnalisé est préfixé par un symbole deux-points (:), contrairement à un lien original qui est
+          préfixé par un symbole dollar ($).
         </p>
       </div>
     </div>
 
-    <template #footer>
+    <div class="flex flex-row justify-between gap-3 pt-6">
       <PButton
-        :label="t('forms.edit_custom_link.cancel')"
+        :label="t('forms.edit_custom_link.remove_link')"
         text
-        :disabled="pending"
-        @click="visible = false"
+        :loading="removePending"
+        :disabled="savePending"
+        @click="removeLink"
       />
-      <PButton
-        :label="t('forms.edit_custom_link.submit')"
-        :loading="pending"
-        icon="i-tabler-check"
-        type="submit"
-        @click="submit"
-      />
-    </template>
+      <div class="flex flex-row gap-3">
+        <PButton
+          :label="t('forms.edit_custom_link.cancel')"
+          text
+          :disabled="savePending || removePending"
+          @click="visible = false"
+        />
+        <PButton
+          :label="t('forms.edit_custom_link.submit')"
+          :loading="savePending"
+          :disabled="removePending"
+          icon="i-tabler-check"
+          type="submit"
+          @click="submit"
+        />
+      </div>
+    </div>
   </PDialog>
 </template>
 

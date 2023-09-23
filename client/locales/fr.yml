@@ -64,6 +64,7 @@ pages:
     context_menu:
       open: Ouvrir
       rename: Renommer
+      custom_link: Définir un lien personnalisé
       change_visibility: Modifier la visibilité
       copy_link: Copier le lien
       download: Télécharger
@@ -87,6 +88,12 @@ pages:
       error: Le fichier n’a pas pu être renommé
       cancel: Annuler
       submit: Renommer
+    edit_custom_link:
+      title: Définir un lien personnalisé
+      domain: Domaine
+      slug: Identifiant
+      cancel: Annuler
+      submit: Sauvegarder
     change_visibility:
       title: Modifier la visibilité d’un fichier
       success: La visibilité a été modifiée
@@ -360,6 +367,15 @@ forms:
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
       unlimited_disk_quota: Autoriser un quota d'espace disque illimité
+  edit_custom_link:
+    submit: Sauvegarder
+    cancel: Annuler
+    remove_link: Supprimer le lien
+    fields:
+      slug: Identifiant
+    errors:
+      missing_slug: Identifiant requis
+      invalid_slug: Format d’identifiant invalide
 
 actions:
   files:
@@ -376,6 +392,13 @@ actions:
         success:
           title: Fichier renommé
           message: Le fichier “{oldName}” a été renommé en “{newName}”
+      custom_link:
+        success:
+          title: Lien personnalisé modifié
+          message: Ce fichier est désormais accessible via le lien “{newCustomLink}”
+      remove_custom_link:
+        success:
+          title: Lien personnalisé supprimé
   users:
     update_password:
       success:
@@ -428,6 +451,8 @@ errors:
     invalid_uuid: Identifiant unique invalide
   files:
     not_found: Ce fichier n’existe pas
+    custom_link:
+      already_exists: Ce lien personnalisé existe déjà
   users:
     password:
       incorrect_password: Mot de passe incorrect

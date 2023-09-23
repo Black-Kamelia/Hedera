@@ -10,12 +10,40 @@ const confirm = useConfirm()
 
 const renameFile = useRenameFile()
 const changeFileVisibility = useChangeFileVisibility()
-const copyFileLink = useCopyFileLink()
+const { copyFileLink, copyFileCustomLink } = useCopyFileLink()
 const downloadFile = useDownloadFile()
 const deleteFile = useDeleteFile()
 
 const editCustomLinkDialog = ref(false)
 
+const copyLinkItem = computed(() => {
+  if (selectedRow.value?.customLink) {
+    return {
+      label: t('pages.files.context_menu.copy_link'),
+      icon: 'i-tabler-clipboard',
+      disabled: !isSupported.value,
+      items: [
+        {
+          label: 'Original',
+          icon: 'i-tabler-link',
+          command: copyFileLink,
+        },
+        {
+          label: 'Personnalisé',
+          icon: 'i-tabler-sparkles',
+          command: copyFileCustomLink,
+        },
+      ],
+    }
+  } else {
+    return {
+      label: t('pages.files.context_menu.copy_link'),
+      icon: 'i-tabler-clipboard',
+      disabled: !isSupported.value,
+      command: copyFileLink,
+    }
+  }
+})
 const menuModel = computed(() => [
   {
     label: t('pages.files.context_menu.open'),
@@ -62,24 +90,7 @@ const menuModel = computed(() => [
       },
     ],
   },
-  {
-    label: t('pages.files.context_menu.copy_link'),
-    icon: 'i-tabler-clipboard',
-    disabled: !isSupported.value,
-    // command: copyFileLink,
-    items: [
-      {
-        label: 'Original',
-        icon: 'i-tabler-link',
-        command: copyFileLink,
-      },
-      {
-        label: 'Personnalisé',
-        icon: 'i-tabler-sparkles',
-        command: () => {},
-      },
-    ],
-  },
+  copyLinkItem.value,
   {
     label: t('pages.files.context_menu.download'),
     icon: 'i-tabler-download',

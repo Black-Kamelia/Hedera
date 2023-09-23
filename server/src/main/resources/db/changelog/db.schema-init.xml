@@ -143,6 +143,9 @@
             <column name="upload_token" type="UUID">
                 <constraints nullable="true"/>
             </column>
+            <column name="custom_link" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
 
             <column name="created_by" type="UUID">
                 <constraints nullable="false"/>

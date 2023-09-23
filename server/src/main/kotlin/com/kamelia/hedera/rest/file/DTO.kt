@@ -17,6 +17,7 @@ fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
     mimeType,
     size,
     visibility,
+    customLink,
     FileOwnerDTO(owner.uuid, owner.username),
     createdAt.toString(),
 )
@@ -30,6 +31,7 @@ fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
 data class FileUpdateDTO(
     val name: String? = null,
     val visibility: FileVisibility? = null,
+    val customLink: String? = null,
 ) : DTO
 
 /**
@@ -45,6 +47,7 @@ data class FileRepresentationDTO(
     val mimeType: String,
     val size: Long,
     val visibility: FileVisibility,
+    val customLink: String? = null,
     val owner: FileOwnerDTO,
     val createdAt: String,
 ) : DTO

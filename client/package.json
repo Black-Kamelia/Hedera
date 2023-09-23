@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.39.7",
-    "@iconify-json/tabler": "^1.1.82",
+    "@iconify-json/tabler": "^1.1.91",
     "@iconify/tools": "^3.0.2",
     "@intlify/unplugin-vue-i18n": "^0.12.2",
     "@notkamui/nuxt-primevue": "^0.5.0",

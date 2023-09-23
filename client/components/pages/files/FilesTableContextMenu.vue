@@ -14,6 +14,8 @@ const copyFileLink = useCopyFileLink()
 const downloadFile = useDownloadFile()
 const deleteFile = useDeleteFile()
 
+const editCustomLinkDialog = ref(false)
+
 const menuModel = computed(() => [
   {
     label: t('pages.files.context_menu.open'),
@@ -27,6 +29,11 @@ const menuModel = computed(() => [
     label: t('pages.files.context_menu.rename'),
     icon: 'i-tabler-pencil',
     command: renameFile,
+  },
+  {
+    label: t('pages.files.context_menu.custom_link'),
+    icon: 'i-tabler-sparkles',
+    command: () => editCustomLinkDialog.value = true,
   },
   {
     label: t('pages.files.context_menu.change_visibility'),
@@ -57,9 +64,21 @@ const menuModel = computed(() => [
   },
   {
     label: t('pages.files.context_menu.copy_link'),
-    icon: 'i-tabler-link',
+    icon: 'i-tabler-clipboard',
     disabled: !isSupported.value,
-    command: copyFileLink,
+    // command: copyFileLink,
+    items: [
+      {
+        label: 'Original',
+        icon: 'i-tabler-link',
+        command: copyFileLink,
+      },
+      {
+        label: 'Personnalisé',
+        icon: 'i-tabler-sparkles',
+        command: () => {},
+      },
+    ],
   },
   {
     label: t('pages.files.context_menu.download'),
@@ -90,4 +109,5 @@ const menuModel = computed(() => [
 
   <PDynamicDialog />
   <ConfirmDialog />
+  <EditCustomLinkDialog v-model:visible="editCustomLinkDialog" />
 </template>

@@ -36,6 +36,30 @@ object Actions {
 
             }
 
+            object CustomLink {
+
+                private const val PREFIX = "${Update.PREFIX}.custom_link"
+
+                object Success {
+                    private const val PREFIX = "${CustomLink.PREFIX}.success"
+                    const val TITLE = "$PREFIX.title"
+                    const val MESSAGE = "$PREFIX.message"
+                }
+
+            }
+
+            object RemoveCustomLink {
+
+                private const val PREFIX = "${Update.PREFIX}.remove_custom_link"
+
+                object Success {
+                    private const val PREFIX = "${RemoveCustomLink.PREFIX}.success"
+                    const val TITLE = "$PREFIX.title"
+                    const val MESSAGE = "$PREFIX.message"
+                }
+
+            }
+
         }
 
         object Upload {

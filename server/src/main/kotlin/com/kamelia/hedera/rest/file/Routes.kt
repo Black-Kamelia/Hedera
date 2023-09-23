@@ -35,6 +35,7 @@ fun Route.filesRoutes() = route("/files") {
         // editFile()
         editFileVisibility()
         editFileName()
+        editFileCustomLink()
         deleteFile()
     }
 
@@ -49,9 +50,28 @@ fun Route.rawFileRoute() = get("""/(?<code>\$[a-zA-Z0-9]{10})""".toRegex()) {
     val code = call.getParam("code")
 
     try {
-        FileService.getFile(code, authedId).ifSuccess { (data) ->
+        FileService.getFileFromCode(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
             val file = FileUtils.getOrNull(data.owner.id, code)
+            if (file != null) {
+                call.respondFileInline(file, ContentType.parse(data.mimeType))
+            } else {
+                // TODO notify orphaned file
+                call.proxyRedirect("/")
+            }
+        }
+    } catch (e: FileNotFoundException) {
+        call.proxyRedirect("/")
+    }
+}
+
+fun Route.rawFileCustomLinkRoute() = get("""/:(?<link>[a-z0-9\-]+)""".toRegex()) {
+    val link = call.getParam("link")
+
+    try {
+        FileService.getFileFromCustomLink(link).ifSuccess { (data) ->
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.owner.id, data.code)
             if (file != null) {
                 call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
@@ -88,7 +108,7 @@ private fun Route.getFile() = get("/{code}") {
     val authedId = call.authenticatedUser?.uuid
     val code = call.getParam("code")
 
-    FileService.getFile(code, authedId).ifSuccessOrElse(
+    FileService.getFileFromCode(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
             val file = FileUtils.getOrNull(data.owner.id, code)
@@ -132,6 +152,13 @@ private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.updateFileName(fileId, userId, body))
+}
+
+private fun Route.editFileCustomLink() = put<FileUpdateDTO>("/{uuid}/custom-link") { body ->
+    val fileId = call.getUUID("uuid")
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.updateCustomLink(fileId, userId, body))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {

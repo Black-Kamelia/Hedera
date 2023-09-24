@@ -7,7 +7,7 @@ defineEmits<{
 
 const { t } = useI18n()
 const setFieldErrors = useFeedbackFormErrors()
-const editFileCustomLink = useEditFileCustomLink()
+const { editCustomLink, deleteCustomLink } = useEditFileCustomLink()
 const { selectedRow, updateSelectedRow } = useFilesTable()
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -31,7 +31,7 @@ const submit = handleSubmit((values) => {
   if (!selectedRow.value) return
   savePending.value = true
 
-  editFileCustomLink(selectedRow.value?.id, values.customLink)
+  editCustomLink(selectedRow.value?.id, values.customLink)
     .then((response) => {
       if (response) {
         visible.value = false
@@ -49,7 +49,7 @@ function removeLink() {
   if (!selectedRow.value) return
   removePending.value = true
 
-  editFileCustomLink(selectedRow.value?.id, '')
+  deleteCustomLink(selectedRow.value?.id)
     .then((response) => {
       if (response) {
         visible.value = false

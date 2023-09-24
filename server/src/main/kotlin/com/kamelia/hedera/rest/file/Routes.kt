@@ -36,6 +36,7 @@ fun Route.filesRoutes() = route("/files") {
         editFileVisibility()
         editFileName()
         editFileCustomLink()
+        removeFileCustomLink()
         deleteFile()
     }
 
@@ -159,6 +160,13 @@ private fun Route.editFileCustomLink() = put<FileUpdateDTO>("/{uuid}/custom-link
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.updateCustomLink(fileId, userId, body))
+}
+
+private fun Route.removeFileCustomLink() = delete("/{uuid}/custom-link") {
+    val fileId = call.getUUID("uuid")
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.removeCustomLink(fileId, userId))
 }
 
 private fun Route.deleteFile() = delete("/{uuid}") {

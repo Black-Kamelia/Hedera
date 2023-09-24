@@ -216,8 +216,8 @@ object FileService {
             val file = File.findById(fileId) ?: throw FileNotFoundException()
             val user = User[userId]
 
-            if (dto.customLink != null) {
-                if (dto.customLink.isNotEmpty() && !CUSTOM_LINK_REGEX.matches(dto.customLink)) {
+            if (!dto.customLink.isNullOrEmpty()) {
+                if (!CUSTOM_LINK_REGEX.matches(dto.customLink)) {
                     raiseError("customLink", Errors.Files.CustomLink.INVALID_FORMAT)
                 }
                 if (File.findByCustomLink(dto.customLink) != null) {
@@ -230,21 +230,30 @@ object FileService {
             val updatedFile = updateFile(file, user, FileUpdateDTO(customLink = dto.customLink))
             val payload = updatedFile.toRepresentationDTO()
 
-            if (dto.customLink != null && dto.customLink.isEmpty()) {
-                ActionResponse.ok(
-                    payload = payload,
-                    title = Actions.Files.Update.RemoveCustomLink.Success.TITLE.asMessage(),
-                )
-            } else {
-                ActionResponse.ok(
-                    payload = payload,
-                    title = Actions.Files.Update.CustomLink.Success.TITLE.asMessage(),
-                    message = Actions.Files.Update.CustomLink.Success.MESSAGE.asMessage(
-                        "newCustomLink" to (payload.customLink ?: ""),
-                    ),
-                )
-            }
+            ActionResponse.ok(
+                payload = payload,
+                title = Actions.Files.Update.CustomLink.Success.TITLE.asMessage(),
+                message = Actions.Files.Update.CustomLink.Success.MESSAGE.asMessage(
+                    "newCustomLink" to (payload.customLink ?: ""),
+                ),
+            )
         }
+    }
+
+    suspend fun removeCustomLink(
+        fileId: UUID,
+        userId: UUID,
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
+        val file = File.findById(fileId) ?: throw FileNotFoundException()
+        val user = User[userId]
+
+        val updatedFile = updateFile(file, user, FileUpdateDTO(customLink = ""))
+        val payload = updatedFile.toRepresentationDTO()
+
+        ActionResponse.ok(
+            payload = payload,
+            title = Actions.Files.Update.RemoveCustomLink.Success.TITLE.asMessage(),
+        )
     }
 
     suspend fun deleteFile(

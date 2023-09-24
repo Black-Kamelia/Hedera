@@ -7,6 +7,7 @@ import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.util.accessToken
+import com.kamelia.hedera.util.authToken
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.jwt
 import io.ktor.server.application.*
@@ -40,5 +41,5 @@ private fun Route.logout() = post("/logout") {
 }
 
 private fun Route.refresh() = post("/refresh") {
-    call.respond(AuthService.refresh(call.jwt))
+    call.respond(AuthService.refresh(call.jwt, call.authToken))
 }

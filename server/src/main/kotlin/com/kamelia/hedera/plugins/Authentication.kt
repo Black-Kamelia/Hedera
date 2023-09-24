@@ -11,6 +11,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import java.util.*
 
 const val AuthJwt = "auth-jwt"
 const val RefreshJwt = "refresh-jwt"
@@ -19,10 +20,11 @@ fun Application.configureAuthentication() {
     install(Authentication) {
         configureJWT(AuthJwt, Environment.secretAccess) { call, _ ->
             val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
-            val user = SessionManager.verify(token)
-            requireNotNull(user)
-            handleForceChangePassword(user, call)
-            UserPrincipal(user, token)
+            val session = SessionManager.verify(token)
+            requireNotNull(session)
+            requireNotNull(session.user)
+            handleForceChangePassword(session.user, call)
+            UserPrincipal(session.sessionId, session.user, token)
         }
         configureJWT(RefreshJwt, Environment.secretRefresh) { call, cred ->
             val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
@@ -53,4 +55,8 @@ private fun AuthenticationConfig.configureJWT(
     challenge { _, _ -> throw ExpiredOrInvalidTokenException() }
 }
 
-data class UserPrincipal(val state: UserState, val accessToken: String) : Principal
+data class UserPrincipal(
+    val sessionId: UUID,
+    val state: UserState,
+    val accessToken: String
+) : Principal

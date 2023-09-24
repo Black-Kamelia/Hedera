@@ -75,6 +75,7 @@ const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) 
 
     &:enabled:hover {
       background-color: var(--primary-color-text);
+      color: var(--primary-500);
     }
 
     &:enabled:active {

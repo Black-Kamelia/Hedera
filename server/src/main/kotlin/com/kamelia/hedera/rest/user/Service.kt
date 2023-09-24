@@ -14,10 +14,14 @@ import com.kamelia.hedera.core.ValidationScope
 import com.kamelia.hedera.core.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
+import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.util.authToken
+import com.kamelia.hedera.util.jwt
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
+import io.ktor.server.application.*
 import java.util.*
 import kotlin.math.ceil
 
@@ -165,12 +169,19 @@ object UserService {
 
     suspend fun updateUserPassword(
         id: UUID,
+        authToken: String,
+        sessionId: UUID,
         dto: UserPasswordUpdateDTO,
+        forced: Boolean,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         validate(MessageDTO.simple(Actions.Users.UpdatePassword.Error.TITLE.asMessage())) {
             checkPassword(dto.newPassword)
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
+
+            if (forced && !toEdit.forceChangePassword) {
+                throw IllegalActionException(Errors.Users.FORCE_CHANGE_PASSWORD_CONFLICT)
+            }
 
             if (!toEdit.forceChangePassword) {
                 if (dto.oldPassword == null) {
@@ -183,6 +194,11 @@ object UserService {
             catchErrors()
 
             toEdit.updatePassword(dto)
+
+            if (forced) {
+                SessionManager.logoutAllExceptCurrent(toEdit, authToken, sessionId, "password_changed")
+            }
+
             ActionResponse.ok(
                 title = Actions.Users.UpdatePassword.Success.TITLE.asMessage(),
                 payload = toEdit.toRepresentationDTO()

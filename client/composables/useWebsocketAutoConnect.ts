@@ -49,4 +49,18 @@ export default function useWebsocketAutoConnect() {
       close()
     }
   })
+
+  watch(tokenResponse, (value) => {
+    if (!value) localStorage.removeItem('websocketSession')
+    else localStorage.setItem('websocketSession', value.token)
+  })
+}
+
+export function useWebsocketEvent<T extends HederaWebsocketPayload['type']>(
+  event: T,
+  handler: (payload: Extract<HederaWebsocketPayload, { type: T }>['data']) => void,
+) {
+  useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
+    if (payload.type === event) handler(payload.data as any)
+  })
 }

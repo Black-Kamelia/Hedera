@@ -28,6 +28,7 @@ import java.util.*
 import java.util.stream.Stream
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
@@ -535,6 +536,58 @@ class FileTest {
         }
         val userAfterDto = Json.decodeFromString<UserRepresentationDTO>(userAfterDelete.bodyAsText())
         assertTrue(1000 >= userAfterDto.currentDiskQuota)
+    }
+
+    @DisplayName("Setting a custom link to a file")
+    @Test
+    fun setCustomLink() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000001/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "add-custom-link"))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("add-custom-link", fileDto.payload!!.customLink)
+    }
+
+    @DisplayName("Accessing a file with a custom link")
+    @Test
+    fun accessFileWithCustomLink() = testApplication {
+        val client = client()
+
+        val response = client.get("/:test-link")
+
+        println(response)
+        println(response.bodyAsText())
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @DisplayName("Accessing a file with a custom link that does not exist")
+    @Test
+    fun accessFileWithNonExistingCustomLink() = testApplication {
+        val client = client()
+
+        val response = client.get("/:non-existing-link")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Deleting a custom link from a file")
+    @Test
+    fun removeCustomLink() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.delete("/api/files/00000000-0000-0008-0000-000000000003/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNull(fileDto.payload!!.customLink)
     }
 
     companion object {

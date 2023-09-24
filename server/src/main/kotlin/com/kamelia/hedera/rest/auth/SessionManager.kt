@@ -86,11 +86,9 @@ object SessionManager {
         val tokenData = TokenData.from(user)
 
         if (sessionId == null) {
-            val oldTokens = refreshTokens[refreshToken] ?: throw ExpiredOrInvalidTokenException()
-            val session = sessions[oldTokens.accessToken] ?: throw ExpiredOrInvalidTokenException()
+            val oldTokens = refreshTokens.remove(refreshToken) ?: throw ExpiredOrInvalidTokenException()
+            val session = sessions.remove(oldTokens.accessToken) ?: throw ExpiredOrInvalidTokenException()
             sessions[tokenData.accessToken] = session.copy(user = userState, tokenData = tokenData)
-            sessions.remove(oldTokens.accessToken)
-            refreshTokens.remove(refreshToken)
         } else {
             val session = Session(sessionId, userState, tokenData)
             sessions[tokenData.accessToken] = session

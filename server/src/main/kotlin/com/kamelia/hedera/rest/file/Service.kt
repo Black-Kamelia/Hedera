@@ -216,7 +216,9 @@ object FileService {
             val file = File.findById(fileId) ?: throw FileNotFoundException()
             val user = User[userId]
 
-            if (!dto.customLink.isNullOrEmpty()) {
+            if (dto.customLink == null) {
+                raiseError("customLink", Errors.Files.CustomLink.MISSING_SLUG)
+            } else {
                 if (!CUSTOM_LINK_REGEX.matches(dto.customLink)) {
                     raiseError("customLink", Errors.Files.CustomLink.INVALID_FORMAT)
                 }

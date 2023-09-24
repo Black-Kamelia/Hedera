@@ -554,6 +554,54 @@ class FileTest {
         assertEquals("add-custom-link", fileDto.payload!!.customLink)
     }
 
+    @DisplayName("Setting a custom link to a file with null link")
+    @Test
+    fun setCustomLinkNull() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000004/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO())
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(Errors.Files.CustomLink.MISSING_SLUG, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Setting a custom link to a file with invalid link")
+    @Test
+    fun setCustomLinkInvalid() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000005/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "not_a_VALID_l1nk.."))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(Errors.Files.CustomLink.INVALID_FORMAT, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Setting a custom link to a file with existing custom link")
+    @Test
+    fun setCustomLinkAlreadyExisting() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000006/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "test-link"))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        assertEquals(Errors.Files.CustomLink.ALREADY_EXISTS, fileDto.fields!!["customLink"]!!.key)
+    }
+
     @DisplayName("Accessing a file with a custom link")
     @Test
     fun accessFileWithCustomLink() = testApplication {

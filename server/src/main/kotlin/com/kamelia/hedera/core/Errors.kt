@@ -32,6 +32,7 @@ object Errors {
 
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_FORMAT = "$PREFIX.invalid_format"
+            const val MISSING_SLUG = "$PREFIX.missing_slug"
 
         }
 

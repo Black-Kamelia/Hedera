@@ -90,10 +90,11 @@ pages:
       submit: Renommer
     edit_custom_link:
       title: Définir un lien personnalisé
-      domain: Domaine
       slug: Identifiant
       cancel: Annuler
       submit: Sauvegarder
+      old_link_summary: 'Votre fichier sera toujours accessible via le lien original : {link}'
+      links_summary: Un lien personnalisé est préfixé par un symbole deux-points (:), contrairement à un lien original qui est préfixé par un symbole dollar ({'$'}).
     change_visibility:
       title: Modifier la visibilité d’un fichier
       success: La visibilité a été modifiée

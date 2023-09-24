@@ -84,12 +84,18 @@ watch(visible, (val) => {
   >
     <div class="flex flex-col gap-3">
       <div class="flex flex-col gap-3 items-start">
-        <p class="text-[--text-color-secondary]">
-          Votre fichier sera toujours accessible via le lien original :
-          <a :href="originalLink" target="_blank" class="inline-flex flew-row items-center gap-0.5">
-            {{ originalLink }} <i class="h-1em w-1em i-tabler-external-link" />
-          </a>
-        </p>
+        <i18n-t
+          keypath="pages.files.edit_custom_link.old_link_summary"
+          class="text-[--text-color-secondary]"
+          scope="global"
+          tag="p"
+        >
+          <template #link>
+            <a :href="originalLink" target="_blank" class="inline-flex flew-row items-center gap-0.5">
+              {{ originalLink }} <i class="h-1em w-1em i-tabler-external-link" />
+            </a>
+          </template>
+        </i18n-t>
 
         <div class="flex flex-row w-full items-end dual-inputs">
           <FormInputTextGroup
@@ -107,8 +113,7 @@ watch(visible, (val) => {
         </div>
 
         <p class="text-[--text-color-secondary]">
-          Un lien personnalisé est préfixé par un symbole deux-points (:), contrairement à un lien original qui est
-          préfixé par un symbole dollar ($).
+          {{ t('pages.files.edit_custom_link.links_summary') }}
         </p>
       </div>
     </div>
@@ -118,7 +123,7 @@ watch(visible, (val) => {
         :label="t('forms.edit_custom_link.remove_link')"
         text
         :loading="removePending"
-        :disabled="savePending"
+        :disabled="savePending || !selectedRow.customLink"
         @click="removeLink"
       />
       <div class="flex flex-row gap-3">

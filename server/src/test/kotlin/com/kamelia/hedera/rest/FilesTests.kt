@@ -4,8 +4,11 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.test.AbstractFilesTests
+import com.kamelia.hedera.rest.test.AbstractUserFilesTests
 import com.kamelia.hedera.rest.test.FilesTestsExpectedResults
 import com.kamelia.hedera.rest.test.FilesTestsInput
+import com.kamelia.hedera.rest.test.UserFilesTestsExpectedResults
+import com.kamelia.hedera.rest.test.UserFilesTestsInput
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -18,9 +21,9 @@ class FilesTests {
 
     @DisplayName("Files tests as owner")
     @Nested
-    inner class OwnerTests : AbstractFilesTests(
+    inner class OwnerTests : AbstractUserFilesTests(
         owner,
-        FilesTestsExpectedResults(
+        UserFilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Created,
 
             // OWN FILES
@@ -67,7 +70,7 @@ class FilesTests {
                 UserRole.REGULAR to HttpStatusCode.Forbidden,
             ),
         ),
-        FilesTestsInput(
+        UserFilesTestsInput(
             viewOwnFileCode = mapOf(
                 FileVisibility.PUBLIC to "\$1000010001",
                 FileVisibility.UNLISTED to "\$1000010002",
@@ -81,9 +84,9 @@ class FilesTests {
 
     @DisplayName("Files tests as admin")
     @Nested
-    inner class AdminTests : AbstractFilesTests(
+    inner class AdminTests : AbstractUserFilesTests(
         admin,
-        FilesTestsExpectedResults(
+        UserFilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Created,
 
             // OWN FILES
@@ -130,7 +133,7 @@ class FilesTests {
                 UserRole.REGULAR to HttpStatusCode.Forbidden,
             ),
         ),
-        FilesTestsInput(
+        UserFilesTestsInput(
             viewOwnFileCode = mapOf(
                 FileVisibility.PUBLIC to "\$2000010001",
                 FileVisibility.UNLISTED to "\$2000010002",
@@ -144,9 +147,9 @@ class FilesTests {
 
     @DisplayName("Files tests as regular user")
     @Nested
-    inner class RegularUserTests : AbstractFilesTests(
+    inner class RegularUserTests : AbstractUserFilesTests(
         user,
-        FilesTestsExpectedResults(
+        UserFilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Created,
 
             // OWN FILES
@@ -193,7 +196,7 @@ class FilesTests {
                 UserRole.REGULAR to HttpStatusCode.Forbidden,
             ),
         ),
-        FilesTestsInput(
+        UserFilesTestsInput(
             viewOwnFileCode = mapOf(
                 FileVisibility.PUBLIC to "\$3000010001",
                 FileVisibility.UNLISTED to "\$3000010002",
@@ -205,23 +208,12 @@ class FilesTests {
         ),
     )
 
-    /*
     @DisplayName("Files tests as guest")
     @Nested
     inner class GuestTests : AbstractFilesTests(
         guest,
         FilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Unauthorized,
-
-            // OWN FILES
-            viewOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            renameOwnFile = HttpStatusCode.OK,
-            updateVisibilityOwnFile = HttpStatusCode.OK,
-            deleteOwnFile = HttpStatusCode.OK,
 
             // OTHERS FILES
             viewOtherFile = mapOf(
@@ -258,13 +250,8 @@ class FilesTests {
             ),
         ),
         FilesTestsInput(
-            viewOwnFileId = UUID.fromString("00000000-0000-0000-0000-000000000000"),
-            viewOwnFileCode = "$0000000000",
-            deleteOwnFileId = UUID.fromString("00000000-0000-0000-0000-000000000000"),
         ),
     )
-
-     */
 
     companion object {
 
@@ -276,20 +263,18 @@ class FilesTests {
         init {
             testApplication {
                 owner = Pair(
-                    login("owner", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0000-0000-0000-000000000001")
+                    login("files.owner", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("ffffffff-0001-0000-0000-000000000001")
                 )
                 admin = Pair(
-                    login("admin", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0000-0000-0000-000000000002")
+                    login("files.admin", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("ffffffff-0001-0000-0000-000000000002")
                 )
                 user = Pair(
-                    login("user", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0000-0000-0000-000000000003")
+                    login("files.user", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("ffffffff-0001-0000-0000-000000000003")
                 )
             }
         }
-
     }
-
 }

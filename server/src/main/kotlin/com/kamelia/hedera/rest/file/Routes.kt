@@ -13,6 +13,7 @@ fun Route.filesRoutes() = route("/files") {
     uploadFileFromToken()
 
     authenticate(AuthJwt) {
+        getFile()
         uploadFile()
         searchFiles()
         getFilesFormats()
@@ -22,9 +23,9 @@ fun Route.filesRoutes() = route("/files") {
         deleteFile()
     }
 
-    authenticate(AuthJwt, optional = true) {
-        getFile()
-    }
+    // authenticate(AuthJwt, optional = true) {
+    //     getFile()
+    // }
 }
 
 

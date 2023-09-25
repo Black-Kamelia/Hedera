@@ -1,4 +1,4 @@
-package com.kamelia.hedera.rest
+package com.kamelia.hedera.rest2
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client

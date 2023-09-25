@@ -1,4 +1,4 @@
-package com.kamelia.hedera.rest
+package com.kamelia.hedera.rest2
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
@@ -514,7 +514,7 @@ class FileTest {
         )
 
         @JvmStatic
-        fun uploadFileToken(): Stream<Arguments> = Stream.of(
+        fun uploadFileEToken(): Stream<Arguments> = Stream.of(
             Arguments.of(
                 "d9efe80efb1745ea8a6c341e70ae36f9",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),

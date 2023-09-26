@@ -5,6 +5,8 @@ import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.rest.core.pageable.FilterObject
+import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
@@ -89,6 +91,20 @@ abstract class AbstractFilesTests(
         }
     }
 
+    @DisplayName("List files")
+    @Test
+    fun listFilesTest() = testApplication {
+        val (tokens, _) = user
+        val client = client()
+
+        val response = client.post("/api/files/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO())
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.listFiles, response.status)
+    }
+
     @DisplayName("View others file (via API)")
     @ParameterizedTest(name = "View {0}''s {1} file")
     @MethodSource("rolesVisibilitiesCombo")
@@ -100,7 +116,7 @@ abstract class AbstractFilesTests(
         val client = client()
 
         val fileCode = input.viewOthersFileCode[target]!![visibility]!!
-        val response = client.get("/api/files/${fileCode}") {
+        val response = client.get("/api/files/$fileCode") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.viewOthersFileAPI[target]!![visibility], response.status)
@@ -117,7 +133,7 @@ abstract class AbstractFilesTests(
         val client = client()
 
         val fileId = input.renameOthersFileId[target]!![visibility]!!
-        val response = client.put("/api/files/${fileId}/name") {
+        val response = client.put("/api/files/$fileId/name") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let { bearerAuth(it.accessToken) }
@@ -144,7 +160,7 @@ abstract class AbstractFilesTests(
         val client = client()
 
         val fileId = input.updateVisibilityOthersFileId[target]!![visibility]!!
-        val response = client.put("/api/files/${fileId}/visibility") {
+        val response = client.put("/api/files/$fileId/visibility") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(visibility = newVisibility))
             tokens?.let { bearerAuth(it.accessToken) }
@@ -188,7 +204,7 @@ abstract class AbstractFilesTests(
             Named.of("admin", UserRole.ADMIN),
             Named.of("regular user", UserRole.REGULAR),
         )
-        private val visibilities = listOf(
+        val visibilities = listOf(
             Named.of("public", FileVisibility.PUBLIC),
             Named.of("unlisted", FileVisibility.UNLISTED),
             Named.of("private", FileVisibility.PRIVATE),
@@ -218,6 +234,7 @@ abstract class AbstractFilesTests(
 
 open class FilesTestsExpectedResults(
     val uploadFile: HttpStatusCode,
+    val listFiles: HttpStatusCode,
 
     val viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val viewOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,

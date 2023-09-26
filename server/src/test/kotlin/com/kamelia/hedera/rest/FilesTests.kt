@@ -21,10 +21,11 @@ class FilesTests {
 
     @DisplayName("Files tests as owner")
     @Nested
-    inner class OwnerTests : AbstractUserFilesTests(
+    inner class OwnerFilesTests : AbstractUserFilesTests(
         owner,
         UserFilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Created,
+            listFiles = HttpStatusCode.OK,
 
             // OWN FILES
             viewOwnFile = mapOf(
@@ -32,9 +33,21 @@ class FilesTests {
                 FileVisibility.UNLISTED to HttpStatusCode.OK,
                 FileVisibility.PRIVATE to HttpStatusCode.OK,
             ),
-            renameOwnFile = HttpStatusCode.OK,
-            updateVisibilityOwnFile = HttpStatusCode.OK,
-            deleteOwnFile = HttpStatusCode.OK,
+            renameOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
+            updateVisibilityOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
+            deleteOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
 
             // OTHERS FILES
             viewOthersFileAPI = mapOf(
@@ -129,9 +142,21 @@ class FilesTests {
                 FileVisibility.UNLISTED to "\$0100010002",
                 FileVisibility.PRIVATE to "\$0100010003",
             ),
-            renameOwnFileId = UUID.fromString("00000001-0000-0000-0003-000000000000"),
-            updateVisibilityOwnFileId = UUID.fromString("00000001-0000-0000-0004-000000000000"),
-            deleteOwnFileId = UUID.fromString("00000001-0000-0000-0005-000000000000"),
+            renameOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000001-0000-0000-0003-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000001-0000-0000-0003-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000001-0000-0000-0003-000000000003"),
+            ),
+            updateVisibilityOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000001-0000-0000-0004-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000001-0000-0000-0004-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000001-0000-0000-0004-000000000003"),
+            ),
+            deleteOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000001-0000-0000-0005-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000001-0000-0000-0005-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000001-0000-0000-0005-000000000003"),
+            ),
 
             viewOthersFileCode = mapOf(
                 UserRole.OWNER to mapOf(
@@ -206,10 +231,11 @@ class FilesTests {
 
     @DisplayName("Files tests as admin")
     @Nested
-    inner class AdminTests : AbstractUserFilesTests(
+    inner class AdminFilesTests : AbstractUserFilesTests(
         admin,
         UserFilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Created,
+            listFiles = HttpStatusCode.OK,
 
             // OWN FILES
             viewOwnFile = mapOf(
@@ -217,9 +243,21 @@ class FilesTests {
                 FileVisibility.UNLISTED to HttpStatusCode.OK,
                 FileVisibility.PRIVATE to HttpStatusCode.OK,
             ),
-            renameOwnFile = HttpStatusCode.OK,
-            updateVisibilityOwnFile = HttpStatusCode.OK,
-            deleteOwnFile = HttpStatusCode.OK,
+            renameOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
+            updateVisibilityOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
+            deleteOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
 
             // OTHERS FILES
             viewOthersFileAPI = mapOf(
@@ -314,9 +352,21 @@ class FilesTests {
                 FileVisibility.UNLISTED to "\$0200010002",
                 FileVisibility.PRIVATE to "\$0200010003",
             ),
-            renameOwnFileId = UUID.fromString("00000002-0000-0000-0003-000000000000"),
-            updateVisibilityOwnFileId = UUID.fromString("00000002-0000-0000-0004-000000000000"),
-            deleteOwnFileId = UUID.fromString("00000002-0000-0000-0005-000000000000"),
+            renameOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000002-0000-0000-0003-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000002-0000-0000-0003-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000002-0000-0000-0003-000000000003"),
+            ),
+            updateVisibilityOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000002-0000-0000-0004-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000002-0000-0000-0004-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000002-0000-0000-0004-000000000003"),
+            ),
+            deleteOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000002-0000-0000-0005-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000002-0000-0000-0005-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000002-0000-0000-0005-000000000003"),
+            ),
 
             viewOthersFileCode = mapOf(
                 UserRole.OWNER to mapOf(
@@ -391,10 +441,11 @@ class FilesTests {
 
     @DisplayName("Files tests as regular user")
     @Nested
-    inner class RegularUserTests : AbstractUserFilesTests(
+    inner class RegularUserFilesTests : AbstractUserFilesTests(
         user,
         UserFilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Created,
+            listFiles = HttpStatusCode.OK,
 
             // OWN FILES
             viewOwnFile = mapOf(
@@ -402,9 +453,21 @@ class FilesTests {
                 FileVisibility.UNLISTED to HttpStatusCode.OK,
                 FileVisibility.PRIVATE to HttpStatusCode.OK,
             ),
-            renameOwnFile = HttpStatusCode.OK,
-            updateVisibilityOwnFile = HttpStatusCode.OK,
-            deleteOwnFile = HttpStatusCode.OK,
+            renameOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
+            updateVisibilityOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
+            deleteOwnFile = mapOf(
+                FileVisibility.PUBLIC to HttpStatusCode.OK,
+                FileVisibility.UNLISTED to HttpStatusCode.OK,
+                FileVisibility.PRIVATE to HttpStatusCode.OK,
+            ),
 
             // OTHERS FILES
             viewOthersFileAPI = mapOf(
@@ -499,9 +562,21 @@ class FilesTests {
                 FileVisibility.UNLISTED to "\$0300010002",
                 FileVisibility.PRIVATE to "\$0300010003",
             ),
-            renameOwnFileId = UUID.fromString("00000003-0000-0000-0003-000000000000"),
-            updateVisibilityOwnFileId = UUID.fromString("00000003-0000-0000-0004-000000000000"),
-            deleteOwnFileId = UUID.fromString("00000003-0000-0000-0005-000000000000"),
+            renameOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000003-0000-0000-0003-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000003-0000-0000-0003-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000003-0000-0000-0003-000000000003"),
+            ),
+            updateVisibilityOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000003-0000-0000-0004-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000003-0000-0000-0004-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000003-0000-0000-0004-000000000003"),
+            ),
+            deleteOwnFileId = mapOf(
+                FileVisibility.PUBLIC to UUID.fromString("00000003-0000-0000-0005-000000000001"),
+                FileVisibility.UNLISTED to UUID.fromString("00000003-0000-0000-0005-000000000002"),
+                FileVisibility.PRIVATE to UUID.fromString("00000003-0000-0000-0005-000000000003"),
+            ),
 
             viewOthersFileCode = mapOf(
                 UserRole.OWNER to mapOf(
@@ -576,10 +651,11 @@ class FilesTests {
 
     @DisplayName("Files tests as guest")
     @Nested
-    inner class GuestTests : AbstractFilesTests(
+    inner class GuestFilesTests : AbstractFilesTests(
         guest,
         FilesTestsExpectedResults(
             uploadFile = HttpStatusCode.Unauthorized,
+            listFiles = HttpStatusCode.Unauthorized,
 
             // OTHERS FILES
             viewOthersFileAPI = mapOf(

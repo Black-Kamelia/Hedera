@@ -8,24 +8,15 @@ import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest2.FileTest
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
 import java.util.*
 import java.util.stream.Stream
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Named
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -45,24 +36,29 @@ abstract class AbstractUserFilesTests(
         val (tokens, _) = user
         val client = client()
 
-        val response = client.get("/api/files/${input.viewOwnFileCode[visibility]}") {
+        val fileCode = input.viewOwnFileCode[visibility]!!
+        val response = client.get("/api/files/$fileCode") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.viewOwnFile[visibility], response.status)
     }
 
     @DisplayName("Rename own file")
-    @Test
-    fun renameOwnFileTest() = testApplication {
+    @ParameterizedTest(name = "Rename own {0} file")
+    @MethodSource("visibilities")
+    fun renameOwnFileTest(
+        visibility: FileVisibility
+    ) = testApplication {
         val (tokens, _) = user
         val client = client()
 
-        val response = client.put("/api/files/${input.renameOwnFileId}/name") {
+        val fileId = input.renameOwnFileId[visibility]!!
+        val response = client.put("/api/files/$fileId/name") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.renameOwnFile, response.status)
+        assertEquals(expectedResults.renameOwnFile[visibility], response.status)
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -73,20 +69,22 @@ abstract class AbstractUserFilesTests(
     }
 
     @DisplayName("Update own file visibility")
-    @ParameterizedTest(name = "Update own file visibility to {0}")
-    @MethodSource("visibilities")
+    @ParameterizedTest(name = "Update own {0} file visibility to {1}")
+    @MethodSource
     fun updateVisibilityOwnFileTest(
+        visibility: FileVisibility,
         newVisibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
 
-        val response = client.put("/api/files/${input.updateVisibilityOwnFileId}/visibility") {
+        val fileId = input.updateVisibilityOwnFileId[visibility]!!
+        val response = client.put("/api/files/$fileId/visibility") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(visibility = newVisibility))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.updateVisibilityOwnFile, response.status)
+        assertEquals(expectedResults.updateVisibilityOwnFile[visibility], response.status)
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -97,15 +95,19 @@ abstract class AbstractUserFilesTests(
     }
 
     @DisplayName("Delete own file")
-    @Test
-    fun deleteOwnFileTest() = testApplication {
+    @ParameterizedTest(name = "Delete own {0} file")
+    @MethodSource("visibilities")
+    fun deleteOwnFileTest(
+        visibility: FileVisibility,
+    ) = testApplication {
         val (tokens, _) = user
         val client = client()
 
-        val response = client.delete("/api/files/${input.deleteOwnFileId}") {
+        val fileId = input.deleteOwnFileId[visibility]!!
+        val response = client.delete("/api/files/$fileId") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.deleteOwnFile, response.status)
+        assertEquals(expectedResults.deleteOwnFile[visibility], response.status)
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -117,22 +119,27 @@ abstract class AbstractUserFilesTests(
     companion object {
 
         @JvmStatic
-        fun visibilities(): Stream<Arguments> = Stream.of(
-            Named.of("public", FileVisibility.PUBLIC),
-            Named.of("unlisted", FileVisibility.UNLISTED),
-            Named.of("private", FileVisibility.PRIVATE),
-        ).map { Arguments.of(it) }
+        fun visibilities(): Stream<Arguments> = visibilities.map { Arguments.of(it) }.stream()
 
+        @JvmStatic
+        fun updateVisibilityOwnFileTest(): Stream<Arguments> {
+            return visibilities.flatMap { visibility ->
+                visibilities.map { newVisibility ->
+                    Arguments.of(visibility, newVisibility)
+                }
+            }.stream()
+        }
     }
 }
 
 class UserFilesTestsExpectedResults(
     uploadFile: HttpStatusCode,
+    listFiles: HttpStatusCode,
 
     val viewOwnFile: Map<FileVisibility, HttpStatusCode>,
-    val renameOwnFile: HttpStatusCode,
-    val updateVisibilityOwnFile: HttpStatusCode,
-    val deleteOwnFile: HttpStatusCode,
+    val renameOwnFile: Map<FileVisibility, HttpStatusCode>,
+    val updateVisibilityOwnFile: Map<FileVisibility, HttpStatusCode>,
+    val deleteOwnFile: Map<FileVisibility, HttpStatusCode>,
 
     viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     viewOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
@@ -141,6 +148,7 @@ class UserFilesTestsExpectedResults(
     deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
 ) : FilesTestsExpectedResults(
     uploadFile,
+    listFiles,
     viewOthersFile,
     viewOthersFileAPI,
     renameOthersFile,
@@ -150,9 +158,9 @@ class UserFilesTestsExpectedResults(
 
 class UserFilesTestsInput(
     val viewOwnFileCode: Map<FileVisibility, String>,
-    val renameOwnFileId: UUID,
-    val updateVisibilityOwnFileId: UUID,
-    val deleteOwnFileId: UUID,
+    val renameOwnFileId: Map<FileVisibility, UUID>,
+    val updateVisibilityOwnFileId: Map<FileVisibility, UUID>,
+    val deleteOwnFileId: Map<FileVisibility, UUID>,
 
     viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
     renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,

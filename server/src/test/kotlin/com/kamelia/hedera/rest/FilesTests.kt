@@ -137,6 +137,7 @@ class FilesTests {
             ),
         ),
         UserFilesTestsInput(
+            uploadToken = "00000001000100000001000000000000",
             viewOwnFileCode = mapOf(
                 FileVisibility.PUBLIC to "\$0100010001",
                 FileVisibility.UNLISTED to "\$0100010002",
@@ -347,6 +348,7 @@ class FilesTests {
             ),
         ),
         UserFilesTestsInput(
+            uploadToken = "00000002000100000001000000000000",
             viewOwnFileCode = mapOf(
                 FileVisibility.PUBLIC to "\$0200010001",
                 FileVisibility.UNLISTED to "\$0200010002",
@@ -557,6 +559,7 @@ class FilesTests {
             ),
         ),
         UserFilesTestsInput(
+            uploadToken = "00000003000100000001000000000000",
             viewOwnFileCode = mapOf(
                 FileVisibility.PUBLIC to "\$0300010001",
                 FileVisibility.UNLISTED to "\$0300010002",

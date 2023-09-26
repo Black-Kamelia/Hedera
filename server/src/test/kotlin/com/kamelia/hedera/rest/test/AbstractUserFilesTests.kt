@@ -1,14 +1,17 @@
 package com.kamelia.hedera.rest.test
 
 import com.kamelia.hedera.TestUser
+import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
+import com.kamelia.hedera.rest.file.toSizeDTO
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -17,6 +20,7 @@ import java.util.stream.Stream
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -26,6 +30,28 @@ abstract class AbstractUserFilesTests(
     private val expectedResults: UserFilesTestsExpectedResults,
     private val input: UserFilesTestsInput,
 ) : AbstractFilesTests(user, expectedResults, input) {
+
+    @DisplayName("Upload a file using token")
+    @Test
+    fun uploadFileTokenTest() = testApplication {
+        val (_, userId) = user
+        val client = client()
+
+        val response = client.submitFormWithBinaryData("/api/files/upload/token", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            header("Upload-Token", input.uploadToken)
+        }
+        assertEquals(expectedResults.uploadFile, response.status)
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
+            assertEquals(userId, responseDto.owner.id)
+            assertEquals("test.txt", responseDto.name)
+            assertEquals("text/plain", responseDto.mimeType)
+            assertEquals(20L.toSizeDTO(), responseDto.size)
+        }
+    }
 
     @DisplayName("View own file")
     @ParameterizedTest(name = "View own {0} file")
@@ -157,6 +183,7 @@ class UserFilesTestsExpectedResults(
 )
 
 class UserFilesTestsInput(
+    val uploadToken: String,
     val viewOwnFileCode: Map<FileVisibility, String>,
     val renameOwnFileId: Map<FileVisibility, UUID>,
     val updateVisibilityOwnFileId: Map<FileVisibility, UUID>,

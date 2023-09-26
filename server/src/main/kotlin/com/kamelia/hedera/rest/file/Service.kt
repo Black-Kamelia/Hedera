@@ -125,7 +125,7 @@ object FileService {
         dto: FileUpdateDTO,
     ): File {
         if (file.ownerId != user.uuid) {
-            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
+            if (file.visibility != FileVisibility.PRIVATE) {
                 throw IllegalActionException()
             }
             throw FileNotFoundException()

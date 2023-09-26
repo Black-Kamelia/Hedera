@@ -63,7 +63,7 @@ suspend fun ApplicationTestBuilder.loginBlocking(
 ): Pair<HttpResponse, TokenData?> {
     val dto = LoginDTO(username, password)
     val response = runBlocking {
-         client().post("/api/login") {
+        client().post("/api/login") {
             contentType(ContentType.Application.Json)
             setBody(dto)
         }

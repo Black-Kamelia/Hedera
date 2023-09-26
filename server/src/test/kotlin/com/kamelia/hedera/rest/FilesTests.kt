@@ -2,15 +2,20 @@ package com.kamelia.hedera.rest
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.login
-import com.kamelia.hedera.rest.file.FileVisibility
+import com.kamelia.hedera.mapOfRole
+import com.kamelia.hedera.mapOfVisibility
 import com.kamelia.hedera.rest.test.AbstractFilesTests
 import com.kamelia.hedera.rest.test.AbstractUserFilesTests
 import com.kamelia.hedera.rest.test.FilesTestsExpectedResults
 import com.kamelia.hedera.rest.test.FilesTestsInput
 import com.kamelia.hedera.rest.test.UserFilesTestsExpectedResults
 import com.kamelia.hedera.rest.test.UserFilesTestsInput
-import com.kamelia.hedera.rest.user.UserRole
-import io.ktor.http.*
+import com.kamelia.hedera.uuid
+import io.ktor.http.HttpStatusCode.Companion.Created
+import io.ktor.http.HttpStatusCode.Companion.Forbidden
+import io.ktor.http.HttpStatusCode.Companion.NotFound
+import io.ktor.http.HttpStatusCode.Companion.OK
+import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.server.testing.*
 import java.util.*
 import org.junit.jupiter.api.DisplayName
@@ -24,207 +29,115 @@ class FilesTests {
     inner class OwnerFilesTests : AbstractUserFilesTests(
         owner,
         UserFilesTestsExpectedResults(
-            uploadFile = HttpStatusCode.Created,
-            listFiles = HttpStatusCode.OK,
+            uploadFile = Created,
+            listFiles = OK,
 
             // OWN FILES
-            viewOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            renameOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            updateVisibilityOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            deleteOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
+            viewOwnFile = mapOfVisibility(OK, OK, OK),
+            renameOwnFile = mapOfVisibility(OK, OK, OK),
+            updateVisibilityOwnFile = mapOfVisibility(OK, OK, OK),
+            deleteOwnFile = mapOfVisibility(OK, OK, OK),
 
             // OTHERS FILES
-            viewOthersFileAPI = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFileAPI = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            viewOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFile = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            renameOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            renameOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
-            updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            updateVisibilityOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
-            deleteOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.OK,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.OK,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.OK,
-                ),
+            deleteOthersFile = mapOfRole(
+                mapOfVisibility(OK, OK, OK),
+                mapOfVisibility(OK, OK, OK),
+                mapOfVisibility(OK, OK, OK),
             ),
         ),
         UserFilesTestsInput(
             uploadToken = "00000001000100000001000000000000",
-            viewOwnFileCode = mapOf(
-                FileVisibility.PUBLIC to "\$0100010001",
-                FileVisibility.UNLISTED to "\$0100010002",
-                FileVisibility.PRIVATE to "\$0100010003",
+            viewOwnFileCode = mapOfVisibility("\$0100010001", "\$0100010002", "\$0100010003"),
+            renameOwnFileId = mapOfVisibility(
+                "00000001-0000-0000-0003-000000000001".uuid(),
+                "00000001-0000-0000-0003-000000000002".uuid(),
+                "00000001-0000-0000-0003-000000000003".uuid(),
             ),
-            renameOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000001-0000-0000-0003-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000001-0000-0000-0003-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000001-0000-0000-0003-000000000003"),
+            updateVisibilityOwnFileId = mapOfVisibility(
+                "00000001-0000-0000-0004-000000000001".uuid(),
+                "00000001-0000-0000-0004-000000000002".uuid(),
+                "00000001-0000-0000-0004-000000000003".uuid(),
             ),
-            updateVisibilityOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000001-0000-0000-0004-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000001-0000-0000-0004-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000001-0000-0000-0004-000000000003"),
-            ),
-            deleteOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000001-0000-0000-0005-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000001-0000-0000-0005-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000001-0000-0000-0005-000000000003"),
+            deleteOwnFileId = mapOfVisibility(
+                "00000001-0000-0000-0005-000000000001".uuid(),
+                "00000001-0000-0000-0005-000000000002".uuid(),
+                "00000001-0000-0000-0005-000000000003".uuid(),
             ),
 
-            viewOthersFileCode = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to "\$1110010001",
-                    FileVisibility.UNLISTED to "\$1110010002",
-                    FileVisibility.PRIVATE to "\$1110010003",
+            viewOthersFileCode = mapOfRole(
+                mapOfVisibility("\$1110010001", "\$1110010002", "\$1110010003"),
+                mapOfVisibility("\$1210010001", "\$1210010002", "\$1210010003"),
+                mapOfVisibility("\$1310010001", "\$1310010002", "\$1310010003"),
+            ),
+            renameOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0003-000000000001".uuid(),
+                    "10000001-0003-0000-0003-000000000002".uuid(),
+                    "10000001-0003-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to "\$1210010001",
-                    FileVisibility.UNLISTED to "\$1210010002",
-                    FileVisibility.PRIVATE to "\$1210010003",
+                mapOfVisibility(
+                    "10000002-0003-0000-0003-000000000001".uuid(),
+                    "10000002-0003-0000-0003-000000000002".uuid(),
+                    "10000002-0003-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to "\$1310010001",
-                    FileVisibility.UNLISTED to "\$1310010002",
-                    FileVisibility.PRIVATE to "\$1310010003",
+                mapOfVisibility(
+                    "10000003-0003-0000-0003-000000000001".uuid(),
+                    "10000003-0003-0000-0003-000000000002".uuid(),
+                    "10000003-0003-0000-0003-000000000003".uuid(),
                 ),
             ),
-            renameOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0003-000000000003"),
+            updateVisibilityOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0001-0000-0004-000000000001".uuid(),
+                    "10000001-0001-0000-0004-000000000002".uuid(),
+                    "10000001-0001-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0003-000000000003"),
+                mapOfVisibility(
+                    "10000002-0001-0000-0004-000000000001".uuid(),
+                    "10000002-0001-0000-0004-000000000002".uuid(),
+                    "10000002-0001-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0003-000000000003"),
-                ),
-            ),
-            updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0001-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0001-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0001-0000-0004-000000000003"),
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0001-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0001-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0001-0000-0004-000000000003"),
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0001-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0001-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0001-0000-0004-000000000003"),
+                mapOfVisibility(
+                    "10000003-0001-0000-0004-000000000001".uuid(),
+                    "10000003-0001-0000-0004-000000000002".uuid(),
+                    "10000003-0001-0000-0004-000000000003".uuid(),
                 ),
             ),
-            deleteOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0001-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0001-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0001-0000-0005-000000000003"),
+            deleteOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0001-0000-0005-000000000001".uuid(),
+                    "10000001-0001-0000-0005-000000000002".uuid(),
+                    "10000001-0001-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0001-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0001-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0001-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000002-0001-0000-0005-000000000001".uuid(),
+                    "10000002-0001-0000-0005-000000000002".uuid(),
+                    "10000002-0001-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0001-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0001-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0001-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000003-0001-0000-0005-000000000001".uuid(),
+                    "10000003-0001-0000-0005-000000000002".uuid(),
+                    "10000003-0001-0000-0005-000000000003".uuid(),
                 ),
             ),
         ),
@@ -235,207 +148,115 @@ class FilesTests {
     inner class AdminFilesTests : AbstractUserFilesTests(
         admin,
         UserFilesTestsExpectedResults(
-            uploadFile = HttpStatusCode.Created,
-            listFiles = HttpStatusCode.OK,
+            uploadFile = Created,
+            listFiles = OK,
 
             // OWN FILES
-            viewOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            renameOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            updateVisibilityOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            deleteOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
+            viewOwnFile = mapOfVisibility(OK, OK, OK),
+            renameOwnFile = mapOfVisibility(OK, OK, OK),
+            updateVisibilityOwnFile = mapOfVisibility(OK, OK, OK),
+            deleteOwnFile = mapOfVisibility(OK, OK, OK),
 
             // OTHERS FILES
-            viewOthersFileAPI = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFileAPI = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            viewOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFile = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            renameOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            renameOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
-            updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            updateVisibilityOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
-            deleteOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.OK,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.OK,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.OK,
-                ),
+            deleteOthersFile = mapOfRole(
+                mapOfVisibility(OK, OK, OK),
+                mapOfVisibility(OK, OK, OK),
+                mapOfVisibility(OK, OK, OK),
             ),
         ),
         UserFilesTestsInput(
             uploadToken = "00000002000100000001000000000000",
-            viewOwnFileCode = mapOf(
-                FileVisibility.PUBLIC to "\$0200010001",
-                FileVisibility.UNLISTED to "\$0200010002",
-                FileVisibility.PRIVATE to "\$0200010003",
+            viewOwnFileCode = mapOfVisibility("\$0200010001", "\$0200010002", "\$0200010003"),
+            renameOwnFileId = mapOfVisibility(
+                "00000002-0000-0000-0003-000000000001".uuid(),
+                "00000002-0000-0000-0003-000000000002".uuid(),
+                "00000002-0000-0000-0003-000000000003".uuid(),
             ),
-            renameOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000002-0000-0000-0003-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000002-0000-0000-0003-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000002-0000-0000-0003-000000000003"),
+            updateVisibilityOwnFileId = mapOfVisibility(
+                "00000002-0000-0000-0004-000000000001".uuid(),
+                "00000002-0000-0000-0004-000000000002".uuid(),
+                "00000002-0000-0000-0004-000000000003".uuid(),
             ),
-            updateVisibilityOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000002-0000-0000-0004-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000002-0000-0000-0004-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000002-0000-0000-0004-000000000003"),
-            ),
-            deleteOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000002-0000-0000-0005-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000002-0000-0000-0005-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000002-0000-0000-0005-000000000003"),
+            deleteOwnFileId = mapOfVisibility(
+                "00000002-0000-0000-0005-000000000001".uuid(),
+                "00000002-0000-0000-0005-000000000002".uuid(),
+                "00000002-0000-0000-0005-000000000003".uuid(),
             ),
 
-            viewOthersFileCode = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to "\$1120010001",
-                    FileVisibility.UNLISTED to "\$1120010002",
-                    FileVisibility.PRIVATE to "\$1120010003",
+            viewOthersFileCode = mapOfRole(
+                mapOfVisibility("\$1120010001", "\$1120010002", "\$1120010003"),
+                mapOfVisibility("\$1220010001", "\$1220010002", "\$1220010003"),
+                mapOfVisibility("\$1320010001", "\$1320010002", "\$1320010003"),
+            ),
+            renameOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0003-000000000001".uuid(),
+                    "10000001-0003-0000-0003-000000000002".uuid(),
+                    "10000001-0003-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to "\$1220010001",
-                    FileVisibility.UNLISTED to "\$1220010002",
-                    FileVisibility.PRIVATE to "\$1220010003",
+                mapOfVisibility(
+                    "10000002-0003-0000-0003-000000000001".uuid(),
+                    "10000002-0003-0000-0003-000000000002".uuid(),
+                    "10000002-0003-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to "\$1320010001",
-                    FileVisibility.UNLISTED to "\$1320010002",
-                    FileVisibility.PRIVATE to "\$1320010003",
+                mapOfVisibility(
+                    "10000003-0003-0000-0003-000000000001".uuid(),
+                    "10000003-0003-0000-0003-000000000002".uuid(),
+                    "10000003-0003-0000-0003-000000000003".uuid(),
                 ),
             ),
-            renameOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0003-000000000003"),
+            updateVisibilityOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0002-0000-0004-000000000001".uuid(),
+                    "10000001-0002-0000-0004-000000000002".uuid(),
+                    "10000001-0002-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0003-000000000003"),
+                mapOfVisibility(
+                    "10000002-0002-0000-0004-000000000001".uuid(),
+                    "10000002-0002-0000-0004-000000000002".uuid(),
+                    "10000002-0002-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0003-000000000003"),
-                ),
-            ),
-            updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0002-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0002-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0002-0000-0004-000000000003"),
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0002-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0002-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0002-0000-0004-000000000003"),
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0002-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0002-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0002-0000-0004-000000000003"),
+                mapOfVisibility(
+                    "10000003-0002-0000-0004-000000000001".uuid(),
+                    "10000003-0002-0000-0004-000000000002".uuid(),
+                    "10000003-0002-0000-0004-000000000003".uuid(),
                 ),
             ),
-            deleteOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0002-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0002-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0002-0000-0005-000000000003"),
+            deleteOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0002-0000-0005-000000000001".uuid(),
+                    "10000001-0002-0000-0005-000000000002".uuid(),
+                    "10000001-0002-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0002-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0002-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0002-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000002-0002-0000-0005-000000000001".uuid(),
+                    "10000002-0002-0000-0005-000000000002".uuid(),
+                    "10000002-0002-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0002-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0002-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0002-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000003-0002-0000-0005-000000000001".uuid(),
+                    "10000003-0002-0000-0005-000000000002".uuid(),
+                    "10000003-0002-0000-0005-000000000003".uuid(),
                 ),
             ),
         ),
@@ -446,207 +267,115 @@ class FilesTests {
     inner class RegularUserFilesTests : AbstractUserFilesTests(
         user,
         UserFilesTestsExpectedResults(
-            uploadFile = HttpStatusCode.Created,
-            listFiles = HttpStatusCode.OK,
+            uploadFile = Created,
+            listFiles = OK,
 
             // OWN FILES
-            viewOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            renameOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            updateVisibilityOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
-            deleteOwnFile = mapOf(
-                FileVisibility.PUBLIC to HttpStatusCode.OK,
-                FileVisibility.UNLISTED to HttpStatusCode.OK,
-                FileVisibility.PRIVATE to HttpStatusCode.OK,
-            ),
+            viewOwnFile = mapOfVisibility(OK, OK, OK),
+            renameOwnFile = mapOfVisibility(OK, OK, OK),
+            updateVisibilityOwnFile = mapOfVisibility(OK, OK, OK),
+            deleteOwnFile = mapOfVisibility(OK, OK, OK),
 
             // OTHERS FILES
-            viewOthersFileAPI = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFileAPI = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            viewOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFile = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            renameOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            renameOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
-            updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            updateVisibilityOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
-            deleteOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
-                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            deleteOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
         ),
         UserFilesTestsInput(
             uploadToken = "00000003000100000001000000000000",
-            viewOwnFileCode = mapOf(
-                FileVisibility.PUBLIC to "\$0300010001",
-                FileVisibility.UNLISTED to "\$0300010002",
-                FileVisibility.PRIVATE to "\$0300010003",
+            viewOwnFileCode = mapOfVisibility("\$0300010001", "\$0300010002", "\$0300010003"),
+            renameOwnFileId = mapOfVisibility(
+                "00000003-0000-0000-0003-000000000001".uuid(),
+                "00000003-0000-0000-0003-000000000002".uuid(),
+                "00000003-0000-0000-0003-000000000003".uuid(),
             ),
-            renameOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000003-0000-0000-0003-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000003-0000-0000-0003-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000003-0000-0000-0003-000000000003"),
+            updateVisibilityOwnFileId = mapOfVisibility(
+                "00000003-0000-0000-0004-000000000001".uuid(),
+                "00000003-0000-0000-0004-000000000002".uuid(),
+                "00000003-0000-0000-0004-000000000003".uuid(),
             ),
-            updateVisibilityOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000003-0000-0000-0004-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000003-0000-0000-0004-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000003-0000-0000-0004-000000000003"),
-            ),
-            deleteOwnFileId = mapOf(
-                FileVisibility.PUBLIC to UUID.fromString("00000003-0000-0000-0005-000000000001"),
-                FileVisibility.UNLISTED to UUID.fromString("00000003-0000-0000-0005-000000000002"),
-                FileVisibility.PRIVATE to UUID.fromString("00000003-0000-0000-0005-000000000003"),
+            deleteOwnFileId = mapOfVisibility(
+                "00000003-0000-0000-0005-000000000001".uuid(),
+                "00000003-0000-0000-0005-000000000002".uuid(),
+                "00000003-0000-0000-0005-000000000003".uuid(),
             ),
 
-            viewOthersFileCode = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to "\$1130010001",
-                    FileVisibility.UNLISTED to "\$1130010002",
-                    FileVisibility.PRIVATE to "\$1130010003",
+            viewOthersFileCode = mapOfRole(
+                mapOfVisibility("\$1130010001", "\$1130010002", "\$1130010003"),
+                mapOfVisibility("\$1230010001", "\$1230010002", "\$1230010003"),
+                mapOfVisibility("\$1330010001", "\$1330010002", "\$1330010003"),
+            ),
+            renameOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0003-000000000001".uuid(),
+                    "10000001-0003-0000-0003-000000000002".uuid(),
+                    "10000001-0003-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to "\$1230010001",
-                    FileVisibility.UNLISTED to "\$1230010002",
-                    FileVisibility.PRIVATE to "\$1230010003",
+                mapOfVisibility(
+                    "10000002-0003-0000-0003-000000000001".uuid(),
+                    "10000002-0003-0000-0003-000000000002".uuid(),
+                    "10000002-0003-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to "\$1330010001",
-                    FileVisibility.UNLISTED to "\$1330010002",
-                    FileVisibility.PRIVATE to "\$1330010003",
+                mapOfVisibility(
+                    "10000003-0003-0000-0003-000000000001".uuid(),
+                    "10000003-0003-0000-0003-000000000002".uuid(),
+                    "10000003-0003-0000-0003-000000000003".uuid(),
                 ),
             ),
-            renameOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0003-000000000003"),
+            updateVisibilityOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0004-000000000001".uuid(),
+                    "10000001-0003-0000-0004-000000000002".uuid(),
+                    "10000001-0003-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0003-000000000003"),
+                mapOfVisibility(
+                    "10000002-0003-0000-0004-000000000001".uuid(),
+                    "10000002-0003-0000-0004-000000000002".uuid(),
+                    "10000002-0003-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0003-000000000003"),
-                ),
-            ),
-            updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0004-000000000003"),
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0004-000000000003"),
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0004-000000000003"),
+                mapOfVisibility(
+                    "10000003-0003-0000-0004-000000000001".uuid(),
+                    "10000003-0003-0000-0004-000000000002".uuid(),
+                    "10000003-0003-0000-0004-000000000003".uuid(),
                 ),
             ),
-            deleteOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0005-000000000003"),
+            deleteOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0005-000000000001".uuid(),
+                    "10000001-0003-0000-0005-000000000002".uuid(),
+                    "10000001-0003-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000002-0003-0000-0005-000000000001".uuid(),
+                    "10000002-0003-0000-0005-000000000002".uuid(),
+                    "10000002-0003-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000003-0003-0000-0005-000000000001".uuid(),
+                    "10000003-0003-0000-0005-000000000002".uuid(),
+                    "10000003-0003-0000-0005-000000000003".uuid(),
                 ),
             ),
         ),
@@ -657,163 +386,91 @@ class FilesTests {
     inner class GuestFilesTests : AbstractFilesTests(
         guest,
         FilesTestsExpectedResults(
-            uploadFile = HttpStatusCode.Unauthorized,
-            listFiles = HttpStatusCode.Unauthorized,
+            uploadFile = Unauthorized,
+            listFiles = Unauthorized,
 
             // OTHERS FILES
-            viewOthersFileAPI = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
+            viewOthersFileAPI = mapOfRole(
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
             ),
-            viewOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.OK,
-                    FileVisibility.UNLISTED to HttpStatusCode.OK,
-                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
-                ),
+            viewOthersFile = mapOfRole(
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
+                mapOfVisibility(OK, OK, NotFound),
             ),
-            renameOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
+            renameOthersFile = mapOfRole(
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
             ),
-            updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
+            updateVisibilityOthersFile = mapOfRole(
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
             ),
-            deleteOthersFile = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
-                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
-                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
-                ),
+            deleteOthersFile = mapOfRole(
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
             ),
         ),
         FilesTestsInput(
-            viewOthersFileCode = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to "\$11f0010001",
-                    FileVisibility.UNLISTED to "\$11f0010002",
-                    FileVisibility.PRIVATE to "\$11f0010003",
+            viewOthersFileCode = mapOfRole(
+                mapOfVisibility("\$11f0010001", "\$11f0010002", "\$11f0010003",),
+                mapOfVisibility("\$12f0010001", "\$12f0010002", "\$12f0010003",),
+                mapOfVisibility("\$13f0010001", "\$13f0010002", "\$13f0010003",),
+            ),
+            renameOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-000f-0000-0003-000000000001".uuid(),
+                    "10000001-000f-0000-0003-000000000002".uuid(),
+                    "10000001-000f-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to "\$12f0010001",
-                    FileVisibility.UNLISTED to "\$12f0010002",
-                    FileVisibility.PRIVATE to "\$12f0010003",
+                mapOfVisibility(
+                    "10000002-000f-0000-0003-000000000001".uuid(),
+                    "10000002-000f-0000-0003-000000000002".uuid(),
+                    "10000002-000f-0000-0003-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to "\$13f0010001",
-                    FileVisibility.UNLISTED to "\$13f0010002",
-                    FileVisibility.PRIVATE to "\$13f0010003",
+                mapOfVisibility(
+                    "10000003-000f-0000-0003-000000000001".uuid(),
+                    "10000003-000f-0000-0003-000000000002".uuid(),
+                    "10000003-000f-0000-0003-000000000003".uuid(),
                 ),
             ),
-            renameOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-000f-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-000f-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-000f-0000-0003-000000000003"),
+            updateVisibilityOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-000f-0000-0004-000000000001".uuid(),
+                    "10000001-000f-0000-0004-000000000002".uuid(),
+                    "10000001-000f-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-000f-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-000f-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-000f-0000-0003-000000000003"),
+                mapOfVisibility(
+                    "10000002-000f-0000-0004-000000000001".uuid(),
+                    "10000002-000f-0000-0004-000000000002".uuid(),
+                    "10000002-000f-0000-0004-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-000f-0000-0003-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-000f-0000-0003-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-000f-0000-0003-000000000003"),
-                ),
-            ),
-            updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-000f-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-000f-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-000f-0000-0004-000000000003"),
-                ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-000f-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-000f-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-000f-0000-0004-000000000003"),
-                ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-000f-0000-0004-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-000f-0000-0004-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-000f-0000-0004-000000000003"),
+                mapOfVisibility(
+                    "10000003-000f-0000-0004-000000000001".uuid(),
+                    "10000003-000f-0000-0004-000000000002".uuid(),
+                    "10000003-000f-0000-0004-000000000003".uuid(),
                 ),
             ),
-            deleteOthersFileId = mapOf(
-                UserRole.OWNER to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000001-000f-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000001-000f-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000001-000f-0000-0005-000000000003"),
+            deleteOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-000f-0000-0005-000000000001".uuid(),
+                    "10000001-000f-0000-0005-000000000002".uuid(),
+                    "10000001-000f-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.ADMIN to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000002-000f-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000002-000f-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000002-000f-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000002-000f-0000-0005-000000000001".uuid(),
+                    "10000002-000f-0000-0005-000000000002".uuid(),
+                    "10000002-000f-0000-0005-000000000003".uuid(),
                 ),
-                UserRole.REGULAR to mapOf(
-                    FileVisibility.PUBLIC to UUID.fromString("10000003-000f-0000-0005-000000000001"),
-                    FileVisibility.UNLISTED to UUID.fromString("10000003-000f-0000-0005-000000000002"),
-                    FileVisibility.PRIVATE to UUID.fromString("10000003-000f-0000-0005-000000000003"),
+                mapOfVisibility(
+                    "10000003-000f-0000-0005-000000000001".uuid(),
+                    "10000003-000f-0000-0005-000000000002".uuid(),
+                    "10000003-000f-0000-0005-000000000003".uuid(),
                 ),
             ),
         ),
@@ -830,15 +487,15 @@ class FilesTests {
             testApplication {
                 owner = Pair(
                     login("files.owner", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0001-0000-0001-000000000000")
+                    "ffffffff-0001-0000-0001-000000000000".uuid()
                 )
                 admin = Pair(
                     login("files.admin", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0001-0000-0001-000000000000")
+                    "ffffffff-0001-0000-0001-000000000000".uuid()
                 )
                 user = Pair(
                     login("files.user", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0001-0000-0001-000000000000")
+                    "ffffffff-0001-0000-0001-000000000000".uuid()
                 )
             }
         }

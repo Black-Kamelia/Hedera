@@ -4,7 +4,9 @@ import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.auth.LoginDTO
 import com.kamelia.hedera.rest.auth.SessionOpeningDTO
 import com.kamelia.hedera.rest.core.DTO
+import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
+import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.UUIDSerializer
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -24,6 +26,28 @@ import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
 typealias TestUser = Pair<TokenData?, UUID>
+
+fun <T> mapOfVisibility(
+    public: T,
+    unlisted: T,
+    private: T,
+) = mapOf(
+    FileVisibility.PUBLIC to public,
+    FileVisibility.UNLISTED to unlisted,
+    FileVisibility.PRIVATE to private,
+)
+
+fun <T> mapOfRole(
+    owner: T,
+    admin: T,
+    regular: T,
+) = mapOf(
+    UserRole.OWNER to owner,
+    UserRole.ADMIN to admin,
+    UserRole.REGULAR to regular,
+)
+
+fun String.uuid() = UUID.fromString(this)
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {

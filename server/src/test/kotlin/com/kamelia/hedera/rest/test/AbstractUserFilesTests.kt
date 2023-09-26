@@ -136,8 +136,8 @@ class UserFilesTestsExpectedResults(
 
     viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     viewOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    renameOthersFile: Map<UserRole, HttpStatusCode>,
-    updateVisibilityOthersFile: Map<UserRole, HttpStatusCode>,
+    renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
 ) : FilesTestsExpectedResults(
     uploadFile,
@@ -155,8 +155,8 @@ class UserFilesTestsInput(
     val deleteOwnFileId: UUID,
 
     viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
-    renameOthersFileId: Map<UserRole, UUID>,
-    updateVisibilityOthersFileId: Map<UserRole, UUID>,
+    renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
 ) : FilesTestsInput(
     viewOthersFileCode,

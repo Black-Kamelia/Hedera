@@ -72,14 +72,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Forbidden,
-                UserRole.ADMIN to HttpStatusCode.Forbidden,
-                UserRole.REGULAR to HttpStatusCode.Forbidden,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
             ),
             updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Forbidden,
-                UserRole.ADMIN to HttpStatusCode.Forbidden,
-                UserRole.REGULAR to HttpStatusCode.Forbidden,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
             ),
             deleteOthersFile = mapOf(
                 UserRole.OWNER to mapOf(
@@ -127,14 +151,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-0001-0000-0003-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-0001-0000-0003-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-0001-0000-0003-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0003-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0003-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0003-000000000003"),
+                ),
             ),
             updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-0001-0000-0004-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-0001-0000-0004-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-0001-0000-0004-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-0001-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-0001-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-0001-0000-0004-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-0001-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-0001-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-0001-0000-0004-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-0001-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-0001-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-0001-0000-0004-000000000003"),
+                ),
             ),
             deleteOthersFileId = mapOf(
                 UserRole.OWNER to mapOf(
@@ -209,14 +257,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Forbidden,
-                UserRole.ADMIN to HttpStatusCode.Forbidden,
-                UserRole.REGULAR to HttpStatusCode.Forbidden,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
             ),
             updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Forbidden,
-                UserRole.ADMIN to HttpStatusCode.Forbidden,
-                UserRole.REGULAR to HttpStatusCode.Forbidden,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
             ),
             deleteOthersFile = mapOf(
                 UserRole.OWNER to mapOf(
@@ -264,14 +336,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-0002-0000-0003-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-0002-0000-0003-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-0002-0000-0003-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0003-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0003-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0003-000000000003"),
+                ),
             ),
             updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-0002-0000-0004-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-0002-0000-0004-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-0002-0000-0004-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-0002-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-0002-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-0002-0000-0004-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-0002-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-0002-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-0002-0000-0004-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-0002-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-0002-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-0002-0000-0004-000000000003"),
+                ),
             ),
             deleteOthersFileId = mapOf(
                 UserRole.OWNER to mapOf(
@@ -346,14 +442,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Forbidden,
-                UserRole.ADMIN to HttpStatusCode.Forbidden,
-                UserRole.REGULAR to HttpStatusCode.Forbidden,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
             ),
             updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Forbidden,
-                UserRole.ADMIN to HttpStatusCode.Forbidden,
-                UserRole.REGULAR to HttpStatusCode.Forbidden,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Forbidden,
+                    FileVisibility.UNLISTED to HttpStatusCode.Forbidden,
+                    FileVisibility.PRIVATE to HttpStatusCode.NotFound,
+                ),
             ),
             deleteOthersFile = mapOf(
                 UserRole.OWNER to mapOf(
@@ -401,14 +521,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-0003-0000-0003-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-0003-0000-0003-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-0003-0000-0003-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0003-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0003-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0003-000000000003"),
+                ),
             ),
             updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-0003-0000-0004-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-0003-0000-0004-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-0003-0000-0004-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-0003-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-0003-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-0003-0000-0004-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-0003-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-0003-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-0003-0000-0004-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-0003-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-0003-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-0003-0000-0004-000000000003"),
+                ),
             ),
             deleteOthersFileId = mapOf(
                 UserRole.OWNER to mapOf(
@@ -473,14 +617,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Unauthorized,
-                UserRole.ADMIN to HttpStatusCode.Unauthorized,
-                UserRole.REGULAR to HttpStatusCode.Unauthorized,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
+                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
+                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
+                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
+                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
+                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
+                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
+                ),
             ),
             updateVisibilityOthersFile = mapOf(
-                UserRole.OWNER to HttpStatusCode.Unauthorized,
-                UserRole.ADMIN to HttpStatusCode.Unauthorized,
-                UserRole.REGULAR to HttpStatusCode.Unauthorized,
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
+                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
+                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
+                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
+                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to HttpStatusCode.Unauthorized,
+                    FileVisibility.UNLISTED to HttpStatusCode.Unauthorized,
+                    FileVisibility.PRIVATE to HttpStatusCode.Unauthorized,
+                ),
             ),
             deleteOthersFile = mapOf(
                 UserRole.OWNER to mapOf(
@@ -519,14 +687,38 @@ class FilesTests {
                 ),
             ),
             renameOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-000f-0000-0003-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-000f-0000-0003-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-000f-0000-0003-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-000f-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-000f-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-000f-0000-0003-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-000f-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-000f-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-000f-0000-0003-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-000f-0000-0003-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-000f-0000-0003-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-000f-0000-0003-000000000003"),
+                ),
             ),
             updateVisibilityOthersFileId = mapOf(
-                UserRole.OWNER to UUID.fromString("10000001-000f-0000-0004-000000000000"),
-                UserRole.ADMIN to UUID.fromString("10000002-000f-0000-0004-000000000000"),
-                UserRole.REGULAR to UUID.fromString("10000003-000f-0000-0004-000000000000"),
+                UserRole.OWNER to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000001-000f-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000001-000f-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000001-000f-0000-0004-000000000003"),
+                ),
+                UserRole.ADMIN to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000002-000f-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000002-000f-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000002-000f-0000-0004-000000000003"),
+                ),
+                UserRole.REGULAR to mapOf(
+                    FileVisibility.PUBLIC to UUID.fromString("10000003-000f-0000-0004-000000000001"),
+                    FileVisibility.UNLISTED to UUID.fromString("10000003-000f-0000-0004-000000000002"),
+                    FileVisibility.PRIVATE to UUID.fromString("10000003-000f-0000-0004-000000000003"),
+                ),
             ),
             deleteOthersFileId = mapOf(
                 UserRole.OWNER to mapOf(
@@ -559,15 +751,15 @@ class FilesTests {
             testApplication {
                 owner = Pair(
                     login("files.owner", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0001-0000-0000-000000000001")
+                    UUID.fromString("ffffffff-0001-0000-0001-000000000000")
                 )
                 admin = Pair(
                     login("files.admin", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0001-0000-0000-000000000002")
+                    UUID.fromString("ffffffff-0001-0000-0001-000000000000")
                 )
                 user = Pair(
                     login("files.user", "password").second ?: throw Exception("Login failed"),
-                    UUID.fromString("ffffffff-0001-0000-0000-000000000003")
+                    UUID.fromString("ffffffff-0001-0000-0001-000000000000")
                 )
             }
         }

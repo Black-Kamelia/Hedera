@@ -94,32 +94,35 @@ abstract class AbstractFilesTests(
     @MethodSource("rolesVisibilitiesCombo")
     fun viewOthersFileAPITest(
         target: UserRole,
-        visibility: FileVisibility
+        visibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
 
-        val response = client.get("/api/files/${input.viewOthersFileCode[target]!![visibility]}") {
+        val fileCode = input.viewOthersFileCode[target]!![visibility]!!
+        val response = client.get("/api/files/${fileCode}") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.viewOthersFileAPI[target]!![visibility], response.status)
     }
 
     @DisplayName("Rename others file")
-    @ParameterizedTest(name = "Rename {0}''s file")
-    @MethodSource("roles")
+    @ParameterizedTest(name = "Rename {0}''s {1} file")
+    @MethodSource("rolesVisibilitiesCombo")
     fun renameOthersFileTest(
         target: UserRole,
+        visibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
 
-        val response = client.put("/api/files/${input.renameOthersFileId[target]}/name") {
+        val fileId = input.renameOthersFileId[target]!![visibility]!!
+        val response = client.put("/api/files/${fileId}/name") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.renameOthersFile[target], response.status)
+        assertEquals(expectedResults.renameOthersFile[target]!![visibility], response.status)
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -130,21 +133,23 @@ abstract class AbstractFilesTests(
     }
 
     @DisplayName("Update others file visibility")
-    @ParameterizedTest(name = "Update {0}''s file visibility to {1}")
-    @MethodSource("rolesVisibilitiesCombo")
+    @ParameterizedTest(name = "Update {0}''s {1} file visibility to {2}")
+    @MethodSource
     fun updateVisibilityOthersFileTest(
         target: UserRole,
+        visibility: FileVisibility,
         newVisibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
         val client = client()
 
-        val response = client.put("/api/files/${input.updateVisibilityOthersFileId[target]}/visibility") {
+        val fileId = input.updateVisibilityOthersFileId[target]!![visibility]!!
+        val response = client.put("/api/files/${fileId}/visibility") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(visibility = newVisibility))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.updateVisibilityOthersFile[target], response.status)
+        assertEquals(expectedResults.updateVisibilityOthersFile[target]!![visibility], response.status)
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -178,26 +183,36 @@ abstract class AbstractFilesTests(
 
     companion object {
 
-        @JvmStatic
-        fun rolesVisibilitiesCombo(): Stream<Arguments> = Stream.of(
-            Arguments.of(Named.of("owner", UserRole.OWNER), Named.of("public", FileVisibility.PUBLIC)),
-            Arguments.of(Named.of("owner", UserRole.OWNER), Named.of("unlisted", FileVisibility.UNLISTED)),
-            Arguments.of(Named.of("owner", UserRole.OWNER), Named.of("private", FileVisibility.PRIVATE)),
-            Arguments.of(Named.of("admin", UserRole.ADMIN), Named.of("public", FileVisibility.PUBLIC)),
-            Arguments.of(Named.of("admin", UserRole.ADMIN), Named.of("unlisted", FileVisibility.UNLISTED)),
-            Arguments.of(Named.of("admin", UserRole.ADMIN), Named.of("private", FileVisibility.PRIVATE)),
-            Arguments.of(Named.of("regular user", UserRole.REGULAR), Named.of("public", FileVisibility.PUBLIC)),
-            Arguments.of(Named.of("regular user", UserRole.REGULAR), Named.of("unlisted", FileVisibility.UNLISTED)),
-            Arguments.of(Named.of("regular user", UserRole.REGULAR), Named.of("private", FileVisibility.PRIVATE)),
+        private val roles = listOf(
+            Named.of("owner", UserRole.OWNER),
+            Named.of("admin", UserRole.ADMIN),
+            Named.of("regular user", UserRole.REGULAR),
+        )
+        private val visibilities = listOf(
+            Named.of("public", FileVisibility.PUBLIC),
+            Named.of("unlisted", FileVisibility.UNLISTED),
+            Named.of("private", FileVisibility.PRIVATE),
         )
 
         @JvmStatic
-        fun roles(): Stream<Arguments> = Stream.of(
-            Arguments.of(Named.of("owner", UserRole.OWNER)),
-            Arguments.of(Named.of("admin", UserRole.ADMIN)),
-            Arguments.of(Named.of("regular user", UserRole.REGULAR)),
-        )
+        fun rolesVisibilitiesCombo(): Stream<Arguments> {
+            return roles.flatMap { role ->
+                visibilities.map { visibility ->
+                        Arguments.of(role, visibility)
+                }
+            }.stream()
+        }
 
+        @JvmStatic
+        fun updateVisibilityOthersFileTest(): Stream<Arguments> {
+            return roles.flatMap { role ->
+                visibilities.flatMap { visibility ->
+                    visibilities.map { newVisibility ->
+                        Arguments.of(role, visibility, newVisibility)
+                    }
+                }
+            }.stream()
+        }
     }
 }
 
@@ -206,14 +221,14 @@ open class FilesTestsExpectedResults(
 
     val viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val viewOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val renameOthersFile: Map<UserRole, HttpStatusCode>,
-    val updateVisibilityOthersFile: Map<UserRole, HttpStatusCode>,
+    val renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    val updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
 )
 
 open class FilesTestsInput(
     val viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
-    val renameOthersFileId: Map<UserRole, UUID>,
-    val updateVisibilityOthersFileId: Map<UserRole, UUID>,
+    val renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    val updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     val deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
 )

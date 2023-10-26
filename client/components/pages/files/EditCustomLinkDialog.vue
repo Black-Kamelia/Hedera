@@ -21,7 +21,7 @@ const removePending = ref(false)
 const schema = object({
   customLink: string()
     .required(t('forms.edit_custom_link.errors.missing_slug'))
-    .matches(/^[a-z0-9\-]+$/, t('forms.edit_custom_link.errors.invalid_slug')),
+    .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, t('forms.edit_custom_link.errors.invalid_slug')),
 })
 const { handleSubmit, resetForm, setFieldValue, setFieldError } = useForm({
   validationSchema: schema,
@@ -141,7 +141,7 @@ watch(visible, (val) => {
         :label="t('forms.edit_custom_link.remove_link')"
         text
         :loading="removePending"
-        :disabled="savePending || !selectedRow.customLink"
+        :disabled="savePending || !selectedRow?.customLink"
         @click="removeLink"
       />
       <div class="flex flex-row gap-3">

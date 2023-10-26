@@ -24,7 +24,7 @@ import io.ktor.http.content.*
 import java.util.*
 import kotlin.math.ceil
 
-val CUSTOM_LINK_REGEX = """^[a-z0-9-]+$""".toRegex()
+val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
 
 object FileService {
 

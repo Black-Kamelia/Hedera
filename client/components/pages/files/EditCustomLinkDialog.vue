@@ -11,6 +11,10 @@ const { editCustomLink, deleteCustomLink } = useEditFileCustomLink()
 const { selectedRow, updateSelectedRow } = useFilesTable()
 
 const visible = defineModel<boolean>('visible', { default: false })
+const header = computed(() => {
+  if (selectedRow?.value?.customLink) return t('pages.files.edit_custom_link.title_edit')
+  return t('pages.files.edit_custom_link.title_set')
+})
 const savePending = ref(false)
 const removePending = ref(false)
 
@@ -77,7 +81,7 @@ watch(visible, (val) => {
     v-model:visible="visible"
     modal
     class="max-w-100% sm:max-w-75% xl:max-w-50% min-w-90% md:min-w-35em"
-    :header="t('pages.files.edit_custom_link.title')"
+    :header="header"
     :draggable="false"
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="resetForm()"

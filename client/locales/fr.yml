@@ -64,7 +64,8 @@ pages:
     context_menu:
       open: Ouvrir
       rename: Renommer
-      custom_link: Définir un lien personnalisé
+      set_custom_link: Définir un lien personnalisé
+      edit_custom_link: Modifier le lien personnalisé
       change_visibility: Modifier la visibilité
       copy_link: Copier le lien
       download: Télécharger
@@ -89,7 +90,8 @@ pages:
       cancel: Annuler
       submit: Renommer
     edit_custom_link:
-      title: Définir un lien personnalisé
+      title_set: Définir un lien personnalisé
+      title_edit: Modifier le lien personnalisé
       old_link_summary: 'Votre fichier sera toujours accessible via le lien original : {link}'
       links_summary: Un lien personnalisé est préfixé par la route {c_route}, contrairement à un lien original qui est préfixé par la route {i_route}.
     change_visibility:

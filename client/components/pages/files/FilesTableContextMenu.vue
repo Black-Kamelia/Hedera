@@ -59,7 +59,9 @@ const menuModel = computed(() => [
     command: renameFile,
   },
   {
-    label: t('pages.files.context_menu.custom_link'),
+    label: selectedRow.value?.customLink
+      ? t('pages.files.context_menu.edit_custom_link')
+      : t('pages.files.context_menu.set_custom_link'),
     icon: 'i-tabler-sparkles',
     command: () => editCustomLinkDialog.value = true,
   },

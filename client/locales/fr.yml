@@ -90,11 +90,8 @@ pages:
       submit: Renommer
     edit_custom_link:
       title: Définir un lien personnalisé
-      slug: Identifiant
-      cancel: Annuler
-      submit: Sauvegarder
       old_link_summary: 'Votre fichier sera toujours accessible via le lien original : {link}'
-      links_summary: Un lien personnalisé est préfixé par un symbole deux-points (:), contrairement à un lien original qui est préfixé par un symbole dollar ({'$'}).
+      links_summary: Un lien personnalisé est préfixé par la route {c_route}, contrairement à un lien original qui est préfixé par la route {i_route}.
     change_visibility:
       title: Modifier la visibilité d’un fichier
       success: La visibilité a été modifiée
@@ -374,6 +371,7 @@ forms:
     remove_link: Supprimer le lien
     fields:
       slug: Identifiant
+      slug_placeholder: lien-personnel-unique
     errors:
       missing_slug: Identifiant requis
       invalid_slug: Format d’identifiant invalide

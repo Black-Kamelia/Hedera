@@ -90,11 +90,8 @@ pages:
       submit: Rename
     edit_custom_link:
       title: Set a custom link
-      slug: Slug
-      cancel: Cancel
-      submit: Save
       old_link_summary: 'Your file will still be accessible via the original link: {link}'
-      links_summary: A custom link is prefixed by a colon (:), unlike an original link which is prefixed by a dollar sign ({'$'}).
+      links_summary: A custom link is prefixed by the {c_route} route, unlike an original link which is prefixed by the {i_route} route.
     change_visibility:
       title: Change the visibility of a file
       success: The visibility has been changed
@@ -374,6 +371,7 @@ forms:
     remove_link: Remove link
     fields:
       slug: Slug
+      slug_placeholder: unique-personal-link
     errors:
       missing_slug: Slug is required
       invalid_slug: Invalid slug format

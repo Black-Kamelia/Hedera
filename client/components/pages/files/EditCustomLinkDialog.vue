@@ -25,7 +25,7 @@ const { handleSubmit, resetForm, setFieldValue, setFieldError } = useForm({
 
 const link = ref<string>('')
 const origin = computed(() => location.origin)
-const originalLink = computed(() => `${location.origin}/${selectedRow.value?.code}`)
+const originalLink = computed(() => `${location.origin}/i/${selectedRow.value?.code}`)
 
 const submit = handleSubmit((values) => {
   if (!selectedRow.value) return
@@ -103,18 +103,32 @@ watch(visible, (val) => {
             v-model="link"
             name="customLink"
             :label="t('forms.edit_custom_link.fields.slug')"
-            placeholder="lien-personnel-unique"
+            :placeholder="t('forms.edit_custom_link.fields.slug_placeholder')"
             :transform-value="slugRestrict"
             class="w-full"
-            :start-addons="[`${origin}/:`]"
+            :start-addons="[`${origin}/c/`]"
             autofocus
             @keydown.enter="submit"
           />
         </div>
 
-        <p class="text-[--text-color-secondary]">
-          {{ t('pages.files.edit_custom_link.links_summary') }}
-        </p>
+        <i18n-t
+          keypath="pages.files.edit_custom_link.links_summary"
+          class="text-[--text-color-secondary]"
+          scope="global"
+          tag="p"
+        >
+          <template #c_route>
+            <PTag style="background-color: var(--surface-border); color: var(--text-color-secondary)">
+              /c/
+            </PTag>
+          </template>
+          <template #i_route>
+            <PTag style="background-color: var(--surface-border); color: var(--text-color-secondary)">
+              /i/
+            </PTag>
+          </template>
+        </i18n-t>
       </div>
     </div>
 

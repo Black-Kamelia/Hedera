@@ -462,10 +462,10 @@ class FileTest {
     fun getFileFromDisabledUser() = testApplication {
         val client = client()
 
-        val control = client.get("/api/files/$0000_00_01")
+        val control = client.get("/api/files/0000_00_01")
         assertEquals(HttpStatusCode.OK, control.status)
 
-        val response = client.get("/api/files/$0006_00_01")
+        val response = client.get("/api/files/0006_00_01")
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
@@ -607,7 +607,7 @@ class FileTest {
     fun accessFileWithCustomLink() = testApplication {
         val client = client()
 
-        val response = client.get("/:test-link")
+        val response = client.get("/c/test-link")
 
         println(response)
         println(response.bodyAsText())
@@ -811,31 +811,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
         )
@@ -845,31 +845,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
         )
@@ -879,31 +879,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
         )

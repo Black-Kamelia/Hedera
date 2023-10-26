@@ -36,7 +36,7 @@ enum class FileVisibility {
 
 object FileTable : AuditableUUIDTable("files") {
 
-    val code = varchar("code", 11).uniqueIndex()
+    val code = varchar("code", 10).uniqueIndex()
     val name = varchar("name", 255)
     val mimeType = varchar("mime_type", 64)
     val size = long("size")

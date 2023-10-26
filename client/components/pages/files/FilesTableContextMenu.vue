@@ -10,10 +10,40 @@ const confirm = useConfirm()
 
 const renameFile = useRenameFile()
 const changeFileVisibility = useChangeFileVisibility()
-const copyFileLink = useCopyFileLink()
+const { copyFileLink, copyFileCustomLink } = useCopyFileLink()
 const downloadFile = useDownloadFile()
 const deleteFile = useDeleteFile()
 
+const editCustomLinkDialog = ref(false)
+
+const copyLinkItem = computed(() => {
+  if (selectedRow.value?.customLink) {
+    return {
+      label: t('pages.files.context_menu.copy_link'),
+      icon: 'i-tabler-clipboard',
+      disabled: !isSupported.value,
+      items: [
+        {
+          label: 'Original',
+          icon: 'i-tabler-link',
+          command: copyFileLink,
+        },
+        {
+          label: 'Personnalisé',
+          icon: 'i-tabler-sparkles',
+          command: copyFileCustomLink,
+        },
+      ],
+    }
+  } else {
+    return {
+      label: t('pages.files.context_menu.copy_link'),
+      icon: 'i-tabler-clipboard',
+      disabled: !isSupported.value,
+      command: copyFileLink,
+    }
+  }
+})
 const menuModel = computed(() => [
   {
     label: t('pages.files.context_menu.open'),
@@ -27,6 +57,13 @@ const menuModel = computed(() => [
     label: t('pages.files.context_menu.rename'),
     icon: 'i-tabler-pencil',
     command: renameFile,
+  },
+  {
+    label: selectedRow.value?.customLink
+      ? t('pages.files.context_menu.edit_custom_link')
+      : t('pages.files.context_menu.set_custom_link'),
+    icon: 'i-tabler-sparkles',
+    command: () => editCustomLinkDialog.value = true,
   },
   {
     label: t('pages.files.context_menu.change_visibility'),
@@ -55,12 +92,7 @@ const menuModel = computed(() => [
       },
     ],
   },
-  {
-    label: t('pages.files.context_menu.copy_link'),
-    icon: 'i-tabler-link',
-    disabled: !isSupported.value,
-    command: copyFileLink,
-  },
+  copyLinkItem.value,
   {
     label: t('pages.files.context_menu.download'),
     icon: 'i-tabler-download',
@@ -90,4 +122,5 @@ const menuModel = computed(() => [
 
   <PDynamicDialog />
   <ConfirmDialog />
+  <EditCustomLinkDialog v-model:visible="editCustomLinkDialog" />
 </template>

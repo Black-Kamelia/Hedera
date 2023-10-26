@@ -4,9 +4,9 @@ export default function useCopyFileLink() {
   const { copy } = useClipboard()
   const { selectedRow, unselectRow } = useFilesTable()
 
-  return function copyFileLink() {
+  function copyLink(linkPart: string) {
     if (!selectedRow.value) return
-    copy(`${location.origin}/${selectedRow.value!.code}`)
+    copy(`${location.origin}${linkPart}`)
       .then(() => {
         toast.add({
           severity: 'info',
@@ -20,4 +20,14 @@ export default function useCopyFileLink() {
       })
       .then(unselectRow)
   }
+
+  function copyFileLink() {
+    return copyLink(`/i/${selectedRow.value!.code!}`)
+  }
+
+  function copyFileCustomLink() {
+    return copyLink(`/c/${selectedRow.value!.customLink!}`)
+  }
+
+  return { copyFileLink, copyFileCustomLink }
 }

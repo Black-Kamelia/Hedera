@@ -36,13 +36,14 @@ enum class FileVisibility {
 
 object FileTable : AuditableUUIDTable("files") {
 
-    val code = varchar("code", 11).uniqueIndex()
+    val code = varchar("code", 10).uniqueIndex()
     val name = varchar("name", 255)
     val mimeType = varchar("mime_type", 64)
     val size = long("size")
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", UserTable)
     val uploadToken = reference("upload_token", PersonalTokenTable).nullable()
+    val customLink = varchar("custom_link", 255).nullable()
 
     init {
         createdBy
@@ -56,6 +57,17 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
     companion object : UUIDEntityClass<File>(FileTable) {
 
         fun findByCode(code: String): File? = find { FileTable.code eq code }.firstOrNull()
+
+        fun findByCustomLink(customLink: String): File? = find { FileTable.customLink eq customLink }.firstOrNull()
+
+        fun findByCustomLinkWithOwner(customLink: String): Pair<File, User>? {
+            return FileTable.leftJoin(UserTable, { owner }, { id })
+                .select { FileTable.customLink eq customLink }
+                .firstOrNull()
+                ?.let {
+                    File.wrapRow(it) to User.wrapRow(it)
+                }
+        }
 
         fun findByCodeWithOwner(code: String): Pair<File, User>? {
             return FileTable.leftJoin(UserTable, { owner }, { id })
@@ -95,12 +107,14 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
     var visibility by FileTable.visibility
     var owner by User referencedOn FileTable.owner
     var uploadToken by PersonalToken optionalReferencedOn FileTable.uploadToken
+    var customLink by FileTable.customLink
 
     val ownerId get() = transaction { owner.uuid }
 
     fun update(dto: FileUpdateDTO, updater: User): File = apply {
         dto.name?.let { name = it }
         dto.visibility?.let { visibility = it }
+        dto.customLink?.let { customLink = it.ifEmpty { null } }
 
         onUpdate(updater)
     }

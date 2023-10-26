@@ -26,6 +26,16 @@ object Errors {
 
         const val NOT_FOUND = "$PREFIX.not_found"
 
+        object CustomLink {
+
+            private const val PREFIX = "${Errors.Files.PREFIX}.custom_link"
+
+            const val ALREADY_EXISTS = "$PREFIX.already_exists"
+            const val INVALID_FORMAT = "$PREFIX.invalid_format"
+            const val MISSING_SLUG = "$PREFIX.missing_slug"
+
+        }
+
     }
 
     object Filters {

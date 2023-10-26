@@ -5133,7 +5133,11 @@ hr {
 .p-dialog .p-dialog-content {
   background: #fff;
   color: var(--text-color);
-  padding: 0 1.5rem 2rem 1.5rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.p-dialog .p-dialog-content:has(+ .p-dialog-footer) {
+  padding-bottom: 2em;
 }
 
 .p-dialog .p-dialog-content:last-of-type {

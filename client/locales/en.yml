@@ -66,6 +66,8 @@ pages:
     context_menu:
       open: Open
       rename: Rename
+      set_custom_link: Set a custom link
+      edit_custom_link: Edit custom link
       change_visibility: Change visibility
       copy_link: Copy link
       download: Download
@@ -89,6 +91,11 @@ pages:
       error: The file could not be renamed
       cancel: Cancel
       submit: Rename
+    edit_custom_link:
+      title_set: Set a custom link
+      title_edit: Edit custom link
+      old_link_summary: 'Your file will still be accessible via the original link: {link}'
+      links_summary: A custom link is prefixed by the {c_route} route, unlike an original link which is prefixed by the {i_route} route.
     change_visibility:
       title: Change the visibility of a file
       success: The visibility has been changed
@@ -363,6 +370,16 @@ forms:
       disk_quota_placeholder: Enter a size
       disk_quota_placeholder_unlimited: Unlimited
       unlimited_disk_quota: Allow for unlimited disk space quota
+  edit_custom_link:
+    submit: Save
+    cancel: Cancel
+    remove_link: Remove link
+    fields:
+      slug: Slug
+      slug_placeholder: unique-personal-link
+    errors:
+      missing_slug: Slug is required
+      invalid_slug: Invalid slug format
 
 actions:
   files:
@@ -379,6 +396,13 @@ actions:
         success:
           title: Successfully renamed
           message: The file “{oldName}” has been renamed to “{newName}”
+      custom_link:
+        success:
+          title: Custom link set
+          message: This file is now accessible via the link “{newCustomLink}”
+      remove_custom_link:
+        success:
+          title: Custom link removed
   users:
     update_password:
       success:

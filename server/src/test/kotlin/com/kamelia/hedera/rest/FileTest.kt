@@ -28,6 +28,7 @@ import java.util.*
 import java.util.stream.Stream
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
@@ -461,10 +462,10 @@ class FileTest {
     fun getFileFromDisabledUser() = testApplication {
         val client = client()
 
-        val control = client.get("/api/files/$0000_00_01")
+        val control = client.get("/api/files/0000_00_01")
         assertEquals(HttpStatusCode.OK, control.status)
 
-        val response = client.get("/api/files/$0006_00_01")
+        val response = client.get("/api/files/0006_00_01")
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
@@ -535,6 +536,106 @@ class FileTest {
         }
         val userAfterDto = Json.decodeFromString<UserRepresentationDTO>(userAfterDelete.bodyAsText())
         assertTrue(1000 >= userAfterDto.currentDiskQuota)
+    }
+
+    @DisplayName("Setting a custom link to a file")
+    @Test
+    fun setCustomLink() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000001/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "add-custom-link"))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("add-custom-link", fileDto.payload!!.customLink)
+    }
+
+    @DisplayName("Setting a custom link to a file with null link")
+    @Test
+    fun setCustomLinkNull() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000004/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO())
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(Errors.Files.CustomLink.MISSING_SLUG, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Setting a custom link to a file with invalid link")
+    @Test
+    fun setCustomLinkInvalid() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000005/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "not_a_VALID_l1nk.."))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(Errors.Files.CustomLink.INVALID_FORMAT, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Setting a custom link to a file with existing custom link")
+    @Test
+    fun setCustomLinkAlreadyExisting() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000006/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "test-link"))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        assertEquals(Errors.Files.CustomLink.ALREADY_EXISTS, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Accessing a file with a custom link")
+    @Test
+    fun accessFileWithCustomLink() = testApplication {
+        val client = client()
+
+        val response = client.get("/c/test-link")
+
+        println(response)
+        println(response.bodyAsText())
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @DisplayName("Accessing a file with a custom link that does not exist")
+    @Test
+    fun accessFileWithNonExistingCustomLink() = testApplication {
+        val client = client()
+
+        val response = client.get("/:non-existing-link")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Deleting a custom link from a file")
+    @Test
+    fun removeCustomLink() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.delete("/api/files/00000000-0000-0008-0000-000000000003/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNull(fileDto.payload!!.customLink)
     }
 
     companion object {
@@ -710,31 +811,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
         )
@@ -744,31 +845,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
         )
@@ -778,31 +879,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
         )

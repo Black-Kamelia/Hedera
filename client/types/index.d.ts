@@ -91,6 +91,7 @@ declare global {
     mimeType: string,
     size: number,
     visibility: string,
+    customLink: Nullable<string>,
     owner: FileOwnerDTO,
     createdAt: string,
   }

@@ -6,7 +6,7 @@ export default function useCopyFileLink() {
 
   function copyLink(linkPart: string) {
     if (!selectedRow.value) return
-    copy(`${location.origin}/${linkPart}`)
+    copy(`${location.origin}${linkPart}`)
       .then(() => {
         toast.add({
           severity: 'info',
@@ -22,11 +22,11 @@ export default function useCopyFileLink() {
   }
 
   function copyFileLink() {
-    return copyLink(selectedRow.value!.code)
+    return copyLink(`/i/${selectedRow.value!.code!}`)
   }
 
   function copyFileCustomLink() {
-    return copyLink(`:${selectedRow.value!.customLink!}`)
+    return copyLink(`/c/${selectedRow.value!.customLink!}`)
   }
 
   return { copyFileLink, copyFileCustomLink }

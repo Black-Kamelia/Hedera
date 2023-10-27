@@ -222,7 +222,8 @@ object FileService {
                 if (!CUSTOM_LINK_REGEX.matches(dto.customLink)) {
                     raiseError("customLink", Errors.Files.CustomLink.INVALID_FORMAT)
                 }
-                if (File.findByCustomLink(dto.customLink) != null) {
+                val fileByLink = File.findByCustomLink(dto.customLink)
+                if (fileByLink != null && fileByLink != file) {
                     raiseError("customLink", Errors.Files.CustomLink.ALREADY_EXISTS, HttpStatusCode.Forbidden)
                 }
             }

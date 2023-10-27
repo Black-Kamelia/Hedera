@@ -87,7 +87,7 @@ pages:
       apply: Appliquer les filtres
     rename:
       title: Renommer un fichier
-      summary: Le nom d'un fichier sert à le rechercher, à le trier ainsi qu'à le nommer au moment du téléchargement. Un nom de fichier sans extension peut empêcher de l'ouvrir correctement sur certains systèmes.
+      summary: Le nom d’un fichier sert à le rechercher, à le trier ainsi qu’à le nommer au moment du téléchargement. Un nom de fichier sans extension peut empêcher de l’ouvrir correctement sur certains systèmes.
       success: Le fichier a été renommé
       error: Le fichier n’a pas pu être renommé
       cancel: Annuler
@@ -159,8 +159,8 @@ pages:
         username: Nom d’utilisateur
         email: Adresse e-mail
         role: Rôle
-        quota: Quota d'espace disque
-        quota_help: Le tri est effectué sur l'espace disque utilisé.
+        quota: Quota d’espace disque
+        quota_help: Le tri est effectué sur l’espace disque utilisé.
         status: Statut
         creation_date: Date de création
       context_menu:
@@ -171,27 +171,27 @@ pages:
       create_user: Créer un utilisateur
       create_dialog:
         title: Créer un utilisateur
-        summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d’envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
         cancel: Annuler
         submit: Créer
       edit_dialog:
         title: Éditer un utilisateur
-        password_summary: Par mesure de sécurité, le mot de passe d'un utilisateur ne peut être modifié que par lui-même.
+        password_summary: Par mesure de sécurité, le mot de passe d’un utilisateur ne peut être modifié que par lui-même.
         cancel: Annuler
         submit: Sauvegarder
       activate_dialog:
         title: Activer un utilisateur
-        summary: L'utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L'utilisateur pourra être désactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?
+        summary: L’utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L’utilisateur pourra être désactivé à n’importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?
         cancel: Annuler
-        submit: Activer l'utilisateur
+        submit: Activer l’utilisateur
       deactivate_dialog:
         title: Désactiver un utilisateur
-        summary: L'utilisateur ne sera plus en mesure de se connecter, ni d'envoyer des fichiers. Ses fichiers ne seront plus visibles, mais ne seront pas supprimés. L'utilisateur pourra être réactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir désactiver cet utilisateur ?
+        summary: L’utilisateur ne sera plus en mesure de se connecter, ni d’envoyer des fichiers. Ses fichiers ne seront plus visibles, mais ne seront pas supprimés. L’utilisateur pourra être réactivé à n’importe quel moment. Êtes-vous sûr(e) de vouloir désactiver cet utilisateur ?
         cancel: Annuler
-        submit: Désactiver l'utilisateur
+        submit: Désactiver l’utilisateur
       delete_dialog:
         title: Supprimer un utilisateur
-        summary: Cette action est irréversible et tous les fichiers de l'utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
+        summary: Cette action est irréversible et tous les fichiers de l’utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
         cancel: Annuler
         submit: Supprimer
   debug:
@@ -350,11 +350,11 @@ forms:
       confirm_password: Confirmer le mot de passe
       role: Rôle
       role_placeholder: Sélectionner un rôle
-      disk_quota: Quota d'espace disque
+      disk_quota: Quota d’espace disque
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
       force_change_password: Forcer la modification du mot de passe à la première connexion
-      unlimited_disk_quota: Autoriser un quota d'espace disque illimité
+      unlimited_disk_quota: Autoriser un quota d’espace disque illimité
   edit_user:
     errors:
       missing_username: Nom d’utilisateur requis
@@ -367,10 +367,10 @@ forms:
       email: Adresse e-mail
       role: Rôle
       role_placeholder: Sélectionner un rôle
-      disk_quota: Quota d'espace disque
+      disk_quota: Quota d’espace disque
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
-      unlimited_disk_quota: Autoriser un quota d'espace disque illimité
+      unlimited_disk_quota: Autoriser un quota d’espace disque illimité
   rename_file:
     submit: Renommer
     cancel: Annuler

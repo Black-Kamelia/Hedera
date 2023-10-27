@@ -19,17 +19,17 @@ const editCustomLinkDialog = ref(false)
 const copyLinkItem = computed(() => {
   if (selectedRow.value?.customLink) {
     return {
-      label: t('pages.files.context_menu.copy_link'),
+      label: t('pages.files.context_menu.copy_link.title'),
       icon: 'i-tabler-clipboard',
       disabled: !isSupported.value,
       items: [
         {
-          label: 'Original',
+          label: t('pages.files.context_menu.copy_link.original'),
           icon: 'i-tabler-link',
           command: copyFileLink,
         },
         {
-          label: 'Personnalisé',
+          label: t('pages.files.context_menu.copy_link.custom'),
           icon: 'i-tabler-sparkles',
           command: copyFileCustomLink,
         },
@@ -37,7 +37,7 @@ const copyLinkItem = computed(() => {
     }
   } else {
     return {
-      label: t('pages.files.context_menu.copy_link'),
+      label: t('pages.files.context_menu.copy_link.title'),
       icon: 'i-tabler-clipboard',
       disabled: !isSupported.value,
       command: copyFileLink,

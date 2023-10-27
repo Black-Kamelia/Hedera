@@ -87,6 +87,7 @@ pages:
       apply: Appliquer les filtres
     rename:
       title: Renommer un fichier
+      summary: Le nom d'un fichier sert à le rechercher, à le trier ainsi qu'à le nommer au moment du téléchargement. Un nom de fichier sans extension peut empêcher de l'ouvrir correctement sur certains systèmes.
       success: Le fichier a été renommé
       error: Le fichier n’a pas pu être renommé
       cancel: Annuler
@@ -370,6 +371,13 @@ forms:
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
       unlimited_disk_quota: Autoriser un quota d'espace disque illimité
+  rename_file:
+    submit: Renommer
+    cancel: Annuler
+    errors:
+      missing_name: Le nom du fichier est requis
+    fields:
+      filename: Nouveau nom du fichier
   edit_custom_link:
     submit: Sauvegarder
     cancel: Annuler

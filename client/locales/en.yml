@@ -87,6 +87,7 @@ pages:
       apply: Apply filters
     rename:
       title: Rename a file
+      summary: A file name is used to search for it, to sort it and to name it when downloading. A file name without extension can prevent it from opening correctly on some systems.
       success: The file has been renamed
       error: The file could not be renamed
       cancel: Cancel
@@ -370,6 +371,13 @@ forms:
       disk_quota_placeholder: Enter a size
       disk_quota_placeholder_unlimited: Unlimited
       unlimited_disk_quota: Allow for unlimited disk space quota
+  rename_file:
+    submit: Rename
+    cancel: Cancel
+    errors:
+      missing_name: Name is required
+    fields:
+      filename: New file name
   edit_custom_link:
     submit: Save
     cancel: Cancel

@@ -3,7 +3,7 @@ import type { MessageDTO } from '~/utils/messages'
 export default function useFeedbackCall<
   T,
   F extends (...args: Parameters<F>) => Promise<MessageDTO<T>>,
->(requestFactory: F) {
+>(requestFactory: F, ignoreErrors = false) {
   const { t, m } = useI18n()
   const toast = useToast()
 
@@ -19,6 +19,7 @@ export default function useFeedbackCall<
         return response satisfies MessageDTO<T>
       })
       .catch((error) => {
+        if (ignoreErrors) throw error
         if (!error.response) {
           toast.add({
             severity: 'error',

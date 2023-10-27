@@ -376,6 +376,7 @@ forms:
     cancel: Annuler
     errors:
       missing_name: Le nom du fichier est requis
+      name_too_long: Le nom du fichier doit contenir au plus {max} caractères
     fields:
       filename: Nouveau nom du fichier
   edit_custom_link:

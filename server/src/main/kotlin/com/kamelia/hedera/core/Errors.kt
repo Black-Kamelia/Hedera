@@ -26,6 +26,15 @@ object Errors {
 
         const val NOT_FOUND = "$PREFIX.not_found"
 
+        object Name {
+
+            private const val PREFIX = "${Errors.Files.PREFIX}.name"
+
+            const val MISSING_NAME = "$PREFIX.missing_name"
+            const val NAME_TOO_LONG = "$PREFIX.name_too_long"
+
+        }
+
         object CustomLink {
 
             private const val PREFIX = "${Errors.Files.PREFIX}.custom_link"

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
 import { useEditFileName } from '~/composables/fileTable/useChangeFileName'
+import { UPDATE_FILE_FORM } from '~/utils/forms'
 
 defineEmits<{
   (event: 'completed', payload: UserRepresentationDTO): void
@@ -16,8 +17,8 @@ const savePending = ref(false)
 
 const schema = object({
   filename: string()
-    .required(t('forms.edit_custom_link.errors.missing_slug')),
-  // .matches(/^[a-z0-9]+(-[a-z0-9]+)*$/, t('forms.edit_custom_link.errors.invalid_slug')),
+    .required(t('forms.rename_file.errors.missing_name'))
+    .max(UPDATE_FILE_FORM.filename.max, t('forms.rename_file.errors.name_too_long', { max: UPDATE_FILE_FORM.filename.max })),
 })
 const { handleSubmit, resetForm, setFieldValue, setFieldError } = useForm({
   validationSchema: schema,

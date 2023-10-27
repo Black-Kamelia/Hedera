@@ -376,6 +376,7 @@ forms:
     cancel: Cancel
     errors:
       missing_name: Name is required
+      name_too_long: The name must be at most {max} characters long
     fields:
       filename: New file name
   edit_custom_link:

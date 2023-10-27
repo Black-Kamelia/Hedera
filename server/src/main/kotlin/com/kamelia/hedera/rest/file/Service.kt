@@ -190,21 +190,31 @@ object FileService {
         userId: UUID,
         dto: FileUpdateDTO,
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
-        val file = File.findById(fileId) ?: throw FileNotFoundException()
-        val user = User[userId]
+        validate {
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
 
-        val oldName = file.name
-        val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
-        val payload = updatedFile.toRepresentationDTO()
+            if (dto.name == null) {
+                raiseError("name", Errors.Files.Name.MISSING_NAME)
+            } else {
+                if (dto.name.length > 255) raiseError("name", Errors.Files.Name.NAME_TOO_LONG)
+            }
 
-        ActionResponse.ok(
-            payload = payload,
-            title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
-            message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
-                "oldName" to oldName,
-                "newName" to payload.name,
-            ),
-        )
+            catchErrors()
+
+            val oldName = file.name
+            val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
+            val payload = updatedFile.toRepresentationDTO()
+
+            ActionResponse.ok(
+                payload = payload,
+                title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
+                message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
+                    "oldName" to oldName,
+                    "newName" to payload.name,
+                ),
+            )
+        }
     }
 
     suspend fun updateCustomLink(

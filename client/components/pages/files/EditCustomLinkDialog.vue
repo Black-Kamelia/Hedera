@@ -29,7 +29,7 @@ const { handleSubmit, resetForm, setFieldValue, setFieldError } = useForm({
 
 const link = ref<string>('')
 const origin = computed(() => location.origin)
-const originalLink = computed(() => `${location.origin}/i/${selectedRow.value?.code}`)
+const originalLink = computed(() => `${location.origin}/m/${selectedRow.value?.code}`)
 
 const submit = handleSubmit((values) => {
   if (!selectedRow.value) return
@@ -129,7 +129,7 @@ watch(visible, (val) => {
           </template>
           <template #i_route>
             <PTag style="background-color: var(--surface-border); color: var(--text-color-secondary)">
-              /i/
+              /m/
             </PTag>
           </template>
         </i18n-t>

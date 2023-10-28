@@ -22,7 +22,7 @@ export default function useCopyFileLink() {
   }
 
   function copyFileLink() {
-    return copyLink(`/i/${selectedRow.value!.code!}`)
+    return copyLink(`/m/${selectedRow.value!.code!}`)
   }
 
   function copyFileCustomLink() {

@@ -90,7 +90,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 }
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
-  window.open(`/${event.data.code}`)
+  window.open(`/m/${event.data.code}`)
 }
 
 function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {

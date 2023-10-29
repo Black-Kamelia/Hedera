@@ -52,7 +52,7 @@ function onHide() {
     @hide="onHide"
   >
     <div class="relative">
-      <Transition name="slide-left">
+      <SlideTransitionContainer>
         <div v-if="!newToken" class="flex flex-col gap-3">
           <p class="text-[--text-color-secondary]">
             {{ t('pages.profile.tokens.create_dialog.summary') }}
@@ -67,6 +67,21 @@ function onHide() {
             autofocus
             @keydown.enter="submit"
           />
+
+          <div class="flex flex-row justify-end gap-2 mt-5 items-center">
+            <PButton
+              :label="t('pages.profile.tokens.create_dialog.cancel')"
+              text
+              :disabled="pending"
+              @click="visible = false"
+            />
+            <PButton
+              :label="t('pages.profile.tokens.create_dialog.submit')"
+              :loading="pending"
+              type="submit"
+              @click="submit"
+            />
+          </div>
         </div>
 
         <div v-else class="flex flex-col gap-3">
@@ -104,44 +119,7 @@ function onHide() {
             </div>
           </div>
         </div>
-      </Transition>
+      </SlideTransitionContainer>
     </div>
-
-    <template v-if="!newToken" #footer>
-      <PButton
-        :label="t('pages.profile.tokens.create_dialog.cancel')"
-        text
-        :disabled="pending"
-        @click="visible = false"
-      />
-      <PButton
-        :label="t('pages.profile.tokens.create_dialog.submit')"
-        :loading="pending"
-        type="submit"
-        @click="submit"
-      />
-    </template>
   </PDialog>
 </template>
-
-<style scoped>
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
-}
-
-.slide-left-leave-active {
-  position: absolute;
-  top: 0;
-}
-
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.slide-left-leave-to {
-  opacity: 0;
-  transform: translateX(-100%);
-}
-</style>

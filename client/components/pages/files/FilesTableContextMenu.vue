@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PContextMenu } from '#components'
-import EditNameDialog from '~/components/pages/files/EditNameDialog.vue'
 
 const cm = inject(FileTableContextMenuKey)
 

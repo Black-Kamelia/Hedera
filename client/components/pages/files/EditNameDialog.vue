@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
-import { useEditFileName } from '~/composables/fileTable/useChangeFileName'
 import { UPDATE_FILE_FORM } from '~/utils/forms'
 
 defineEmits<{

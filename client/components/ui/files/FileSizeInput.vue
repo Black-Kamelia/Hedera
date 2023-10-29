@@ -70,8 +70,8 @@ function onSelect(event: AutoCompleteItemSelectEvent) {
   }
 }
 watch(model, (val) => {
-  inputModel.value = val ? computeShift(val) : null
-})
+  inputModel.value = val !== null && val !== undefined ? computeShift(val) : null
+}, { immediate: true })
 </script>
 
 <template>
@@ -91,9 +91,6 @@ watch(model, (val) => {
       <p class="py-3 px-5 text-[--text-color-secondary]">
         {{ t('size_units.incorrect_format') }}
       </p>
-    </template>
-    <template #content>
-      <p>coucou</p>
     </template>
   </PAutoComplete>
 </template>

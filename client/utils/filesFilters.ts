@@ -33,7 +33,7 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>,
     filtersDefinition.push([{
       field: 'size',
       operator: 'ge',
-      value: `${filters.minimalSize.value};${filters.minimalSize.shift}`,
+      value: filters.minimalSize.toString(),
       type: 'POSITIVE',
     }])
   }
@@ -41,7 +41,7 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>,
     filtersDefinition.push([{
       field: 'size',
       operator: 'le',
-      value: `${filters.maximalSize.value};${filters.maximalSize.shift}`,
+      value: filters.maximalSize.toString(),
       type: 'POSITIVE',
     }])
   }

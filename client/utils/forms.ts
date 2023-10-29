@@ -15,3 +15,10 @@ export const UPDATE_PASSWORD_FORM = {
     max: 128,
   },
 }
+
+export const UPDATE_FILE_FORM = {
+  filename: {
+    min: 1,
+    max: 255,
+  },
+}

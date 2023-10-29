@@ -8,7 +8,7 @@ defineEmits<{
 const { t } = useI18n()
 const setFieldErrors = useFeedbackFormErrors()
 const { editCustomLink, deleteCustomLink } = useEditFileCustomLink()
-const { selectedRow, updateSelectedRow } = useFilesTable()
+const { selectedRow, updateSelectedRow, unselectRow } = useFilesTable()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const header = computed(() => {
@@ -67,6 +67,11 @@ function removeLink() {
     .finally(() => removePending.value = false)
 }
 
+function onHide() {
+  resetForm()
+  unselectRow()
+}
+
 watch(visible, (val) => {
   if (val) {
     if (!selectedRow.value) return
@@ -84,7 +89,7 @@ watch(visible, (val) => {
     :header="header"
     :draggable="false"
     :pt="{ content: { class: 'overflow-hidden' } }"
-    @hide="resetForm()"
+    @hide="onHide"
   >
     <div class="flex flex-col gap-3">
       <div class="flex flex-col gap-3 items-start">

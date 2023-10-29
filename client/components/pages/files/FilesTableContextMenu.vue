@@ -8,13 +8,13 @@ const { isSupported } = useClipboard()
 const { selectedRow } = useFilesTable()
 const confirm = useConfirm()
 
-const renameFile = useRenameFile()
 const changeFileVisibility = useChangeFileVisibility()
 const { copyFileLink, copyFileCustomLink } = useCopyFileLink()
 const downloadFile = useDownloadFile()
 const deleteFile = useDeleteFile()
 
 const editCustomLinkDialog = ref(false)
+const editNameDialog = ref(false)
 
 const copyLinkItem = computed(() => {
   if (selectedRow.value?.customLink) {
@@ -56,7 +56,7 @@ const menuModel = computed(() => [
   {
     label: t('pages.files.context_menu.rename'),
     icon: 'i-tabler-pencil',
-    command: renameFile,
+    command: () => editNameDialog.value = true,
   },
   {
     label: selectedRow.value?.customLink
@@ -120,7 +120,7 @@ const menuModel = computed(() => [
 <template>
   <PContextMenu ref="cm" :model="menuModel" />
 
-  <PDynamicDialog />
   <ConfirmDialog />
   <EditCustomLinkDialog v-model:visible="editCustomLinkDialog" />
+  <EditNameDialog v-model:visible="editNameDialog" />
 </template>

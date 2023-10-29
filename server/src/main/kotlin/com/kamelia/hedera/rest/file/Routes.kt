@@ -46,7 +46,7 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 
-fun Route.rawFileRoute() = get("""/i/(?<code>[a-zA-Z0-9]{10})""".toRegex()) {
+fun Route.rawFileRoute() = get("""/m/(?<code>[a-zA-Z0-9]{10})""".toRegex()) {
     val authedId = call.authenticatedUser?.uuid
     val code = call.getParam("code")
 

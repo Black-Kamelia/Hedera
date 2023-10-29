@@ -69,7 +69,10 @@ pages:
       set_custom_link: Définir un lien personnalisé
       edit_custom_link: Modifier le lien personnalisé
       change_visibility: Modifier la visibilité
-      copy_link: Copier le lien
+      copy_link:
+        title: Copier le lien
+        original: Original
+        custom: Personnalisé
       download: Télécharger
       delete: Supprimer
       unselect: Désélectionner

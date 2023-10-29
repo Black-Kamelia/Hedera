@@ -3,7 +3,7 @@ import type { MessageDTO } from '~/utils/messages'
 export function useEditFileCustomLink() {
   const editLink = useFeedbackCall((id: string, customLink: string) => {
     return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/files/${id}/custom-link`, { method: 'PUT', body: { customLink } })
-  })
+  }, true)
   const deleteLink = useFeedbackCall((id: string) => {
     return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/files/${id}/custom-link`, { method: 'DELETE' })
   })

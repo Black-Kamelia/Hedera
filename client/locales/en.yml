@@ -69,7 +69,10 @@ pages:
       set_custom_link: Set a custom link
       edit_custom_link: Edit custom link
       change_visibility: Change visibility
-      copy_link: Copy link
+      copy_link:
+        title: Copy link
+        original: Original
+        custom: Custom
       download: Download
       delete: Delete
       unselect: Unselect
@@ -455,6 +458,8 @@ errors:
     invalid_uuid: Invalid unique identifier
   files:
     not_found: This file does not exist
+    custom_link:
+      already_exists: This custom link is already taken
   users:
     password:
       incorrect_password: Incorrect password

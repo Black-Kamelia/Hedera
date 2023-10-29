@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { FileDeletedEvent } from '~/utils/events'
+
 const visible = defineModel<boolean>('visible')
 
 const { t } = useI18n()
@@ -10,11 +12,12 @@ const visibilityOptions = [
   { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ]
 
-const { data, pending } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
+const { data, pending, refresh } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
 const formats = computed(() => data.value?.map(type => ({ name: type })) ?? [])
 
 const filters = useFilesFilters()
 const localFilters = reactiveFilters(filters)
+useEventBus(FileDeletedEvent).on(() => refresh())
 
 function applyAndClose() {
   filters.updateFilters(localFilters)

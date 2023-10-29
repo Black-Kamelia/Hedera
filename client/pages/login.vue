@@ -117,7 +117,7 @@ useWebsocketEvent('user-forcefully-logged-out', (event) => {
     </h1>
     <div class="relative">
       <SlideTransitionContainer :direction="stateTransition">
-        <h2 :key="subtitle" class="font-600 text-3xl mb-3">
+        <h2 :key="state" class="font-600 text-3xl mb-3">
           {{ subtitle }}
         </h2>
       </SlideTransitionContainer>

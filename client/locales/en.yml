@@ -221,6 +221,10 @@ pages:
         title: You have not created any token yet
         description: Create a token to upload files from a third-party application.
         create_token: Create a token
+      error:
+        title: Something went wrong
+        description: Failed to load the list of tokens
+        retry_button: Retry
       create_dialog:
         title: Create a new token
         summary: A personal token allows you to authorize a third-party application to upload files with your identity. Tokens are strictly personal and must not be shared. If you think a token has been compromised, it is strongly recommended to delete it.

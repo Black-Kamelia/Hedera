@@ -26,3 +26,5 @@ export const AccessTokenExpiredEvent: EventBusKey<void> = Symbol('access-token-e
 export const RefreshTokenExpiredEvent: EventBusKey<{
   error?: MessageKeyDTO
 }> = Symbol('refresh-token-expired')
+
+export const FileDeletedEvent: EventBusKey<void> = Symbol('file-deleted')

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const { t } = useI18n()
-const { data, pending } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
+const { data, pending, error, refresh } = useFetchAPI<PersonalTokenDTO[]>('/personalTokens')
 
 const empty = computed(() => !pending.value && data.value?.length === 0)
 
@@ -36,6 +36,17 @@ function handleDelete(tokenId: string) {
     <div class="flex flex-row-reverse justify-between items-center my-3">
       <PButton :label="t('pages.profile.tokens.create')" icon="i-tabler-plus" outlined @click="createTokenDialog = true" />
     </div>
+  </div>
+  <div v-else-if="error" class="p-card p-7 py-15 h-full w-full flex flex-col justify-center items-center">
+    <!-- TODO: Empty state illustration -->
+    <img class="w-10em" src="/assets/img/new_file.png" alt="New token">
+    <h1 class="text-2xl">
+      {{ t('pages.profile.tokens.error.title') }}
+    </h1>
+    <p class="pb-10">
+      {{ t('pages.profile.tokens.error.description') }}
+    </p>
+    <PButton rounded :label="t('pages.profile.tokens.error.retry_button')" @click="refresh()" />
   </div>
   <div v-else class="p-card p-7 py-15 h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->

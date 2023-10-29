@@ -71,7 +71,7 @@ function onSelect(event: AutoCompleteItemSelectEvent) {
 }
 watch(model, (val) => {
   inputModel.value = val !== null && val !== undefined ? computeShift(val) : null
-})
+}, { immediate: true })
 </script>
 
 <template>

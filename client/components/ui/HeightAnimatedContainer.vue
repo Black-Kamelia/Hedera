@@ -3,7 +3,7 @@ const { preventTransition = false } = defineProps<{
   preventTransition?: boolean
 }>()
 
-const child = ref()
+const child = ref<Nullable<HTMLElement>>(null)
 const { height } = useElementSize(child)
 </script>
 

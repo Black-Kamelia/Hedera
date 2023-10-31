@@ -44,11 +44,11 @@ function onHide() {
   <PDialog
     v-model:visible="visible"
     modal
-    class="min-w-30em max-w-75% xl:max-w-50%"
+    class="mx-4 sm:w-45em md:mx-0 md:max-w-75%"
     :header="t('pages.profile.tokens.create_dialog.title')"
     :draggable="false"
     :dismissable-mask="newToken !== null"
-    :pt="{ content: { class: 'overflow-hidden' } }"
+    :pt="{ content: { class: 'important-overflow-hidden' } }"
     @hide="onHide"
   >
     <div class="relative">

@@ -3,18 +3,15 @@ const { preventTransition = false } = defineProps<{
   preventTransition?: boolean
 }>()
 
-const containerHeight = ref(0)
 const child = ref()
-
 const { height } = useElementSize(child)
-watch(height, val => containerHeight.value = val)
 </script>
 
 <template>
   <div
     class="relative w-full"
     :class="{ 'h-transition': !preventTransition }"
-    :style="{ height: `${containerHeight}px` }"
+    :style="{ height: `${height}px` }"
   >
     <div ref="child">
       <slot />

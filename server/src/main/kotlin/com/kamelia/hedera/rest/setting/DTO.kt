@@ -16,6 +16,7 @@ fun UserSettings.toRepresentationDTO() = UserSettingsRepresentationDTO(
     preferredTimeStyle = preferredTimeStyle,
     preferredLocale = preferredLocale,
     uploadBehavior = uploadBehavior,
+    fileDoubleClickAction = fileDoubleClickAction,
 )
 
 /**
@@ -32,6 +33,7 @@ data class UserSettingsUpdateDTO(
     val preferredTimeStyle: TimeStyle? = null,
     val preferredLocale: Locale? = null,
     val uploadBehavior: UploadBehavior? = null,
+    val fileDoubleClickAction: FileDoubleClickAction? = null,
 ) : DTO
 
 /**
@@ -48,4 +50,5 @@ data class UserSettingsRepresentationDTO(
     val preferredTimeStyle: TimeStyle,
     val preferredLocale: Locale,
     val uploadBehavior: UploadBehavior,
+    val fileDoubleClickAction: FileDoubleClickAction,
 ) : DTO

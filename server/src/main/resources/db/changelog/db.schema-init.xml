@@ -212,6 +212,9 @@
             <column name="upload_behavior" type="VARCHAR(16)" defaultValue="INSTANT">
                 <constraints nullable="false"/>
             </column>
+            <column name="file_double_click_action" type="VARCHAR(16)" defaultValue="OPEN_NEW_TAB">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="users"

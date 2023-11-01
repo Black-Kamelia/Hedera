@@ -26,6 +26,8 @@ object UserSettingsTable : UUIDTable("users_settings") {
         .clientDefault { Locale.en }
     val uploadBehavior = enumerationByName<UploadBehavior>("upload_behavior", 16)
         .clientDefault { UploadBehavior.INSTANT }
+    val fileDoubleClickAction = enumerationByName<FileDoubleClickAction>("file_double_click_action", 16)
+        .clientDefault { FileDoubleClickAction.OPEN_NEW_TAB }
 }
 
 class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
@@ -48,6 +50,7 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
     var preferredTimeStyle by UserSettingsTable.preferredTimeStyle
     var preferredLocale by UserSettingsTable.preferredLocale
     var uploadBehavior by UserSettingsTable.uploadBehavior
+    var fileDoubleClickAction by UserSettingsTable.fileDoubleClickAction
 
     fun update(dto: UserSettingsUpdateDTO): UserSettings = apply {
         dto.defaultFileVisibility?.let { defaultFileVisibility = it }
@@ -57,5 +60,6 @@ class UserSettings(id: EntityID<UUID>) : UUIDEntity(id) {
         dto.preferredTimeStyle?.let { preferredTimeStyle = it }
         dto.preferredLocale?.let { preferredLocale = it }
         dto.uploadBehavior?.let { uploadBehavior = it }
+        dto.fileDoubleClickAction?.let { fileDoubleClickAction = it }
     }
 }

@@ -29,3 +29,13 @@ enum class UploadBehavior {
     INSTANT,
     MANUAL,
 }
+
+enum class FileDoubleClickAction {
+    OPEN_NEW_TAB,
+    OPEN_PREVIEW,
+    COPY_LINK,
+    COPY_CUSTOM_LINK,
+    RENAME_FILE,
+    DELETE_FILE,
+    DOWNLOAD_FILE,
+}

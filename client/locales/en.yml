@@ -249,6 +249,7 @@ pages:
         submit: Delete
     settings:
       headers:
+        files_table: Files list
         files_upload: Files upload
         display_and_animations: Display and animations
       local_setting: Affects this browser only
@@ -264,6 +265,16 @@ pages:
           title: Decimal scale
           description: Units are powers of 10
           summary: 1 KB = 1000 bytes
+      file_double_click_action:
+        title: Double-click on a file behavior
+        description: Choose the action to execute when double-clicking on a file in the files list.
+        open_new_tab: Open in a new tab
+        open_preview: Open preview
+        copy_link: Copy link
+        copy_custom_link: Copy custom link
+        rename: Rename
+        delete: Delete
+        download: Download
       default_files_visibility:
         title: Default files visibility
         description: Choose the default visibility of the files you upload. You can change the visibility of each file individually at any time.

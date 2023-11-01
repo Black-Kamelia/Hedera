@@ -249,6 +249,7 @@ pages:
         submit: Supprimer
     settings:
       headers:
+        files_table: Liste des fichiers
         files_upload: Envoi de fichiers
         display_and_animations: Affichage et animations
       local_setting: Affecte ce navigateur uniquement
@@ -264,6 +265,16 @@ pages:
           title: Échelle décimale
           description: Les unités sont des puissances de 10
           summary: 1 Ko = 1000 octets
+      file_double_click_action:
+        title: Comportement du double-clic sur un fichier
+        description: Choisir l’action à exécuter lorsqu’un double-clic est effectué sur un fichier dans la liste des fichiers.
+        open_new_tab: Ouvrir dans un nouvel onglet
+        open_preview: Ouvrir l’aperçu
+        copy_link: Copier le lien
+        copy_custom_link: Copier le lien personnalisé
+        rename: Renommer
+        delete: Supprimer
+        download: Télécharger
       default_files_visibility:
         title: Visibilité par défaut des fichiers
         description: Choisissez la visibilité par défaut des fichiers que vous envoyez. Vous pouvez modifier la visibilité de chaque fichier individuellement à tout moment.

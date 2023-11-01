@@ -6,10 +6,10 @@ declare global {
   type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
   type KeysOf<T> = Array<
     T extends T // Include all keys of union types, not just common keys
-    ? keyof T extends string
-      ? keyof T
+      ? keyof T extends string
+        ? keyof T
+        : never
       : never
-    : never
   >
   type PickFrom<T, K extends Array<string>> = T extends Array<any>
     ? T
@@ -62,7 +62,7 @@ declare global {
   type FilterDefinitionDTO = FilterGroupDTO[]
   type FilterGroupDTO = FilterObject[]
 
-  interface FilterObject{
+  interface FilterObject {
     field: string
     operator: string
     value: string
@@ -132,6 +132,14 @@ declare global {
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
   type Locale = 'en' | 'fr'
   type UploadBehavior = 'INSTANT' | 'MANUAL'
+  type FileDoubleClickAction =
+    'OPEN_NEW_TAB'
+    | 'OPEN_PREVIEW'
+    | 'COPY_LINK'
+    | 'COPY_CUSTOM_LINK'
+    | 'RENAME_FILE'
+    | 'DELETE_FILE'
+    | 'DOWNLOAD_FILE'
 
   interface UserSettings {
     defaultFileVisibility: FileVisibility
@@ -141,6 +149,7 @@ declare global {
     preferredTimeStyle: DateTimeStyle
     preferredLocale: Locale
     uploadBehavior: UploadBehavior
+    fileDoubleClickAction: FileDoubleClickAction
   }
 
   interface SessionOpeningDTO {

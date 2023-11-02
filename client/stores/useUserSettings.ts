@@ -9,6 +9,7 @@ export interface UserSettingsStore {
   preferredTimeStyle: Ref<DateTimeStyle>
   preferredLocale: Ref<Locale>
   uploadBehavior: Ref<UploadBehavior>
+  fileDoubleClickAction: Ref<FileDoubleClickAction>
   updateSettings: (filters: Partial<UserSettings>) => void
 }
 
@@ -22,6 +23,7 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
   const preferredTimeStyle = ref<DateTimeStyle>('MEDIUM')
   const preferredLocale = ref<Locale>('en')
   const uploadBehavior = ref<UploadBehavior>('INSTANT')
+  const fileDoubleClickAction = ref<FileDoubleClickAction>('OPEN_NEW_TAB')
 
   function updateSettings(settings: Partial<UserSettings>) {
     if (settings.defaultFileVisibility !== undefined) defaultFileVisibility.value = settings.defaultFileVisibility
@@ -31,6 +33,7 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
     if (settings.preferredTimeStyle !== undefined) preferredTimeStyle.value = settings.preferredTimeStyle
     if (settings.preferredLocale !== undefined) locale.value = preferredLocale.value = settings.preferredLocale
     if (settings.uploadBehavior !== undefined) uploadBehavior.value = settings.uploadBehavior
+    if (settings.fileDoubleClickAction !== undefined) fileDoubleClickAction.value = settings.fileDoubleClickAction
   }
 
   return {
@@ -41,6 +44,7 @@ export const useUserSettings = defineStore('userSettings', (): UserSettingsStore
     preferredTimeStyle,
     preferredLocale,
     uploadBehavior,
+    fileDoubleClickAction,
     updateSettings,
   }
 }, {

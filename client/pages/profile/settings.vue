@@ -11,6 +11,7 @@ const preferredDateTimeFormat = computed(() => ({
 }))
 const preferredLocale = computed(() => settings.preferredLocale)
 const uploadBehavior = computed(() => settings.uploadBehavior)
+const fileDoubleClickAction = computed(() => settings.fileDoubleClickAction)
 
 // Local settings
 const color = useColorMode()
@@ -20,6 +21,11 @@ const animations = useLocalStorage('animations', true)
 <template>
   <div class="flex flex-col gap-3">
     <h1 class="text-2xl">
+      {{ t('pages.profile.settings.headers.files_table') }}
+    </h1>
+    <FileDoubleClickAction :value="fileDoubleClickAction" />
+
+    <h1 class="text-2xl mt-6">
       {{ t('pages.profile.settings.headers.files_upload') }}
     </h1>
     <DefaultFileVisibility :value="defaultFileVisibility" />

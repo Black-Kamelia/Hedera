@@ -6,6 +6,7 @@ import type {
   DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
+import { FilesTableDoubleClickEvent } from '~/utils/events'
 
 const DEFAULT_PAGE = 0
 const DEFAULT_PAGE_SIZE = 25
@@ -15,6 +16,7 @@ const DEFAULT_QUERY = ''
 const { t, d } = useI18n()
 const filters = useFilesFilters()
 const { format } = useHumanFileSize()
+const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
@@ -90,7 +92,7 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 }
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
-  window.open(`/m/${event.data.code}`)
+  fileDoubleClickEvent.emit({ file: event.data })
 }
 
 function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {

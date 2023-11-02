@@ -28,3 +28,7 @@ export const RefreshTokenExpiredEvent: EventBusKey<{
 }> = Symbol('refresh-token-expired')
 
 export const FileDeletedEvent: EventBusKey<void> = Symbol('file-deleted')
+
+export const FilesTableDoubleClickEvent: EventBusKey<{
+  file: FileRepresentationDTO
+}> = Symbol('files-table-double-click')

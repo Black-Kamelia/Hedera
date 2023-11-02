@@ -272,6 +272,7 @@ pages:
         open_preview: Ouvrir l’aperçu
         copy_link: Copier le lien
         copy_custom_link: Copier le lien personnalisé
+        copy_custom_link_tooltip: Si aucun lien personnalisé n’est défini, le lien original sera copié.
         rename: Renommer
         delete: Supprimer
         download: Télécharger

@@ -272,6 +272,7 @@ pages:
         open_preview: Open preview
         copy_link: Copy link
         copy_custom_link: Copy custom link
+        copy_custom_link_tooltip: If no custom link is set, the original link will be copied.
         rename: Rename
         delete: Delete
         download: Download

@@ -5,8 +5,8 @@ export interface FileFilters {
   visibility: string[]
   startingDate: Date | null
   endingDate: Date | null
-  minimalSize: FileSize | null
-  maximalSize: FileSize | null
+  minimalSize: number | null
+  maximalSize: number | null
   minimalViews: number | null
   maximalViews: number | null
   formats: string[]
@@ -17,8 +17,8 @@ export interface FilesFiltersStore {
   visibility: Ref<string[]>
   startingDate: Ref<Date | null>
   endingDate: Ref<Date | null>
-  minimalSize: Ref<FileSize | null>
-  maximalSize: Ref<FileSize | null>
+  minimalSize: Ref<number | null>
+  maximalSize: Ref<number | null>
   minimalViews: Ref<number | null>
   maximalViews: Ref<number | null>
   formats: Ref<string[]>
@@ -33,8 +33,8 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
   const visibility = ref<string[]>([])
   const startingDate = ref<Date | null>(null)
   const endingDate = ref<Date | null>(null)
-  const minimalSize = ref<FileSize | null>(null)
-  const maximalSize = ref<FileSize | null>(null)
+  const minimalSize = ref<number | null>(null)
+  const maximalSize = ref<number | null>(null)
   const minimalViews = ref<number | null>(null)
   const maximalViews = ref<number | null>(null)
   const formats = ref<string[]>([])

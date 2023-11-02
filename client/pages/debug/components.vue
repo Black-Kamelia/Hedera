@@ -35,13 +35,13 @@
         <PButton text size="small" label="Help" severity="help" />
       </div>
       <div class="flex gap-2">
-        <PSplitButton size="small" label="Primary" icon="pi pi-plus" :model="[]" />
-        <PSplitButton size="small" label="Secondary" icon="pi pi-plus" severity="secondary" :model="[]" />
-        <PSplitButton size="small" label="Success" icon="pi pi-plus" severity="success" :model="[]" />
-        <PSplitButton size="small" label="Warning" icon="pi pi-plus" severity="warning" :model="[]" />
-        <PSplitButton size="small" label="Danger" icon="pi pi-plus" severity="danger" :model="[]" />
-        <PSplitButton size="small" label="Info" icon="pi pi-plus" severity="info" :model="[]" />
-        <PSplitButton size="small" label="Help" icon="pi pi-plus" severity="help" :model="[]" />
+        <PSplitButton size="small" label="Primary" :model="[]" />
+        <PSplitButton size="small" label="Secondary" severity="secondary" :model="[]" />
+        <PSplitButton size="small" label="Success" severity="success" :model="[]" />
+        <PSplitButton size="small" label="Warning" severity="warning" :model="[]" />
+        <PSplitButton size="small" label="Danger" severity="danger" :model="[]" />
+        <PSplitButton size="small" label="Info" severity="info" :model="[]" />
+        <PSplitButton size="small" label="Help" severity="help" :model="[]" />
       </div>
     </div>
 

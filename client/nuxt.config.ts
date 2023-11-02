@@ -20,10 +20,6 @@ export default defineNuxtConfig({
     layoutTransition: { name: 'layout-in', appear: true },
   },
   ssr: false,
-  css: [
-    '@unocss/reset/tailwind.css',
-    'primevue/resources/primevue.css',
-  ],
   imports: { // add folders here to auto-import them in your application
     dirs: [
       'stores/**',
@@ -107,7 +103,6 @@ export default defineNuxtConfig({
     storageKey: 'color-scheme',
   },
   primevue: {
-    cssLayerOrder: 'primevue',
     options: {
       ripple: false,
       inputStyle: 'filled',

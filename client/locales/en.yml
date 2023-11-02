@@ -32,12 +32,16 @@ pages:
   login:
     forgot_password: Forgot password?
     title: Log in
+    register: Create an account
     reasons:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
       password_changed: Your password has been changed, please log in again
       session_terminated: Your session has been terminated
+  register:
+    title: Create an account
+    back: Back to login
   change_password:
     title: Change password
     message: You must change your password before continuing
@@ -306,6 +310,23 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
+  register:
+    errors:
+      missing_username: Username is required
+      invalid_username: Invalid username format
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_password: Password is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      missing_password_confirmation: Password confirmation is required
+      passwords_mismatch: The passwords do not match
+    fields:
+      username: Username
+      email: E-mail address
+      password: Password
+      confirm_password: Password confirmation
+    submit: Submit
   change_password:
     submit: Continue
     errors:

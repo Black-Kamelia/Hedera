@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { object, string } from 'yup'
+import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
+import { CREATE_USER_FORM } from '~/utils/forms'
 
 const { t, m } = useI18n()
 const { login } = useAuth()
@@ -20,18 +21,23 @@ const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
 const emailField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
-const passwordConfirmationField = ref<Nullable<CompElement>>(null)
+const confirmPasswordField = ref<Nullable<CompElement>>(null)
 
 const schema = object({
   username: string()
     .required(t('forms.register.errors.missing_username'))
     .matches(/^[a-z0-9_\-.]+$/, t('forms.register.errors.invalid_username')),
   email: string()
-    .required(t('forms.register.errors.missing_email')),
+    .required(t('forms.register.errors.missing_email'))
+    .email(t('forms.create_user.errors.invalid_email')),
   password: string()
-    .required(t('forms.register.errors.missing_password')),
-  passwordConfirmation: string()
-    .required(t('forms.register.errors.missing_password_confirmation')),
+    .required(t('forms.register.errors.missing_password'))
+    .min(CREATE_USER_FORM.password.min, t('forms.register.errors.password_too_short', { min: CREATE_USER_FORM.password.min }))
+    .max(CREATE_USER_FORM.password.max, t('forms.register.errors.password_too_long', { max: CREATE_USER_FORM.password.max })),
+  confirmPassword: string()
+    .required(t('forms.register.errors.missing_password_confirmation'))
+    .oneOf([yref('password')], t('forms.register.errors.passwords_mismatch')),
+
 })
 const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
@@ -77,7 +83,10 @@ useEventBus(LoggedInEvent).on((event) => {
 
 <template>
   <form @submit="onSubmit">
-    <PMessage v-show="message.content" :pt="{ root: { class: 'important-mt-0' } }" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
+    <PMessage
+      v-show="message.content" :pt="{ root: { class: 'important-mt-0' } }" :severity="message.severity"
+      icon="i-tabler-alert-circle-filled" :closable="false"
+    >
       {{ message.content }}
     </PMessage>
 
@@ -126,12 +135,12 @@ useEventBus(LoggedInEvent).on((event) => {
 
     <div class="mb-3">
       <FormInputText
-        id="passwordConfirmation"
-        ref="passwordConfirmationField"
+        id="confirmPassword"
+        ref="confirmPasswordField"
         class="w-full"
-        name="passwordConfirmation"
+        name="confirmPassword"
         type="password"
-        :label="t('forms.register.fields.password_confirmation')"
+        :label="t('forms.register.fields.confirm_password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
         @input="hideErrorMessage"

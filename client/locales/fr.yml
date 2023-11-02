@@ -311,11 +311,21 @@ forms:
       remember_me: Se souvenir de moi
       username: Nom d’utilisateur
   register:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      invalid_username: Format de nom d’utilisateur invalide
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+      missing_password: Mot de passe requis
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      missing_password_confirmation: Confirmation du mot de passe requise
+      passwords_mismatch: Les mots de passe ne correspondent pas
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail
       password: Mot de passe
-      password_confirmation: Confirmer le mot de passe
+      confirm_password: Confirmer le mot de passe
     submit: Valider
   change_password:
     submit: Continuer

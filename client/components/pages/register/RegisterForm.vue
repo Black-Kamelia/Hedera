@@ -18,14 +18,20 @@ const message = defineModel<{
 
 const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
+const emailField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
+const passwordConfirmationField = ref<Nullable<CompElement>>(null)
 
 const schema = object({
   username: string()
-    .required(t('forms.login.errors.missing_username'))
-    .matches(/^[a-z0-9_\-.]+$/, t('forms.login.errors.invalid_username')),
+    .required(t('forms.register.errors.missing_username'))
+    .matches(/^[a-z0-9_\-.]+$/, t('forms.register.errors.invalid_username')),
+  email: string()
+    .required(t('forms.register.errors.missing_email')),
   password: string()
-    .required(t('forms.login.errors.missing_password')),
+    .required(t('forms.register.errors.missing_password')),
+  passwordConfirmation: string()
+    .required(t('forms.register.errors.missing_password_confirmation')),
 })
 const { handleSubmit, resetField } = useForm({
   validationSchema: schema,
@@ -48,7 +54,7 @@ useEventBus(LoggedInEvent).on((event) => {
       resetField('username')
       resetField('password')
       usernameField.value?.$el.focus()
-      message.value.content = t('forms.login.errors.server_error')
+      message.value.content = t('forms.register.errors.server_error')
       message.value.severity = 'error'
       return
     }
@@ -82,10 +88,24 @@ useEventBus(LoggedInEvent).on((event) => {
         class="w-full"
         name="username"
         type="text"
-        :label="t('forms.login.fields.username')"
+        :label="t('forms.register.fields.username')"
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
+        @input="hideErrorMessage"
+      />
+    </div>
+
+    <div class="mb-3">
+      <FormInputText
+        id="email"
+        ref="emailField"
+        class="w-full"
+        name="email"
+        type="email"
+        :label="t('forms.register.fields.email')"
+        :placeholder="`${usernamePlaceholder}@example.com`"
+        start-icon="i-tabler-mail"
         @input="hideErrorMessage"
       />
     </div>
@@ -97,22 +117,33 @@ useEventBus(LoggedInEvent).on((event) => {
         class="w-full"
         name="password"
         type="password"
-        :label="t('forms.login.fields.password')"
+        :label="t('forms.register.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
         @input="hideErrorMessage"
       />
     </div>
 
-    <div class="flex flex-row items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/register" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-        {{ t('pages.login.register') }}
-      </NuxtLink>
-      <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-        {{ t('pages.login.forgot_password') }}
+    <div class="mb-3">
+      <FormInputText
+        id="passwordConfirmation"
+        ref="passwordConfirmationField"
+        class="w-full"
+        name="passwordConfirmation"
+        type="password"
+        :label="t('forms.register.fields.password_confirmation')"
+        placeholder="••••••••••••••••"
+        start-icon="i-tabler-lock"
+        @input="hideErrorMessage"
+      />
+    </div>
+
+    <div class="flex flex-row items-center justify-end mb-6 w-100%">
+      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+        {{ t('pages.register.back') }}
       </NuxtLink>
     </div>
 
-    <PButton :label="t('forms.submit')" class="w-full" type="submit" :loading="loading" />
+    <PButton :label="t('forms.register.submit')" class="w-full" type="submit" :loading="loading" />
   </form>
 </template>

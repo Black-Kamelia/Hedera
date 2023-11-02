@@ -32,12 +32,16 @@ pages:
   login:
     forgot_password: Mot de passe oublié ?
     title: Connexion
+    register: Créer un compte
     reasons:
       expired: Votre session a expiré, veuillez vous reconnecter
       logout_all: Vous avez été déconnecté de tous les appareils
       disabled: Votre compte a été désactivé
       password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
       session_terminated: Votre session a été terminée
+  register:
+    title: Créer un compte
+    back: Retour à la connexion
   change_password:
     title: Modifier le mot de passe
     message: Vous devez modifier votre mot de passe pour continuer
@@ -306,6 +310,13 @@ forms:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d’utilisateur
+  register:
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
+      password: Mot de passe
+      password_confirmation: Confirmer le mot de passe
+    submit: Valider
   change_password:
     submit: Continuer
     errors:

@@ -118,6 +118,12 @@ declare global {
     createdAt: string
   }
 
+  interface UserSignupDTO {
+    username: string
+    email: string
+    password: string
+  }
+
   interface UserCreationDTO {
     username: string
     email: string

@@ -3,8 +3,9 @@ import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import { CREATE_USER_FORM } from '~/utils/forms'
 
-const { t, m } = useI18n()
+const { t } = useI18n()
 const { login } = useAuth()
+const setFieldErrors = useFeedbackFormErrors()
 
 const usernamePlaceholder = getRandomDeveloperUsername()
 const message = defineModel<{
@@ -18,10 +19,6 @@ const message = defineModel<{
 })
 
 const loading = ref(false)
-const usernameField = ref<Nullable<CompElement>>(null)
-const emailField = ref<Nullable<CompElement>>(null)
-const passwordField = ref<Nullable<CompElement>>(null)
-const confirmPasswordField = ref<Nullable<CompElement>>(null)
 
 const schema = object({
   username: string()
@@ -39,46 +36,21 @@ const schema = object({
     .oneOf([yref('password')], t('forms.register.errors.passwords_mismatch')),
 
 })
-const { handleSubmit, resetField } = useForm({
-  validationSchema: schema,
-})
+const { handleSubmit, setFieldError } = useForm({ validationSchema: schema })
 
-const onSubmit = handleSubmit((values) => {
+const onSubmit = handleSubmit(async (values) => {
   loading.value = true
-  login(values).catch(() => loading.value = false)
+  $fetchAPI<UserSignupDTO>('/users/signup', { method: 'POST', body: values })
+    .then(() => login(values))
+    .catch((err) => {
+      setFieldErrors(err.response._data.fields, setFieldError)
+      loading.value = false
+    })
 })
 
 function hideErrorMessage() {
   message.value.content = null
 }
-
-useEventBus(LoggedInEvent).on((event) => {
-  if (event.error) {
-    const status = event.error?.response?.status
-
-    if (status === 500) {
-      resetField('username')
-      resetField('password')
-      usernameField.value?.$el.focus()
-      message.value.content = t('forms.register.errors.server_error')
-      message.value.severity = 'error'
-      return
-    }
-
-    if (status === 401) {
-      resetField('password')
-      passwordField.value?.$el.focus()
-    }
-    if (status === 403) {
-      resetField('username')
-      resetField('password')
-      usernameField.value?.$el.focus()
-    }
-
-    message.value.content = m(event.error.data.title)
-    message.value.severity = 'error'
-  }
-})
 </script>
 
 <template>
@@ -93,7 +65,6 @@ useEventBus(LoggedInEvent).on((event) => {
     <div class="mb-3">
       <FormInputText
         id="username"
-        ref="usernameField"
         class="w-full"
         name="username"
         type="text"
@@ -108,7 +79,6 @@ useEventBus(LoggedInEvent).on((event) => {
     <div class="mb-3">
       <FormInputText
         id="email"
-        ref="emailField"
         class="w-full"
         name="email"
         type="email"
@@ -122,7 +92,6 @@ useEventBus(LoggedInEvent).on((event) => {
     <div class="mb-3">
       <FormInputText
         id="password"
-        ref="passwordField"
         class="w-full"
         name="password"
         type="password"
@@ -136,7 +105,6 @@ useEventBus(LoggedInEvent).on((event) => {
     <div class="mb-3">
       <FormInputText
         id="confirmPassword"
-        ref="confirmPasswordField"
         class="w-full"
         name="confirmPassword"
         type="password"

@@ -8,21 +8,13 @@ const { login } = useAuth()
 const setFieldErrors = useFeedbackFormErrors()
 
 const usernamePlaceholder = getRandomDeveloperUsername()
-const message = defineModel<{
-  content: string | null
-  severity: 'success' | 'info' | 'warn' | 'error' | undefined
-}>('message', {
-  default: {
-    content: null,
-    severity: undefined,
-  },
-})
-
 const loading = ref(false)
 
 const schema = object({
   username: string()
     .required(t('forms.register.errors.missing_username'))
+    .min(CREATE_USER_FORM.username.min, t('forms.register.errors.username_too_short', { min: CREATE_USER_FORM.username.min }))
+    .max(CREATE_USER_FORM.username.max, t('forms.register.errors.username_too_long', { max: CREATE_USER_FORM.username.max }))
     .matches(/^[a-z0-9_\-.]+$/, t('forms.register.errors.invalid_username')),
   email: string()
     .required(t('forms.register.errors.missing_email'))
@@ -47,21 +39,10 @@ const onSubmit = handleSubmit(async (values) => {
       loading.value = false
     })
 })
-
-function hideErrorMessage() {
-  message.value.content = null
-}
 </script>
 
 <template>
   <form @submit="onSubmit">
-    <PMessage
-      v-show="message.content" :pt="{ root: { class: 'important-mt-0' } }" :severity="message.severity"
-      icon="i-tabler-alert-circle-filled" :closable="false"
-    >
-      {{ message.content }}
-    </PMessage>
-
     <div class="mb-3">
       <FormInputText
         id="username"
@@ -72,7 +53,6 @@ function hideErrorMessage() {
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
-        @input="hideErrorMessage"
       />
     </div>
 
@@ -85,7 +65,6 @@ function hideErrorMessage() {
         :label="t('forms.register.fields.email')"
         :placeholder="`${usernamePlaceholder}@example.com`"
         start-icon="i-tabler-mail"
-        @input="hideErrorMessage"
       />
     </div>
 
@@ -98,7 +77,6 @@ function hideErrorMessage() {
         :label="t('forms.register.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
-        @input="hideErrorMessage"
       />
     </div>
 
@@ -111,7 +89,6 @@ function hideErrorMessage() {
         :label="t('forms.register.fields.confirm_password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
-        @input="hideErrorMessage"
       />
     </div>
 

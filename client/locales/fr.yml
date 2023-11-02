@@ -314,6 +314,8 @@ forms:
     errors:
       missing_username: Nom d’utilisateur requis
       invalid_username: Format de nom d’utilisateur invalide
+      username_too_short: Le nom d’utilisateur doit contenir au moins {min} caractères
+      username_too_long: Le nom d’utilisateur doit contenir au plus {max} caractères
       missing_email: Adresse e-mail requise
       invalid_email: Format d’adresse e-mail invalide
       missing_password: Mot de passe requis

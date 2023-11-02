@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import RegisterForm from '~/components/pages/register/RegisterForm.vue'
-
 const { t } = useI18n()
 
 usePageName(() => t('pages.register.title'))
 definePageMeta({
   layout: 'centercard',
   middleware: ['auth'],
-})
-
-const message = reactive<{
-  content: string | null
-  severity: 'success' | 'info' | 'warn' | 'error' | undefined
-}>({
-  content: null,
-  severity: undefined,
 })
 
 function redirectToApplication() {
@@ -31,9 +21,7 @@ function redirectToApplication() {
 }
 
 useEventBus(LoggedInEvent).on((event) => {
-  if (!event.error) {
-    redirectToApplication()
-  }
+  if (!event.error) redirectToApplication()
 })
 </script>
 
@@ -49,5 +37,5 @@ useEventBus(LoggedInEvent).on((event) => {
     </div>
   </div>
 
-  <RegisterForm v-model:message="message" />
+  <RegisterForm />
 </template>

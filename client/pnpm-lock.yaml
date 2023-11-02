@@ -17,9 +17,6 @@ devDependencies:
   '@intlify/unplugin-vue-i18n':
     specifier: ^1.5.0
     version: 1.5.0(vue-i18n@9.6.4)
-  '@notkamui/nuxt-primevue':
-    specifier: ^0.5.0
-    version: 0.5.0(primevue@3.29.2)
   '@nuxt/devtools':
     specifier: ^1.0.0
     version: 1.0.0(nuxt@3.8.0)(vite@4.5.0)
@@ -83,6 +80,9 @@ devDependencies:
   nuxt:
     specifier: ^3.8.0
     version: 3.8.0(eslint@8.52.0)(sass@1.69.5)(typescript@4.9.5)(vite@4.5.0)
+  nuxt-primevue:
+    specifier: ^0.1.0
+    version: 0.1.0(primevue@3.39.0)
   ofetch:
     specifier: ^1.3.3
     version: 1.3.3
@@ -93,8 +93,8 @@ devDependencies:
     specifier: ^2.1.7
     version: 2.1.7(typescript@4.9.5)(vue@3.3.7)
   primevue:
-    specifier: ^3.29.2
-    version: 3.29.2(vue@3.3.7)
+    specifier: ^3.39.0
+    version: 3.39.0(vue@3.3.7)
   sass:
     specifier: ^1.69.5
     version: 1.69.5
@@ -288,7 +288,7 @@ packages:
       debug: 4.3.4
       gensync: 1.0.0-beta.2
       json5: 2.2.3
-      semver: 6.3.0
+      semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1516,18 +1516,6 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
-    dev: true
-
-  /@notkamui/nuxt-primevue@0.5.0(primevue@3.29.2):
-    resolution: {integrity: sha512-MeuEkm5zP68i52LFlx3fgUKTV1oQJcqlcoQHkCJoKD2lF/O6YgyQzfAs5o9faSX3m57f2hiiTCOcXBx9EHzfRA==}
-    peerDependencies:
-      primevue: ^3.0.0
-    dependencies:
-      '@nuxt/kit': 3.5.3
-      primevue: 3.29.2(vue@3.3.7)
-    transitivePeerDependencies:
-      - rollup
-      - supports-color
     dev: true
 
   /@npmcli/agent@2.2.0:
@@ -5970,7 +5958,7 @@ packages:
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.3.6
-      minimatch: 9.0.1
+      minimatch: 9.0.3
       minipass: 7.0.4
       path-scurry: 1.10.1
     dev: true
@@ -6945,7 +6933,7 @@ packages:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
     dependencies:
-      semver: 6.3.0
+      semver: 6.3.1
     dev: true
 
   /make-fetch-happen@13.0.0:
@@ -7098,13 +7086,6 @@ packages:
 
   /minimatch@8.0.3:
     resolution: {integrity: sha512-tEEvU9TkZgnFDCtpnrEYnPsjT7iUx42aXfs4bzmQ5sMA09/6hZY0jeZcGkXyDagiBOvkUjNo8Viom+Me6+2x7g==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dependencies:
-      brace-expansion: 2.0.1
-    dev: true
-
-  /minimatch@9.0.1:
-    resolution: {integrity: sha512-0jWhJpD/MdhPXwPuiRkCbfYfSKp2qnn2eOc279qI7f+osl/l+prKSrvhg157zSYvx/1nmgn2NqdT6k2Z7zSH9w==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       brace-expansion: 2.0.1
@@ -7567,6 +7548,18 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.3
+    dev: true
+
+  /nuxt-primevue@0.1.0(primevue@3.39.0):
+    resolution: {integrity: sha512-CYmKtM8mCTygpOcj9IfxYRChQUpuwEEoM1oDEg8ojxd6fBZmws0/ONxR7cyVxI2buSNy8yQoM3CMHbEaUGUm9w==}
+    peerDependencies:
+      primevue: ^3.38.1
+    dependencies:
+      '@nuxt/kit': 3.8.0
+      primevue: 3.39.0(vue@3.3.7)
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
     dev: true
 
   /nuxt@3.8.0(eslint@8.52.0)(sass@1.69.5)(typescript@4.9.5)(vite@4.5.0):
@@ -8418,8 +8411,8 @@ packages:
     engines: {node: ^14.13.1 || >=16.0.0}
     dev: true
 
-  /primevue@3.29.2(vue@3.3.7):
-    resolution: {integrity: sha512-zMk1w5AySLR6ipWH2fONKtDabHrvRZhZFI1OdoiBDdMhZpARmWuCXwE/ZFusUh5Te0RBEd3iVCiizjUkSRraRQ==}
+  /primevue@3.39.0(vue@3.3.7):
+    resolution: {integrity: sha512-fDaK/SHijvw5ds3RNs4yzPgVFyA1/RYXxnEshHME1zhn9/HiTxEqa0Wv3obbuwSmRckA4fdGh+lZ8dDd1RJJLQ==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:
@@ -8775,11 +8768,6 @@ packages:
 
   /semver@5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
-    hasBin: true
-    dev: true
-
-  /semver@6.3.0:
-    resolution: {integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==}
     hasBin: true
     dev: true
 

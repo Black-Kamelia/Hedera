@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useToast } from 'primevue/usetoast'
 import type { FileUploadUploaderEvent } from 'primevue/fileupload'
 
 const { t } = useI18n()

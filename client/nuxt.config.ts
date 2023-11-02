@@ -45,7 +45,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/color-mode',
-    '@notkamui/nuxt-primevue',
+    'nuxt-primevue',
   ],
   devtools: {
     enabled: true,
@@ -99,11 +99,6 @@ export default defineNuxtConfig({
       FieldArray: 'VFieldArray',
     },
   },
-  pinia: {
-    autoImports: [
-      'storeToRefs',
-    ],
-  },
   colorMode: {
     preference: 'system',
     fallback: 'light',
@@ -112,7 +107,13 @@ export default defineNuxtConfig({
     storageKey: 'color-scheme',
   },
   primevue: {
-    ripple: false,
-    inputStyle: 'filled',
+    cssLayerOrder: 'primevue',
+    options: {
+      ripple: false,
+      inputStyle: 'filled',
+    },
+    components: {
+      prefix: 'P',
+    },
   },
 })

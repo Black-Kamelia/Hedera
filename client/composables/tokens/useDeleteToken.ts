@@ -1,3 +1,4 @@
+import { useConfirm } from 'primevue/useconfirm'
 import type { MessageDTO } from '~/utils/messages'
 
 export default function useDeleteToken() {

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useToast } from 'primevue/usetoast'
+
 const toast = useToast()
 
 function getIcon(severity: string, detail?: { icon: string }) {

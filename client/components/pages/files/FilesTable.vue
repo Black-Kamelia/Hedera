@@ -15,7 +15,6 @@ const DEFAULT_QUERY = ''
 
 const { t, d } = useI18n()
 const filters = useFilesFilters()
-const settings = useUserSettings()
 const { format } = useHumanFileSize()
 const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 

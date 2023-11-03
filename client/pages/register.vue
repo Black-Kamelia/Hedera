@@ -26,7 +26,7 @@ useEventBus(LoggedInEvent).on((event) => {
 </script>
 
 <template>
-  <div class="p-card main-card">
+  <div>
     <div class="text-center mb-10">
       <h1 class="font-600 text-5xl mb-1">
         {{ t('app_name') }}

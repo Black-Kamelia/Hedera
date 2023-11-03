@@ -15,6 +15,7 @@ const message = defineModel<{
     severity: undefined,
   },
 })
+const state = defineModel('state')
 
 const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
@@ -105,10 +106,10 @@ useEventBus(LoggedInEvent).on((event) => {
     </div>
 
     <div class="flex flex-row items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/register" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = 'REGISTER'">
         {{ t('pages.login.register') }}
       </NuxtLink>
-      <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = 'RESET_PASSWORD'">
         {{ t('pages.login.forgot_password') }}
       </NuxtLink>
     </div>

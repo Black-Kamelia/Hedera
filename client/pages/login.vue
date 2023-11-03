@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { ForcePasswordChangeDoneEvent } from '~/utils/events'
+import ResetPasswordForm from '~/components/pages/resetPassword/ResetPasswordForm.vue'
 
 const { t } = useI18n()
 
-type State = 'LOGIN' | 'CHANGE_PASSWORD' | 'COMPLETE_OTP'
+type State = 'RESET_PASSWORD' | 'LOGIN' | 'REGISTER' | 'COMPLETE_OTP' | 'CHANGE_PASSWORD'
 function stateToIndex(state: State) {
   switch (state) {
+    case 'RESET_PASSWORD':
+      return -1
     case 'LOGIN':
       return 0
-    case 'CHANGE_PASSWORD':
+    case 'REGISTER':
       return 1
     case 'COMPLETE_OTP':
       return 2
+    case 'CHANGE_PASSWORD':
+      return 3
   }
 }
 
@@ -39,9 +44,11 @@ const stateTransition = computed(() => {
 
 const subtitle = computed(() => {
   switch (state.value) {
+    case 'REGISTER': return t('pages.register.title')
+    case 'RESET_PASSWORD': return t('pages.reset_password.title')
     case 'LOGIN': return t('pages.login.title')
-    case 'CHANGE_PASSWORD': return t('pages.change_password.title')
     case 'COMPLETE_OTP': return t('pages.two_factor_authentication.title')
+    case 'CHANGE_PASSWORD': return t('pages.change_password.title')
   }
 })
 const message = reactive<{
@@ -111,23 +118,41 @@ useWebsocketEvent('user-forcefully-logged-out', (event) => {
 </script>
 
 <template>
-  <div class="p-card main-card">
+  <div>
     <div class="text-center mb-10">
       <h1 class="font-600 text-5xl mb-1">
         {{ t('app_name') }}
       </h1>
-      <div class="relative">
-        <SlideTransitionContainer :direction="stateTransition">
-          <h2 :key="state" class="font-600 text-3xl mb-3">
+      <div class="relative w-full">
+        <SlideTransitionContainer :direction="stateTransition" gap="2.5em">
+          <h2 :key="state" class="w-full font-600 text-3xl mb-3">
             {{ subtitle }}
           </h2>
         </SlideTransitionContainer>
       </div>
     </div>
 
-    <SlideTransitionContainer :direction="stateTransition">
-      <LoginForm v-if="state === 'LOGIN'" v-model:message="message" />
-      <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
+    <SlideTransitionContainer :direction="stateTransition" animate-width gap="2.5em">
+      <RegisterForm
+        v-if="state === 'REGISTER'"
+        v-model:state="state"
+        class="w-175"
+      />
+      <ResetPasswordForm
+        v-else-if="state === 'RESET_PASSWORD'"
+        v-model:state="state"
+        class="w-125"
+      />
+      <LoginForm
+        v-else-if="state === 'LOGIN'"
+        v-model:message="message"
+        v-model:state="state"
+        class="w-125"
+      />
+      <PasswordEditionForm
+        v-else-if="state === 'CHANGE_PASSWORD'"
+        class="w-125"
+      />
     </SlideTransitionContainer>
   </div>
 </template>

@@ -13,7 +13,7 @@ export default defineConfig({
   shortcuts: [
     ['flex-center', 'flex items-center justify-center'],
     ['grid-center', 'grid place-items-center'],
-    ['main-card', 'p-10 w-100 sm:w-125 lg:w-150 sm:mx-0 mx-3 overflow-hidden'],
+    ['main-card', 'p-10 sm:mx-0 mx-3'],
   ],
   presets: [
     presetUno(),

@@ -10,7 +10,7 @@ const { t } = useI18n()
 usePageName(() => t('pages.reset_password.title'))
 definePageMeta({
   layout: 'centercard',
-  middleware: ['auth'],
+  middleware: ['auth', 'card-transitions'],
 })
 
 const schema = object({
@@ -35,33 +35,35 @@ const onSubmit = handleSubmit((_) => {
 </script>
 
 <template>
-  <div class="text-center mb-10">
-    <h1 class="font-600 text-5xl mb-1">
-      {{ t('app_name') }}
-    </h1>
-    <h2 class="font-600 text-3xl mb-3">
-      {{ t('pages.reset_password.title') }}
-    </h2>
-  </div>
-
-  <form @submit="onSubmit">
-    <InputText
-      id="email"
-      class="w-full"
-      name="email"
-      type="email"
-      :label="t('forms.reset_password.fields.email')"
-      :placeholder="`${usernamePlaceholder}@example.com`"
-      start-icon="i-tabler-mail"
-      @input="hideErrorMessage"
-    />
-
-    <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-        {{ t('pages.reset_password.login') }}
-      </NuxtLink>
+  <div class="p-card main-card">
+    <div class="text-center mb-10">
+      <h1 class="font-600 text-5xl mb-1">
+        {{ t('app_name') }}
+      </h1>
+      <h2 class="font-600 text-3xl mb-3">
+        {{ t('pages.reset_password.title') }}
+      </h2>
     </div>
 
-    <PButton :label="t('forms.submit')" class="w-full" type="submit" />
-  </form>
+    <form @submit="onSubmit">
+      <InputText
+        id="email"
+        class="w-full"
+        name="email"
+        type="email"
+        :label="t('forms.reset_password.fields.email')"
+        :placeholder="`${usernamePlaceholder}@example.com`"
+        start-icon="i-tabler-mail"
+        @input="hideErrorMessage"
+      />
+
+      <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
+        <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+          {{ t('pages.reset_password.login') }}
+        </NuxtLink>
+      </div>
+
+      <PButton :label="t('forms.submit')" class="w-full" type="submit" />
+    </form>
+  </div>
 </template>

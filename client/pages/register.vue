@@ -4,7 +4,7 @@ const { t } = useI18n()
 usePageName(() => t('pages.register.title'))
 definePageMeta({
   layout: 'centercard',
-  middleware: ['auth'],
+  middleware: ['auth', 'card-transitions'],
 })
 
 function redirectToApplication() {
@@ -26,16 +26,18 @@ useEventBus(LoggedInEvent).on((event) => {
 </script>
 
 <template>
-  <div class="text-center mb-10">
-    <h1 class="font-600 text-5xl mb-1">
-      {{ t('app_name') }}
-    </h1>
-    <div class="relative">
-      <h2 class="font-600 text-3xl mb-3">
-        {{ t('pages.register.title') }}
-      </h2>
+  <div class="p-card main-card">
+    <div class="text-center mb-10">
+      <h1 class="font-600 text-5xl mb-1">
+        {{ t('app_name') }}
+      </h1>
+      <div class="relative">
+        <h2 class="font-600 text-3xl mb-3">
+          {{ t('pages.register.title') }}
+        </h2>
+      </div>
     </div>
-  </div>
 
-  <RegisterForm />
+    <RegisterForm />
+  </div>
 </template>

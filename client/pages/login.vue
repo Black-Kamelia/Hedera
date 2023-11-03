@@ -18,7 +18,7 @@ function stateToIndex(state: State) {
 usePageName(() => t('pages.login.title'))
 definePageMeta({
   layout: 'centercard',
-  middleware: ['auth'],
+  middleware: ['auth', 'card-transitions'],
 })
 const { currentRoute } = useRouter()
 const { isAuthenticated } = storeToRefs(useAuth())
@@ -111,21 +111,23 @@ useWebsocketEvent('user-forcefully-logged-out', (event) => {
 </script>
 
 <template>
-  <div class="text-center mb-10">
-    <h1 class="font-600 text-5xl mb-1">
-      {{ t('app_name') }}
-    </h1>
-    <div class="relative">
-      <SlideTransitionContainer :direction="stateTransition">
-        <h2 :key="state" class="font-600 text-3xl mb-3">
-          {{ subtitle }}
-        </h2>
-      </SlideTransitionContainer>
+  <div class="p-card main-card">
+    <div class="text-center mb-10">
+      <h1 class="font-600 text-5xl mb-1">
+        {{ t('app_name') }}
+      </h1>
+      <div class="relative">
+        <SlideTransitionContainer :direction="stateTransition">
+          <h2 :key="state" class="font-600 text-3xl mb-3">
+            {{ subtitle }}
+          </h2>
+        </SlideTransitionContainer>
+      </div>
     </div>
-  </div>
 
-  <SlideTransitionContainer :direction="stateTransition">
-    <LoginForm v-if="state === 'LOGIN'" v-model:message="message" />
-    <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
-  </SlideTransitionContainer>
+    <SlideTransitionContainer :direction="stateTransition">
+      <LoginForm v-if="state === 'LOGIN'" v-model:message="message" />
+      <PasswordEditionForm v-else-if="state === 'CHANGE_PASSWORD'" />
+    </SlideTransitionContainer>
+  </div>
 </template>

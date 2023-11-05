@@ -46,7 +46,7 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <form @submit="onSubmit">
     <PMessage :pt="{ root: { class: 'important-mt-0' } }" severity="info" icon="i-tabler-info-circle-filled" :closable="false">
-      Votre compte aura un quota d'espace disque de 10.00 Mio.
+      <pre>TODO: Account space quota</pre>
     </PMessage>
 
     <div class="grid grid-cols-2 gap-3 mb-3">
@@ -93,7 +93,7 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
 
     <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = 'LOGIN'">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = LoginState">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>

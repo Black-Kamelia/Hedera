@@ -106,10 +106,10 @@ useEventBus(LoggedInEvent).on((event) => {
     </div>
 
     <div class="flex flex-row items-center justify-between mb-6 w-100%">
-      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = 'REGISTER'">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = RegisterState">
         {{ t('pages.login.register') }}
       </NuxtLink>
-      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = 'RESET_PASSWORD'">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = ResetPasswordState">
         {{ t('pages.login.forgot_password') }}
       </NuxtLink>
     </div>

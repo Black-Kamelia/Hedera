@@ -13,9 +13,7 @@ const modelValue = defineModel<OTP>({ default: () => Array.from({ length: 6 }).f
 
 const otpInputRefs = ref<CompElement[]>([])
 
-onMounted(() => {
-  otpInputRefs.value[0].$el?.focus()
-})
+onMounted(() => otpInputRefs.value[0].$el?.focus({ preventScroll: true }))
 
 // Add small delay to allow extensions such as KeePassXC to fill the inputs
 watchDebounced(

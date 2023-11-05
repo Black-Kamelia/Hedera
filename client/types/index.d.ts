@@ -34,6 +34,13 @@ declare global {
 
 // BEGIN SECTION: Others
 declare global {
+  interface AuthState {
+    name: 'REGISTER' | 'RESET_PASSWORD' | 'LOGIN' | 'COMPLETE_OTP' | 'CHANGE_PASSWORD'
+    index: number
+    subtitleKey: string
+    route?: string
+  }
+
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
 }

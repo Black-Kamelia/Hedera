@@ -44,11 +44,11 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
 
     <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = 'LOGIN'">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = LoginState">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>
 
-    <PButton :label="t('forms.register.submit')" class="w-full" type="submit" :loading="loading" />
+    <PButton :label="t('forms.reset_password.submit')" class="w-full" type="submit" :loading="loading" />
   </form>
 </template>

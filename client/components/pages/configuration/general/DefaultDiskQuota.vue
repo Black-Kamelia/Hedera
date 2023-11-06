@@ -4,14 +4,19 @@ const {
   quotaValue,
 } = defineProps<{
   quotaPolicyValue: DiskQuotaPolicy
-  quotaValue: number
+  quotaValue: number | null
 }>()
 const quotaPolicy = ref(quotaPolicyValue)
-const quota = ref<Nullable<number>>(quotaValue)
+const quota = ref<number | null>(quotaValue)
 
 const { t } = useI18n()
-const { patchConfiguration: patchPolicy, isError: policyError } = useConfigurationField(quotaPolicy, value => ({ defaultDiskQuotaPolicy: value }))
-const { patchConfiguration: patchQuota, isError: quotaError } = useConfigurationField(quota, value => ({ defaultDiskQuota: value }))
+const { patchConfiguration, isError } = useConfigurationFields({
+  defaultDiskQuotaPolicy: quotaPolicy,
+  defaultDiskQuota: quota,
+}, ({ defaultDiskQuotaPolicy, defaultDiskQuota }) => ({
+  defaultDiskQuotaPolicy: defaultDiskQuotaPolicy.value,
+  defaultDiskQuota: defaultDiskQuota.value,
+}))
 
 const options = computed(() => [
   { icon: 'i-tabler-infinity', name: t('pages.configuration.general.default_disk_quota.unlimited'), value: 'UNLIMITED' },
@@ -27,13 +32,13 @@ function getOption(value: string) {
 }
 
 function patch() {
-  if (quotaPolicy.value === 'UNLIMITED') {
-    patchPolicy(quotaPolicy.value)
-    patchQuota(null)
-  } else if (quota.value !== null) {
-    patchPolicy(quotaPolicy.value)
-    patchQuota(quota.value)
-  }
+  if (quotaPolicy.value === 'UNLIMITED') quota.value = null
+  if (quotaPolicy.value === 'LIMITED' && quota.value === null) return
+
+  patchConfiguration({
+    defaultDiskQuotaPolicy: quotaPolicy,
+    defaultDiskQuota: quota,
+  })
 }
 
 watch(quotaPolicy, () => {
@@ -45,7 +50,7 @@ watch(quotaPolicy, () => {
   <HorizontalActionPanel
     :header="t('pages.configuration.general.default_disk_quota.title')"
     :description="t('pages.configuration.general.default_disk_quota.description')"
-    :error="policyError || quotaError"
+    :error="isError"
   >
     <div class="flex flex-col gap-2">
       <PDropdown
@@ -54,7 +59,7 @@ watch(quotaPolicy, () => {
         option-label="name"
         option-value="value"
         class="w-full md:w-14rem"
-        :class="{ 'p-invalid': policyError }"
+        :class="{ 'p-invalid': isError }"
         @update:model-value="patch"
       >
         <template #value="{ value: selectedOption }">
@@ -79,7 +84,7 @@ watch(quotaPolicy, () => {
       <FileSizeInput
         v-model="quota"
         class="w-full"
-        :class="{ 'p-invalid': quotaError }"
+        :class="{ 'p-invalid': isError }"
         :disabled="quotaPolicy === 'UNLIMITED'"
         :placeholder="inputPlaceholder"
         @update:model-value="patch"

@@ -60,15 +60,12 @@ object GlobalConfigurationService {
         dto: GlobalConfigurationUpdateDTO
     ): Response<GlobalConfigurationRepresentationDTO>  {
         dto.enableRegistrations?.let { currentConfiguration.enableRegistrations = it }
-        dto.defaultDiskQuotaPolicy?.let{
-            if (currentConfiguration.defaultDiskQuota != null)
-                currentConfiguration.defaultDiskQuotaPolicy = it
-            if (it == DiskQuotaPolicy.UNLIMITED)
-                currentConfiguration.defaultDiskQuota = null
-        }
-        dto.defaultDiskQuota?.let{
-            if (currentConfiguration.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED)
-                currentConfiguration.defaultDiskQuota = it
+        if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
+            currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
+            currentConfiguration.defaultDiskQuota = null
+        } else if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED && dto.defaultDiskQuota != null) {
+            currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
+            currentConfiguration.defaultDiskQuota = dto.defaultDiskQuota
         }
         writeConfiguration()
         ConfigurationEvents.configurationUpdatedEvent(currentConfiguration.toDTO())

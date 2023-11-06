@@ -20,6 +20,16 @@ object Errors {
 
     }
 
+    object Configuration {
+
+        private const val PREFIX = "${Errors.PREFIX}.configuration"
+
+        const val GENERATION_ERROR = "$PREFIX.generation_error"
+        const val PARSE_ERROR = "$PREFIX.parse_error"
+        const val WRITE_ERROR = "$PREFIX.write_error"
+
+    }
+
     object Files {
 
         private const val PREFIX = "${Errors.PREFIX}.files"

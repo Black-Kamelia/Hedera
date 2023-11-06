@@ -152,6 +152,19 @@ pages:
     menu:
       general: General
       users: Users
+    general:
+      headers:
+        registrations: Registrations of new users
+      toggle_registration:
+        title: Allow registrations
+        description: If this option is enabled, visitors will be able to create an account on your Hedera instance. Otherwise, only administrators will be able to create accounts.
+      default_disk_quota:
+        title: Default disk space quota
+        description: Set the default disk space quota for users who sign up. It is possible to allow an unlimited quota, but this is strongly discouraged, especially if registrations are allowed and/or the instance is public.
+        unlimited: Unlimited (not recommended)
+        limited: Limited
+        choose: Choose a policy
+        placeholder: Enter a size
     users:
       title: Users
       role:

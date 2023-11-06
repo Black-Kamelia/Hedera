@@ -4,7 +4,6 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
 import java.io.File
-import java.io.IOException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -14,7 +13,7 @@ import kotlinx.serialization.json.Json
 class GlobalConfiguration(
     var enableRegistrations: Boolean = false,
     var defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
-    var defaultDiskQuota: Long = 512000, // 500 MiB
+    var defaultDiskQuota: Long = 524288000, // 500 MiB
 ) {
     fun toDTO() = GlobalConfigurationRepresentationDTO(
         enableRegistrations,

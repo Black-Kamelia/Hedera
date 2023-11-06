@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class GlobalConfigurationRepresentationDTO(
     val enableRegistrations: Boolean,
     val defaultDiskQuotaPolicy: DiskQuotaPolicy,
-    val defaultDiskQuota: Long,
+    val defaultDiskQuota: Long?,
 )
 
 @Serializable

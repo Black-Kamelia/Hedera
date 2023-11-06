@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.configuration
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.rest.user.ConfigurationEvents
 import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -13,7 +14,7 @@ import kotlinx.serialization.json.Json
 class GlobalConfiguration(
     var enableRegistrations: Boolean = false,
     var defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
-    var defaultDiskQuota: Long = 524288000, // 500 MiB
+    var defaultDiskQuota: Long? = 524288000, // 500 MiB
 ) {
     fun toDTO() = GlobalConfigurationRepresentationDTO(
         enableRegistrations,
@@ -55,13 +56,22 @@ object GlobalConfigurationService {
     /* May change in the future if we need to hide some settings */
     fun getConfigurationPublic() = Response.ok(currentConfiguration.toDTO())
 
-    fun updateConfiguration(
+    suspend fun updateConfiguration(
         dto: GlobalConfigurationUpdateDTO
     ): Response<GlobalConfigurationRepresentationDTO>  {
         dto.enableRegistrations?.let { currentConfiguration.enableRegistrations = it }
-        dto.defaultDiskQuotaPolicy?.let{ currentConfiguration.defaultDiskQuotaPolicy = it }
-        dto.defaultDiskQuota?.let{ currentConfiguration.defaultDiskQuota = it }
+        dto.defaultDiskQuotaPolicy?.let{
+            if (currentConfiguration.defaultDiskQuota != null)
+                currentConfiguration.defaultDiskQuotaPolicy = it
+            if (it == DiskQuotaPolicy.UNLIMITED)
+                currentConfiguration.defaultDiskQuota = null
+        }
+        dto.defaultDiskQuota?.let{
+            if (currentConfiguration.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED)
+                currentConfiguration.defaultDiskQuota = it
+        }
         writeConfiguration()
+        ConfigurationEvents.configurationUpdatedEvent(currentConfiguration.toDTO())
 
         return Response.ok(currentConfiguration.toDTO())
     }

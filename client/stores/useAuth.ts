@@ -24,6 +24,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
   const loggedInEvent = useEventBus(LoggedInEvent)
   const loggedOutEvent = useEventBus(LoggedOutEvent)
   const { updateSettings } = useUserSettings()
+  const { initConfiguration } = useGlobalConfiguration()
 
   const user = ref<Nullable<User>>(null)
   const tokens = ref<Nullable<Tokens>>(null)
@@ -54,6 +55,7 @@ export const useAuth = defineStore('auth', (): UseAuthComposer => {
       setTokens(tokens)
       setUser(user)
       updateSettings(userSettings)
+      if (user.role === 'ADMIN' || user.role === 'OWNER') initConfiguration()
       loggedInEvent.emit({ tokens, user })
     } catch (error) {
       if (error instanceof FetchError) {

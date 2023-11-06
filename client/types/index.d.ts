@@ -162,6 +162,22 @@ declare global {
     createdAt: string
     lastUsed?: string
   }
+
+  type DiskQuotaPolicy = 'UNLIMITED' | 'LIMITED'
+
+  interface GlobalConfiguration {
+    enableRegistrations: boolean
+    defaultDiskQuotaPolicy: DiskQuotaPolicy
+    defaultDiskQuota: number | null
+  }
+
+  interface GlobalConfigurationRepresentationDTO extends GlobalConfiguration {}
+
+  interface GlobalConfigurationUpdateDTO {
+    enableRegistrations?: boolean
+    defaultDiskQuotaPolicy?: DiskQuotaPolicy
+    defaultDiskQuota?: number
+  }
 }
 // END SECTION: DTO
 

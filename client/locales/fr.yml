@@ -39,6 +39,7 @@ pages:
       disabled: Votre compte a été désactivé
       password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
       session_terminated: Votre session a été terminée
+      registration_disabled: Les inscriptions ne sont pas activées
   register:
     title: Créer un compte
     back: Retour à la connexion

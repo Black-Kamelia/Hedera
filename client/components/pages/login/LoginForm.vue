@@ -16,6 +16,7 @@ const message = defineModel<{
   },
 })
 
+const registrationEnabled = ref(false)
 const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
@@ -67,6 +68,10 @@ useEventBus(LoggedInEvent).on((event) => {
     message.value.severity = 'error'
   }
 })
+onMounted(() => {
+  $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration/public')
+    .then(config => registrationEnabled.value = config.enableRegistrations)
+})
 </script>
 
 <template>
@@ -104,12 +109,12 @@ useEventBus(LoggedInEvent).on((event) => {
       />
     </div>
 
-    <div class="flex flex-row items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/register" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
-        {{ t('pages.login.register') }}
-      </NuxtLink>
+    <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
         {{ t('pages.login.forgot_password') }}
+      </NuxtLink>
+      <NuxtLink v-show="registrationEnabled" to="/register" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+        {{ t('pages.login.register') }}
       </NuxtLink>
     </div>
 

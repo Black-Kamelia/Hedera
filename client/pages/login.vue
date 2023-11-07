@@ -58,6 +58,9 @@ onMounted(() => {
   if (params.includes('reason')) {
     message.content = t(`pages.login.reasons.${query.reason}`)
     message.severity = 'warn'
+    if (query.reason === 'registration_disabled') {
+      message.severity = 'error'
+    }
   }
 })
 

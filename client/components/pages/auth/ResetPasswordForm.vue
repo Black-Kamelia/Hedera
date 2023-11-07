@@ -40,6 +40,7 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.email')"
         :placeholder="`${usernamePlaceholder}@example.com`"
         start-icon="i-tabler-mail"
+        autocomplete="email"
       />
     </div>
 

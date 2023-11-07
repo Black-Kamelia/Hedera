@@ -59,6 +59,7 @@ const onSubmit = handleSubmit(async (values) => {
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
+        autocomplete="username"
       />
 
       <FormInputText
@@ -69,6 +70,7 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.email')"
         :placeholder="`${usernamePlaceholder}@example.com`"
         start-icon="i-tabler-mail"
+        autocomplete="email"
       />
 
       <FormInputText
@@ -79,6 +81,7 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="new-password"
       />
 
       <FormInputText
@@ -89,6 +92,7 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.confirm_password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="new-password"
       />
     </div>
 

@@ -91,6 +91,7 @@ const onSubmit = handleSubmit((values) => {
         type="password"
         :label="t('forms.change_password.fields.password')"
         placeholder="••••••••••••••••"
+        autocomplete="new-password"
         @input="hideErrorMessage"
       />
     </div>
@@ -103,6 +104,7 @@ const onSubmit = handleSubmit((values) => {
         type="password"
         :label="t('forms.change_password.fields.confirm_password')"
         placeholder="••••••••••••••••"
+        autocomplete="new-password"
         @input="hideErrorMessage"
       />
     </div>

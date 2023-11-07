@@ -87,6 +87,7 @@ useEventBus(LoggedInEvent).on((event) => {
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
+        autocomplete="username"
         @input="hideErrorMessage"
       />
     </div>
@@ -101,6 +102,7 @@ useEventBus(LoggedInEvent).on((event) => {
         :label="t('forms.login.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="current-password"
         @input="hideErrorMessage"
       />
     </div>

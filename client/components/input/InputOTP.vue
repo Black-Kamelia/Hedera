@@ -96,7 +96,7 @@ defineExpose({
 </script>
 
 <template>
-  <div v-focus-trap class="flex items-center flex-row gap-5">
+  <div class="flex items-center flex-row gap-5">
     <PInputText
       v-for="n in OTP_LENGTH" :key="n - 1"
       ref="otpInputRefs"
@@ -107,6 +107,7 @@ defineExpose({
       maxlength="1"
       pattern="[0-9]?"
       inputmode="numeric"
+      autocomplete="one-time-code"
       @keydown="onKeyDown($event, n - 1)"
       @paste="onPaste($event, n - 1)"
       @input="onInput($event, n - 1)"

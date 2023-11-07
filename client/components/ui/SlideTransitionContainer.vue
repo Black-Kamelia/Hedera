@@ -37,7 +37,6 @@ const cardTransition = ref(false)
 .slide-right-enter-active,
 .slide-right-leave-active {
   transition: all .5s cubic-bezier(0.65, 0, 0.35, 1);
-
 }
 
 .slide-left-leave-active,
@@ -46,21 +45,13 @@ const cardTransition = ref(false)
   top: 0;
 }
 
-.slide-left-enter-from {
-  opacity: 0;
-  transform: translateX(calc(100% + v-bind(gap)));
-}
-
-.slide-left-leave-to {
-  opacity: 0;
-  transform: translateX(calc(-100% - v-bind(gap)));
-}
-
+.slide-left-leave-to,
 .slide-right-enter-from {
   opacity: 0;
   transform: translateX(calc(-100% - v-bind(gap)));
 }
 
+.slide-left-enter-from,
 .slide-right-leave-to {
   opacity: 0;
   transform: translateX(calc(100% + v-bind(gap)));

@@ -40,6 +40,8 @@ pages:
       password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
       session_terminated: Votre session a été terminée
       registration_disabled: Les inscriptions ne sont pas activées
+  complete_otp:
+    title: Authentification à deux facteurs
   register:
     title: Créer un compte
     back: Retour à la connexion
@@ -324,6 +326,7 @@ forms:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d’utilisateur
+    submit: Se connecter
   register:
     errors:
       missing_username: Nom d’utilisateur requis
@@ -342,7 +345,7 @@ forms:
       email: Adresse e-mail
       password: Mot de passe
       confirm_password: Confirmer le mot de passe
-    submit: Valider
+    submit: Créer
   change_password:
     submit: Continuer
     errors:
@@ -361,6 +364,7 @@ forms:
       invalid_email: Format d’adresse e-mail invalide
     fields:
       email: Adresse e-mail
+    submit: Envoyer le lien de réinitialisation
   update_password:
     submit: Mettre à jour
     errors:

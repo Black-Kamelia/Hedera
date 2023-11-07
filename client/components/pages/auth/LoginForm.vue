@@ -15,6 +15,7 @@ const message = defineModel<{
     severity: undefined,
   },
 })
+const state = defineModel('state')
 
 const registrationEnabled = ref(false)
 const loading = ref(false)
@@ -91,6 +92,7 @@ onMounted(() => {
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
+        autocomplete="username"
         @input="hideErrorMessage"
       />
     </div>
@@ -105,6 +107,7 @@ onMounted(() => {
         :label="t('forms.login.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="current-password"
         @input="hideErrorMessage"
       />
     </div>

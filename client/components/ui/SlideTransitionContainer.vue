@@ -1,19 +1,34 @@
 <script lang="ts" setup>
 export type SlideDirection = 'LEFT' | 'RIGHT'
 
-const { direction = 'LEFT' } = defineProps<{
+const {
+  gap = '0px',
+  direction = 'LEFT',
+  animateHeight = true,
+  animateWidth = false,
+} = defineProps<{
+  gap?: string
   direction?: SlideDirection
+  animateHeight?: boolean
+  animateWidth?: boolean
 }>()
 
 const cardTransition = ref(false)
 </script>
 
 <template>
-  <HeightAnimatedContainer :prevent-transition="!cardTransition">
-    <Transition :name="`slide-${direction.toLowerCase()}`" @after-enter="cardTransition = false" @before-enter="cardTransition = true">
+  <MorphAnimatedContainer
+    :prevent-transition="!cardTransition"
+    :animate-height="animateHeight"
+    :animate-width="animateWidth"
+  >
+    <Transition
+      :name="`slide-${direction.toLowerCase()}`" @after-enter="cardTransition = false"
+      @before-enter="cardTransition = true"
+    >
       <slot />
     </Transition>
-  </HeightAnimatedContainer>
+  </MorphAnimatedContainer>
 </template>
 
 <style scoped>
@@ -21,8 +36,8 @@ const cardTransition = ref(false)
 .slide-left-leave-active,
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transition: all .4s cubic-bezier(0.87, 0, 0.13, 1);
-  width: 100%;
+  transition: all .5s cubic-bezier(0.65, 0, 0.35, 1);
+
 }
 
 .slide-left-leave-active,
@@ -33,21 +48,21 @@ const cardTransition = ref(false)
 
 .slide-left-enter-from {
   opacity: 0;
-  transform: translateX(100%);
+  transform: translateX(calc(100% + v-bind(gap)));
 }
 
 .slide-left-leave-to {
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(calc(-100% - v-bind(gap)));
 }
 
 .slide-right-enter-from {
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(calc(-100% - v-bind(gap)));
 }
 
 .slide-right-leave-to {
   opacity: 0;
-  transform: translateX(100%);
+  transform: translateX(calc(100% + v-bind(gap)));
 }
 </style>

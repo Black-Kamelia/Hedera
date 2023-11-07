@@ -3,6 +3,8 @@ import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import { CREATE_USER_FORM } from '~/utils/forms'
 
+const state = defineModel('state')
+
 const { t } = useI18n()
 const { login } = useAuth()
 const setFieldErrors = useFeedbackFormErrors()
@@ -43,7 +45,11 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <form @submit="onSubmit">
-    <div class="mb-3">
+    <PMessage :pt="{ root: { class: 'important-mt-0' } }" severity="info" icon="i-tabler-info-circle-filled" :closable="false">
+      <pre>TODO: Account space quota</pre>
+    </PMessage>
+
+    <div class="grid grid-cols-2 gap-3 mb-3">
       <FormInputText
         id="username"
         class="w-full"
@@ -53,10 +59,9 @@ const onSubmit = handleSubmit(async (values) => {
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
+        autocomplete="username"
       />
-    </div>
 
-    <div class="mb-3">
       <FormInputText
         id="email"
         class="w-full"
@@ -65,10 +70,9 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.email')"
         :placeholder="`${usernamePlaceholder}@example.com`"
         start-icon="i-tabler-mail"
+        autocomplete="email"
       />
-    </div>
 
-    <div class="mb-3">
       <FormInputText
         id="password"
         class="w-full"
@@ -77,10 +81,9 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="new-password"
       />
-    </div>
 
-    <div class="mb-3">
       <FormInputText
         id="confirmPassword"
         class="w-full"
@@ -89,11 +92,12 @@ const onSubmit = handleSubmit(async (values) => {
         :label="t('forms.register.fields.confirm_password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="new-password"
       />
     </div>
 
     <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = LoginState">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>

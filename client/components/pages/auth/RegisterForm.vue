@@ -3,8 +3,6 @@ import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import { CREATE_USER_FORM } from '~/utils/forms'
 
-const state = defineModel('state')
-
 const { t } = useI18n()
 const { login } = useAuth()
 const setFieldErrors = useFeedbackFormErrors()
@@ -45,10 +43,6 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <form @submit="onSubmit">
-    <PMessage :pt="{ root: { class: 'important-mt-0' } }" severity="info" icon="i-tabler-info-circle-filled" :closable="false">
-      <pre>TODO: Account space quota</pre>
-    </PMessage>
-
     <div class="grid grid-cols-2 gap-3 mb-3">
       <FormInputText
         id="username"
@@ -97,7 +91,7 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
 
     <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = LoginState">
+      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>

@@ -2,10 +2,7 @@
 import { object, string } from 'yup'
 import { useForm } from 'vee-validate'
 
-const state = defineModel('state')
-
 const { t } = useI18n()
-const setFieldErrors = useFeedbackFormErrors()
 
 const usernamePlaceholder = getRandomDeveloperUsername()
 const loading = ref(false)
@@ -16,17 +13,9 @@ const schema = object({
     .email(t('forms.create_user.errors.invalid_email')),
 
 })
-const { handleSubmit, setFieldError } = useForm({ validationSchema: schema })
+const { handleSubmit } = useForm({ validationSchema: schema })
 
-const onSubmit = handleSubmit(async (values) => {
-  // loading.value = true
-  // $fetchAPI<UserSignupDTO>('/users/signup', { method: 'POST', body: values })
-  //   .then(() => login(values))
-  //   .catch((err) => {
-  //     setFieldErrors(err.response._data.fields, setFieldError)
-  //     loading.value = false
-  //   })
-})
+const onSubmit = handleSubmit(async () => {})
 </script>
 
 <template>
@@ -45,7 +34,7 @@ const onSubmit = handleSubmit(async (values) => {
     </div>
 
     <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" @click="state = LoginState">
+      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>

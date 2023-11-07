@@ -3,8 +3,8 @@ const { t } = useI18n()
 
 usePageName(() => t('pages.reset_password.title'))
 definePageMeta({
-  layout: 'centercard',
-  middleware: ['auth'],
+  layout: 'auth',
+  middleware: ['auth', 'card-transitions'],
 })
 /*
 import { object, string } from 'yup'
@@ -44,5 +44,11 @@ const onSubmit = handleSubmit((_) => {
 </script>
 
 <template>
-  <AuthContainer :initial-state="ResetPasswordState" />
+  <div>
+    <h2 class="text-center w-full mb-10 font-600 text-3xl">
+      {{ t('pages.reset_password.title') }}
+    </h2>
+
+    <ResetPasswordForm class="w-125" />
+  </div>
 </template>

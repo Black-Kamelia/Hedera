@@ -4,9 +4,9 @@ const SLIDE_LEFT = { name: 'slide-left' }
 const SLIDE_RIGHT = { name: 'slide-right' }
 
 const INDICES = new Map<string, number>([
-  ['register', 0],
-  ['login', 1],
-  ['reset-password', 2],
+  ['register', -2],
+  ['reset-password', -1],
+  ['login', 0],
 ])
 
 export default defineNuxtRouteMiddleware((to, from) => {

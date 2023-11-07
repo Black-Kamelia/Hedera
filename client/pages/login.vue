@@ -1,15 +1,14 @@
 <script setup lang="ts">
-// import { ForcePasswordChangeDoneEvent } from '~/utils/events'
+import { ForcePasswordChangeDoneEvent } from '~/utils/events'
 
 const { t } = useI18n()
 
 usePageName(() => t('pages.login.title'))
 definePageMeta({
-  layout: 'centercard',
-  middleware: ['auth'],
+  layout: 'auth',
+  middleware: ['auth', 'card-transitions'],
 })
 
-/*
 const { currentRoute } = useRouter()
 
 const message = reactive<{
@@ -79,10 +78,14 @@ useWebsocketEvent('user-forcefully-logged-out', (event) => {
     message.content = t(`pages.login.reasons.${event.reason}`)
   }
 })
-
- */
 </script>
 
 <template>
-  <AuthContainer />
+  <div>
+    <h2 class="text-center w-full mb-10 font-600 text-3xl">
+      {{ t('pages.login.title') }}
+    </h2>
+
+    <LoginForm v-model:message="message" class="w-125" />
+  </div>
 </template>

@@ -15,7 +15,6 @@ const message = defineModel<{
     severity: undefined,
   },
 })
-const state = defineModel('state')
 
 const registrationEnabled = ref(false)
 const loading = ref(false)
@@ -35,16 +34,9 @@ const { handleSubmit, resetField } = useForm({
 
 const onSubmit = handleSubmit((values) => {
   loading.value = true
-  login(values).catch(() => loading.value = false)
-})
-
-function hideErrorMessage() {
-  message.value.content = null
-}
-
-useEventBus(LoggedInEvent).on((event) => {
-  if (event.error) {
-    const status = event.error?.response?.status
+  login(values).catch((error) => {
+    loading.value = false
+    const status = error?.response?.status
 
     if (status === 500) {
       resetField('username')
@@ -65,10 +57,15 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.value.content = m(event.error.data.title)
+    message.value.content = m(error.data.title)
     message.value.severity = 'error'
-  }
+  })
 })
+
+function hideErrorMessage() {
+  message.value.content = null
+}
+
 onMounted(() => {
   $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration/public')
     .then(config => registrationEnabled.value = config.enableRegistrations)

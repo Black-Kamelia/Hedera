@@ -1,5 +1,6 @@
 package com.kamelia.hedera.rest
 
+import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
@@ -33,10 +34,12 @@ import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@ExtendWith(GlobalConfigurationSetup::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {
 
@@ -61,7 +64,7 @@ class FileTest {
 
     @AfterAll
     fun cleanUp() {
-        testFolder.deleteRecursively()
+        testFolder.resolve("upload").deleteRecursively()
     }
 
     @DisplayName("Uploading a file")

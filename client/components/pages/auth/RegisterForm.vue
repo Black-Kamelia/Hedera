@@ -45,7 +45,7 @@ const onSubmit = handleSubmit(async (values) => {
   <form @submit="onSubmit">
     <div class="grid grid-cols-2 gap-3 mb-3">
       <FormInputText
-        id="username"
+        id="register_username"
         class="w-full"
         name="username"
         type="text"
@@ -57,7 +57,7 @@ const onSubmit = handleSubmit(async (values) => {
       />
 
       <FormInputText
-        id="email"
+        id="register_email"
         class="w-full"
         name="email"
         type="email"
@@ -68,7 +68,7 @@ const onSubmit = handleSubmit(async (values) => {
       />
 
       <FormInputText
-        id="password"
+        id="register_password"
         class="w-full"
         name="password"
         type="password"
@@ -79,7 +79,7 @@ const onSubmit = handleSubmit(async (values) => {
       />
 
       <FormInputText
-        id="confirmPassword"
+        id="register_confirmPassword"
         class="w-full"
         name="confirmPassword"
         type="password"

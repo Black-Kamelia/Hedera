@@ -80,7 +80,7 @@ onMounted(() => {
 
     <div class="mb-3">
       <FormInputText
-        id="username"
+        id="login_username"
         ref="usernameField"
         class="w-full"
         name="username"
@@ -96,7 +96,7 @@ onMounted(() => {
 
     <div class="mb-3">
       <FormInputText
-        id="password"
+        id="login_password"
         ref="passwordField"
         class="w-full"
         name="password"

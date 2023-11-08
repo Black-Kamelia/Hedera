@@ -22,7 +22,7 @@ const onSubmit = handleSubmit(async () => {})
   <form @submit="onSubmit">
     <div class="mb-3">
       <FormInputText
-        id="email"
+        id="resetPwd_email"
         class="w-full"
         name="email"
         type="email"

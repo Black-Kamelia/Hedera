@@ -84,7 +84,7 @@ const onSubmit = handleSubmit((values) => {
 
     <div class="mb-3">
       <FormInputText
-        id="password"
+        id="updatePwd_password"
         ref="passwordField"
         class="w-full"
         name="password"
@@ -98,7 +98,7 @@ const onSubmit = handleSubmit((values) => {
 
     <div class="mb-3">
       <FormInputText
-        id="confirmPassword"
+        id="updatePwd_confirmPassword"
         class="w-full"
         name="confirmPassword"
         type="password"

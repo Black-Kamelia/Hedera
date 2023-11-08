@@ -2,6 +2,7 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.ActionResponse
 import com.kamelia.hedera.core.Actions
+import com.kamelia.hedera.core.DisabledRegistrationsException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
@@ -15,6 +16,8 @@ import com.kamelia.hedera.core.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.auth.SessionManager
+import com.kamelia.hedera.rest.configuration.DiskQuotaPolicy
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.authToken
@@ -24,12 +27,20 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import java.util.*
 import kotlin.math.ceil
+import kotlin.properties.Delegates
+import kotlin.properties.Delegates.notNull
 
 private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 
 object UserService {
 
     suspend fun signup(dto: UserCreationDTO): Response<UserRepresentationDTO> = Connection.transaction {
+        val configuration = GlobalConfigurationService.currentConfiguration
+
+        if (!configuration.enableRegistrations) {
+            throw DisabledRegistrationsException()
+        }
+
         validate {
             checkEmail(dto.email)
             checkUsername(dto.username)
@@ -39,9 +50,19 @@ object UserService {
                 throw IllegalActionException()
             }
 
+            if (dto.forceChangePassword) {
+                throw IllegalActionException()
+            }
+
+            val quota = if (configuration.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
+                -1
+            } else {
+                configuration.defaultDiskQuota ?: 0
+            }
+
             catchErrors()
 
-            val user = User.create(dto)
+            val user = User.create(dto.copy(diskQuota = quota))
             Response.created(user.toRepresentationDTO())
         }
     }

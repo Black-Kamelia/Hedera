@@ -107,6 +107,14 @@ object Errors {
 
     }
 
+    object Registrations {
+
+        private const val PREFIX = "${Errors.PREFIX}.registrations"
+
+        const val DISABLED = "$PREFIX.disabled"
+
+    }
+
     object Sorts {
 
         private const val PREFIX = "${Errors.PREFIX}.sorts"

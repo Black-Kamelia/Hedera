@@ -27,7 +27,7 @@ const val FILENAME = "global_configuration.json"
 
 object GlobalConfigurationService {
 
-    private val currentConfiguration: GlobalConfiguration by lazy {
+    val currentConfiguration: GlobalConfiguration by lazy {
         with(File(FILENAME)) {
             if (!exists()) generateDefaultConfiguration(this)
             try {

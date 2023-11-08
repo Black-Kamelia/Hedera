@@ -15,6 +15,7 @@ object Environment {
     val liquibaseMaster get() = config.property("liquibase.master").getString()
 
     val uploadFolder get() = config.property("hedera.uploadFolder").getString()
+    val globalConfigurationFile get() = config.property("hedera.globalConfigurationFile").getString()
     val searchMaxDistance get() = config.property("hedera.searchMaxDistance").getString().toDouble()
     val loginThrottle get() = config.property("hedera.loginThrottle").getString().toLong()
 

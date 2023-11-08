@@ -3,12 +3,18 @@ package com.kamelia.hedera.rest
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.login
+import com.kamelia.hedera.rest.configuration.DiskQuotaPolicy
+import com.kamelia.hedera.rest.configuration.GlobalConfiguration
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationRepresentationDTO
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationUpdateDTO
+import com.kamelia.hedera.rest.user.UserCreationDTO
+import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import java.io.File
 import java.util.*
 import java.util.stream.Stream
 import kotlinx.serialization.json.Json
@@ -23,6 +29,14 @@ import org.junit.jupiter.params.provider.MethodSource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ConfigurationTest {
+
+    private fun restoreConfiguration(originalConfiguration: GlobalConfiguration) {
+        GlobalConfigurationService.currentConfiguration.let {
+            it.enableRegistrations = originalConfiguration.enableRegistrations
+            it.defaultDiskQuotaPolicy = originalConfiguration.defaultDiskQuotaPolicy
+            it.defaultDiskQuota = originalConfiguration.defaultDiskQuota
+        }
+    }
 
     @DisplayName("Get global configuration")
     @ParameterizedTest(name = "Get global configuration as {0} is {1}")
@@ -67,6 +81,83 @@ class ConfigurationTest {
             val responseDto = Json.decodeFromString<GlobalConfigurationRepresentationDTO>(response.bodyAsText())
             assertEquals(true, responseDto.enableRegistrations)
         }
+    }
+
+    @DisplayName("Signing up with registrations off")
+    @Test
+    fun signUpWithRegistrationsOff() = testApplication {
+        val originalConfig = GlobalConfigurationService.currentConfiguration.copy()
+        GlobalConfigurationService.currentConfiguration.enableRegistrations = false
+
+        val newUserDto = UserCreationDTO(
+            username = "test.user.off",
+            password = "Test0@aaa",
+            email = "test.signup.off@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+
+        restoreConfiguration(originalConfig)
+    }
+
+    @DisplayName("Signing up with default quota limited")
+    @Test
+    fun signUpWithDefaultQuotaLimited() = testApplication {
+        val originalConfig = GlobalConfigurationService.currentConfiguration.copy()
+        GlobalConfigurationService.currentConfiguration.let {
+            it.enableRegistrations = true
+            it.defaultDiskQuotaPolicy = DiskQuotaPolicy.LIMITED
+            it.defaultDiskQuota = 1024
+        }
+
+        val newUserDto = UserCreationDTO(
+            username = "test.user.quota.limited",
+            password = "Test0@aaa",
+            email = "test.signup.quota.limited@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString<UserRepresentationDTO>(response.bodyAsText())
+        assertEquals(1024, responseDto.maximumDiskQuota)
+
+        restoreConfiguration(originalConfig)
+    }
+
+    @DisplayName("Signing up with default quota unlimited")
+    @Test
+    fun signUpWithDefaultQuotaUnlimited() = testApplication {
+        val originalConfig = GlobalConfigurationService.currentConfiguration.copy()
+        GlobalConfigurationService.currentConfiguration.let {
+            it.enableRegistrations = true
+            it.defaultDiskQuotaPolicy = DiskQuotaPolicy.UNLIMITED
+            it.defaultDiskQuota = null
+        }
+
+        val newUserDto = UserCreationDTO(
+            username = "test.user.quota.unlimited",
+            password = "Test0@aaa",
+            email = "test.signup.quota.unlimited@test.com"
+        )
+        val client = client()
+        val response = client.post("/api/users/signup") {
+            contentType(ContentType.Application.Json)
+            setBody(newUserDto)
+        }
+        assertEquals(HttpStatusCode.Created, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString<UserRepresentationDTO>(response.bodyAsText())
+        assertEquals(-1, responseDto.maximumDiskQuota)
+
+        restoreConfiguration(originalConfig)
     }
 
     companion object {

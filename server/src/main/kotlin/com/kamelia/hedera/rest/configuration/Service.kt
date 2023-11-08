@@ -4,6 +4,7 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.rest.user.ConfigurationEvents
+import com.kamelia.hedera.util.Environment
 import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -11,7 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-class GlobalConfiguration(
+data class GlobalConfiguration(
     var enableRegistrations: Boolean = false,
     var defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
     var defaultDiskQuota: Long? = 524288000, // 500 MiB
@@ -23,12 +24,10 @@ class GlobalConfiguration(
     )
 }
 
-const val FILENAME = "global_configuration.json"
-
 object GlobalConfigurationService {
 
     val currentConfiguration: GlobalConfiguration by lazy {
-        with(File(FILENAME)) {
+        with(File(Environment.globalConfigurationFile)) {
             if (!exists()) generateDefaultConfiguration(this)
             try {
                 Json.decodeFromString<GlobalConfiguration>(this.readText())
@@ -44,7 +43,7 @@ object GlobalConfigurationService {
     }
 
     private fun writeConfiguration() {
-        with(File(FILENAME)) {
+        with(File(Environment.globalConfigurationFile)) {
             if (!exists() && !createNewFile()) throw HederaException(Errors.Configuration.WRITE_ERROR)
             writeText("")
             appendText(Json.encodeToString(currentConfiguration))

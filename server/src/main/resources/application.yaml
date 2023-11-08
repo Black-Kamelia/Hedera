@@ -13,6 +13,7 @@ liquibase:
 
 hedera:
   uploadFolder: "$HEDERA_UPLOAD_FOLDER:uploads"
+  globalConfigurationFile: "$HEDERA_GLOBAL_CONFIGURATION_FILE:./global_configuration.json"
   searchMaxDistance: "$HEDERA_SEARCH_MAX_DISTANCE:0.85"
   loginThrottle: "$HEDERA_LOGIN_THROTTLE:3000" # Default 3 seconds
 

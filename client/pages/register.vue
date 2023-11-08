@@ -6,6 +6,10 @@ definePageMeta({
   layout: 'auth',
   middleware: ['auth', 'card-transitions'],
 })
+
+useEventBus(LoggedInEvent).on((event) => {
+  if (!event.error) navigateTo('/files', { replace: true })
+})
 </script>
 
 <template>

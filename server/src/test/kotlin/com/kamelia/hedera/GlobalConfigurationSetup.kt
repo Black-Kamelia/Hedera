@@ -12,8 +12,6 @@ class GlobalConfigurationSetup : BeforeAllCallback, AfterAllCallback {
     private lateinit var testFolder: File
 
     override fun beforeAll(context: ExtensionContext?) {
-        println("CREATING TEST FOLDER")
-
         val testFolderPath = Path.of("_tests")
         if (Files.exists(testFolderPath)) testFolderPath.toFile().deleteRecursively()
         testFolder = Files.createDirectory(testFolderPath).toFile()
@@ -26,7 +24,6 @@ class GlobalConfigurationSetup : BeforeAllCallback, AfterAllCallback {
     }
 
     override fun afterAll(context: ExtensionContext?) {
-        println("DELETING TEST FOLDER")
         testFolder.deleteRecursively()
     }
 }

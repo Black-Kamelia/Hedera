@@ -8,7 +8,6 @@ import com.kamelia.hedera.core.MessageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.file.toSizeDTO
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -49,7 +48,7 @@ abstract class AbstractUserFilesTests(
             assertEquals(userId, responseDto.owner.id)
             assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)
-            assertEquals(20L.toSizeDTO(), responseDto.size)
+            assertEquals(20L, responseDto.size)
         }
     }
 

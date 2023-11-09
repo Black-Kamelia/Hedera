@@ -4,7 +4,6 @@ import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
 import com.kamelia.hedera.loginBlocking
@@ -16,13 +15,17 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import kotlinx.coroutines.delay
-import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestMethodOrder
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)

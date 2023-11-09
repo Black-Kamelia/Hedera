@@ -418,9 +418,9 @@ class FilesTests {
         ),
         FilesTestsInput(
             viewOthersFileCode = mapOfRole(
-                mapOfVisibility("\$11f0010001", "\$11f0010002", "\$11f0010003",),
-                mapOfVisibility("\$12f0010001", "\$12f0010002", "\$12f0010003",),
-                mapOfVisibility("\$13f0010001", "\$13f0010002", "\$13f0010003",),
+                mapOfVisibility("\$11f0010001", "\$11f0010002", "\$11f0010003"),
+                mapOfVisibility("\$12f0010001", "\$12f0010002", "\$12f0010003"),
+                mapOfVisibility("\$13f0010001", "\$13f0010002", "\$13f0010003"),
             ),
             renameOthersFileId = mapOfRole(
                 mapOfVisibility(

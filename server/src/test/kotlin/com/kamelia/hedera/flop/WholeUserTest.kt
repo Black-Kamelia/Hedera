@@ -1,9 +1,10 @@
 package com.kamelia.hedera.flop
 
+import com.kamelia.hedera.rest.user.UserRole.ADMIN
+import com.kamelia.hedera.rest.user.UserRole.OWNER
+import com.kamelia.hedera.rest.user.UserRole.REGULAR
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
-
-import com.kamelia.hedera.rest.user.UserRole.*
 
 class WholeUserTest {
 

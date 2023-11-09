@@ -5,12 +5,10 @@ import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.file.toSizeDTO
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest2.FileTest
 import io.ktor.client.request.*
@@ -87,7 +85,7 @@ abstract class AbstractFilesTests(
             assertEquals(userId, responseDto.owner.id)
             assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)
-            assertEquals(20L.toSizeDTO(), responseDto.size)
+            assertEquals(20L, responseDto.size)
         }
     }
 
@@ -214,7 +212,7 @@ abstract class AbstractFilesTests(
         fun rolesVisibilitiesCombo(): Stream<Arguments> {
             return roles.flatMap { role ->
                 visibilities.map { visibility ->
-                        Arguments.of(role, visibility)
+                    Arguments.of(role, visibility)
                 }
             }.stream()
         }

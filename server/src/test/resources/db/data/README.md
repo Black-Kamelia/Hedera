@@ -61,3 +61,12 @@ ffffffff-0001-0000-0001-000000000000
 Dummy user needed for suite 1, test 5, case 3:
 00000000-0001-0000-0005-000000000003
 ```
+
+## User settings IDs
+
+Each user settings has a unique ID of the form `aaaaaaaa-bbbb-0000-cccc-dddddddddddd` where:
+
+- `aaaaaaaa` is either all `f` or all `0` depending on whether the user is a real user or a dummy user
+- `bbbb` is the test suite number
+- `cccc` is the test number or zeros
+- `dddddddddddd` is the test case number or zeros

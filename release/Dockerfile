@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 openjdk:17-alpine
+FROM --platform=linux/amd64 amazoncorretto:17-al2023-headless
 
 WORKDIR /app
 VOLUME /app

@@ -93,29 +93,36 @@ fun ApplicationCall.getUUIDOrNull(name: String = "uuid"): UUID? = getParamOrNull
 
 fun ApplicationCall.getUUID(name: String = "uuid"): UUID = getUUIDOrNull(name) ?: throw InvalidUUIDException()
 
-fun PipelineContext<*, ApplicationCall>.jwtOrNull(): Payload? = this.call.principal<JWTPrincipal>()?.payload
+fun ApplicationCall.jwtOrNull(): Payload? = this.principal<JWTPrincipal>()?.payload
 
-fun PipelineContext<*, ApplicationCall>.userOrNull(): UserPrincipal? = this.call.principal()
+fun ApplicationCall.userOrNull(): UserPrincipal? = this.principal()
 
-val PipelineContext<*, ApplicationCall>.jwt: Payload
+val ApplicationCall.authToken: String
+    get() = getHeader(HttpHeaders.Authorization).removePrefix("Bearer ")
+
+val ApplicationCall.jwt: Payload
     get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
-val PipelineContext<*, ApplicationCall>.authenticatedUser: UserState?
+val ApplicationCall.authenticatedUser: UserState?
     get() = userOrNull()?.state
 
-val PipelineContext<*, ApplicationCall>.accessToken: String?
+val ApplicationCall.accessToken: String?
     get() = userOrNull()?.accessToken
+
+val ApplicationCall.sessionId: UUID?
+    get() = userOrNull()?.sessionId
+
 
 operator fun Payload.get(key: String): Claim = this.getClaim(key)
 
 val Payload.uuid get() = this["id"].asString().toUUID()
 
 inline fun PipelineContext<*, ApplicationCall>.ifRegular(block: () -> Unit) {
-    if (authenticatedUser?.role == UserRole.REGULAR) block()
+    if (call.authenticatedUser?.role == UserRole.REGULAR) block()
 }
 
 inline fun PipelineContext<*, ApplicationCall>.ifNotRegular(block: () -> Unit) {
-    if (authenticatedUser?.role != UserRole.REGULAR) block()
+    if (call.authenticatedUser?.role != UserRole.REGULAR) block()
 }
 
 fun PipelineContext<*, ApplicationCall>.adminRestrict() {
@@ -123,7 +130,7 @@ fun PipelineContext<*, ApplicationCall>.adminRestrict() {
 }
 
 fun PipelineContext<*, ApplicationCall>.idRestrict(uuid: UUID) {
-    if (authenticatedUser?.uuid != uuid) throw IllegalActionException()
+    if (call.authenticatedUser?.uuid != uuid) throw IllegalActionException()
 }
 
 fun ApplicationCall.getPageParameters(): Pair<Long, Int> {
@@ -188,14 +195,6 @@ private const val CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy
 fun String.Companion.random(size: Int) = (1..size)
     .map { CHARSET.random() }
     .joinToString("")
-
-fun FilterObject.adaptFileSize(): FilterObject {
-    val (value, unit) = value.split(";")
-    val size = value.toDoubleOrNull() ?: throw IllegalFilterException(this)
-    val shift = unit.toIntOrNull() ?: throw IllegalFilterException(this)
-    val bytes = size * (1 shl shift)
-    return copy(value = bytes.roundToLong().toString())
-}
 
 /** Checks if this expression fuzzy matches the specified [pattern]. */
 infix fun <T : String?> Expression<T>.fuzzy(pattern: String) = fuzzy(LikePattern(pattern))

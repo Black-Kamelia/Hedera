@@ -72,7 +72,7 @@ object FileUtils {
         repeat(10) {
             val code = String.random(10)
             if (HederaFile.findByCode(code) == null) {
-                return "\$$code"
+                return code
             }
         }
         throw UploadCodeGenerationException()

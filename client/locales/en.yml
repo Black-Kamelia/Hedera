@@ -15,14 +15,12 @@ size_units:
     20: MiB
     30: GiB
     40: TiB
-    50: PiB
   decimal:
     0: bytes
     3: KB
     6: MB
     9: GB
     12: TB
-    15: PB
 unlimited_quota: Unlimited quota
 
 sidebar:
@@ -38,6 +36,11 @@ pages:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
+      password_changed: Your password has been changed, please log in again
+      session_terminated: Your session has been terminated
+  change_password:
+    title: Change password
+    message: You must change your password before continuing
   reset_password:
     title: Reset password
     login: Back to login
@@ -63,8 +66,13 @@ pages:
     context_menu:
       open: Open
       rename: Rename
+      set_custom_link: Set a custom link
+      edit_custom_link: Edit custom link
       change_visibility: Change visibility
-      copy_link: Copy link
+      copy_link:
+        title: Copy link
+        original: Original
+        custom: Custom
       download: Download
       delete: Delete
       unselect: Unselect
@@ -82,10 +90,16 @@ pages:
       apply: Apply filters
     rename:
       title: Rename a file
+      summary: A file name is used to search for it, to sort it and to name it when downloading. A file name without extension can prevent it from opening correctly on some systems.
       success: The file has been renamed
       error: The file could not be renamed
       cancel: Cancel
       submit: Rename
+    edit_custom_link:
+      title_set: Set a custom link
+      title_edit: Edit custom link
+      old_link_summary: 'Your file will still be accessible via the original link: {link}'
+      links_summary: A custom link is prefixed by the {c_route} route, unlike an original link which is prefixed by the {i_route} route.
     change_visibility:
       title: Change the visibility of a file
       success: The visibility has been changed
@@ -148,6 +162,8 @@ pages:
         username: Username
         email: E-mail address
         role: Role
+        quota: Disk space quota
+        quota_help: Sorting is done based on the used disk space.
         status: Status
         creation_date: Creation date
       context_menu:
@@ -163,7 +179,7 @@ pages:
         submit: Create
       edit_dialog:
         title: Edit a user
-        password_summary: For security reasons, a user's password can only be changed by themselves.
+        password_summary: For security reasons, a user’s password can only be changed by themselves.
         cancel: Cancel
         submit: Save
       activate_dialog:
@@ -178,7 +194,7 @@ pages:
         submit: Deactivate the user
       delete_dialog:
         title: Delete a user
-        summary: This action is irreversible and all the user's files will be permanently deleted. Are you sure you want to delete this user?
+        summary: This action is irreversible and all the user’s files will be permanently deleted. Are you sure you want to delete this user?
         cancel: Cancel
         submit: Delete
   debug:
@@ -206,6 +222,10 @@ pages:
         title: You have not created any token yet
         description: Create a token to upload files from a third-party application.
         create_token: Create a token
+      error:
+        title: Something went wrong
+        description: Failed to load the list of tokens
+        retry_button: Retry
       create_dialog:
         title: Create a new token
         summary: A personal token allows you to authorize a third-party application to upload files with your identity. Tokens are strictly personal and must not be shared. If you think a token has been compromised, it is strongly recommended to delete it.
@@ -229,6 +249,7 @@ pages:
         submit: Delete
     settings:
       headers:
+        files_table: Files list
         files_upload: Files upload
         display_and_animations: Display and animations
       local_setting: Affects this browser only
@@ -244,6 +265,17 @@ pages:
           title: Decimal scale
           description: Units are powers of 10
           summary: 1 KB = 1000 bytes
+      file_double_click_action:
+        title: Double-click on a file behavior
+        description: Choose the action to execute when double-clicking on a file in the files list.
+        open_new_tab: Open in a new tab
+        open_preview: Open preview
+        copy_link: Copy link
+        copy_custom_link: Copy custom link
+        copy_custom_link_tooltip: If no custom link is set, the original link will be copied.
+        rename: Rename
+        delete: Delete
+        download: Download
       default_files_visibility:
         title: Default files visibility
         description: Choose the default visibility of the files you upload. You can change the visibility of each file individually at any time.
@@ -286,6 +318,18 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
+  change_password:
+    submit: Continue
+    errors:
+      missing_password: Password is required
+      missing_password_confirmation: Password confirmation is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      passwords_mismatch: The passwords do not match
+      server_error: Server is unreachable
+    fields:
+      password: New password
+      confirm_password: Confirm the new password
   reset_password:
     errors:
       missing_email: Email is required
@@ -317,6 +361,7 @@ forms:
       passwords_mismatch: The passwords do not match
       missing_role: Role is required
       missing_force_change_password: Choice of forcing password change is required
+      missing_disk_quota: Disk space quota is required
     fields:
       username: Username
       email: Email address
@@ -324,7 +369,45 @@ forms:
       confirm_password: Password confirmation
       role: Role
       role_placeholder: Select a role
+      disk_quota: Disk space quota
+      disk_quota_placeholder: Enter a size
+      disk_quota_placeholder_unlimited: Unlimited
       force_change_password: Force to change password on first login
+      unlimited_disk_quota: Allow for unlimited disk space quota
+  edit_user:
+    errors:
+      missing_username: Username is required
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_role: Role is required
+      missing_disk_quota: Disk space quota is required
+    fields:
+      username: Username
+      email: Email address
+      role: Role
+      role_placeholder: Select a role
+      disk_quota: Disk space quota
+      disk_quota_placeholder: Enter a size
+      disk_quota_placeholder_unlimited: Unlimited
+      unlimited_disk_quota: Allow for unlimited disk space quota
+  rename_file:
+    submit: Rename
+    cancel: Cancel
+    errors:
+      missing_name: Name is required
+      name_too_long: The name must be at most {max} characters long
+    fields:
+      filename: New file name
+  edit_custom_link:
+    submit: Save
+    cancel: Cancel
+    remove_link: Remove link
+    fields:
+      slug: Slug
+      slug_placeholder: unique-personal-link
+    errors:
+      missing_slug: Slug is required
+      invalid_slug: Invalid slug format
 
 actions:
   files:
@@ -341,6 +424,13 @@ actions:
         success:
           title: Successfully renamed
           message: The file “{oldName}” has been renamed to “{newName}”
+      custom_link:
+        success:
+          title: Custom link set
+          message: This file is now accessible via the link “{newCustomLink}”
+      remove_custom_link:
+        success:
+          title: Custom link removed
   users:
     update_password:
       success:
@@ -393,6 +483,8 @@ errors:
     invalid_uuid: Invalid unique identifier
   files:
     not_found: This file does not exist
+    custom_link:
+      already_exists: This custom link is already taken
   users:
     password:
       incorrect_password: Incorrect password
@@ -400,6 +492,8 @@ errors:
       already_exists: This username is already taken
     email:
       already_exists: This email address is already taken
+    disk_quota:
+      invalid_disk_quota: Invalid disk quota
 
 theme:
   system: System

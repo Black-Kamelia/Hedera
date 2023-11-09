@@ -4,7 +4,6 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
@@ -49,9 +48,11 @@ object SessionManager {
                     it.value.tokenData.accessTokenExpiration < now
                 }
                 loggedUsers.entries.removeIf {
-                    !sessions.values.any { session -> session.user.uuid == it.key }
+                    sessions.values.none { session -> session.user.uuid == it.key }
                 }
-                refreshTokens.entries.removeIf { it.value.refreshTokenExpiration < now }
+                refreshTokens.entries.removeIf {
+                    it.value.refreshTokenExpiration < now
+                }
             }
         }
     }
@@ -62,14 +63,37 @@ object SessionManager {
         pruneJob = null
     }
 
-    private suspend fun generateTokens(user: User): TokenData = mutex.withReentrantLock {
+    private suspend fun generateTokens(
+        user: User,
+        sessionId: UUID? = null,
+        refreshToken: String? = null
+    ): TokenData = mutex.withReentrantLock {
+        require((sessionId == null) xor (refreshToken == null)) { "Either sessionId or token must be provided" }
+
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
-            UserState(user.id.value, user.username, user.email, user.role, user.enabled, user.createdAt)
+            UserState(
+                user.id.value,
+                user.username,
+                user.email,
+                user.role,
+                user.enabled,
+                user.forceChangePassword,
+                user.currentDiskQuota,
+                user.maximumDiskQuota,
+                user.createdAt
+            )
         }
         val tokenData = TokenData.from(user)
-        val session = Session(userState, tokenData)
 
-        sessions[tokenData.accessToken] = session
+        if (sessionId == null) {
+            val oldTokens = refreshTokens.remove(refreshToken) ?: throw ExpiredOrInvalidTokenException()
+            val session = sessions.remove(oldTokens.accessToken) ?: throw ExpiredOrInvalidTokenException()
+            sessions[tokenData.accessToken] = session.copy(user = userState, tokenData = tokenData)
+        } else {
+            val session = Session(sessionId, userState, tokenData)
+            sessions[tokenData.accessToken] = session
+        }
+
         refreshTokens[tokenData.refreshToken] = tokenData
         tokenData
     }
@@ -80,6 +104,9 @@ object SessionManager {
             email = user.email
             role = user.role
             enabled = user.enabled
+            forceChangePassword = user.forceChangePassword
+            currentDiskQuota = user.currentDiskQuota
+            maximumDiskQuota = user.maximumDiskQuota
         }
 
         if (!user.enabled) {
@@ -96,6 +123,7 @@ object SessionManager {
     suspend fun login(username: String, password: String): Response<SessionOpeningDTO> {
         val unauthorized = Response.unauthorized(Errors.Auth.INVALID_CREDENTIALS)
         val user = User.findByUsername(username) ?: return unauthorized
+        val sessionId = UUID.randomUUID()
 
         if (!Hasher.verify(password, user.password).verified) {
             delay(Environment.loginThrottle)
@@ -107,19 +135,20 @@ object SessionManager {
         }
 
         return Response.created(SessionOpeningDTO(
-            tokens = generateTokens(user),
+            sessionId = sessionId,
+            tokens = generateTokens(user, sessionId = sessionId),
             user = user.toRepresentationDTO(),
             userSettings = user.settings.toRepresentationDTO()
         ))
     }
 
-    suspend fun refresh(jwt: Payload): Response<TokenData> {
+    suspend fun refresh(jwt: Payload, token: String): Response<TokenData> {
         val user = User.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
-        return Response.created(generateTokens(user))
+        return Response.created(generateTokens(user, refreshToken = token))
     }
 
-    suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
-        sessions[token]?.user
+    suspend fun verify(token: String): Session? = mutex.withReentrantLock {
+        sessions[token]
     }
 
     suspend fun verifyRefresh(token: String): Unit = mutex.withReentrantLock {
@@ -148,14 +177,35 @@ object SessionManager {
         }
         loggedUsers.remove(user.id.value)
     }
+
+    suspend fun logoutAllExceptCurrent(user: User, token: String, sessionId: UUID, reason: String) = mutex.withReentrantLock {
+        UserEvents.userForcefullyLoggedOutEvent(
+            UserForcefullyLoggedOutDTO(
+                userId = user.id.value,
+                reason = reason,
+            ),
+            ignoredSessions = listOf(sessionId)
+        )
+        sessions.entries.filter {
+            it.value.user.uuid == user.id.value && it.key != token
+        }.forEach {
+            refreshTokens.entries.removeIf { refreshEntry ->
+                refreshEntry.value.accessToken == it.key
+            }
+            sessions.remove(it.key)
+        }
+    }
 }
 
 data class UserState(
-    var uuid: UUID,
+    val uuid: UUID,
     var username: String,
     var email: String,
     var role: UserRole,
     var enabled: Boolean,
+    var forceChangePassword: Boolean,
+    var currentDiskQuota: Long,
+    var maximumDiskQuota: Long,
     val createdAt: Instant,
 ) : Principal {
 
@@ -165,11 +215,16 @@ data class UserState(
         email,
         role,
         enabled,
+        forceChangePassword,
+        currentDiskQuota,
+        if(maximumDiskQuota > 0L) currentDiskQuota.toDouble() / maximumDiskQuota.toDouble() else 0.0,
+        maximumDiskQuota,
         createdAt.toString(),
     )
 }
 
 data class Session(
+    val sessionId: UUID,
     val user: UserState,
     val tokenData: TokenData,
 )

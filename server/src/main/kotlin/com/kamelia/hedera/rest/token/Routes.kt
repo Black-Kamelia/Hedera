@@ -18,19 +18,19 @@ fun Route.personalTokensRoutes() = route("/personalTokens") {
 }
 
 private fun Route.createPersonalToken() = post<PersonalTokenCreationDTO> { body ->
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.respond(PersonalTokenService.createPersonalToken(userId, body))
 }
 
 private fun Route.getPersonalTokens() = get {
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.respond(PersonalTokenService.getPersonalTokens(userId))
 }
 
 private fun Route.deletePersonalToken() = delete("/{uuid}") {
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
     val tokenId = call.getUUID("uuid")
 
     call.respond(PersonalTokenService.deletePersonalToken(userId, tokenId))

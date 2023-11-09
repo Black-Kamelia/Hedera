@@ -13,10 +13,10 @@ import io.ktor.util.*
 import io.ktor.websocket.*
 import java.util.*
 
-suspend fun WebSocketServerSession.handleSession(userId: UUID) = keepAlive(userId,
+suspend fun WebSocketServerSession.handleSession(userId: UUID, sessionId: UUID) = keepAlive(userId,
     // Define event listeners here
-    defineEventListener(UserEvents.userUpdatedEvent) { onUserUpdate(userId, it) },
-    defineEventListener(UserEvents.userForcefullyLoggedOutEvent) { onUserForcefullyLoggedOut(userId, it) },
+    defineEventListener(UserEvents.userUpdatedEvent, sessionId) { onUserUpdate(userId, it) },
+    defineEventListener(UserEvents.userForcefullyLoggedOutEvent, sessionId) { onUserForcefullyLoggedOut(userId, it) },
 )
 
 private const val USER_UPDATED = "user-updated"
@@ -38,11 +38,14 @@ private const val CONNECTION_CLOSED_BY_CLIENT = "connection-closed-by-client"
 private const val INVALID_FRAME = "invalid-frame"
 private suspend fun WebSocketServerSession.keepAlive(userId: UUID, vararg closers: () -> Unit) {
     val terminator: () -> Unit = { closers.forEach { it() } }
-
     val user = SessionManager.getUserOrNull(userId) ?: return forcefullyClose(INVALID_USER_ID, terminator)
 
     sendEvent(USER_CONNECTED, user.toUserRepresentationDTO())
+    pingPong(terminator)
+    gracefullyClose(CONNECTION_CLOSED_BY_CLIENT, terminator)
+}
 
+private suspend fun WebSocketServerSession.pingPong(terminator: () -> Unit) {
     for (frame in incoming) when (frame) {
         is Frame.Ping -> send(Frame.Pong(frame.buffer.copy()))
         is Frame.Text -> {
@@ -55,6 +58,4 @@ private suspend fun WebSocketServerSession.keepAlive(userId: UUID, vararg closer
         }
         else -> forcefullyClose(INVALID_FRAME, terminator)
     }
-
-    gracefullyClose(CONNECTION_CLOSED_BY_CLIENT, terminator)
 }

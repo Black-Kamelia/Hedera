@@ -7,11 +7,11 @@ import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.util.accessToken
+import com.kamelia.hedera.util.authToken
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.jwt
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.authRoutes() = route("/") {
@@ -31,15 +31,15 @@ private fun Route.login() = post<LoginDTO>("/login") { body ->
 }
 
 private fun Route.logoutAll() = post("/logout/all") {
-    val userId = authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = call.authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
     call.respondNoSuccess(AuthService.logoutAll(userId))
 }
 
 private fun Route.logout() = post("/logout") {
-    val token = accessToken ?: throw MissingTokenException()
+    val token = call.accessToken ?: throw MissingTokenException()
     call.respond(AuthService.logout(token))
 }
 
 private fun Route.refresh() = post("/refresh") {
-    call.respond(AuthService.refresh(jwt))
+    call.respond(AuthService.refresh(call.jwt, call.authToken))
 }

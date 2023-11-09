@@ -7,6 +7,7 @@ useWebsocketAutoConnect()
 const route = useRoute()
 const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
+const { currentRoute } = useRouter()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
@@ -18,17 +19,25 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
     case 'user-forcefully-logged-out': {
       setTokens(null)
       setUser(null)
-      const redirect = getRedirectParam(route.path)
-      navigateTo(`/login?reason=${encodeURIComponent(payload.data.reason)}${redirect}}`)
+      const redirect = currentRoute.value.query.redirect ?? route.path
+      navigateTo({
+        path: '/login',
+        query: { reason: payload.data.reason, redirect },
+      })
       break
     }
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
-  const redirect = getRedirectParam(route.path)
-  navigateTo(`/login?reason=expired${redirect}`)
+  if (currentRoute.value.path === '/login') return
+  const redirect = currentRoute.value.query.redirect ?? route.path
+  navigateTo({
+    path: '/login',
+    query: { reason: 'expired', redirect },
+  })
 })
-useEventBus(LoggedOutEvent).on(() => {
+useEventBus(LoggedOutEvent).on((event) => {
+  if (event && event.abortLogin) return
   navigateTo('/login', { replace: true })
 })
 

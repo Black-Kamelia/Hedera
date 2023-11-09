@@ -5,7 +5,6 @@ import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -13,10 +12,9 @@ import com.kamelia.hedera.rest.core.pageable.SortDirection
 import com.kamelia.hedera.rest.core.pageable.SortObject
 import com.kamelia.hedera.rest.file.FilePageDTO
 import com.kamelia.hedera.rest.file.FileRepresentationDTO
-import com.kamelia.hedera.rest.file.FileSizeDTO
 import com.kamelia.hedera.rest.file.FileUpdateDTO
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.file.toSizeDTO
+import com.kamelia.hedera.rest.user.UserRepresentationDTO
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -28,9 +26,9 @@ import java.nio.file.Path
 import java.time.Instant
 import java.util.*
 import java.util.stream.Stream
-import kotlin.test.assertContains
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
@@ -88,7 +86,7 @@ class FileTest {
             assertEquals(userId, responseDto.owner.id)
             assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)
-            assertEquals(20L.toSizeDTO(), responseDto.size)
+            assertEquals(20L, responseDto.size)
         }
     }
 
@@ -464,11 +462,180 @@ class FileTest {
     fun getFileFromDisabledUser() = testApplication {
         val client = client()
 
-        val control = client.get("/api/files/$0000_00_01")
+        val control = client.get("/api/files/0000_00_01")
         assertEquals(HttpStatusCode.OK, control.status)
 
-        val response = client.get("/api/files/$0006_00_01")
+        val response = client.get("/api/files/0006_00_01")
         assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Uploading file when quota is reached")
+    @Test
+    fun uploadFileOnReachedQuota() = testApplication {
+        val (_, tokens) = login("upload_exceed_quota", "password")
+        val client = client()
+
+        val response = client.submitFormWithBinaryData("/api/files/upload", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            tokens?.let {
+                bearerAuth(it.accessToken)
+            }
+        }
+
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.INSUFFICIENT_DISK_QUOTA, responseDto.title.key)
+    }
+
+    @DisplayName("Uploading a file increases disk quota")
+    @Test
+    fun uploadFileIncreasesQuota() = testApplication {
+        val (_, tokens) = login("upload_increase_quota", "password")
+        val client = client()
+
+        val userBeforeUpload = client.get("/api/users/00000000-0000-0017-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userBeforeDto = Json.decodeFromString<UserRepresentationDTO>(userBeforeUpload.bodyAsText())
+        assertEquals(1000, userBeforeDto.currentDiskQuota)
+
+        val response = client.submitFormWithBinaryData("/api/files/upload", formData {
+            appendFile("/test_files/test.txt", "test.txt", "text/plain")
+        }) {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Created, response.status)
+
+        val userAfterUpload = client.get("/api/users/00000000-0000-0017-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userAfterDto = Json.decodeFromString<UserRepresentationDTO>(userAfterUpload.bodyAsText())
+        assertTrue(1000 <= userAfterDto.currentDiskQuota)
+    }
+
+    @DisplayName("Deleting a file decreases disk quota")
+    @Test
+    fun deleteFileDecreasesQuota() = testApplication {
+        val (_, tokens) = login("delete_decrease_quota", "password")
+        val client = client()
+
+        val userBeforeDelete = client.get("/api/users/00000000-0000-0018-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userBeforeDto = Json.decodeFromString<UserRepresentationDTO>(userBeforeDelete.bodyAsText())
+        assertEquals(1000, userBeforeDto.currentDiskQuota)
+
+        val response = client.delete("/api/files/00000000-0000-0007-0000-000000000001") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val userAfterDelete = client.get("/api/users/00000000-0000-0018-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val userAfterDto = Json.decodeFromString<UserRepresentationDTO>(userAfterDelete.bodyAsText())
+        assertTrue(1000 >= userAfterDto.currentDiskQuota)
+    }
+
+    @DisplayName("Setting a custom link to a file")
+    @Test
+    fun setCustomLink() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000001/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "add-custom-link"))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("add-custom-link", fileDto.payload!!.customLink)
+    }
+
+    @DisplayName("Setting a custom link to a file with null link")
+    @Test
+    fun setCustomLinkNull() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000004/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO())
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(Errors.Files.CustomLink.MISSING_SLUG, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Setting a custom link to a file with invalid link")
+    @Test
+    fun setCustomLinkInvalid() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000005/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "not_a_VALID_l1nk.."))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(Errors.Files.CustomLink.INVALID_FORMAT, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Setting a custom link to a file with existing custom link")
+    @Test
+    fun setCustomLinkAlreadyExisting() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.put("/api/files/00000000-0000-0008-0000-000000000006/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = "test-link"))
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        assertEquals(Errors.Files.CustomLink.ALREADY_EXISTS, fileDto.fields!!["customLink"]!!.key)
+    }
+
+    @DisplayName("Accessing a file with a custom link")
+    @Test
+    fun accessFileWithCustomLink() = testApplication {
+        val client = client()
+
+        val response = client.get("/c/test-link")
+
+        println(response)
+        println(response.bodyAsText())
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @DisplayName("Accessing a file with a custom link that does not exist")
+    @Test
+    fun accessFileWithNonExistingCustomLink() = testApplication {
+        val client = client()
+
+        val response = client.get("/:non-existing-link")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+
+    @DisplayName("Deleting a custom link from a file")
+    @Test
+    fun removeCustomLink() = testApplication {
+        val (tokens, _) = user1
+        val client = client()
+
+        val response = client.delete("/api/files/00000000-0000-0008-0000-000000000003/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        val fileDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNull(fileDto.payload!!.customLink)
     }
 
     companion object {
@@ -644,31 +811,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PRIVATE.toString().lowercase(),
-                "$0002_01_03",
+                "0002_01_03",
                 HttpStatusCode.NotFound
             ),
         )
@@ -678,31 +845,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.UNLISTED.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
         )
@@ -712,31 +879,31 @@ class FileTest {
             Arguments.of(
                 Named.of("superadmin", superadmin),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("admin", admin),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_02_03",
+                "0002_02_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("file owner", user1),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("another user", user2),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
             Arguments.of(
                 Named.of("guest", guest),
                 FileVisibility.PUBLIC.toString().lowercase(),
-                "$0002_03_03",
+                "0002_03_03",
                 HttpStatusCode.OK
             ),
         )
@@ -870,29 +1037,29 @@ class FileTest {
                     assertTrue(dto.page.items.all { it.mimeType != "image/png" })
                 }),
 
-                Arguments.of("size", "eq", "1000;0", { dto: FilePageDTO ->
+                Arguments.of("size", "eq", "1000", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 1)
-                    assertTrue(dto.page.items.all { it.size == FileSizeDTO(1000.0, 0) })
+                    assertTrue(dto.page.items.all { it.size == 1000L })
                 }),
-                Arguments.of("size", "ne", "1000;0", { dto: FilePageDTO ->
+                Arguments.of("size", "ne", "1000", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 2)
-                    assertTrue(dto.page.items.all { it.size != FileSizeDTO(1000.0, 0) })
+                    assertTrue(dto.page.items.all { it.size != 1000L })
                 }),
-                Arguments.of("size", "gt", "800;0", { dto: FilePageDTO ->
+                Arguments.of("size", "gt", "800", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 1)
-                    assertTrue(dto.page.items.all { it.size.value > 800 })
+                    assertTrue(dto.page.items.all { it.size > 800 })
                 }),
-                Arguments.of("size", "lt", "800;0", { dto: FilePageDTO ->
+                Arguments.of("size", "lt", "800", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 1)
-                    assertTrue(dto.page.items.all { it.size.value < 800 })
+                    assertTrue(dto.page.items.all { it.size < 800 })
                 }),
-                Arguments.of("size", "ge", "800;0", { dto: FilePageDTO ->
+                Arguments.of("size", "ge", "800", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 2)
-                    assertTrue(dto.page.items.all { it.size.value >= 800 })
+                    assertTrue(dto.page.items.all { it.size >= 800 })
                 }),
-                Arguments.of("size", "le", "800;0", { dto: FilePageDTO ->
+                Arguments.of("size", "le", "800", { dto: FilePageDTO ->
                     assertTrue(dto.page.items.size == 2)
-                    assertTrue(dto.page.items.all { it.size.value <= 800 })
+                    assertTrue(dto.page.items.all { it.size <= 800 })
                 }),
 
                 Arguments.of("visibility", "eq", FileVisibility.PRIVATE.toString(), { dto: FilePageDTO ->
@@ -984,14 +1151,14 @@ class FileTest {
             Arguments.of("size", SortDirection.ASC, { dto: FilePageDTO ->
                 assertTrue(dto.page.items.size == 3)
                 assertContentEquals(
-                    listOf(FileSizeDTO(500.0, 0), FileSizeDTO(800.0, 0), FileSizeDTO(1000.0, 0)),
+                    listOf(500, 800, 1000),
                     dto.page.items.map { it.size }
                 )
             }),
             Arguments.of("size", SortDirection.DESC, { dto: FilePageDTO ->
                 assertTrue(dto.page.items.size == 3)
                 assertContentEquals(
-                    listOf(FileSizeDTO(1000.0, 0), FileSizeDTO(800.0, 0), FileSizeDTO(500.0, 0)),
+                    listOf(1000, 800, 500),
                     dto.page.items.map { it.size }
                 )
             }),

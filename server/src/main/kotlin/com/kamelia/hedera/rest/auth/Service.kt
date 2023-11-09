@@ -14,8 +14,8 @@ object AuthService {
         SessionManager.login(username, password)
     }
 
-    suspend fun refresh(jwt: Payload): Response<TokenData> = Connection.transaction {
-        SessionManager.refresh(jwt)
+    suspend fun refresh(jwt: Payload, token: String): Response<TokenData> = Connection.transaction {
+        SessionManager.refresh(jwt, token)
     }
 
     suspend fun logout(token: String): Response<Boolean> = Connection.transaction {

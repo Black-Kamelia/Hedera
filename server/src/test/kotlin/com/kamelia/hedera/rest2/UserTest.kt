@@ -494,6 +494,49 @@ class UserTest {
         }
     }
 
+    @DisplayName("Updating own disk quota")
+    @ParameterizedTest(name = "Updating own disk quota as {0} is {1}")
+    @MethodSource
+    fun updateOwnDiskQuota(
+        user: TestUser,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, userId) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(diskQuota = -1))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(-1, responseDto.payload!!.maximumDiskQuota)
+        }
+    }
+
+    @DisplayName("Updating other's disk quota")
+    @ParameterizedTest(name = "Updating {1}''s disk quota as {0} is {2}")
+    @MethodSource
+    fun updateOtherDiskQuota(
+        user: TestUser,
+        userId: UUID,
+        expectedStatus: HttpStatusCode
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.patch("/api/users/${userId}") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(diskQuota = -1))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedStatus, response.status, response.bodyAsText())
+        if (expectedStatus == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(-1, responseDto.payload!!.maximumDiskQuota)
+        }
+    }
+
     @DisplayName("Updating own state (`enabled`)")
     @ParameterizedTest(name = "Updating own state as {0} to {1} is 403 Forbidden")
     @MethodSource
@@ -1006,6 +1049,113 @@ class UserTest {
                     Named.of("guest", guest),
                     Named.of("regular", UUID.fromString("00000000-0000-0011-0004-000000000006")),
                     Named.of("admin", UserRole.ADMIN),
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOwnDiskQuota(): Stream<Arguments> {
+            lateinit var superadmin: TestUser
+            lateinit var admin: TestUser
+            lateinit var user: TestUser
+
+            testApplication {
+                superadmin = Pair(
+                    login("owner_edit_quota", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0019-0000-000000000001")
+                )
+                admin = Pair(
+                    login("admin_edit_quota", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0019-0000-000000000002")
+                )
+                user = Pair(
+                    login("user_edit_quota", "password").second ?: throw Exception("Login failed"),
+                    UUID.fromString("00000000-0000-0019-0000-000000000003")
+                )
+            }
+
+            return Stream.of(
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    HttpStatusCode.Unauthorized
+                ),
+            )
+        }
+
+        @JvmStatic
+        fun updateOtherDiskQuota(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0020-0001-000000000001")),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0020-0001-000000000003")),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("owner", superadmin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0020-0001-000000000005")),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("owner", UUID.fromString("00000000-0000-0020-0002-000000000001")),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("admin", UUID.fromString("00000000-0000-0020-0002-000000000003")),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("admin", admin),
+                    Named.of("regular", UUID.fromString("00000000-0000-0020-0002-000000000005")),
+                    HttpStatusCode.OK
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("owner", UUID.fromString("00000000-0000-0020-0003-000000000001")),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("admin", UUID.fromString("00000000-0000-0020-0003-000000000003")),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("regular user", user),
+                    Named.of("regular", UUID.fromString("00000000-0000-0020-0003-000000000005")),
+                    HttpStatusCode.Forbidden
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("owner", UUID.fromString("00000000-0000-0020-0004-000000000001")),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("admin", UUID.fromString("00000000-0000-0020-0004-000000000003")),
+                    HttpStatusCode.Unauthorized
+                ),
+                Arguments.of(
+                    Named.of("guest", guest),
+                    Named.of("regular", UUID.fromString("00000000-0000-0020-0004-000000000005")),
                     HttpStatusCode.Unauthorized
                 ),
             )

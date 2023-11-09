@@ -6,9 +6,11 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.IllegalActionException
+import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.asMessage
+import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -17,9 +19,12 @@ import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.FileUtils
 import com.kamelia.hedera.util.uuid
+import io.ktor.http.*
 import io.ktor.http.content.*
 import java.util.*
 import kotlin.math.ceil
+
+val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
 
 object FileService {
 
@@ -53,6 +58,13 @@ object FileService {
 
         val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
 
+        // TODO: Find a way to determine size BEFORE writing to disk...
+        if (!creator.unlimitedDiskQuota && creator.currentDiskQuota + size > creator.maximumDiskQuota) {
+            throw InsufficientDiskQuotaException()
+        }
+
+        creator.increaseCurrentDiskQuota(size)
+
         val file = File.create(
             code = code,
             name = filename,
@@ -70,11 +82,11 @@ object FileService {
         )
     }
 
-    suspend fun getFile(
-        code: String,
+    private fun getFile(
+        file: File,
+        owner: User,
         authId: UUID? = null,
-    ): Response<FileRepresentationDTO> = Connection.transaction {
-        val (file, owner) = File.findByCodeWithOwner(code) ?: throw FileNotFoundException()
+    ): Response<FileRepresentationDTO> {
         val user = authId?.let { User.findById(it) }
 
         if (!owner.enabled) {
@@ -85,7 +97,23 @@ object FileService {
             throw FileNotFoundException()
         }
 
-        Response.ok(file.toRepresentationDTO())
+        return Response.ok(file.toRepresentationDTO())
+    }
+
+    suspend fun getFileFromCode(
+        code: String,
+        authId: UUID? = null,
+    ): Response<FileRepresentationDTO> = Connection.transaction {
+        val (file, owner) = File.findByCodeWithOwner(code) ?: throw FileNotFoundException()
+        getFile(file, owner, authId)
+    }
+
+    suspend fun getFileFromCustomLink(
+        customLink: String,
+        authId: UUID? = null,
+    ): Response<FileRepresentationDTO> = Connection.transaction {
+        val (file, owner) = File.findByCustomLinkWithOwner(customLink) ?: throw FileNotFoundException()
+        getFile(file, owner, authId)
     }
 
     suspend fun getFiles(
@@ -162,20 +190,82 @@ object FileService {
         userId: UUID,
         dto: FileUpdateDTO,
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
+        validate {
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
+
+            if (dto.name == null) {
+                raiseError("name", Errors.Files.Name.MISSING_NAME)
+            } else {
+                if (dto.name.length > 255) raiseError("name", Errors.Files.Name.NAME_TOO_LONG)
+            }
+
+            catchErrors()
+
+            val oldName = file.name
+            val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
+            val payload = updatedFile.toRepresentationDTO()
+
+            ActionResponse.ok(
+                payload = payload,
+                title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
+                message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
+                    "oldName" to oldName,
+                    "newName" to payload.name,
+                ),
+            )
+        }
+    }
+
+    suspend fun updateCustomLink(
+        fileId: UUID,
+        userId: UUID,
+        dto: FileUpdateDTO,
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
+        validate {
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
+
+            if (dto.customLink == null) {
+                raiseError("customLink", Errors.Files.CustomLink.MISSING_SLUG)
+            } else {
+                if (!CUSTOM_LINK_REGEX.matches(dto.customLink)) {
+                    raiseError("customLink", Errors.Files.CustomLink.INVALID_FORMAT)
+                }
+                val fileByLink = File.findByCustomLink(dto.customLink)
+                if (fileByLink != null && fileByLink != file) {
+                    raiseError("customLink", Errors.Files.CustomLink.ALREADY_EXISTS, HttpStatusCode.Forbidden)
+                }
+            }
+
+            catchErrors()
+
+            val updatedFile = updateFile(file, user, FileUpdateDTO(customLink = dto.customLink))
+            val payload = updatedFile.toRepresentationDTO()
+
+            ActionResponse.ok(
+                payload = payload,
+                title = Actions.Files.Update.CustomLink.Success.TITLE.asMessage(),
+                message = Actions.Files.Update.CustomLink.Success.MESSAGE.asMessage(
+                    "newCustomLink" to (payload.customLink ?: ""),
+                ),
+            )
+        }
+    }
+
+    suspend fun removeCustomLink(
+        fileId: UUID,
+        userId: UUID,
+    ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         val file = File.findById(fileId) ?: throw FileNotFoundException()
         val user = User[userId]
 
-        val oldName = file.name
-        val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))
+        val updatedFile = updateFile(file, user, FileUpdateDTO(customLink = ""))
         val payload = updatedFile.toRepresentationDTO()
 
         ActionResponse.ok(
             payload = payload,
-            title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
-            message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
-                "oldName" to oldName,
-                "newName" to payload.name,
-            ),
+            title = Actions.Files.Update.RemoveCustomLink.Success.TITLE.asMessage(),
         )
     }
 
@@ -193,6 +283,7 @@ object FileService {
             throw FileNotFoundException()
         }
 
+        file.owner.decreaseCurrentDiskQuota(file.size)
         file.delete()
         FileUtils.delete(file.ownerId, file.code)
 

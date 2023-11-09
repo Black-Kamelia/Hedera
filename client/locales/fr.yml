@@ -15,14 +15,12 @@ size_units:
     20: Mio
     30: Gio
     40: Tio
-    50: Pio
   decimal:
     0: octets
     3: Ko
     6: Mo
     9: Go
     12: To
-    15: Po
 unlimited_quota: Quota illimité
 
 sidebar:
@@ -38,6 +36,11 @@ pages:
       expired: Votre session a expiré, veuillez vous reconnecter
       logout_all: Vous avez été déconnecté de tous les appareils
       disabled: Votre compte a été désactivé
+      password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
+      session_terminated: Votre session a été terminée
+  change_password:
+    title: Modifier le mot de passe
+    message: Vous devez modifier votre mot de passe pour continuer
   reset_password:
     title: Réinitialiser le mot de passe
     login: Retour à la connexion
@@ -63,8 +66,13 @@ pages:
     context_menu:
       open: Ouvrir
       rename: Renommer
+      set_custom_link: Définir un lien personnalisé
+      edit_custom_link: Modifier le lien personnalisé
       change_visibility: Modifier la visibilité
-      copy_link: Copier le lien
+      copy_link:
+        title: Copier le lien
+        original: Original
+        custom: Personnalisé
       download: Télécharger
       delete: Supprimer
       unselect: Désélectionner
@@ -82,10 +90,16 @@ pages:
       apply: Appliquer les filtres
     rename:
       title: Renommer un fichier
+      summary: Le nom d’un fichier sert à le rechercher, à le trier ainsi qu’à le nommer au moment du téléchargement. Un nom de fichier sans extension peut empêcher de l’ouvrir correctement sur certains systèmes.
       success: Le fichier a été renommé
       error: Le fichier n’a pas pu être renommé
       cancel: Annuler
       submit: Renommer
+    edit_custom_link:
+      title_set: Définir un lien personnalisé
+      title_edit: Modifier le lien personnalisé
+      old_link_summary: 'Votre fichier sera toujours accessible via le lien original : {link}'
+      links_summary: Un lien personnalisé est préfixé par la route {c_route}, contrairement à un lien original qui est préfixé par la route {i_route}.
     change_visibility:
       title: Modifier la visibilité d’un fichier
       success: La visibilité a été modifiée
@@ -148,6 +162,8 @@ pages:
         username: Nom d’utilisateur
         email: Adresse e-mail
         role: Rôle
+        quota: Quota d’espace disque
+        quota_help: Le tri est effectué sur l’espace disque utilisé.
         status: Statut
         creation_date: Date de création
       context_menu:
@@ -158,27 +174,27 @@ pages:
       create_user: Créer un utilisateur
       create_dialog:
         title: Créer un utilisateur
-        summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d'envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
+        summary: Créer un utilisateur pour lui permettre de se connecter à Hedera et d’envoyer des fichiers. Les utilisateurs peuvent être désactivés à tout moment.
         cancel: Annuler
         submit: Créer
       edit_dialog:
         title: Éditer un utilisateur
-        password_summary: Par mesure de sécurité, le mot de passe d'un utilisateur ne peut être modifié que par lui-même.
+        password_summary: Par mesure de sécurité, le mot de passe d’un utilisateur ne peut être modifié que par lui-même.
         cancel: Annuler
         submit: Sauvegarder
       activate_dialog:
         title: Activer un utilisateur
-        summary: L'utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L'utilisateur pourra être désactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?
+        summary: L’utilisateur pourra se connecter et envoyer des fichiers. Ses fichiers existant seront désormais visibles. L’utilisateur pourra être désactivé à n’importe quel moment. Êtes-vous sûr(e) de vouloir activer cet utilisateur ?
         cancel: Annuler
-        submit: Activer l'utilisateur
+        submit: Activer l’utilisateur
       deactivate_dialog:
         title: Désactiver un utilisateur
-        summary: L'utilisateur ne sera plus en mesure de se connecter, ni d'envoyer des fichiers. Ses fichiers ne seront plus visibles, mais ne seront pas supprimés. L'utilisateur pourra être réactivé à n'importe quel moment. Êtes-vous sûr(e) de vouloir désactiver cet utilisateur ?
+        summary: L’utilisateur ne sera plus en mesure de se connecter, ni d’envoyer des fichiers. Ses fichiers ne seront plus visibles, mais ne seront pas supprimés. L’utilisateur pourra être réactivé à n’importe quel moment. Êtes-vous sûr(e) de vouloir désactiver cet utilisateur ?
         cancel: Annuler
-        submit: Désactiver l'utilisateur
+        submit: Désactiver l’utilisateur
       delete_dialog:
         title: Supprimer un utilisateur
-        summary: Cette action est irréversible et tous les fichiers de l'utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
+        summary: Cette action est irréversible et tous les fichiers de l’utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
         cancel: Annuler
         submit: Supprimer
   debug:
@@ -206,6 +222,10 @@ pages:
         title: Vous n’avez pas encore créé de jeton
         description: Créez un jeton pour pouvoir envoyer des fichiers depuis une application tierce.
         create_token: Créer un jeton
+      error:
+        title: Quelque chose s’est mal passé
+        description: Impossible de charger la liste des jetons
+        retry_button: Réessayer
       create_dialog:
         title: Créer un jeton
         summary: Un jeton personnel vous permet d’autoriser une application tierce à envoyer des fichiers avec votre identité. Les jetons sont strictement personnels et ne doivent pas être partagés. Si vous pensez qu’un jeton est compromis, il est vivement conseillé de le supprimer.
@@ -229,6 +249,7 @@ pages:
         submit: Supprimer
     settings:
       headers:
+        files_table: Liste des fichiers
         files_upload: Envoi de fichiers
         display_and_animations: Affichage et animations
       local_setting: Affecte ce navigateur uniquement
@@ -244,6 +265,17 @@ pages:
           title: Échelle décimale
           description: Les unités sont des puissances de 10
           summary: 1 Ko = 1000 octets
+      file_double_click_action:
+        title: Comportement du double-clic sur un fichier
+        description: Choisir l’action à exécuter lorsqu’un double-clic est effectué sur un fichier dans la liste des fichiers.
+        open_new_tab: Ouvrir dans un nouvel onglet
+        open_preview: Ouvrir l’aperçu
+        copy_link: Copier le lien
+        copy_custom_link: Copier le lien personnalisé
+        copy_custom_link_tooltip: Si aucun lien personnalisé n’est défini, le lien original sera copié.
+        rename: Renommer
+        delete: Supprimer
+        download: Télécharger
       default_files_visibility:
         title: Visibilité par défaut des fichiers
         description: Choisissez la visibilité par défaut des fichiers que vous envoyez. Vous pouvez modifier la visibilité de chaque fichier individuellement à tout moment.
@@ -286,6 +318,18 @@ forms:
       password: Mot de passe
       remember_me: Se souvenir de moi
       username: Nom d’utilisateur
+  change_password:
+    submit: Continuer
+    errors:
+      missing_password: Mot de passe requis
+      missing_password_confirmation: Confirmation du mot de passe requise
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      passwords_mismatch: Les mots de passe ne correspondent pas
+      server_error: Le serveur est indisponible
+    fields:
+      password: Nouveau mot de passe
+      confirm_password: Confirmer le nouveau mot de passe
   reset_password:
     errors:
       missing_email: Adresse e-mail requise
@@ -317,6 +361,7 @@ forms:
       passwords_mismatch: Les mots de passe ne correspondent pas
       missing_role: Rôle requis
       missing_force_change_password: Choix sur la modification du mot de passe obligatoire requis
+      missing_disk_quota: Quota d’espace disque requis
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail
@@ -324,7 +369,45 @@ forms:
       confirm_password: Confirmer le mot de passe
       role: Rôle
       role_placeholder: Sélectionner un rôle
+      disk_quota: Quota d’espace disque
+      disk_quota_placeholder: Saisir une taille
+      disk_quota_placeholder_unlimited: Illimité
       force_change_password: Forcer la modification du mot de passe à la première connexion
+      unlimited_disk_quota: Autoriser un quota d’espace disque illimité
+  edit_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+      missing_role: Rôle requis
+      missing_disk_quota: Quota d’espace disque requis
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
+      role: Rôle
+      role_placeholder: Sélectionner un rôle
+      disk_quota: Quota d’espace disque
+      disk_quota_placeholder: Saisir une taille
+      disk_quota_placeholder_unlimited: Illimité
+      unlimited_disk_quota: Autoriser un quota d’espace disque illimité
+  rename_file:
+    submit: Renommer
+    cancel: Annuler
+    errors:
+      missing_name: Le nom du fichier est requis
+      name_too_long: Le nom du fichier doit contenir au plus {max} caractères
+    fields:
+      filename: Nouveau nom du fichier
+  edit_custom_link:
+    submit: Sauvegarder
+    cancel: Annuler
+    remove_link: Supprimer le lien
+    fields:
+      slug: Identifiant
+      slug_placeholder: lien-personnel-unique
+    errors:
+      missing_slug: Identifiant requis
+      invalid_slug: Format d’identifiant invalide
 
 actions:
   files:
@@ -341,6 +424,13 @@ actions:
         success:
           title: Fichier renommé
           message: Le fichier “{oldName}” a été renommé en “{newName}”
+      custom_link:
+        success:
+          title: Lien personnalisé modifié
+          message: Ce fichier est désormais accessible via le lien “{newCustomLink}”
+      remove_custom_link:
+        success:
+          title: Lien personnalisé supprimé
   users:
     update_password:
       success:
@@ -393,6 +483,8 @@ errors:
     invalid_uuid: Identifiant unique invalide
   files:
     not_found: Ce fichier n’existe pas
+    custom_link:
+      already_exists: Ce lien personnalisé existe déjà
   users:
     password:
       incorrect_password: Mot de passe incorrect
@@ -400,6 +492,8 @@ errors:
       already_exists: Ce nom d’utilisateur est déjà utilisé
     email:
       already_exists: Cette adresse e-mail est déjà utilisée
+    disk_quota:
+      invalid_disk_quota: Quota d’espace disque invalide
 
 theme:
   system: Système

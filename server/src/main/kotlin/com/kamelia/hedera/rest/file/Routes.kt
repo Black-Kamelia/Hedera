@@ -1,9 +1,25 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.*
+import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.respondNoSuccess
+import com.kamelia.hedera.core.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.util.*
+import com.kamelia.hedera.util.FileUtils
+import com.kamelia.hedera.util.adminRestrict
+import com.kamelia.hedera.util.authenticatedUser
+import com.kamelia.hedera.util.doWithForm
+import com.kamelia.hedera.util.getHeader
+import com.kamelia.hedera.util.getPageParameters
+import com.kamelia.hedera.util.getParam
+import com.kamelia.hedera.util.getUUID
+import com.kamelia.hedera.util.getUUIDOrNull
+import com.kamelia.hedera.util.proxyRedirect
+import com.kamelia.hedera.util.respondFile
+import com.kamelia.hedera.util.respondFileInline
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -20,6 +36,8 @@ fun Route.filesRoutes() = route("/files") {
         // editFile()
         editFileVisibility()
         editFileName()
+        editFileCustomLink()
+        removeFileCustomLink()
         deleteFile()
     }
 
@@ -29,12 +47,12 @@ fun Route.filesRoutes() = route("/files") {
 }
 
 
-fun Route.rawFileRoute() = get("""/(?<code>\$[a-zA-Z0-9]{10})""".toRegex()) {
-    val authedId = authenticatedUser?.uuid
+fun Route.rawFileRoute() = get("""/m/(?<code>[a-zA-Z0-9]{10})""".toRegex()) {
+    val authedId = call.authenticatedUser?.uuid
     val code = call.getParam("code")
 
     try {
-        FileService.getFile(code, authedId).ifSuccess { (data) ->
+        FileService.getFileFromCode(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
             val file = FileUtils.getOrNull(data.owner.id, code)
             if (file != null) {
@@ -49,8 +67,27 @@ fun Route.rawFileRoute() = get("""/(?<code>\$[a-zA-Z0-9]{10})""".toRegex()) {
     }
 }
 
+fun Route.rawFileCustomLinkRoute() = get("""/c/(?<link>[a-z0-9\-]+)""".toRegex()) {
+    val link = call.getParam("link")
+
+    try {
+        FileService.getFileFromCustomLink(link).ifSuccess { (data) ->
+            checkNotNull(data) { "File not found" }
+            val file = FileUtils.getOrNull(data.owner.id, data.code)
+            if (file != null) {
+                call.respondFileInline(file, ContentType.parse(data.mimeType))
+            } else {
+                // TODO notify orphaned file
+                call.proxyRedirect("/")
+            }
+        }
+    } catch (e: FileNotFoundException) {
+        call.proxyRedirect("/")
+    }
+}
+
 private fun Route.uploadFile() = post("/upload") {
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.doWithForm(onFiles = mapOf(
         "file" to { call.respond(FileService.handleFile(it, userId)) }
@@ -70,10 +107,10 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
 }
 
 private fun Route.getFile() = get("/{code}") {
-    val authedId = authenticatedUser?.uuid
+    val authedId = call.authenticatedUser?.uuid
     val code = call.getParam("code")
 
-    FileService.getFile(code, authedId).ifSuccessOrElse(
+    FileService.getFileFromCode(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
             val file = FileUtils.getOrNull(data.owner.id, code)
@@ -92,7 +129,7 @@ private fun Route.getFile() = get("/{code}") {
 
 private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->
     val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = authenticatedUser!!.uuid
+    val jwtId = call.authenticatedUser!!.uuid
     val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
     val (page, pageSize) = call.getPageParameters()
 
@@ -100,28 +137,42 @@ private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { b
 }
 
 private fun Route.getFilesFormats() = get("/formats") {
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.getFilesFormats(userId))
 }
 
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.updateFileVisibility(fileId, userId, body))
 }
 
 private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.updateFileName(fileId, userId, body))
 }
 
+private fun Route.editFileCustomLink() = put<FileUpdateDTO>("/{uuid}/custom-link") { body ->
+    val fileId = call.getUUID("uuid")
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.updateCustomLink(fileId, userId, body))
+}
+
+private fun Route.removeFileCustomLink() = delete("/{uuid}/custom-link") {
+    val fileId = call.getUUID("uuid")
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.removeCustomLink(fileId, userId))
+}
+
 private fun Route.deleteFile() = delete("/{uuid}") {
     val fileId = call.getUUID("uuid")
-    val userId = authenticatedUser!!.uuid
+    val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.deleteFile(fileId, userId))
 }

@@ -6,10 +6,10 @@ declare global {
   type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
   type KeysOf<T> = Array<
     T extends T // Include all keys of union types, not just common keys
-    ? keyof T extends string
-      ? keyof T
+      ? keyof T extends string
+        ? keyof T
+        : never
       : never
-    : never
   >
   type PickFrom<T, K extends Array<string>> = T extends Array<any>
     ? T
@@ -36,11 +36,6 @@ declare global {
 declare global {
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
-
-  interface FileSize {
-    value: number
-    shift: 0 | 10 | 20 | 30 | 40 | 50
-  }
 }
 // END SECTION: Others
 
@@ -67,7 +62,7 @@ declare global {
   type FilterDefinitionDTO = FilterGroupDTO[]
   type FilterGroupDTO = FilterObject[]
 
-  interface FilterObject{
+  interface FilterObject {
     field: string
     operator: string
     value: string
@@ -94,8 +89,9 @@ declare global {
     code: string,
     name: string,
     mimeType: string,
-    size: FileSize,
+    size: number,
     visibility: string,
+    customLink: Nullable<string>,
     owner: FileOwnerDTO,
     createdAt: string,
   }
@@ -115,6 +111,10 @@ declare global {
     email: string
     role: Role
     enabled: boolean
+    forceChangePassword: boolean
+    currentDiskQuota: number
+    currentDiskQuotaRatio: number
+    maximumDiskQuota: number
     createdAt: string
   }
 
@@ -123,7 +123,8 @@ declare global {
     email: string
     password: string
     role: Role
-    forceChangePassword: boolean
+    diskQuota?: number
+    forceChangePassword?: boolean
   }
 
   type FileVisibility = 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
@@ -131,6 +132,14 @@ declare global {
   type DateTimeStyle = 'SHORT' | 'MEDIUM' | 'LONG' | 'FULL'
   type Locale = 'en' | 'fr'
   type UploadBehavior = 'INSTANT' | 'MANUAL'
+  type FileDoubleClickAction =
+    'OPEN_NEW_TAB'
+    | 'OPEN_PREVIEW'
+    | 'COPY_LINK'
+    | 'COPY_CUSTOM_LINK'
+    | 'RENAME_FILE'
+    | 'DELETE_FILE'
+    | 'DOWNLOAD_FILE'
 
   interface UserSettings {
     defaultFileVisibility: FileVisibility
@@ -140,6 +149,7 @@ declare global {
     preferredTimeStyle: DateTimeStyle
     preferredLocale: Locale
     uploadBehavior: UploadBehavior
+    fileDoubleClickAction: FileDoubleClickAction
   }
 
   interface SessionOpeningDTO {

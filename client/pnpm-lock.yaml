@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^0.39.7
     version: 0.39.7(eslint@8.45.0)(typescript@4.9.5)
   '@iconify-json/tabler':
-    specifier: ^1.1.82
-    version: 1.1.82
+    specifier: ^1.1.91
+    version: 1.1.91
   '@iconify/tools':
     specifier: ^3.0.2
     version: 3.0.2
@@ -1049,8 +1049,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@iconify-json/tabler@1.1.82:
-    resolution: {integrity: sha512-Wy+Qlw+oOpcVRlEmwI4YzLgbzdan4KgTZizsdHrydA1FguXQSgQZ8w3HvYbQoiBxLedIx3cw6Iea1nKgZl9Ljw==}
+  /@iconify-json/tabler@1.1.91:
+    resolution: {integrity: sha512-ZpLOOEeUluYZdA79hEjA9tElWYQM5i9W9jpDgr02tnYVPB42WQQKnrTOaeW6jL7F+VV4vUfYI0z0D9+h0mDKkg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

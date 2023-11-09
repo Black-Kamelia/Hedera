@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { FileDeletedEvent } from '~/utils/events'
+
 const visible = defineModel<boolean>('visible')
 
 const { t } = useI18n()
@@ -10,11 +12,12 @@ const visibilityOptions = [
   { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ]
 
-const { data, pending } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
+const { data, pending, refresh } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
 const formats = computed(() => data.value?.map(type => ({ name: type })) ?? [])
 
 const filters = useFilesFilters()
 const localFilters = reactiveFilters(filters)
+useEventBus(FileDeletedEvent).on(() => refresh())
 
 function applyAndClose() {
   filters.updateFilters(localFilters)
@@ -57,7 +60,7 @@ watch(visible, (visible) => {
 
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.creation_date') }}</h2>
-        <div class="flex flex-row gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <PCalendar
             v-model="localFilters.startingDate"
             class="w-full"
@@ -93,7 +96,7 @@ watch(visible, (visible) => {
 
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.size') }}</h2>
-        <div class="flex flex-row gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <FileSizeInput v-model="localFilters.minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
           <FileSizeInput v-model="localFilters.maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
         </div>
@@ -101,7 +104,7 @@ watch(visible, (visible) => {
 
       <div class="flex flex-col gap-2">
         <h2>{{ t('pages.files.table.views') }}</h2>
-        <div class="flex flex-row gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <PInputNumber v-model="localFilters.minimalViews" disabled class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
           <PInputNumber v-model="localFilters.maximalViews" disabled class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
         </div>

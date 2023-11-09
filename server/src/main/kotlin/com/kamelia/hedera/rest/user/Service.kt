@@ -14,10 +14,14 @@ import com.kamelia.hedera.core.ValidationScope
 import com.kamelia.hedera.core.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
+import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.util.authToken
+import com.kamelia.hedera.util.jwt
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
+import io.ktor.server.application.*
 import java.util.*
 import kotlin.math.ceil
 
@@ -49,6 +53,7 @@ object UserService {
             checkEmail(dto.email)
             checkUsername(dto.username)
             checkPassword(dto.password)
+            checkDiskQuota(dto.diskQuota)
 
             if (dto.role == UserRole.OWNER) {
                 throw IllegalActionException()
@@ -102,20 +107,27 @@ object UserService {
 
             val updater = User[updaterID]
 
-            // Prevent updating self state
-            if ((dto.enabled != null) && updater.id == toEdit.id) {
-                throw IllegalActionException()
+            // Self updating
+            if (updater.id == toEdit.id) {
+                dto.enabled?.let { throw IllegalActionException() }
+                dto.role?.let { if (it != toEdit.role) throw IllegalActionException() }
+                dto.diskQuota?.let { if (it != toEdit.maximumDiskQuota && toEdit.role !== UserRole.OWNER) throw IllegalActionException() }
             }
 
-            // Prevent changing self role
-            if (dto.role != null && toEdit.id == updater.id && dto.role != toEdit.role) {
-                throw IllegalActionException()
-            }
-
-            // Prevent changing the role of someone else if not strictly superior
-            if (dto.role != null && toEdit.id != updater.id && (dto.role ge updater.role || toEdit.role ge updater.role)) {
+            // Updating someone with greater or equal role
+            if (updater.id != toEdit.id && toEdit.role ge updater.role && updater.role !== UserRole.OWNER) {
                 throw InsufficientPermissionsException()
             }
+
+            // Updating someone with lower role
+            if (updater.id != toEdit.id) {
+                dto.role?.let { if (it ge updater.role) throw IllegalActionException() }
+            }
+
+            // Demoting owner
+            dto.role?.let { if (it lt toEdit.role && toEdit.role == UserRole.OWNER) throw IllegalActionException() }
+
+            checkDiskQuota(dto.diskQuota)
 
             catchErrors()
 
@@ -157,20 +169,36 @@ object UserService {
 
     suspend fun updateUserPassword(
         id: UUID,
+        authToken: String,
+        sessionId: UUID,
         dto: UserPasswordUpdateDTO,
+        forced: Boolean,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         validate(MessageDTO.simple(Actions.Users.UpdatePassword.Error.TITLE.asMessage())) {
             checkPassword(dto.newPassword)
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
-            if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
-                raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD, HttpStatusCode.Forbidden)
+            if (forced && !toEdit.forceChangePassword) {
+                throw IllegalActionException(Errors.Users.FORCE_CHANGE_PASSWORD_CONFLICT)
+            }
+
+            if (!toEdit.forceChangePassword) {
+                if (dto.oldPassword == null) {
+                    raiseError("oldPassword", Errors.Users.Password.MISSING_OLD_PASSWORD, HttpStatusCode.BadRequest)
+                } else if (!Hasher.verify(dto.oldPassword, toEdit.password).verified) {
+                    raiseError("oldPassword", Errors.Users.Password.INCORRECT_PASSWORD, HttpStatusCode.Forbidden)
+                }
             }
 
             catchErrors()
 
             toEdit.updatePassword(dto)
+
+            if (forced) {
+                SessionManager.logoutAllExceptCurrent(toEdit, authToken, sessionId, "password_changed")
+            }
+
             ActionResponse.ok(
                 title = Actions.Users.UpdatePassword.Success.TITLE.asMessage(),
                 payload = toEdit.toRepresentationDTO()
@@ -221,5 +249,11 @@ private fun ValidationScope.checkPassword(password: String) {
         password.length < 8 -> raiseError("password", Errors.Users.Password.TOO_SHORT)
         password.length > 128 -> raiseError("password", Errors.Users.Password.TOO_LONG)
         else -> return
+    }
+}
+
+private fun ValidationScope.checkDiskQuota(diskQuota: Long?) {
+    if (diskQuota != null && diskQuota < -1) {
+        raiseError("diskQuota", Errors.Users.DiskQuota.INVALID_DISK_QUOTA, HttpStatusCode.BadRequest)
     }
 }

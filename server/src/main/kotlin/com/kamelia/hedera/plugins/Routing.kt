@@ -2,6 +2,7 @@ package com.kamelia.hedera.plugins
 
 import com.kamelia.hedera.rest.auth.authRoutes
 import com.kamelia.hedera.rest.file.filesRoutes
+import com.kamelia.hedera.rest.file.rawFileCustomLinkRoute
 import com.kamelia.hedera.rest.file.rawFileRoute
 import com.kamelia.hedera.rest.setting.userSettingsRoutes
 import com.kamelia.hedera.rest.token.personalTokensRoutes
@@ -24,6 +25,7 @@ fun Application.configureRouting() {
         }
 
         rawFileRoute()
+        rawFileCustomLinkRoute()
 
         when {
             isDev -> get("/") {

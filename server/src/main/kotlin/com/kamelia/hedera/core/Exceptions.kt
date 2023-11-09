@@ -28,9 +28,15 @@ class UnknownFilterFieldException(field: String) : HederaException(MessageKeyDTO
 
 class UnknownSortFieldException(field: String) : HederaException(MessageKeyDTO(Errors.Sorts.UNKNOWN_FIELD, "field" to field))
 
-class IllegalActionException : HederaException(Errors.ILLEGAL_ACTION)
+class IllegalActionException(error: MessageKeyDTO = MessageKeyDTO(Errors.ILLEGAL_ACTION)) : HederaException(error) {
+
+    constructor(key: String) : this(MessageKeyDTO(key))
+
+}
 
 class InsufficientPermissionsException : HederaException(Errors.INSUFFICIENT_PERMISSIONS)
+
+class InsufficientDiskQuotaException : HederaException(Errors.Users.INSUFFICIENT_DISK_QUOTA)
 
 class FileNotFoundException : HederaException(Errors.Files.NOT_FOUND)
 

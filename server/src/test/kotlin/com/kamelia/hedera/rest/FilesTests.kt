@@ -67,7 +67,7 @@ class FilesTests {
         ),
         UserFilesTestsInput(
             uploadToken = "00000001000100000001000000000000",
-            viewOwnFileCode = mapOfVisibility("\$0100010001", "\$0100010002", "\$0100010003"),
+            viewOwnFileCode = mapOfVisibility("0100010001", "0100010002", "0100010003"),
             renameOwnFileId = mapOfVisibility(
                 "00000001-0000-0000-0003-000000000001".uuid(),
                 "00000001-0000-0000-0003-000000000002".uuid(),
@@ -85,9 +85,9 @@ class FilesTests {
             ),
 
             viewOthersFileCode = mapOfRole(
-                mapOfVisibility("\$1110010001", "\$1110010002", "\$1110010003"),
-                mapOfVisibility("\$1210010001", "\$1210010002", "\$1210010003"),
-                mapOfVisibility("\$1310010001", "\$1310010002", "\$1310010003"),
+                mapOfVisibility("1110010001", "1110010002", "1110010003"),
+                mapOfVisibility("1210010001", "1210010002", "1210010003"),
+                mapOfVisibility("1310010001", "1310010002", "1310010003"),
             ),
             renameOthersFileId = mapOfRole(
                 mapOfVisibility(
@@ -186,7 +186,7 @@ class FilesTests {
         ),
         UserFilesTestsInput(
             uploadToken = "00000002000100000001000000000000",
-            viewOwnFileCode = mapOfVisibility("\$0200010001", "\$0200010002", "\$0200010003"),
+            viewOwnFileCode = mapOfVisibility("0200010001", "0200010002", "0200010003"),
             renameOwnFileId = mapOfVisibility(
                 "00000002-0000-0000-0003-000000000001".uuid(),
                 "00000002-0000-0000-0003-000000000002".uuid(),
@@ -204,9 +204,9 @@ class FilesTests {
             ),
 
             viewOthersFileCode = mapOfRole(
-                mapOfVisibility("\$1120010001", "\$1120010002", "\$1120010003"),
-                mapOfVisibility("\$1220010001", "\$1220010002", "\$1220010003"),
-                mapOfVisibility("\$1320010001", "\$1320010002", "\$1320010003"),
+                mapOfVisibility("1120010001", "1120010002", "1120010003"),
+                mapOfVisibility("1220010001", "1220010002", "1220010003"),
+                mapOfVisibility("1320010001", "1320010002", "1320010003"),
             ),
             renameOthersFileId = mapOfRole(
                 mapOfVisibility(
@@ -305,7 +305,7 @@ class FilesTests {
         ),
         UserFilesTestsInput(
             uploadToken = "00000003000100000001000000000000",
-            viewOwnFileCode = mapOfVisibility("\$0300010001", "\$0300010002", "\$0300010003"),
+            viewOwnFileCode = mapOfVisibility("0300010001", "0300010002", "0300010003"),
             renameOwnFileId = mapOfVisibility(
                 "00000003-0000-0000-0003-000000000001".uuid(),
                 "00000003-0000-0000-0003-000000000002".uuid(),
@@ -323,9 +323,9 @@ class FilesTests {
             ),
 
             viewOthersFileCode = mapOfRole(
-                mapOfVisibility("\$1130010001", "\$1130010002", "\$1130010003"),
-                mapOfVisibility("\$1230010001", "\$1230010002", "\$1230010003"),
-                mapOfVisibility("\$1330010001", "\$1330010002", "\$1330010003"),
+                mapOfVisibility("1130010001", "1130010002", "1130010003"),
+                mapOfVisibility("1230010001", "1230010002", "1230010003"),
+                mapOfVisibility("1330010001", "1330010002", "1330010003"),
             ),
             renameOthersFileId = mapOfRole(
                 mapOfVisibility(
@@ -418,9 +418,9 @@ class FilesTests {
         ),
         FilesTestsInput(
             viewOthersFileCode = mapOfRole(
-                mapOfVisibility("\$11f0010001", "\$11f0010002", "\$11f0010003"),
-                mapOfVisibility("\$12f0010001", "\$12f0010002", "\$12f0010003"),
-                mapOfVisibility("\$13f0010001", "\$13f0010002", "\$13f0010003"),
+                mapOfVisibility("11f0010001", "11f0010002", "11f0010003"),
+                mapOfVisibility("12f0010001", "12f0010002", "12f0010003"),
+                mapOfVisibility("13f0010001", "13f0010002", "13f0010003"),
             ),
             renameOthersFileId = mapOfRole(
                 mapOfVisibility(

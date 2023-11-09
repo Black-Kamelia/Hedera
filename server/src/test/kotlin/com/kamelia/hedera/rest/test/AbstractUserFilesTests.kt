@@ -44,7 +44,7 @@ abstract class AbstractUserFilesTests(
         assertEquals(expectedResults.uploadFile, response.status)
 
         if (response.status == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
+            val responseDto = Json.decodeFromString<FileRepresentationDTO>(response.bodyAsText())
             assertEquals(userId, responseDto.owner.id)
             assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)

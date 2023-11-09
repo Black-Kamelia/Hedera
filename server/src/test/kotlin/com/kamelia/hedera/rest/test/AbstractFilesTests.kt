@@ -44,9 +44,6 @@ abstract class AbstractFilesTests(
 
     @BeforeAll
     fun prepareEnvironment() {
-        println("Preparing environment for $user")
-
-
         val testFolderPath = Path.of("_tests")
         testFolder = if (Files.exists(testFolderPath)) {
             testFolderPath.toFile()
@@ -55,7 +52,7 @@ abstract class AbstractFilesTests(
         }
 
         val uploadFolder = File(
-            FileTest::class.java.getResource("/upload")?.toURI()
+            FileTest::class.java.getResource("/test_files/upload")?.toURI()
                 ?: throw Exception("Missing resource folder")
         )
 
@@ -81,7 +78,7 @@ abstract class AbstractFilesTests(
         assertEquals(expectedResults.uploadFile, response.status)
 
         if (response.status == HttpStatusCode.OK) {
-            val responseDto = Json.decodeFromString(FileRepresentationDTO.serializer(), response.bodyAsText())
+            val responseDto = Json.decodeFromString<FileRepresentationDTO>(response.bodyAsText())
             assertEquals(userId, responseDto.owner.id)
             assertEquals("test.txt", responseDto.name)
             assertEquals("text/plain", responseDto.mimeType)

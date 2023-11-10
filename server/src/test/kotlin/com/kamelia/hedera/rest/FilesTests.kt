@@ -34,17 +34,16 @@ class FilesTests {
 
             // OWN FILES
             viewOwnFile = mapOfVisibility(OK, OK, OK),
+            viewPubliclyFileCode = mapOfVisibility(OK, OK, NotFound),
+            viewPubliclyFileCustomLink = mapOfVisibility(OK, OK, NotFound),
             renameOwnFile = mapOfVisibility(OK, OK, OK),
             updateVisibilityOwnFile = mapOfVisibility(OK, OK, OK),
+            updateCustomLinkOwnFile = mapOfVisibility(OK, OK, OK),
+            removeCustomLinkOwnFile = mapOfVisibility(OK, OK, OK),
             deleteOwnFile = mapOfVisibility(OK, OK, OK),
 
             // OTHERS FILES
             viewOthersFileAPI = mapOfRole(
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-            ),
-            viewOthersFile = mapOfRole(
                 mapOfVisibility(OK, OK, NotFound),
                 mapOfVisibility(OK, OK, NotFound),
                 mapOfVisibility(OK, OK, NotFound),
@@ -59,6 +58,16 @@ class FilesTests {
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
+            updateCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+            ),
+            removeCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+            ),
             deleteOthersFile = mapOfRole(
                 mapOfVisibility(OK, OK, OK),
                 mapOfVisibility(OK, OK, OK),
@@ -68,6 +77,12 @@ class FilesTests {
         UserFilesTestsInput(
             uploadToken = "00000001000100000001000000000000",
             viewOwnFileCode = mapOfVisibility("0100010001", "0100010002", "0100010003"),
+            viewPubliclyFileCode = mapOfVisibility("0100080001", "0100080002", "0100080003"),
+            viewPubliclyFileCustomLink = mapOfVisibility(
+                "ffffffff-0001-0000-0001-000000000000-00000001-0000-0000-0008-000000000001-public",
+                "ffffffff-0001-0000-0001-000000000000-00000001-0000-0000-0008-000000000002-unlisted",
+                "ffffffff-0001-0000-0001-000000000000-00000001-0000-0000-0008-000000000003-private"
+            ),
             renameOwnFileId = mapOfVisibility(
                 "00000001-0000-0000-0003-000000000001".uuid(),
                 "00000001-0000-0000-0003-000000000002".uuid(),
@@ -77,6 +92,16 @@ class FilesTests {
                 "00000001-0000-0000-0004-000000000001".uuid(),
                 "00000001-0000-0000-0004-000000000002".uuid(),
                 "00000001-0000-0000-0004-000000000003".uuid(),
+            ),
+            updateCustomLinkOwnFileId = mapOfVisibility(
+                "00000001-0000-0000-0006-000000000001".uuid(),
+                "00000001-0000-0000-0006-000000000002".uuid(),
+                "00000001-0000-0000-0006-000000000003".uuid(),
+            ),
+            removeCustomLinkOwnFileId = mapOfVisibility(
+                "00000001-0000-0000-0007-000000000001".uuid(),
+                "00000001-0000-0000-0007-000000000002".uuid(),
+                "00000001-0000-0000-0007-000000000003".uuid(),
             ),
             deleteOwnFileId = mapOfVisibility(
                 "00000001-0000-0000-0005-000000000001".uuid(),
@@ -123,6 +148,40 @@ class FilesTests {
                     "10000003-0001-0000-0004-000000000003".uuid(),
                 ),
             ),
+            updateCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0001-0000-0006-000000000001".uuid(),
+                    "10000001-0001-0000-0006-000000000002".uuid(),
+                    "10000001-0001-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-0001-0000-0006-000000000001".uuid(),
+                    "10000002-0001-0000-0006-000000000002".uuid(),
+                    "10000002-0001-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-0001-0000-0006-000000000001".uuid(),
+                    "10000003-0001-0000-0006-000000000002".uuid(),
+                    "10000003-0001-0000-0006-000000000003".uuid(),
+                ),
+            ),
+            removeCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0001-0000-0007-000000000001".uuid(),
+                    "10000001-0001-0000-0007-000000000002".uuid(),
+                    "10000001-0001-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-0001-0000-0007-000000000001".uuid(),
+                    "10000002-0001-0000-0007-000000000002".uuid(),
+                    "10000002-0001-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-0001-0000-0007-000000000001".uuid(),
+                    "10000003-0001-0000-0007-000000000002".uuid(),
+                    "10000003-0001-0000-0007-000000000003".uuid(),
+                ),
+            ),
             deleteOthersFileId = mapOfRole(
                 mapOfVisibility(
                     "10000001-0001-0000-0005-000000000001".uuid(),
@@ -153,17 +212,16 @@ class FilesTests {
 
             // OWN FILES
             viewOwnFile = mapOfVisibility(OK, OK, OK),
+            viewPubliclyFileCode = mapOfVisibility(OK, OK, NotFound),
+            viewPubliclyFileCustomLink = mapOfVisibility(OK, OK, NotFound),
             renameOwnFile = mapOfVisibility(OK, OK, OK),
             updateVisibilityOwnFile = mapOfVisibility(OK, OK, OK),
+            updateCustomLinkOwnFile = mapOfVisibility(OK, OK, OK),
+            removeCustomLinkOwnFile = mapOfVisibility(OK, OK, OK),
             deleteOwnFile = mapOfVisibility(OK, OK, OK),
 
             // OTHERS FILES
             viewOthersFileAPI = mapOfRole(
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-            ),
-            viewOthersFile = mapOfRole(
                 mapOfVisibility(OK, OK, NotFound),
                 mapOfVisibility(OK, OK, NotFound),
                 mapOfVisibility(OK, OK, NotFound),
@@ -178,6 +236,16 @@ class FilesTests {
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
+            updateCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+            ),
+            removeCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+            ),
             deleteOthersFile = mapOfRole(
                 mapOfVisibility(OK, OK, OK),
                 mapOfVisibility(OK, OK, OK),
@@ -187,6 +255,12 @@ class FilesTests {
         UserFilesTestsInput(
             uploadToken = "00000002000100000001000000000000",
             viewOwnFileCode = mapOfVisibility("0200010001", "0200010002", "0200010003"),
+            viewPubliclyFileCode = mapOfVisibility("0200080001", "0200080002", "0200080003"),
+            viewPubliclyFileCustomLink = mapOfVisibility(
+                "ffffffff-0001-0000-0002-000000000000-00000002-0000-0000-0008-000000000001-public",
+                "ffffffff-0001-0000-0002-000000000000-00000002-0000-0000-0008-000000000002-unlisted",
+                "ffffffff-0001-0000-0002-000000000000-00000002-0000-0000-0008-000000000003-private"
+            ),
             renameOwnFileId = mapOfVisibility(
                 "00000002-0000-0000-0003-000000000001".uuid(),
                 "00000002-0000-0000-0003-000000000002".uuid(),
@@ -196,6 +270,16 @@ class FilesTests {
                 "00000002-0000-0000-0004-000000000001".uuid(),
                 "00000002-0000-0000-0004-000000000002".uuid(),
                 "00000002-0000-0000-0004-000000000003".uuid(),
+            ),
+            updateCustomLinkOwnFileId = mapOfVisibility(
+                "00000002-0000-0000-0006-000000000001".uuid(),
+                "00000002-0000-0000-0006-000000000002".uuid(),
+                "00000002-0000-0000-0006-000000000003".uuid(),
+            ),
+            removeCustomLinkOwnFileId = mapOfVisibility(
+                "00000002-0000-0000-0007-000000000001".uuid(),
+                "00000002-0000-0000-0007-000000000002".uuid(),
+                "00000002-0000-0000-0007-000000000003".uuid(),
             ),
             deleteOwnFileId = mapOfVisibility(
                 "00000002-0000-0000-0005-000000000001".uuid(),
@@ -242,6 +326,40 @@ class FilesTests {
                     "10000003-0002-0000-0004-000000000003".uuid(),
                 ),
             ),
+            updateCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0002-0000-0006-000000000001".uuid(),
+                    "10000001-0002-0000-0006-000000000002".uuid(),
+                    "10000001-0002-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-0002-0000-0006-000000000001".uuid(),
+                    "10000002-0002-0000-0006-000000000002".uuid(),
+                    "10000002-0002-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-0002-0000-0006-000000000001".uuid(),
+                    "10000003-0002-0000-0006-000000000002".uuid(),
+                    "10000003-0002-0000-0006-000000000003".uuid(),
+                ),
+            ),
+            removeCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0002-0000-0007-000000000001".uuid(),
+                    "10000001-0002-0000-0007-000000000002".uuid(),
+                    "10000001-0002-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-0002-0000-0007-000000000001".uuid(),
+                    "10000002-0002-0000-0007-000000000002".uuid(),
+                    "10000002-0002-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-0002-0000-0007-000000000001".uuid(),
+                    "10000003-0002-0000-0007-000000000002".uuid(),
+                    "10000003-0002-0000-0007-000000000003".uuid(),
+                ),
+            ),
             deleteOthersFileId = mapOfRole(
                 mapOfVisibility(
                     "10000001-0002-0000-0005-000000000001".uuid(),
@@ -272,17 +390,16 @@ class FilesTests {
 
             // OWN FILES
             viewOwnFile = mapOfVisibility(OK, OK, OK),
+            viewPubliclyFileCode = mapOfVisibility(OK, OK, NotFound),
+            viewPubliclyFileCustomLink = mapOfVisibility(OK, OK, NotFound),
             renameOwnFile = mapOfVisibility(OK, OK, OK),
             updateVisibilityOwnFile = mapOfVisibility(OK, OK, OK),
+            updateCustomLinkOwnFile = mapOfVisibility(OK, OK, OK),
+            removeCustomLinkOwnFile = mapOfVisibility(OK, OK, OK),
             deleteOwnFile = mapOfVisibility(OK, OK, OK),
 
             // OTHERS FILES
             viewOthersFileAPI = mapOfRole(
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-            ),
-            viewOthersFile = mapOfRole(
                 mapOfVisibility(OK, OK, NotFound),
                 mapOfVisibility(OK, OK, NotFound),
                 mapOfVisibility(OK, OK, NotFound),
@@ -297,6 +414,16 @@ class FilesTests {
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
             ),
+            updateCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+            ),
+            removeCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+                mapOfVisibility(Forbidden, Forbidden, NotFound),
+            ),
             deleteOthersFile = mapOfRole(
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
                 mapOfVisibility(Forbidden, Forbidden, NotFound),
@@ -306,6 +433,12 @@ class FilesTests {
         UserFilesTestsInput(
             uploadToken = "00000003000100000001000000000000",
             viewOwnFileCode = mapOfVisibility("0300010001", "0300010002", "0300010003"),
+            viewPubliclyFileCode = mapOfVisibility("0300080001", "0300080002", "0300080003"),
+            viewPubliclyFileCustomLink = mapOfVisibility(
+                "ffffffff-0001-0000-0003-000000000000-00000003-0000-0000-0008-000000000001-public",
+                "ffffffff-0001-0000-0003-000000000000-00000003-0000-0000-0008-000000000002-unlisted",
+                "ffffffff-0001-0000-0003-000000000000-00000003-0000-0000-0008-000000000003-private"
+            ),
             renameOwnFileId = mapOfVisibility(
                 "00000003-0000-0000-0003-000000000001".uuid(),
                 "00000003-0000-0000-0003-000000000002".uuid(),
@@ -315,6 +448,16 @@ class FilesTests {
                 "00000003-0000-0000-0004-000000000001".uuid(),
                 "00000003-0000-0000-0004-000000000002".uuid(),
                 "00000003-0000-0000-0004-000000000003".uuid(),
+            ),
+            updateCustomLinkOwnFileId = mapOfVisibility(
+                "00000003-0000-0000-0006-000000000001".uuid(),
+                "00000003-0000-0000-0006-000000000002".uuid(),
+                "00000003-0000-0000-0006-000000000003".uuid(),
+            ),
+            removeCustomLinkOwnFileId = mapOfVisibility(
+                "00000003-0000-0000-0007-000000000001".uuid(),
+                "00000003-0000-0000-0007-000000000002".uuid(),
+                "00000003-0000-0000-0007-000000000003".uuid(),
             ),
             deleteOwnFileId = mapOfVisibility(
                 "00000003-0000-0000-0005-000000000001".uuid(),
@@ -361,6 +504,40 @@ class FilesTests {
                     "10000003-0003-0000-0004-000000000003".uuid(),
                 ),
             ),
+            updateCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0006-000000000001".uuid(),
+                    "10000001-0003-0000-0006-000000000002".uuid(),
+                    "10000001-0003-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-0003-0000-0006-000000000001".uuid(),
+                    "10000002-0003-0000-0006-000000000002".uuid(),
+                    "10000002-0003-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-0003-0000-0006-000000000001".uuid(),
+                    "10000003-0003-0000-0006-000000000002".uuid(),
+                    "10000003-0003-0000-0006-000000000003".uuid(),
+                ),
+            ),
+            removeCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-0003-0000-0007-000000000001".uuid(),
+                    "10000001-0003-0000-0007-000000000002".uuid(),
+                    "10000001-0003-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-0003-0000-0007-000000000001".uuid(),
+                    "10000002-0003-0000-0007-000000000002".uuid(),
+                    "10000002-0003-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-0003-0000-0007-000000000001".uuid(),
+                    "10000003-0003-0000-0007-000000000002".uuid(),
+                    "10000003-0003-0000-0007-000000000003".uuid(),
+                ),
+            ),
             deleteOthersFileId = mapOfRole(
                 mapOfVisibility(
                     "10000001-0003-0000-0005-000000000001".uuid(),
@@ -395,17 +572,22 @@ class FilesTests {
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
             ),
-            viewOthersFile = mapOfRole(
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-                mapOfVisibility(OK, OK, NotFound),
-            ),
             renameOthersFile = mapOfRole(
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
             ),
             updateVisibilityOthersFile = mapOfRole(
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+            ),
+            updateCustomLinkOthersFile = mapOfRole(
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+                mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
+            ),
+            removeCustomLinkOthersFile = mapOfRole(
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
                 mapOfVisibility(Unauthorized, Unauthorized, Unauthorized),
@@ -454,6 +636,40 @@ class FilesTests {
                     "10000003-000f-0000-0004-000000000001".uuid(),
                     "10000003-000f-0000-0004-000000000002".uuid(),
                     "10000003-000f-0000-0004-000000000003".uuid(),
+                ),
+            ),
+            updateCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-000f-0000-0006-000000000001".uuid(),
+                    "10000001-000f-0000-0006-000000000002".uuid(),
+                    "10000001-000f-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-000f-0000-0006-000000000001".uuid(),
+                    "10000002-000f-0000-0006-000000000002".uuid(),
+                    "10000002-000f-0000-0006-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-000f-0000-0006-000000000001".uuid(),
+                    "10000003-000f-0000-0006-000000000002".uuid(),
+                    "10000003-000f-0000-0006-000000000003".uuid(),
+                ),
+            ),
+            removeCustomLinkOthersFileId = mapOfRole(
+                mapOfVisibility(
+                    "10000001-000f-0000-0007-000000000001".uuid(),
+                    "10000001-000f-0000-0007-000000000002".uuid(),
+                    "10000001-000f-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000002-000f-0000-0007-000000000001".uuid(),
+                    "10000002-000f-0000-0007-000000000002".uuid(),
+                    "10000002-000f-0000-0007-000000000003".uuid(),
+                ),
+                mapOfVisibility(
+                    "10000003-000f-0000-0007-000000000001".uuid(),
+                    "10000003-000f-0000-0007-000000000002".uuid(),
+                    "10000003-000f-0000-0007-000000000003".uuid(),
                 ),
             ),
             deleteOthersFileId = mapOfRole(

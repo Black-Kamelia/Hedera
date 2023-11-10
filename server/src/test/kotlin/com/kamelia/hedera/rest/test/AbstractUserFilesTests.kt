@@ -16,6 +16,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import java.util.*
 import java.util.stream.Stream
+import kotlin.test.assertNull
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -52,10 +53,10 @@ abstract class AbstractUserFilesTests(
         }
     }
 
-    @DisplayName("View own file")
+    @DisplayName("View own file (via API)")
     @ParameterizedTest(name = "View own {0} file")
     @MethodSource("visibilities")
-    fun viewOwnFileTest(
+    fun viewOwnFileAPITest(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
@@ -66,6 +67,32 @@ abstract class AbstractUserFilesTests(
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.viewOwnFile[visibility], response.status)
+    }
+
+    @DisplayName("View file publicly")
+    @ParameterizedTest(name = "View {0} file publicly")
+    @MethodSource("visibilities")
+    fun viewFilePubliclyTest(
+        visibility: FileVisibility
+    ) = testApplication {
+        val client = client()
+
+        val fileCode = input.viewPubliclyFileCode[visibility]!!
+        val response = client.get("/m/$fileCode")
+        assertEquals(expectedResults.viewPubliclyFileCode[visibility], response.status)
+    }
+
+    @DisplayName("View file publicly via custom link")
+    @ParameterizedTest(name = "View {0} file publicly via custom link")
+    @MethodSource("visibilities")
+    fun viewFilePubliclyCustomLinkTest(
+        visibility: FileVisibility
+    ) = testApplication {
+        val client = client()
+
+        val customLink = input.viewPubliclyFileCustomLink[visibility]!!
+        val response = client.get("/c/$customLink")
+        assertEquals(expectedResults.viewPubliclyFileCustomLink[visibility], response.status)
     }
 
     @DisplayName("Rename own file")
@@ -119,6 +146,54 @@ abstract class AbstractUserFilesTests(
         }
     }
 
+    @DisplayName("Update own file's custom link")
+    @ParameterizedTest(name = "Update own {0} file's custom link")
+    @MethodSource("visibilities")
+    fun updateOwnFileCustomLinkTest(
+        visibility: FileVisibility
+    ) = testApplication {
+        val (tokens, uuid) = user
+        val client = client()
+
+        val fileId = input.updateCustomLinkOwnFileId[visibility]!!
+        val customLink = "$uuid-$fileId-$visibility".lowercase()
+        val response = client.put("/api/files/$fileId/custom-link") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = customLink))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateCustomLinkOwnFile[visibility], response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals(Actions.Files.Update.CustomLink.Success.TITLE, responseDto.title.key)
+            assertEquals(Actions.Files.Update.CustomLink.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(customLink, responseDto.payload!!.customLink)
+        }
+    }
+
+    @DisplayName("Remove own file's custom link")
+    @ParameterizedTest(name = "Remove own {0} file's custom link")
+    @MethodSource("visibilities")
+    fun removeOwnFileCustomLinkTest(
+        visibility: FileVisibility
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+
+        val fileId = input.removeCustomLinkOwnFileId[visibility]!!
+        val response = client.delete("/api/files/$fileId/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.removeCustomLinkOwnFile[visibility], response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals(Actions.Files.Update.RemoveCustomLink.Success.TITLE, responseDto.title.key)
+            assertNull(responseDto.payload!!.customLink)
+        }
+    }
+
     @DisplayName("Delete own file")
     @ParameterizedTest(name = "Delete own {0} file")
     @MethodSource("visibilities")
@@ -162,39 +237,53 @@ class UserFilesTestsExpectedResults(
     listFiles: HttpStatusCode,
 
     val viewOwnFile: Map<FileVisibility, HttpStatusCode>,
+    val viewPubliclyFileCode: Map<FileVisibility, HttpStatusCode>,
+    val viewPubliclyFileCustomLink: Map<FileVisibility, HttpStatusCode>,
     val renameOwnFile: Map<FileVisibility, HttpStatusCode>,
     val updateVisibilityOwnFile: Map<FileVisibility, HttpStatusCode>,
+    val updateCustomLinkOwnFile: Map<FileVisibility, HttpStatusCode>,
+    val removeCustomLinkOwnFile: Map<FileVisibility, HttpStatusCode>,
     val deleteOwnFile: Map<FileVisibility, HttpStatusCode>,
 
     viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    viewOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    updateCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    removeCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
 ) : FilesTestsExpectedResults(
     uploadFile,
     listFiles,
-    viewOthersFile,
     viewOthersFileAPI,
     renameOthersFile,
     updateVisibilityOthersFile,
+    updateCustomLinkOthersFile,
+    removeCustomLinkOthersFile,
     deleteOthersFile,
 )
 
 class UserFilesTestsInput(
     val uploadToken: String,
     val viewOwnFileCode: Map<FileVisibility, String>,
+    val viewPubliclyFileCode: Map<FileVisibility, String>,
+    val viewPubliclyFileCustomLink: Map<FileVisibility, String>,
     val renameOwnFileId: Map<FileVisibility, UUID>,
     val updateVisibilityOwnFileId: Map<FileVisibility, UUID>,
+    val updateCustomLinkOwnFileId: Map<FileVisibility, UUID>,
+    val removeCustomLinkOwnFileId: Map<FileVisibility, UUID>,
     val deleteOwnFileId: Map<FileVisibility, UUID>,
 
     viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
     renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    updateCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    removeCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
 ) : FilesTestsInput(
     viewOthersFileCode,
     renameOthersFileId,
     updateVisibilityOthersFileId,
+    updateCustomLinkOthersFileId,
+    removeCustomLinkOthersFileId,
     deleteOthersFileId,
 )

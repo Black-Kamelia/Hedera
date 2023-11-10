@@ -21,6 +21,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 import java.util.stream.Stream
+import kotlin.test.assertNull
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -170,6 +171,56 @@ abstract class AbstractFilesTests(
         }
     }
 
+    @DisplayName("Update others file's custom link")
+    @ParameterizedTest(name = "Update {0}''s {1} file's custom link")
+    @MethodSource("rolesVisibilitiesCombo")
+    fun updateOtherFileCustomLinkTest(
+        target: UserRole,
+        visibility: FileVisibility,
+    ) = testApplication {
+        val (tokens, uuid) = user
+        val client = client()
+
+        val fileId = input.updateCustomLinkOthersFileId[target]!![visibility]!!
+        val customLink = "$uuid-$fileId-$visibility".lowercase()
+        val response = client.put("/api/files/$fileId/custom-link") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(customLink = customLink))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateCustomLinkOthersFile[target]!![visibility], response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals(Actions.Files.Update.CustomLink.Success.TITLE, responseDto.title.key)
+            assertEquals(Actions.Files.Update.CustomLink.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(customLink, responseDto.payload!!.customLink)
+        }
+    }
+
+    @DisplayName("Remove others file's custom link")
+    @ParameterizedTest(name = "Remove {0}''s {1} file's custom link")
+    @MethodSource("rolesVisibilitiesCombo")
+    fun removeOtherFileCustomLinkTest(
+        target: UserRole,
+        visibility: FileVisibility,
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+
+        val fileId = input.removeCustomLinkOthersFileId[target]!![visibility]!!
+        val response = client.delete("/api/files/$fileId/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.removeCustomLinkOthersFile[target]!![visibility], response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
+            assertEquals(Actions.Files.Update.RemoveCustomLink.Success.TITLE, responseDto.title.key)
+            assertNull(responseDto.payload!!.customLink)
+        }
+    }
+
     @DisplayName("Delete others file")
     @ParameterizedTest(name = "Delete {0}''s {1} file")
     @MethodSource("rolesVisibilitiesCombo")
@@ -232,9 +283,10 @@ open class FilesTestsExpectedResults(
     val listFiles: HttpStatusCode,
 
     val viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val viewOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    val updateCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    val removeCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
 )
 
@@ -242,5 +294,7 @@ open class FilesTestsInput(
     val viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
     val renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     val updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    val updateCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    val removeCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     val deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
 )

@@ -1,16 +1,8 @@
-package com.kamelia.hedera.rest.test
+package com.kamelia.hedera.rest.setting
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.setting.DateStyle
-import com.kamelia.hedera.rest.setting.FileDoubleClickAction
-import com.kamelia.hedera.rest.setting.FilesSizeScale
-import com.kamelia.hedera.rest.setting.Locale
-import com.kamelia.hedera.rest.setting.TimeStyle
-import com.kamelia.hedera.rest.setting.UploadBehavior
-import com.kamelia.hedera.rest.setting.UserSettingsRepresentationDTO
-import com.kamelia.hedera.rest.setting.UserSettingsUpdateDTO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

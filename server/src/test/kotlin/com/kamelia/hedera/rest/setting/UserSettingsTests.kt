@@ -1,21 +1,8 @@
-package com.kamelia.hedera.rest
+package com.kamelia.hedera.rest.setting
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.login
-import com.kamelia.hedera.mapOfRole
-import com.kamelia.hedera.mapOfVisibility
-import com.kamelia.hedera.rest.test.AbstractFilesTests
-import com.kamelia.hedera.rest.test.AbstractUserFilesTests
-import com.kamelia.hedera.rest.test.AbstractUserSettingsTests
-import com.kamelia.hedera.rest.test.FilesTestsExpectedResults
-import com.kamelia.hedera.rest.test.FilesTestsInput
-import com.kamelia.hedera.rest.test.UserFilesTestsExpectedResults
-import com.kamelia.hedera.rest.test.UserFilesTestsInput
-import com.kamelia.hedera.rest.test.UserSettingsTestsExpectedResults
 import com.kamelia.hedera.uuid
-import io.ktor.http.HttpStatusCode.Companion.Created
-import io.ktor.http.HttpStatusCode.Companion.Forbidden
-import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.server.testing.*

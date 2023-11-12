@@ -1,13 +1,10 @@
-package com.kamelia.hedera.rest.test
+package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.rest.file.FileRepresentationDTO
-import com.kamelia.hedera.rest.file.FileUpdateDTO
-import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*

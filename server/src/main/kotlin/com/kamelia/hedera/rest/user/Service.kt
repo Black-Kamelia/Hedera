@@ -209,9 +209,22 @@ object UserService {
     }
 
     suspend fun deleteUser(
-        id: UUID
+        id: UUID,
+        updaterID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         val toDelete = User.findById(id) ?: throw UserNotFoundException()
+
+        if (id == updaterID) {
+            throw IllegalActionException()
+        }
+
+        if (toDelete.role ge User[updaterID].role) {
+            throw InsufficientPermissionsException()
+        }
+
+        if (toDelete.role == UserRole.OWNER) {
+            throw IllegalActionException()
+        }
 
         toDelete.delete()
         ActionResponse.ok(

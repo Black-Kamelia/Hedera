@@ -3,11 +3,9 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.login
 import com.kamelia.hedera.mapOfRole
-import com.kamelia.hedera.mapOfVisibility
 import com.kamelia.hedera.uuid
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.Forbidden
-import io.ktor.http.HttpStatusCode.Companion.NotFound
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.server.testing.*
@@ -20,11 +18,21 @@ class UsersTests {
 
     @DisplayName("Users tests as owner")
     @Nested
-    inner class OwnerUsersTests : AbstractUserUsersTests(
+    inner class OwnerUsersTests : AbstractUsersSelfTests(
         owner,
-        UserUsersTestsExpectedResults(
+        SelfUsersTestsExpectedResults(
             listUsers = OK,
             createUser = mapOfRole(Forbidden, Created, Created),
+
+            updateOwnUsername = OK,
+            updateOwnEmail = OK,
+            updateOwnRole = mapOfRole(Forbidden, Forbidden, Forbidden),
+            updateOwnQuota = OK,
+            updateOwnPassword = OK,
+            activateSelf = Forbidden,
+            deactivateSelf = Forbidden,
+            deleteSelf = Forbidden,
+
             updateOthersUsername = mapOfRole(OK, OK, OK),
             updateOthersEmail = mapOfRole(OK, OK, OK),
             updateOthersRole = mapOfRole(
@@ -38,7 +46,20 @@ class UsersTests {
             deactivateUser = mapOfRole(Forbidden, OK, OK),
             deleteUser = mapOfRole(Forbidden, OK, OK),
         ),
-        UserUsersTestsInput(
+        SelfUsersTestsInput(
+            updateOwnUsernameUserId = "ffffffff-0002-0000-0001-000000000001".uuid(),
+            updateOwnEmailUserId = "ffffffff-0002-0000-0001-000000000002".uuid(),
+            updateOwnRoleUserId = mapOfRole(
+                "ffffffff-0002-0000-0001-000000000003".uuid(),
+                "ffffffff-0002-0000-0001-000000000004".uuid(),
+                "ffffffff-0002-0000-0001-000000000005".uuid(),
+            ),
+            updateOwnQuotaUserId = "ffffffff-0002-0000-0001-000000000006".uuid(),
+            updateOwnPasswordUserId = "ffffffff-0002-0000-0001-000000000007".uuid(),
+            activateSelfUserId = "ffffffff-0002-0000-0001-000000000008".uuid(),
+            deactivateSelfUserId = "ffffffff-0002-0000-0001-000000000009".uuid(),
+            deleteSelfUserId = "ffffffff-0002-0000-0001-000000000010".uuid(),
+
             updateOthersUsernameUserId = mapOfRole(
                 "00000000-0002-0001-0001-000000000001".uuid(),
                 "00000000-0002-0001-0001-000000000002".uuid(),
@@ -92,15 +113,26 @@ class UsersTests {
                 "00000000-0002-0008-0001-000000000003".uuid(),
             ),
         ),
+        selfRole = UserRole.OWNER,
     )
 
     @DisplayName("Users tests as admin")
     @Nested
-    inner class AdminUsersTests : AbstractUserUsersTests(
+    inner class AdminUsersTests : AbstractUsersSelfTests(
         admin,
-        UserUsersTestsExpectedResults(
+        SelfUsersTestsExpectedResults(
             listUsers = OK,
             createUser = mapOfRole(Forbidden, Forbidden, Created),
+
+            updateOwnUsername = OK,
+            updateOwnEmail = OK,
+            updateOwnRole = mapOfRole(Forbidden, Forbidden, Forbidden),
+            updateOwnQuota = Forbidden,
+            updateOwnPassword = OK,
+            activateSelf = Forbidden,
+            deactivateSelf = Forbidden,
+            deleteSelf = Forbidden,
+
             updateOthersUsername = mapOfRole(Forbidden, Forbidden, OK),
             updateOthersEmail = mapOfRole(Forbidden, Forbidden, OK),
             updateOthersRole = mapOfRole(
@@ -114,7 +146,20 @@ class UsersTests {
             deactivateUser = mapOfRole(Forbidden, Forbidden, OK),
             deleteUser = mapOfRole(Forbidden, Forbidden, OK),
         ),
-        UserUsersTestsInput(
+        SelfUsersTestsInput(
+            updateOwnUsernameUserId = "ffffffff-0002-0000-0002-000000000001".uuid(),
+            updateOwnEmailUserId = "ffffffff-0002-0000-0002-000000000002".uuid(),
+            updateOwnRoleUserId = mapOfRole(
+                "ffffffff-0002-0000-0002-000000000003".uuid(),
+                "ffffffff-0002-0000-0002-000000000004".uuid(),
+                "ffffffff-0002-0000-0002-000000000005".uuid(),
+            ),
+            updateOwnQuotaUserId = "ffffffff-0002-0000-0002-000000000006".uuid(),
+            updateOwnPasswordUserId = "ffffffff-0002-0000-0002-000000000007".uuid(),
+            activateSelfUserId = "ffffffff-0002-0000-0002-000000000008".uuid(),
+            deactivateSelfUserId = "ffffffff-0002-0000-0002-000000000009".uuid(),
+            deleteSelfUserId = "ffffffff-0002-0000-0002-000000000010".uuid(),
+
             updateOthersUsernameUserId = mapOfRole(
                 "00000000-0002-0001-0002-000000000001".uuid(),
                 "00000000-0002-0001-0002-000000000002".uuid(),
@@ -168,15 +213,26 @@ class UsersTests {
                 "00000000-0002-0008-0002-000000000003".uuid(),
             ),
         ),
+        selfRole = UserRole.ADMIN,
     )
 
     @DisplayName("Users tests as regular user")
     @Nested
-    inner class RegularUserUsersTests : AbstractUserUsersTests(
+    inner class RegularUserUsersTests : AbstractUsersSelfTests(
         user,
-        UserUsersTestsExpectedResults(
+        SelfUsersTestsExpectedResults(
             listUsers = Forbidden,
             createUser = mapOfRole(Forbidden, Forbidden, Forbidden),
+
+            updateOwnUsername = OK,
+            updateOwnEmail = OK,
+            updateOwnRole = mapOfRole(Forbidden, Forbidden, Forbidden),
+            updateOwnQuota = Forbidden,
+            updateOwnPassword = OK,
+            activateSelf = Forbidden,
+            deactivateSelf = Forbidden,
+            deleteSelf = Forbidden,
+
             updateOthersUsername = mapOfRole(Forbidden, Forbidden, Forbidden),
             updateOthersEmail = mapOfRole(Forbidden, Forbidden, Forbidden),
             updateOthersRole = mapOfRole(
@@ -190,7 +246,20 @@ class UsersTests {
             deactivateUser = mapOfRole(Forbidden, Forbidden, Forbidden),
             deleteUser = mapOfRole(Forbidden, Forbidden, Forbidden),
         ),
-        UserUsersTestsInput(
+        SelfUsersTestsInput(
+            updateOwnUsernameUserId = "ffffffff-0002-0000-0003-000000000001".uuid(),
+            updateOwnEmailUserId = "ffffffff-0002-0000-0003-000000000002".uuid(),
+            updateOwnRoleUserId = mapOfRole(
+                "ffffffff-0002-0000-0003-000000000003".uuid(),
+                "ffffffff-0002-0000-0003-000000000004".uuid(),
+                "ffffffff-0002-0000-0003-000000000005".uuid(),
+            ),
+            updateOwnQuotaUserId = "ffffffff-0002-0000-0003-000000000006".uuid(),
+            updateOwnPasswordUserId = "ffffffff-0002-0000-0003-000000000007".uuid(),
+            activateSelfUserId = "ffffffff-0002-0000-0003-000000000008".uuid(),
+            deactivateSelfUserId = "ffffffff-0002-0000-0003-000000000009".uuid(),
+            deleteSelfUserId = "ffffffff-0002-0000-0003-000000000010".uuid(),
+
             updateOthersUsernameUserId = mapOfRole(
                 "00000000-0002-0001-0003-000000000001".uuid(),
                 "00000000-0002-0001-0003-000000000002".uuid(),
@@ -244,6 +313,7 @@ class UsersTests {
                 "00000000-0002-0008-0003-000000000003".uuid(),
             ),
         ),
+        selfRole = UserRole.REGULAR,
     )
 
     @DisplayName("Users tests as guest")
@@ -253,6 +323,7 @@ class UsersTests {
         UsersTestsExpectedResults(
             listUsers = Unauthorized,
             createUser = mapOfRole(Unauthorized, Unauthorized, Unauthorized),
+
             updateOthersUsername = mapOfRole(Unauthorized, Unauthorized, Unauthorized),
             updateOthersEmail = mapOfRole(Unauthorized, Unauthorized, Unauthorized),
             updateOthersRole = mapOfRole(

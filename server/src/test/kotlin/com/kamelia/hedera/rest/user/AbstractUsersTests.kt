@@ -1,8 +1,17 @@
 package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.TestUser
+import com.kamelia.hedera.client
+import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.server.testing.*
+import java.util.*
 import java.util.stream.Stream
+import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Named
 import org.junit.jupiter.api.Test
@@ -21,6 +30,14 @@ abstract class AbstractUsersTests(
     @DisplayName("List users")
     @Test
     fun listUsersTest() = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.post("/api/users/search") {
+            contentType(ContentType.Application.Json)
+            setBody(PageDefinitionDTO())
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.listUsers, response.status, response.bodyAsText())
     }
 
     @DisplayName("Create user")
@@ -29,6 +46,27 @@ abstract class AbstractUsersTests(
     fun createUserTest(
         role: UserRole
     ) = testApplication {
+        val (tokens, userId) = user
+        val userDto = UserCreationDTO(
+            username = "$userId-create-$role-user".lowercase(),
+            password = "password",
+            email = "$userId-create-$role@test.local".lowercase(),
+            role = role,
+        )
+        val client = client()
+        val response = client.post("/api/users") {
+            contentType(ContentType.Application.Json)
+            setBody(userDto)
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.createUser[role], response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.Created) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(userDto.username, responseDto.payload!!.username)
+            assertEquals(userDto.email, responseDto.payload!!.email)
+            assertEquals(role, responseDto.payload!!.role)
+        }
     }
 
     @DisplayName("Edit others username")
@@ -37,6 +75,20 @@ abstract class AbstractUsersTests(
     fun editOthersUsernameTest(
         target: UserRole,
     ) = testApplication {
+        val (tokens, id) = user
+        val newUsername = "$id-edit-$target-username".lowercase()
+        val client = client()
+        val userId = input.updateOthersUsernameUserId[target]!!
+        val response = client.patch("/api/users/$userId") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(username = newUsername))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateOthersUsername[target], response.status, response.bodyAsText())
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newUsername, responseDto.payload!!.username)
+        }
     }
 
     @DisplayName("Edit others email address")
@@ -45,6 +97,20 @@ abstract class AbstractUsersTests(
     fun editOthersEmailTest(
         target: UserRole,
     ) = testApplication {
+        val (tokens, id) = user
+        val newEmail = "$id-edit-$target-email@test.local".lowercase()
+        val client = client()
+        val userId = input.updateOthersEmailUserId[target]!!
+        val response = client.patch("/api/users/$userId") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(email = newEmail))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateOthersEmail[target], response.status, response.bodyAsText())
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newEmail, responseDto.payload!!.email)
+        }
     }
 
     @DisplayName("Edit others role")
@@ -54,6 +120,19 @@ abstract class AbstractUsersTests(
         target: UserRole,
         newRole: UserRole,
     ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val userId = input.updateOthersRoleUserId[target]!![newRole]!!
+        val response = client.patch("/api/users/$userId") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(role = newRole))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateOthersRole[target]!![newRole], response.status, response.bodyAsText())
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(newRole, responseDto.payload!!.role)
+        }
     }
 
     @DisplayName("Edit others disk space quota")
@@ -62,6 +141,19 @@ abstract class AbstractUsersTests(
     fun editOthersDiskQuotaTest(
         target: UserRole,
     ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val userId = input.updateOthersQuotaUserId[target]!!
+        val response = client.patch("/api/users/$userId") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(diskQuota = 5000))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateOthersQuota[target], response.status, response.bodyAsText())
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(5000, responseDto.payload!!.maximumDiskQuota)
+        }
     }
 
     @DisplayName("Edit others password")
@@ -70,30 +162,68 @@ abstract class AbstractUsersTests(
     fun editOthersPasswordTest(
         target: UserRole
     ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val userId = input.updateOthersPasswordUserId[target]!!
+        val response = client.patch("/api/users/$userId/password") {
+            contentType(ContentType.Application.Json)
+            setBody(UserPasswordUpdateDTO(oldPassword = "password", newPassword = "new-password"))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateOthersPassword[target], response.status, response.bodyAsText())
     }
 
-    @DisplayName("Activate someone")
+    @DisplayName("Activate user")
     @ParameterizedTest(name = "Activate {0}")
     @MethodSource("roles")
-    fun activateSomeoneTest(
+    fun activateUserTest(
         target: UserRole,
     ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val userId = input.activateUserId[target]!!
+        val response = client.post("/api/users/$userId/activate") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.activateUser[target], response.status, response.bodyAsText())
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(true, responseDto.payload!!.enabled)
+        }
     }
 
-    @DisplayName("Deactivate someone")
+    @DisplayName("Deactivate user")
     @ParameterizedTest(name = "Deactivate {0}")
     @MethodSource("roles")
-    fun deactivateSomeoneTest(
+    fun deactivateUserTest(
         target: UserRole,
     ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val userId = input.deactivateUserId[target]!!
+        val response = client.post("/api/users/$userId/deactivate") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.deactivateUser[target], response.status, response.bodyAsText())
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<UserRepresentationDTO>>(response.bodyAsText())
+            assertEquals(false, responseDto.payload!!.enabled)
+        }
     }
 
-    @DisplayName("Delete someone")
+    @DisplayName("Delete user")
     @ParameterizedTest(name = "Delete {0}")
     @MethodSource("roles")
-    fun deleteSomeoneTest(
+    fun deleteUserTest(
         target: UserRole,
     ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val userId = input.deleteUserId[target]!!
+        val response = client.delete("/api/users/$userId") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.deleteUser[target], response.status, response.bodyAsText())
     }
 
     companion object {
@@ -121,9 +251,26 @@ abstract class AbstractUsersTests(
 }
 
 open class UsersTestsExpectedResults(
+    val listUsers: HttpStatusCode,
+    val createUser: Map<UserRole, HttpStatusCode>,
 
+    val updateOthersUsername: Map<UserRole, HttpStatusCode>,
+    val updateOthersEmail: Map<UserRole, HttpStatusCode>,
+    val updateOthersRole: Map<UserRole, Map<UserRole, HttpStatusCode>>,
+    val updateOthersQuota: Map<UserRole, HttpStatusCode>,
+    val updateOthersPassword: Map<UserRole, HttpStatusCode>,
+    val activateUser: Map<UserRole, HttpStatusCode>,
+    val deactivateUser: Map<UserRole, HttpStatusCode>,
+    val deleteUser: Map<UserRole, HttpStatusCode>,
 )
 
 open class UsersTestsInput(
-
+    val updateOthersUsernameUserId: Map<UserRole, UUID>,
+    val updateOthersEmailUserId: Map<UserRole, UUID>,
+    val updateOthersRoleUserId: Map<UserRole, Map<UserRole, UUID>>,
+    val updateOthersQuotaUserId: Map<UserRole, UUID>,
+    val updateOthersPasswordUserId: Map<UserRole, UUID>,
+    val activateUserId: Map<UserRole, UUID>,
+    val deactivateUserId: Map<UserRole, UUID>,
+    val deleteUserId: Map<UserRole, UUID>,
 )

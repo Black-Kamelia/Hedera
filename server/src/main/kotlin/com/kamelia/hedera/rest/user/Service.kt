@@ -144,7 +144,7 @@ object UserService {
         id: UUID,
         enable: Boolean,
         updaterID: UUID,
-    ): ActionResponse<Nothing> = Connection.transaction {
+    ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         val toEdit = User.findById(id) ?: throw UserNotFoundException()
         val updater = User[updaterID]
 
@@ -158,11 +158,13 @@ object UserService {
             ActionResponse.ok(
                 title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
                 message = Actions.Users.Activate.Success.MESSAGE.asMessage("username" to toEdit.username),
+                payload = toEdit.toRepresentationDTO(),
             )
         } else {
             ActionResponse.ok(
                 title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
                 message = Actions.Users.Deactivate.Success.MESSAGE.asMessage("username" to toEdit.username),
+                payload = toEdit.toRepresentationDTO(),
             )
         }
     }

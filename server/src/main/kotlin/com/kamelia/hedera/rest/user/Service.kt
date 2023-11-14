@@ -47,7 +47,8 @@ object UserService {
     }
 
     suspend fun createUser(
-        dto: UserCreationDTO
+        dto: UserCreationDTO,
+        creatorID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         validate(MessageDTO.simple(Actions.Users.Create.Error.TITLE.asMessage())) {
             checkEmail(dto.email)
@@ -57,6 +58,11 @@ object UserService {
 
             if (dto.role == UserRole.OWNER) {
                 throw IllegalActionException()
+            }
+
+            val updater = User[creatorID]
+            if (dto.role ge updater.role) {
+                throw InsufficientPermissionsException()
             }
 
             catchErrors()
@@ -110,7 +116,7 @@ object UserService {
             // Self updating
             if (updater.id == toEdit.id) {
                 dto.enabled?.let { throw IllegalActionException() }
-                dto.role?.let { if (it != toEdit.role) throw IllegalActionException() }
+                dto.role?.let { throw IllegalActionException() }
                 dto.diskQuota?.let { if (it != toEdit.maximumDiskQuota && toEdit.role !== UserRole.OWNER) throw IllegalActionException() }
             }
 

@@ -701,11 +701,11 @@ class FilesTests {
                 )
                 admin = Pair(
                     login("files.admin", "password").second ?: throw Exception("Login failed"),
-                    "ffffffff-0001-0000-0001-000000000000".uuid()
+                    "ffffffff-0001-0000-0002-000000000000".uuid()
                 )
                 user = Pair(
                     login("files.user", "password").second ?: throw Exception("Login failed"),
-                    "ffffffff-0001-0000-0001-000000000000".uuid()
+                    "ffffffff-0001-0000-0003-000000000000".uuid()
                 )
             }
         }

@@ -138,7 +138,7 @@ class UsersTests {
             updateOthersRole = mapOfRole(
                 mapOfRole(Forbidden, Forbidden, Forbidden),
                 mapOfRole(Forbidden, Forbidden, Forbidden),
-                mapOfRole(Forbidden, Forbidden, Forbidden),
+                mapOfRole(Forbidden, Forbidden, OK),
             ),
             updateOthersQuota = mapOfRole(Forbidden, Forbidden, OK),
             updateOthersPassword = mapOfRole(Forbidden, Forbidden, Forbidden),

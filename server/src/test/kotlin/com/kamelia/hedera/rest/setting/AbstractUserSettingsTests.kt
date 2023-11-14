@@ -29,7 +29,7 @@ abstract class AbstractUserSettingsTests(
     @DisplayName("Get user settings")
     @Test
     fun getUserSettingsTest() = testApplication {
-        val (tokens, userId) = user
+        val (tokens, _) = user
         val client = client()
 
         val response = client.get("/api/users/settings") {

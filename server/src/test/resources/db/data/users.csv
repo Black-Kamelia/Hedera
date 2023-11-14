@@ -8,6 +8,9 @@ ffffffff-0002-0000-0003-000000000000,user-settings-user@test.com,user.settings.u
 ffffffff-0003-0000-0001-000000000000,users-owner@test.com,users.owner,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,OWNER,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,ffffffff-0003-0000-0001-000000000000,1970-01-01 00:00:00.000000,,
 ffffffff-0003-0000-0002-000000000000,users-admin@test.com,users.admin,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,ADMIN,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,ffffffff-0003-0000-0002-000000000000,1970-01-01 00:00:00.000000,,
 ffffffff-0003-0000-0003-000000000000,users-user@test.com,users.user,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,REGULAR,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,ffffffff-0003-0000-0003-000000000000,1970-01-01 00:00:00.000000,,
+ffffffff-0004-0000-0001-000000000000,personal-tokens-owner@test.com,personal.tokens.owner,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,OWNER,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,ffffffff-0004-0000-0001-000000000000,1970-01-01 00:00:00.000000,,
+ffffffff-0004-0000-0002-000000000000,personal-tokens-admin@test.com,personal.tokens.admin,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,ADMIN,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,ffffffff-0004-0000-0002-000000000000,1970-01-01 00:00:00.000000,,
+ffffffff-0004-0000-0003-000000000000,personal-tokens-user@test.com,personal.tokens.user,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,REGULAR,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,ffffffff-0004-0000-0003-000000000000,1970-01-01 00:00:00.000000,,
 
 
 
@@ -176,3 +179,8 @@ ffffffff-0002-0000-0003-000000000010,regular-delete@test.com,regular.delete,$2b$
 00000000-0002-0008-0004-000000000001,guest-delete-owner@test.com,guest.delete.owner,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,OWNER,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,00000000-0002-0008-0004-000000000001,1970-01-01 00:00:00.000000,,
 00000000-0002-0008-0004-000000000002,guest-delete-admin@test.com,guest.delete.admin,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,ADMIN,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,00000000-0002-0008-0004-000000000002,1970-01-01 00:00:00.000000,,
 00000000-0002-0008-0004-000000000003,guest-delete-user@test.com,guest.delete.user,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,REGULAR,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,00000000-0002-0008-0004-000000000003,1970-01-01 00:00:00.000000,,
+
+
+00000000-0004-0000-0001-000000000000,dummy-personal-tokens-owner@test.com,dummy.personal.tokens.owner,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,OWNER,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,00000000-0004-0000-0001-000000000000,1970-01-01 00:00:00.000000,,
+00000000-0004-0000-0002-000000000000,dummy-personal-tokens-admin@test.com,dummy.personal.tokens.admin,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,ADMIN,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,00000000-0004-0000-0002-000000000000,1970-01-01 00:00:00.000000,,
+00000000-0004-0000-0003-000000000000,dummy-personal-tokens-user@test.com,dummy.personal.tokens.user,$2b$12$hPXCE1gVmMZmND7t.VTBWO3UUeHcfBXGrIkadatM8f1F3M9VWxqOi,REGULAR,true,false,ffffffff-ffff-ffff-ffff-ffffffffffff,1000,2000,00000000-0004-0000-0003-000000000000,1970-01-01 00:00:00.000000,,

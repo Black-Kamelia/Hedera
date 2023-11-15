@@ -13,9 +13,3 @@ object UserEvents {
 
     val userForcefullyLoggedOutEvent = event<UserForcefullyLoggedOutDTO>()
 }
-
-object ConfigurationEvents {
-
-    val configurationUpdatedEvent = event<GlobalConfigurationRepresentationDTO>()
-
-}

@@ -23,7 +23,8 @@ const cardTransition = ref(false)
     :animate-width="animateWidth"
   >
     <Transition
-      :name="`slide-${direction.toLowerCase()}`" @after-enter="cardTransition = false"
+      :name="`slide-${direction.toLowerCase()}`"
+      @after-enter="cardTransition = false"
       @before-enter="cardTransition = true"
     >
       <slot />
@@ -31,7 +32,7 @@ const cardTransition = ref(false)
   </MorphAnimatedContainer>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .slide-left-enter-active,
 .slide-left-leave-active,
 .slide-right-enter-active,

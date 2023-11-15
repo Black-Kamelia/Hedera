@@ -1,8 +1,8 @@
 package com.kamelia.hedera.websocket
 
 import com.kamelia.hedera.rest.auth.SessionManager
+import com.kamelia.hedera.rest.configuration.ConfigurationEvents
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationRepresentationDTO
-import com.kamelia.hedera.rest.user.ConfigurationEvents
 import com.kamelia.hedera.rest.user.UserEvents
 import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO

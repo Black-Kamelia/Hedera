@@ -1,4 +1,4 @@
-import type { Ref } from 'vue/dist/vue'
+import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export interface GlobalConfigurationStore {
@@ -6,7 +6,7 @@ export interface GlobalConfigurationStore {
   defaultDiskQuotaPolicy: Ref<DiskQuotaPolicy>
   defaultDiskQuota: Ref<number | null>
   updateConfiguration: (configuration: Partial<GlobalConfiguration>) => void
-  initConfiguration: () => void
+  fetchConfiguration: () => void
 }
 
 export const useGlobalConfiguration = defineStore('globalConfiguration', (): GlobalConfigurationStore => {
@@ -20,7 +20,7 @@ export const useGlobalConfiguration = defineStore('globalConfiguration', (): Glo
     if (configuration.defaultDiskQuota !== undefined) defaultDiskQuota.value = configuration.defaultDiskQuota
   }
 
-  function initConfiguration() {
+  function fetchConfiguration() {
     $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration').then(updateConfiguration)
   }
 
@@ -29,7 +29,7 @@ export const useGlobalConfiguration = defineStore('globalConfiguration', (): Glo
     defaultDiskQuotaPolicy,
     defaultDiskQuota,
     updateConfiguration,
-    initConfiguration,
+    fetchConfiguration,
   }
 }, {
   persist: {

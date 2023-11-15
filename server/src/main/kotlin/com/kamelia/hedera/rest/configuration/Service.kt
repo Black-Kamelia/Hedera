@@ -3,13 +3,17 @@ package com.kamelia.hedera.rest.configuration
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.rest.user.ConfigurationEvents
 import com.kamelia.hedera.util.Environment
 import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+
+enum class DiskQuotaPolicy {
+    UNLIMITED,
+    LIMITED,
+}
 
 @Serializable
 data class GlobalConfiguration(

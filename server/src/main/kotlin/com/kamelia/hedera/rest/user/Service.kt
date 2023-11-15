@@ -50,10 +50,6 @@ object UserService {
                 throw IllegalActionException()
             }
 
-            if (dto.forceChangePassword) {
-                throw IllegalActionException()
-            }
-
             val quota = if (configuration.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
                 -1
             } else {
@@ -62,7 +58,7 @@ object UserService {
 
             catchErrors()
 
-            val user = User.create(dto.copy(diskQuota = quota))
+            val user = User.create(dto.copy(diskQuota = quota, forceChangePassword = false))
             Response.created(user.toRepresentationDTO())
         }
     }

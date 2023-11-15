@@ -31,7 +31,10 @@ function getOption(value: string) {
   return options.value.find(option => option.value === value)
 }
 
-function patch() {
+function patch(policyValue?: Nullable<DiskQuotaPolicy>, quotaValue?: Nullable<number>) {
+  if (policyValue) quotaPolicy.value = policyValue
+  if (quotaValue !== undefined) quota.value = quotaValue
+
   if (quotaPolicy.value === 'UNLIMITED') quota.value = null
   if (quotaPolicy.value === 'LIMITED' && quota.value === null) return
 
@@ -54,13 +57,13 @@ watch(quotaPolicy, () => {
   >
     <div class="flex flex-col gap-2">
       <PDropdown
-        v-model="quotaPolicy"
         :options="options"
         option-label="name"
         option-value="value"
         class="w-full md:w-14rem"
         :class="{ 'p-invalid': isError }"
-        @update:model-value="patch"
+        :model-value="quotaPolicy"
+        @update:model-value="val => patch(val, undefined)"
       >
         <template #value="{ value: selectedOption }">
           <div v-if="selectedOption" class="flex items-center gap-2">
@@ -82,12 +85,12 @@ watch(quotaPolicy, () => {
       </PDropdown>
 
       <FileSizeInput
-        v-model="quota"
         class="w-full"
         :class="{ 'p-invalid': isError }"
         :disabled="quotaPolicy === 'UNLIMITED'"
         :placeholder="inputPlaceholder"
-        @update:model-value="patch"
+        :model-value="quota"
+        @update:model-value="val => patch(undefined, val)"
       />
     </div>
   </HorizontalActionPanel>

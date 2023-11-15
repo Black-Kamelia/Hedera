@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ForcePasswordChangeDoneEvent } from '~/utils/events'
-
 const { t } = useI18n()
 
 usePageName(() => t('pages.login.title'))
@@ -31,11 +29,15 @@ onMounted(() => {
   }
 })
 
-function redirectToApplication() {
-  const redirect = useRoute().query.redirect?.toString()
-  const to = redirect && (redirect.startsWith('%2F') || redirect.startsWith('/'))
+function getRedirect() {
+  const redirect = currentRoute.value.query.redirect?.toString()
+  return redirect && (redirect.startsWith('%2F') || redirect.startsWith('/'))
     ? decodeURIComponent(redirect)
     : '/files'
+}
+
+function redirectToApplication() {
+  const to = getRedirect()
 
   try {
     navigateTo(to, { replace: true })
@@ -50,32 +52,18 @@ useEventBus(LoggedInEvent).on((event) => {
     message.content = null
     message.severity = undefined
     if (user?.forceChangePassword) {
-      // state.value = 'CHANGE_PASSWORD'
+      navigateTo({
+        path: '/update-password',
+        query: { redirect: getRedirect() },
+      }, { replace: true })
     } else {
       redirectToApplication()
     }
   }
 })
-useEventBus(ForcePasswordChangeDoneEvent).on(() => {
-  redirectToApplication()
-})
 useEventBus(LoggedOutEvent).on((event) => {
   if (event?.abortLogin) {
-    // state.value = 'LOGIN'
     navigateTo('/login', { replace: true })
-  }
-})
-useEventBus(RefreshTokenExpiredEvent).on(() => {
-  // state.value = 'LOGIN'
-  message.content = t('pages.login.reasons.expired')
-  message.severity = 'warn'
-})
-useWebsocketEvent('user-forcefully-logged-out', (event) => {
-  // state.value = 'LOGIN'
-  message.content = t('pages.login.reasons.session_terminated')
-  message.severity = 'warn'
-  if (event.reason) {
-    message.content = t(`pages.login.reasons.${event.reason}`)
   }
 })
 </script>

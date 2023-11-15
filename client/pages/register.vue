@@ -4,7 +4,7 @@ const { t } = useI18n()
 usePageName(() => t('pages.register.title'))
 definePageMeta({
   layout: 'auth',
-  middleware: ['auth', 'card-transitions'],
+  middleware: ['auth', 'register', 'card-transitions'],
 })
 
 useEventBus(LoggedInEvent).on((event) => {

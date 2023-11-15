@@ -8,14 +8,15 @@ const route = useRoute()
 const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
 const { currentRoute } = useRouter()
-const { initConfiguration, updateConfiguration } = useGlobalConfiguration()
+const { fetchConfiguration, updateConfiguration } = useGlobalConfiguration()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
     case 'user-connected':
     case 'user-updated': {
-      setUser(payload.data)
-      if (payload.data.role === 'ADMIN' || payload.data.role === 'OWNER') initConfiguration()
+      const user = payload.data
+      setUser(user)
+      if (!user.forceChangePassword && (user.role === 'ADMIN' || user.role === 'OWNER')) fetchConfiguration()
       break
     }
     case 'user-forcefully-logged-out': {

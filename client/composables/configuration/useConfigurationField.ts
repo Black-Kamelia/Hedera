@@ -1,4 +1,5 @@
 import type { Ref } from 'vue'
+import useErrorToast from '~/composables/useErrorToast'
 
 // single parameter version
 export function useConfigurationField<T>(
@@ -6,16 +7,15 @@ export function useConfigurationField<T>(
   mapField: (newField: T) => Partial<GlobalConfiguration>,
 ) {
   const { updateConfiguration } = useGlobalConfiguration()
-  const toast = useToast()
-  const { t, m } = useI18n()
+  const handleError = useErrorToast()
   const isError = ref<boolean>(false)
-  const backupValue = shallowRef<T>(field.value)
 
+  const backupValue = shallowRef<T>(field.value)
   watch(field, (_, oldValue) => {
     backupValue.value = oldValue
   })
 
-  function patchConfiguration(newSetting: T) {
+  async function patchConfiguration(newSetting: T) {
     isError.value = false
     return $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration', { method: 'PATCH', body: mapField(newSetting) })
       .then((response) => {
@@ -25,21 +25,7 @@ export function useConfigurationField<T>(
       .catch((error) => {
         isError.value = true
         field.value = backupValue.value
-        if (!error.response) {
-          toast.add({
-            severity: 'error',
-            summary: t('errors.unknown'),
-            detail: { text: t('errors.network') },
-            life: 5000,
-          })
-          return
-        }
-        toast.add({
-          severity: 'error',
-          summary: t('error'), // TODO: get error title from backend
-          detail: { text: m(error) },
-          life: 5000,
-        })
+        handleError(error)
       })
   }
 
@@ -54,18 +40,17 @@ export function useConfigurationFields<T extends Record<string, Ref<any>>>(
   mapFields: (newFields: T) => Partial<GlobalConfiguration>,
 ) {
   const { updateConfiguration } = useGlobalConfiguration()
-  const toast = useToast()
-  const { t, m } = useI18n()
+  const handleError = useErrorToast()
   const isError = ref<boolean>(false)
-  const backupValues = shallowRef<T>({} as T)
 
   // Initialize backupValues with the current values of the fields
+  const backupValues = shallowRef<T>({} as T)
   for (const key in fields) {
     backupValues.value[key] = fields[key].value
     watch(fields[key], (_, oldValue) => backupValues.value[key] = oldValue)
   }
 
-  function patchConfiguration(newSettings: T) {
+  async function patchConfiguration(newSettings: T) {
     isError.value = false
     const mapFieldsResult = mapFields(newSettings)
     return $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration', { method: 'PATCH', body: mapFieldsResult })
@@ -81,22 +66,7 @@ export function useConfigurationFields<T extends Record<string, Ref<any>>>(
           fields[key].value = backupValues.value[key]
         }
 
-        if (!error.response) {
-          toast.add({
-            severity: 'error',
-            summary: t('errors.unknown'),
-            detail: { text: t('errors.network') },
-            life: 5000,
-          })
-          return
-        }
-
-        toast.add({
-          severity: 'error',
-          summary: t('error'), // TODO: get error title from backend
-          detail: { text: m(error) },
-          life: 5000,
-        })
+        handleError(error)
       })
   }
 

@@ -14,6 +14,8 @@ private const val PASSWORD_CHANGE_METHOD = "PATCH"
 
 private val WHITELISTED_ROUTES = listOf(
     PASSWORD_CHANGE_PATH,
+    "/api/logout",
+    "/api/logout/all",
     "/api/ws",
 )
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const config = storeToRefs(useGlobalConfiguration())
+const config = useGlobalConfiguration()
 const { t } = useI18n()
 
-const toggleRegistrations = computed(() => config.toggleRegistrations.value)
-const defaultDiskQuotaPolicy = computed(() => config.defaultDiskQuotaPolicy.value)
-const defaultDiskQuota = computed(() => config.defaultDiskQuota.value)
+const toggleRegistrations = computed(() => config.toggleRegistrations)
+const defaultDiskQuotaPolicy = computed(() => config.defaultDiskQuotaPolicy)
+const defaultDiskQuota = computed(() => config.defaultDiskQuota)
 </script>
 
 <template>

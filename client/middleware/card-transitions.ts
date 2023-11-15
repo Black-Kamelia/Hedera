@@ -1,4 +1,4 @@
-const VALID_ROUTES = ['login', 'register', 'reset-password']
+const VALID_ROUTES = ['login', 'register', 'reset-password', 'update-password']
 
 const SLIDE_LEFT = { name: 'slide-left' }
 const SLIDE_RIGHT = { name: 'slide-right' }
@@ -7,6 +7,7 @@ const INDICES = new Map<string, number>([
   ['register', -2],
   ['reset-password', -1],
   ['login', 0],
+  ['update-password', 1],
 ])
 
 export default defineNuxtRouteMiddleware((to, from) => {

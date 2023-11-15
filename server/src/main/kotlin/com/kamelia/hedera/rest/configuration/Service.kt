@@ -54,10 +54,10 @@ object GlobalConfigurationService {
         }
     }
 
-    fun getConfiguration() = Response.ok(currentConfiguration.toDTO())
+    fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> = Response.ok(currentConfiguration.toDTO())
 
     /* May change in the future if we need to hide some settings */
-    fun getConfigurationPublic() = Response.ok(currentConfiguration.toDTO())
+    fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO> = Response.ok(currentConfiguration.toDTO())
 
     suspend fun updateConfiguration(
         dto: GlobalConfigurationUpdateDTO

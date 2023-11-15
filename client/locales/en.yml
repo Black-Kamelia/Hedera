@@ -40,6 +40,8 @@ pages:
       password_changed: Your password has been changed, please log in again
       session_terminated: Your session has been terminated
       registration_disabled: Registrations are not enabled
+  complete_otp:
+    title: Two-factor authentication
   register:
     title: Create an account
     back: Back to login
@@ -178,7 +180,7 @@ pages:
         disabled: Disabled
       table:
         username: Username
-        email: E-mail address
+        email: Email address
         role: Role
         quota: Disk space quota
         quota_help: Sorting is done based on the used disk space.
@@ -324,6 +326,7 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
+    submit: Log in
   register:
     errors:
       missing_username: Username is required
@@ -339,7 +342,7 @@ forms:
       passwords_mismatch: The passwords do not match
     fields:
       username: Username
-      email: E-mail address
+      email: Email address
       password: Password
       confirm_password: Password confirmation
     submit: Submit
@@ -361,6 +364,7 @@ forms:
       invalid_email: Invalid email address format
     fields:
       email: Email address
+    submit: Send reset link
   update_password:
     submit: Update
     errors:

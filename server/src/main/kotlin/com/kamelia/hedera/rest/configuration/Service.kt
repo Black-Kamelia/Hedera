@@ -4,6 +4,8 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.util.Environment
+import com.kamelia.hedera.util.suspendUntilUnlocked
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
@@ -36,9 +38,9 @@ object GlobalConfigurationService {
     private val readWriteMutex = Mutex()
 
     private lateinit var _currentConfiguration: GlobalConfiguration
-    val currentConfiguration: GlobalConfiguration get() {
-        while (readWriteMutex.isLocked) { /* wait for read+write to finish */ }
-        return _currentConfiguration
+    val currentConfiguration: GlobalConfiguration get() = runBlocking {
+        readWriteMutex.suspendUntilUnlocked()
+        _currentConfiguration
     }
 
     suspend fun init() = readWriteMutex.withLock {
@@ -52,14 +54,14 @@ object GlobalConfigurationService {
         }
     }
 
-    fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> {
-        while (readWriteMutex.isLocked) { /* wait for read+write to finish */ }
+    suspend fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> {
+        readWriteMutex.suspendUntilUnlocked()
         return Response.ok(_currentConfiguration.toDTO())
     }
 
     /* May change in the future if we need to hide some settings */
-    fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO> {
-        while (readWriteMutex.isLocked) { /* wait for read+write to finish */ }
+    suspend fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO> {
+        readWriteMutex.suspendUntilUnlocked()
         return Response.ok(_currentConfiguration.toDTO())
     }
 

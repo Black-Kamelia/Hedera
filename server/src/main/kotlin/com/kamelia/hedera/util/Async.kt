@@ -49,6 +49,10 @@ suspend fun <T> Mutex.withReentrantLock(action: suspend () -> T): T {
     }
 }
 
+suspend fun Mutex.suspendUntilUnlocked() {
+    while (isLocked) delay(0)
+}
+
 fun CoroutineScope.launchPeriodic(
     delay: Duration,
     immediate: Boolean = false,

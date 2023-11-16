@@ -20,9 +20,9 @@ enum class DiskQuotaPolicy {
 
 @Serializable
 data class GlobalConfiguration(
-    var enableRegistrations: Boolean = false,
-    var defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
-    var defaultDiskQuota: Long? = 524288000, // 500 MiB
+    val enableRegistrations: Boolean = false,
+    val defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
+    val defaultDiskQuota: Long? = 524288000, // 500 MiB
 ) {
     fun toDTO() = GlobalConfigurationRepresentationDTO(
         enableRegistrations,
@@ -36,9 +36,9 @@ object GlobalConfigurationService {
     private val mutex = Mutex()
 
     private lateinit var _currentConfiguration: GlobalConfiguration
-    val currentConfiguration: GlobalConfiguration get() = runBlocking { mutex.withLock {
-        _currentConfiguration
-    }}
+    val currentConfiguration: GlobalConfiguration get() = runBlocking {
+        mutex.withLock { _currentConfiguration }
+    }
 
     suspend fun init() = mutex.withLock {
         if (::_currentConfiguration.isInitialized) return
@@ -63,18 +63,23 @@ object GlobalConfigurationService {
     suspend fun updateConfiguration(
         dto: GlobalConfigurationUpdateDTO
     ): Response<GlobalConfigurationRepresentationDTO> = mutex.withLock {
-        dto.enableRegistrations?.let { _currentConfiguration.enableRegistrations = it }
-        if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
-            _currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
-            _currentConfiguration.defaultDiskQuota = null
-        } else if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED && dto.defaultDiskQuota != null) {
-            _currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
-            _currentConfiguration.defaultDiskQuota = dto.defaultDiskQuota
+        val enableRegistrations = dto.enableRegistrations ?: _currentConfiguration.enableRegistrations
+        val (defaultDiskQuotaPolicy, defaultDiskQuota) = when {
+            dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED -> dto.defaultDiskQuotaPolicy to null
+            dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED && dto.defaultDiskQuota != null -> dto.defaultDiskQuotaPolicy to dto.defaultDiskQuota
+            else -> _currentConfiguration.defaultDiskQuotaPolicy to _currentConfiguration.defaultDiskQuota
         }
-        writeConfiguration()
-        ConfigurationEvents.configurationUpdatedEvent(_currentConfiguration.toDTO())
 
-        return Response.ok(_currentConfiguration.toDTO())
+        _currentConfiguration = GlobalConfiguration(
+            enableRegistrations,
+            defaultDiskQuotaPolicy,
+            defaultDiskQuota
+        )
+
+        val response = _currentConfiguration.toDTO()
+        writeConfiguration()
+        ConfigurationEvents.configurationUpdatedEvent(response)
+        return Response.ok(response)
     }
 
     private fun generateDefaultConfiguration(file: File) {

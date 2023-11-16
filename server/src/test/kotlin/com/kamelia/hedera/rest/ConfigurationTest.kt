@@ -32,12 +32,10 @@ import org.junit.jupiter.params.provider.MethodSource
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ConfigurationTest {
 
-    private fun restoreConfiguration(originalConfiguration: GlobalConfiguration) {
-        GlobalConfigurationService.currentConfiguration.let {
-            it.enableRegistrations = originalConfiguration.enableRegistrations
-            it.defaultDiskQuotaPolicy = originalConfiguration.defaultDiskQuotaPolicy
-            it.defaultDiskQuota = originalConfiguration.defaultDiskQuota
-        }
+    private fun setTestConfiguration(originalConfiguration: GlobalConfiguration) {
+        val field = GlobalConfigurationService::class.java.getDeclaredField("_currentConfiguration")
+        field.isAccessible = true
+        field.set(GlobalConfigurationService, originalConfiguration)
     }
 
     @DisplayName("Get global configuration")
@@ -88,8 +86,8 @@ class ConfigurationTest {
     @DisplayName("Signing up with registrations off")
     @Test
     fun signUpWithRegistrationsOff() = testApplication {
-        val originalConfig = GlobalConfigurationService.currentConfiguration.copy()
-        GlobalConfigurationService.currentConfiguration.enableRegistrations = false
+        val originalConfig = GlobalConfigurationService.currentConfiguration
+        setTestConfiguration(GlobalConfigurationService.currentConfiguration.copy(enableRegistrations = false))
 
         val newUserDto = UserCreationDTO(
             username = "test.user.off",
@@ -103,18 +101,18 @@ class ConfigurationTest {
         }
         assertEquals(HttpStatusCode.Forbidden, response.status)
 
-        restoreConfiguration(originalConfig)
+        setTestConfiguration(originalConfig)
     }
 
     @DisplayName("Signing up with default quota limited")
     @Test
     fun signUpWithDefaultQuotaLimited() = testApplication {
-        val originalConfig = GlobalConfigurationService.currentConfiguration.copy()
-        GlobalConfigurationService.currentConfiguration.let {
-            it.enableRegistrations = true
-            it.defaultDiskQuotaPolicy = DiskQuotaPolicy.LIMITED
-            it.defaultDiskQuota = 1024
-        }
+        val originalConfig = GlobalConfigurationService.currentConfiguration
+        setTestConfiguration(GlobalConfiguration(
+            enableRegistrations = true,
+            defaultDiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
+            defaultDiskQuota = 1024,
+        ))
 
         val newUserDto = UserCreationDTO(
             username = "test.user.quota.limited",
@@ -131,18 +129,18 @@ class ConfigurationTest {
         val responseDto = Json.decodeFromString<UserRepresentationDTO>(response.bodyAsText())
         assertEquals(1024, responseDto.maximumDiskQuota)
 
-        restoreConfiguration(originalConfig)
+        setTestConfiguration(originalConfig)
     }
 
     @DisplayName("Signing up with default quota unlimited")
     @Test
     fun signUpWithDefaultQuotaUnlimited() = testApplication {
         val originalConfig = GlobalConfigurationService.currentConfiguration.copy()
-        GlobalConfigurationService.currentConfiguration.let {
-            it.enableRegistrations = true
-            it.defaultDiskQuotaPolicy = DiskQuotaPolicy.UNLIMITED
-            it.defaultDiskQuota = null
-        }
+        setTestConfiguration(GlobalConfiguration(
+            enableRegistrations = true,
+            defaultDiskQuotaPolicy = DiskQuotaPolicy.UNLIMITED,
+            defaultDiskQuota = null,
+        ))
 
         val newUserDto = UserCreationDTO(
             username = "test.user.quota.unlimited",
@@ -159,7 +157,7 @@ class ConfigurationTest {
         val responseDto = Json.decodeFromString<UserRepresentationDTO>(response.bodyAsText())
         assertEquals(-1, responseDto.maximumDiskQuota)
 
-        restoreConfiguration(originalConfig)
+        setTestConfiguration(originalConfig)
     }
 
     companion object {

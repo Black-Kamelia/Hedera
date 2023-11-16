@@ -4,15 +4,14 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.util.Environment
-import com.kamelia.hedera.util.suspendUntilUnlocked
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.File
 
 enum class DiskQuotaPolicy {
     UNLIMITED,
@@ -34,16 +33,14 @@ data class GlobalConfiguration(
 
 object GlobalConfigurationService {
 
-    // Mutex to prevent concurrent read+write. Read-only is allowed if the lock is free.
-    private val readWriteMutex = Mutex()
+    private val mutex = Mutex()
 
     private lateinit var _currentConfiguration: GlobalConfiguration
-    val currentConfiguration: GlobalConfiguration get() = runBlocking {
-        readWriteMutex.suspendUntilUnlocked()
+    val currentConfiguration: GlobalConfiguration get() = runBlocking { mutex.withLock {
         _currentConfiguration
-    }
+    }}
 
-    suspend fun init() = readWriteMutex.withLock {
+    suspend fun init() = mutex.withLock {
         if (::_currentConfiguration.isInitialized) return
         val file = File(Environment.globalConfigurationFile)
         if (!file.exists()) generateDefaultConfiguration(file)
@@ -54,20 +51,18 @@ object GlobalConfigurationService {
         }
     }
 
-    suspend fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> {
-        readWriteMutex.suspendUntilUnlocked()
-        return Response.ok(_currentConfiguration.toDTO())
+    suspend fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> = mutex.withLock {
+        Response.ok(_currentConfiguration.toDTO())
     }
 
     /* May change in the future if we need to hide some settings */
-    suspend fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO> {
-        readWriteMutex.suspendUntilUnlocked()
-        return Response.ok(_currentConfiguration.toDTO())
+    suspend fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO>  = mutex.withLock {
+        Response.ok(_currentConfiguration.toDTO())
     }
 
     suspend fun updateConfiguration(
         dto: GlobalConfigurationUpdateDTO
-    ): Response<GlobalConfigurationRepresentationDTO> = readWriteMutex.withLock {
+    ): Response<GlobalConfigurationRepresentationDTO> = mutex.withLock {
         dto.enableRegistrations?.let { _currentConfiguration.enableRegistrations = it }
         if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
             _currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy

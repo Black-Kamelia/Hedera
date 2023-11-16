@@ -4,6 +4,8 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.util.Environment
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -30,15 +32,52 @@ data class GlobalConfiguration(
 
 object GlobalConfigurationService {
 
-    val currentConfiguration: GlobalConfiguration by lazy {
-        with(File(Environment.globalConfigurationFile)) {
-            if (!exists()) generateDefaultConfiguration(this)
-            try {
-                Json.decodeFromString<GlobalConfiguration>(this.readText())
-            } catch (e: SerializationException) {
-                throw HederaException(Errors.Configuration.PARSE_ERROR)
-            }
+    // Mutex to prevent concurrent read+write. Read-only is allowed if the lock is free.
+    private val readWriteMutex = Mutex()
+
+    private lateinit var _currentConfiguration: GlobalConfiguration
+    val currentConfiguration: GlobalConfiguration get() {
+        while (readWriteMutex.isLocked) { /* wait for read+write to finish */ }
+        return _currentConfiguration
+    }
+
+    suspend fun init() = readWriteMutex.withLock {
+        if (::_currentConfiguration.isInitialized) return
+        val file = File(Environment.globalConfigurationFile)
+        if (!file.exists()) generateDefaultConfiguration(file)
+        _currentConfiguration = try {
+            Json.decodeFromString<GlobalConfiguration>(file.readText())
+        } catch (e: SerializationException) {
+            throw HederaException(Errors.Configuration.PARSE_ERROR)
         }
+    }
+
+    fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> {
+        while (readWriteMutex.isLocked) { /* wait for read+write to finish */ }
+        return Response.ok(_currentConfiguration.toDTO())
+    }
+
+    /* May change in the future if we need to hide some settings */
+    fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO> {
+        while (readWriteMutex.isLocked) { /* wait for read+write to finish */ }
+        return Response.ok(_currentConfiguration.toDTO())
+    }
+
+    suspend fun updateConfiguration(
+        dto: GlobalConfigurationUpdateDTO
+    ): Response<GlobalConfigurationRepresentationDTO> = readWriteMutex.withLock {
+        dto.enableRegistrations?.let { _currentConfiguration.enableRegistrations = it }
+        if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
+            _currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
+            _currentConfiguration.defaultDiskQuota = null
+        } else if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED && dto.defaultDiskQuota != null) {
+            _currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
+            _currentConfiguration.defaultDiskQuota = dto.defaultDiskQuota
+        }
+        writeConfiguration()
+        ConfigurationEvents.configurationUpdatedEvent(_currentConfiguration.toDTO())
+
+        return Response.ok(_currentConfiguration.toDTO())
     }
 
     private fun generateDefaultConfiguration(file: File) {
@@ -47,33 +86,8 @@ object GlobalConfigurationService {
     }
 
     private fun writeConfiguration() {
-        with(File(Environment.globalConfigurationFile)) {
-            if (!exists() && !createNewFile()) throw HederaException(Errors.Configuration.WRITE_ERROR)
-            writeText("")
-            appendText(Json.encodeToString(currentConfiguration))
-        }
+        val file = File(Environment.globalConfigurationFile)
+        if (!file.exists() && !file.createNewFile()) throw HederaException(Errors.Configuration.WRITE_ERROR)
+        file.writeText(Json.encodeToString(_currentConfiguration))
     }
-
-    fun getConfiguration(): Response<GlobalConfigurationRepresentationDTO> = Response.ok(currentConfiguration.toDTO())
-
-    /* May change in the future if we need to hide some settings */
-    fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO> = Response.ok(currentConfiguration.toDTO())
-
-    suspend fun updateConfiguration(
-        dto: GlobalConfigurationUpdateDTO
-    ): Response<GlobalConfigurationRepresentationDTO>  {
-        dto.enableRegistrations?.let { currentConfiguration.enableRegistrations = it }
-        if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.UNLIMITED) {
-            currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
-            currentConfiguration.defaultDiskQuota = null
-        } else if (dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED && dto.defaultDiskQuota != null) {
-            currentConfiguration.defaultDiskQuotaPolicy = dto.defaultDiskQuotaPolicy
-            currentConfiguration.defaultDiskQuota = dto.defaultDiskQuota
-        }
-        writeConfiguration()
-        ConfigurationEvents.configurationUpdatedEvent(currentConfiguration.toDTO())
-
-        return Response.ok(currentConfiguration.toDTO())
-    }
-
 }

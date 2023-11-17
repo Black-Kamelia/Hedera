@@ -3,19 +3,19 @@ const VALID_ROUTES = ['login', 'register', 'reset-password', 'update-password']
 const SLIDE_LEFT = { name: 'slide-left' }
 const SLIDE_RIGHT = { name: 'slide-right' }
 
-const INDICES = new Map<string, number>([
-  ['register', -2],
-  ['reset-password', -1],
-  ['login', 0],
-  ['update-password', 1],
-])
+const INDICES = {
+  'register': -2,
+  'reset-password': -1,
+  'login': 0,
+  'update-password': 1,
+}
 
 export default defineNuxtRouteMiddleware((to, from) => {
   if (!VALID_ROUTES.includes(to.name)) return
   if (!VALID_ROUTES.includes(from.name)) return
 
-  const toIndex = INDICES.get(to.name)!
-  const fromIndex = INDICES.get(from.name)!
+  const toIndex = INDICES[to.name as keyof typeof INDICES]
+  const fromIndex = INDICES[from.name as keyof typeof INDICES]
 
   if (toIndex > fromIndex) {
     from.meta.pageTransition = SLIDE_LEFT

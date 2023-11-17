@@ -38,7 +38,7 @@ private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: 
 
 private const val CONFIGURATION_UPDATED = "configuration-updated"
 private suspend fun WebSocketServerSession.onConfigurationUpdate(userId: UUID, payload: GlobalConfigurationRepresentationDTO) {
-    val user = SessionManager.getUserOrNull(userId) ?: return forcefullyClose(INVALID_USER_ID)
+    val user = SessionManager.getUserOrNull(userId)!!
     if (user.role === UserRole.REGULAR) return
     sendEvent(CONFIGURATION_UPDATED, payload)
 }

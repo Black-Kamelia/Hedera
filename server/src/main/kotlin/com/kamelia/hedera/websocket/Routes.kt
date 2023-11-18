@@ -1,6 +1,5 @@
 package com.kamelia.hedera.websocket
 
-import com.auth0.jwt.JWT
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.respondNoError
@@ -11,7 +10,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import java.util.*
 
 fun Route.webSocketRoutes() = route("/") {
     authenticate(AuthJwt) {

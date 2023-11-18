@@ -3,7 +3,7 @@ package com.kamelia.hedera.rest.core.auditable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserTable
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable

@@ -20,15 +20,10 @@ import com.kamelia.hedera.rest.configuration.DiskQuotaPolicy
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.util.authToken
-import com.kamelia.hedera.util.jwt
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
-import io.ktor.server.application.*
 import java.util.*
 import kotlin.math.ceil
-import kotlin.properties.Delegates
-import kotlin.properties.Delegates.notNull
 
 private val USERNAME_REGEX = Regex("""^[a-z0-9_\-.]+$""")
 

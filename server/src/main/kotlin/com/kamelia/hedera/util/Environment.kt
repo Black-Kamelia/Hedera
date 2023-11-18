@@ -1,7 +1,7 @@
 package com.kamelia.hedera.util
 
-import io.ktor.http.ContentType
-import io.ktor.server.application.Application
+import io.ktor.http.*
+import io.ktor.server.application.*
 
 object Environment {
 

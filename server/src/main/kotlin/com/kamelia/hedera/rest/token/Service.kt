@@ -3,7 +3,6 @@ package com.kamelia.hedera.rest.token
 import com.kamelia.hedera.core.ActionResponse
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.IllegalActionException
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.asMessage

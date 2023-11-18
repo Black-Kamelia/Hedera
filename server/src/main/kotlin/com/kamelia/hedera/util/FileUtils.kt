@@ -1,7 +1,6 @@
 package com.kamelia.hedera.util
 
 import com.kamelia.hedera.core.UploadCodeGenerationException
-import com.kamelia.hedera.rest.file.File as HederaFile
 import io.ktor.http.content.*
 import java.io.File
 import java.nio.file.Files
@@ -9,6 +8,7 @@ import java.nio.file.Path
 import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.kamelia.hedera.rest.file.File as HederaFile
 
 object FileUtils {
 

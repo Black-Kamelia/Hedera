@@ -8,12 +8,15 @@ const route = useRoute()
 const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
 const { currentRoute } = useRouter()
+const { fetchConfiguration, updateConfiguration } = useGlobalConfiguration()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
     case 'user-connected':
     case 'user-updated': {
-      setUser(payload.data)
+      const user = payload.data
+      setUser(user)
+      if (!user.forceChangePassword && (user.role === 'ADMIN' || user.role === 'OWNER')) fetchConfiguration()
       break
     }
     case 'user-forcefully-logged-out': {
@@ -26,6 +29,9 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
       })
       break
     }
+    case 'configuration-updated':
+      updateConfiguration(payload.data)
+      break
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
@@ -56,6 +62,35 @@ const animation = useLocalStorage('animations', true)
 </template>
 
 <style lang="scss">
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all .5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.slide-left-leave-active,
+.slide-right-leave-active {
+  position: absolute;
+  top: 0;
+}
+
+.slide-left-leave-to,
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-100%) scaleX(1);
+}
+
+.slide-left-enter-from,
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(100%) scaleX(1);
+}
+
+.scroll:not(:has(.slide-left-enter-active)) {
+  overflow-y: auto;
+}
+
 :root {
   --easeInOutExpo: cubic-bezier(0.87, 0, 0.13, 1);
   --easeOutExpo: cubic-bezier(0.16, 1, 0.3, 1);

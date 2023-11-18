@@ -84,25 +84,27 @@ const onSubmit = handleSubmit((values) => {
 
     <div class="mb-3">
       <FormInputText
-        id="password"
+        id="updatePwd_password"
         ref="passwordField"
         class="w-full"
         name="password"
         type="password"
         :label="t('forms.change_password.fields.password')"
         placeholder="••••••••••••••••"
+        autocomplete="new-password"
         @input="hideErrorMessage"
       />
     </div>
 
     <div class="mb-3">
       <FormInputText
-        id="confirmPassword"
+        id="updatePwd_confirmPassword"
         class="w-full"
         name="confirmPassword"
         type="password"
         :label="t('forms.change_password.fields.confirm_password')"
         placeholder="••••••••••••••••"
+        autocomplete="new-password"
         @input="hideErrorMessage"
       />
     </div>

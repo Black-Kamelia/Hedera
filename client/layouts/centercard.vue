@@ -3,18 +3,18 @@ const color = useColorMode()
 </script>
 
 <template>
-  <div class="flex items-center justify-center w-screen h-screen">
+  <div class="flex items-center justify-center w-screen h-screen p-10">
     <div class="background" :class="color.value" />
 
-    <div class="p-card p-10 w-100 sm:w-125 lg:w-150 sm:mx-0 mx-3 overflow-hidden">
+    <div class="p-card main-card overflow-x-hidden scroll max-h-full">
       <slot />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.test {
-  transition: height 0.5s ease-in-out;
+.scroll:not(:has(.slide-left-enter-active)) {
+  overflow-y: auto;
 }
 
 .background {

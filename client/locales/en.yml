@@ -32,12 +32,19 @@ pages:
   login:
     forgot_password: Forgot password?
     title: Log in
+    register: Create an account
     reasons:
       expired: Your session has expired, please log in again
       logout_all: You have been logged out of all devices
       disabled: Your account has been disabled
       password_changed: Your password has been changed, please log in again
       session_terminated: Your session has been terminated
+      registration_disabled: Registrations are not enabled
+  complete_otp:
+    title: Two-factor authentication
+  register:
+    title: Create an account
+    back: Back to login
   change_password:
     title: Change password
     message: You must change your password before continuing
@@ -148,6 +155,19 @@ pages:
     menu:
       general: General
       users: Users
+    general:
+      headers:
+        registrations: Registrations of new users
+      toggle_registration:
+        title: Allow registrations
+        description: If this option is enabled, visitors will be able to create an account on your Hedera instance. Otherwise, only administrators will be able to create accounts.
+      default_disk_quota:
+        title: Default disk space quota
+        description: Set the default disk space quota for users who sign up. It is possible to allow an unlimited quota, but this is strongly discouraged, especially if registrations are allowed and/or the instance is public.
+        unlimited: Unlimited (not recommended)
+        limited: Limited
+        choose: Choose a policy
+        placeholder: Enter a size
     users:
       title: Users
       role:
@@ -160,7 +180,7 @@ pages:
         disabled: Disabled
       table:
         username: Username
-        email: E-mail address
+        email: Email address
         role: Role
         quota: Disk space quota
         quota_help: Sorting is done based on the used disk space.
@@ -318,6 +338,26 @@ forms:
       password: Password
       remember_me: Remember me
       username: Username
+    submit: Log in
+  register:
+    errors:
+      missing_username: Username is required
+      invalid_username: Invalid username format
+      username_too_short: The username must be at least {min} characters long
+      username_too_long: The username must be at most {max} characters long
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+      missing_password: Password is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      missing_password_confirmation: Password confirmation is required
+      passwords_mismatch: The passwords do not match
+    fields:
+      username: Username
+      email: Email address
+      password: Password
+      confirm_password: Password confirmation
+    submit: Submit
   change_password:
     submit: Continue
     errors:
@@ -336,6 +376,7 @@ forms:
       invalid_email: Invalid email address format
     fields:
       email: Email address
+    submit: Send reset link
   update_password:
     submit: Update
     errors:

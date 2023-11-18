@@ -1,12 +1,12 @@
 import type { Ref } from 'vue'
+import useErrorToast from '~/composables/useErrorToast'
 
 export function useSetting<T>(
   setting: Ref<T>,
   mapSetting: (newSetting: T) => Partial<UserSettings>,
 ) {
   const { updateSettings } = useUserSettings()
-  const toast = useToast()
-  const { t, m } = useI18n()
+  const handleError = useErrorToast()
   const isError = ref<boolean>(false)
   const backupValue = shallowRef<T>(setting.value)
 
@@ -24,21 +24,7 @@ export function useSetting<T>(
       .catch((error) => {
         isError.value = true
         setting.value = backupValue.value
-        if (!error.response) {
-          toast.add({
-            severity: 'error',
-            summary: t('errors.unknown'),
-            detail: { text: t('errors.network') },
-            life: 5000,
-          })
-          return
-        }
-        toast.add({
-          severity: 'error',
-          summary: t('error'), // TODO: get error title from backend
-          detail: { text: m(error) },
-          life: 5000,
-        })
+        handleError(error)
       })
   }
 

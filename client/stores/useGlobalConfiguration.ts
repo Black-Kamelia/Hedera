@@ -12,7 +12,7 @@ export interface GlobalConfigurationStore {
 export const useGlobalConfiguration = defineStore('globalConfiguration', (): GlobalConfigurationStore => {
   const toggleRegistrations = ref<boolean>(false)
   const defaultDiskQuotaPolicy = ref<DiskQuotaPolicy>('LIMITED')
-  const defaultDiskQuota = ref<number | null>(524288000)
+  const defaultDiskQuota = ref<number | null>(524288000) // 500 MiB
 
   function updateConfiguration(configuration: Partial<GlobalConfiguration>) {
     if (configuration.enableRegistrations !== undefined) toggleRegistrations.value = configuration.enableRegistrations

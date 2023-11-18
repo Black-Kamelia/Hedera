@@ -15,7 +15,7 @@ export function useConfigurationField<T>(
     backupValue.value = oldValue
   })
 
-  async function patchConfiguration(newSetting: T) {
+  function patchConfiguration(newSetting: T) {
     isError.value = false
     return $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration', { method: 'PATCH', body: mapField(newSetting) })
       .then((response) => {
@@ -50,7 +50,7 @@ export function useConfigurationFields<T extends Record<string, Ref<any>>>(
     watch(fields[key], (_, oldValue) => backupValues.value[key] = oldValue)
   }
 
-  async function patchConfiguration(newSettings: T) {
+  function patchConfiguration(newSettings: T) {
     isError.value = false
     const mapFieldsResult = mapFields(newSettings)
     return $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration', { method: 'PATCH', body: mapFieldsResult })

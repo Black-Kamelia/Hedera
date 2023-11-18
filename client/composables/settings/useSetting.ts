@@ -14,7 +14,7 @@ export function useSetting<T>(
     backupValue.value = oldValue
   })
 
-  async function patchSetting(newSetting: T) {
+  function patchSetting(newSetting: T) {
     isError.value = false
     return $fetchAPI<UserSettings>('/users/settings', { method: 'PATCH', body: mapSetting(newSetting) })
       .then((response) => {

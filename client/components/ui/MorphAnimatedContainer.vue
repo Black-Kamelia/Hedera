@@ -3,10 +3,12 @@ const {
   preventTransition = false,
   animateHeight = true,
   animateWidth = true,
+  transitionDuration = '0.4s',
 } = defineProps<{
   preventTransition?: boolean
   animateHeight?: boolean
   animateWidth?: boolean
+  transitionDuration?: string
 }>()
 
 const child = ref<Nullable<HTMLElement>>(null)
@@ -30,6 +32,8 @@ const { width, height } = useElementSize(child)
 
 <style scoped>
 .morph-transition {
-  transition: width .5s cubic-bezier(0.65, 0, 0.35, 1), height .5s cubic-bezier(0.65, 0, 0.35, 1);
+  transition:
+    width v-bind(transitionDuration) cubic-bezier(0.76, 0, 0.24, 1),
+    height v-bind(transitionDuration) cubic-bezier(0.76, 0, 0.24, 1);
 }
 </style>

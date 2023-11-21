@@ -60,6 +60,9 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+function openRowContextMenu(event: Event) {
+  contextMenu.value?.show(event)
+}
 </script>
 
 <template>
@@ -95,16 +98,6 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         <template #body="slotProps">
           <span v-if="slotProps.data">{{ slotProps.data.username }}</span>
           <PSkeleton v-else width="5rem" height="1rem" />
-        </template>
-      </PColumn>
-
-      <PColumn sortable field="email" :header="t('pages.configuration.users.table.email')">
-        <template #sorticon="slotProps">
-          <SortIcon v-bind="slotProps" />
-        </template>
-        <template #body="slotProps">
-          <span v-if="slotProps.data">{{ slotProps.data.email }}</span>
-          <PSkeleton v-else width="12.5rem" height="1rem" />
         </template>
       </PColumn>
 
@@ -170,6 +163,23 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         <template #body="slotProps">
           <span v-if="slotProps.data">{{ d(slotProps.data.createdAt) }}</span>
           <PSkeleton v-else width="8rem" height="1rem" />
+        </template>
+      </PColumn>
+
+      <PColumn>
+        <template #body="slotProps">
+          <PButton
+            severity="secondary"
+            text
+            rounded
+            icon="i-tabler-dots-vertical"
+            size="small"
+            @click="(e) => {
+              e.stopPropagation()
+              openRowContextMenu(e)
+              selectedRow = slotProps.data
+            }"
+          />
         </template>
       </PColumn>
     </PDataTable>

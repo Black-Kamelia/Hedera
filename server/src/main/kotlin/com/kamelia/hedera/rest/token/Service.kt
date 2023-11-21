@@ -43,12 +43,11 @@ object PersonalTokenService {
         tokenId: UUID,
     ): ActionResponse<Nothing> = Connection.transaction {
         val token = PersonalToken.findById(tokenId) ?: throw PersonalTokenNotFoundException()
-        val user = User[userId]
 
         if (token.deleted) throw PersonalTokenNotFoundException()
         if (token.ownerId != userId) throw IllegalActionException()
 
-        token.delete(user)
+        token.delete()
         ActionResponse.ok(
             title = Actions.Tokens.Delete.Success.TITLE.asMessage(),
             message = Actions.Tokens.Delete.Success.MESSAGE.asMessage("name" to token.name)

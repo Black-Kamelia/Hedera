@@ -84,17 +84,8 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="created_by" type="UUID">
-                <constraints nullable="false"/>
-            </column>
             <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
-            </column>
-            <column name="updated_by" type="UUID">
-                <constraints nullable="true"/>
-            </column>
-            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
-                <constraints nullable="true"/>
             </column>
         </createTable>
 
@@ -102,19 +93,9 @@
                                  baseColumnNames="owner"
                                  constraintName="fk_personal_tokens__owner__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id"/>
+                                 referencedColumnNames="id"
+                                 deleteCascade="true" />
 
-        <addForeignKeyConstraint baseTableName="personal_tokens"
-                                 baseColumnNames="created_by"
-                                 constraintName="fk_personal_tokens__created_by__id"
-                                 referencedTableName="users"
-                                 referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint baseTableName="personal_tokens"
-                                 baseColumnNames="updated_by"
-                                 constraintName="fk_personal_tokens__updated_by__id"
-                                 referencedTableName="users"
-                                 referencedColumnNames="id"/>
     </changeSet>
 
     <changeSet author="system" id="init-1.0-files">

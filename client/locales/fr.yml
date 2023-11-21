@@ -200,6 +200,7 @@ pages:
       edit_dialog:
         title: Éditer un utilisateur
         password_summary: Par mesure de sécurité, le mot de passe d’un utilisateur ne peut être modifié que par lui-même.
+        password_change_yours: Modifier votre mot de passe
         cancel: Annuler
         submit: Sauvegarder
       activate_dialog:

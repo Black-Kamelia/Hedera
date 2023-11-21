@@ -200,6 +200,7 @@ pages:
       edit_dialog:
         title: Edit a user
         password_summary: For security reasons, a user’s password can only be changed by themselves.
+        password_change_yours: Change your password
         cancel: Cancel
         submit: Save
       activate_dialog:

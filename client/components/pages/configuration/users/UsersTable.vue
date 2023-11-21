@@ -165,7 +165,7 @@ function openRowContextMenu(event: Event) {
         </template>
       </PColumn>
 
-      <PColumn>
+      <PColumn class="w-3em">
         <template #body="slotProps">
           <PButton
             severity="secondary"

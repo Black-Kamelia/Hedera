@@ -90,6 +90,9 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+function openRowContextMenu(event: Event) {
+  contextMenu.value?.show(event)
+}
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   fileDoubleClickEvent.emit({ file: event.data })
@@ -258,6 +261,23 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ d(slotProps.data.createdAt) }}</span>
         <PSkeleton v-else width="8rem" height="1rem" />
+      </template>
+    </PColumn>
+
+    <PColumn class="w-3em">
+      <template #body="slotProps">
+        <PButton
+          severity="secondary"
+          text
+          rounded
+          icon="i-tabler-dots-vertical"
+          size="small"
+          @click="(e) => {
+            e.stopPropagation()
+            openRowContextMenu(e)
+            selectedRow = slotProps.data
+          }"
+        />
       </template>
     </PColumn>
   </PDataTable>

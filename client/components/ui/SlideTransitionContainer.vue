@@ -37,7 +37,7 @@ const cardTransition = ref(false)
 .slide-left-leave-active,
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transition: all .5s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: all 0.4s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 .slide-left-leave-active,

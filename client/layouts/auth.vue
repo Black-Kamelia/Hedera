@@ -25,7 +25,7 @@ useMutationObserver(child, (mutations) => {
         {{ t('app_name') }}
       </h1>
 
-      <MorphAnimatedContainer :prevent-transition="!cardTransition">
+      <MorphAnimatedContainer :prevent-transition="!cardTransition" transition-duration="0.5s">
         <div ref="child">
           <slot />
         </div>

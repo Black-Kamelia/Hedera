@@ -62,27 +62,27 @@ const animation = useLocalStorage('animations', true)
 </template>
 
 <style lang="scss">
-.slide-left-enter-active,
-.slide-left-leave-active,
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all .5s cubic-bezier(0.65, 0, 0.35, 1);
+.card-slide-left-enter-active,
+.card-slide-left-leave-active,
+.card-slide-right-enter-active,
+.card-slide-right-leave-active {
+  transition: all .5s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-.slide-left-leave-active,
-.slide-right-leave-active {
+.card-slide-left-leave-active,
+.card-slide-right-leave-active {
   position: absolute;
   top: 0;
 }
 
-.slide-left-leave-to,
-.slide-right-enter-from {
+.card-slide-left-leave-to,
+.card-slide-right-enter-from {
   opacity: 0;
   transform: translateX(-100%) scaleX(1);
 }
 
-.slide-left-enter-from,
-.slide-right-leave-to {
+.card-slide-left-enter-from,
+.card-slide-right-leave-to {
   opacity: 0;
   transform: translateX(100%) scaleX(1);
 }

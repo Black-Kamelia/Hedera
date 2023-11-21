@@ -272,8 +272,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
           rounded
           icon="i-tabler-dots-vertical"
           size="small"
-          @click="(e) => {
-            e.stopPropagation()
+          @click.stop="(e) => {
             openRowContextMenu(e)
             selectedRow = slotProps.data
           }"

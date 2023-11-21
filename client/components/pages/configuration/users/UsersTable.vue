@@ -40,7 +40,6 @@ const selectedRowId = computed(() => selectedRow.value?.id)
 const loading = computed(() => pending.value && debouncedPending.value)
 
 const createUserDialog = ref(false)
-const editUserDialog = ref(false)
 
 provide(UsersTableKey, {
   selectedRow,
@@ -66,7 +65,7 @@ function openRowContextMenu(event: Event) {
 </script>
 
 <template>
-  <UsersTableContextMenu @on-edit="editUserDialog = true" />
+  <UsersTableContextMenu />
 
   <div class="p-card flex flex-row items-center gap-7 w-full overflow-hidden">
     <PDataTable
@@ -195,5 +194,4 @@ function openRowContextMenu(event: Event) {
   </div>
 
   <CreateUserDialog v-model:visible="createUserDialog" />
-  <EditUserDialog v-model:visible="editUserDialog" />
 </template>

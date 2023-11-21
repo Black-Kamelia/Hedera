@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { PContextMenu } from '#components'
 
-const emit = defineEmits<{
-  (event: 'onEdit'): void
-}>()
-
 const cm = inject(UsersTableContextMenuKey)
 
 const { t } = useI18n()
@@ -14,6 +10,8 @@ const { selectedRow, selectedRowId, unselectRow, refresh } = useUsersTable()
 
 const { activate, deactivate } = useUpdateUserStatus()
 const deleteUser = useDeleteUser()
+
+const editUserDialog = ref(false)
 
 function disabled() {
   if (!selectedRowId.value) return true
@@ -67,7 +65,7 @@ const menuModel = computed(() => [
   {
     label: t('pages.configuration.users.context_menu.edit'),
     icon: 'i-tabler-pencil',
-    command: () => emit('onEdit'),
+    command() { editUserDialog.value = true },
   },
   statusToggle.value,
   { separator: true },
@@ -98,6 +96,6 @@ const menuModel = computed(() => [
 <template>
   <PContextMenu ref="cm" :model="menuModel" />
 
-  <PDynamicDialog />
+  <EditUserDialog v-model:visible="editUserDialog" />
   <ConfirmDialog />
 </template>

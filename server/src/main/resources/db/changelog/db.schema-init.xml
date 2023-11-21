@@ -102,7 +102,8 @@
                                  baseColumnNames="owner"
                                  constraintName="fk_personal_tokens__owner__id"
                                  referencedTableName="users"
-                                 referencedColumnNames="id"/>
+                                 referencedColumnNames="id"
+                                 deleteCascade="true" />
 
         <addForeignKeyConstraint baseTableName="personal_tokens"
                                  baseColumnNames="created_by"

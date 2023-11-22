@@ -508,6 +508,7 @@ actions:
     update:
       success:
         title: User edited
+        title_self: Your profile has been edited
         message: The user “{username}” has been edited
       error:
         title: Could not edit user

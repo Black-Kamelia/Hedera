@@ -228,6 +228,8 @@ pages:
       sessions: Sessions
       tokens: Jetons personnels
       settings: Paramètres
+    details:
+      title: Informations du compte
     security:
       change_password: Modifier le mot de passe
     tokens:
@@ -378,6 +380,16 @@ forms:
     fields:
       email: Adresse e-mail
     submit: Envoyer le lien de réinitialisation
+  update_details:
+    submit: Mettre à jour
+    errors:
+      missing_username: Nom d’utilisateur requis
+      invalid_username: Nom d’utilisateur invalide
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
   update_password:
     submit: Mettre à jour
     errors:

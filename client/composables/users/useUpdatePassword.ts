@@ -13,7 +13,7 @@ export default function useUpdatePassword() {
       body: { oldPassword, newPassword },
       params: { forced },
     })
-  })
+  }, true)
 
   return (oldPassword: string | null, newPassword: string, forced = false) => new Promise<void | MessageDTO<UserRepresentationDTO>>((resolve, reject) => {
     (call(oldPassword, newPassword, forced) as Promise<void | MessageDTO<UserRepresentationDTO>>)

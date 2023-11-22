@@ -8,11 +8,8 @@ export default function useUpdateDetails() {
   }
 
   const call = useFeedbackCall((dto: Partial<UserUpdateDTO>) => {
-    return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/users/${user.value!.id}`, {
-      method: 'PATCH',
-      body: dto,
-    })
-  })
+    return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/users/${user.value!.id}`, { method: 'PATCH', body: dto })
+  }, true)
 
   return (dto: Partial<UserUpdateDTO>) => new Promise<void | MessageDTO<UserRepresentationDTO>>((resolve, reject) => {
     (call(dto) as Promise<void | MessageDTO<UserRepresentationDTO>>)

@@ -4,7 +4,9 @@ import { UPDATE_PASSWORD_FORM } from '~/utils/forms'
 
 const { t, m } = useI18n()
 const updatePassword = useUpdatePassword()
+const setFieldErrors = useFeedbackFormErrors()
 
+const loading = ref(false)
 const oldPasswordField = ref<Nullable<CompElement>>(null)
 const newPasswordField = ref<Nullable<CompElement>>(null)
 const confirmNewPasswordField = ref<Nullable<CompElement>>(null)
@@ -25,18 +27,18 @@ const { handleSubmit, resetForm, setFieldError } = useForm({
 })
 
 const onSubmit = handleSubmit((values) => {
+  loading.value = true
   updatePassword(values.oldPassword, values.newPassword)
     .then(() => resetForm())
     .catch((error) => {
-      for (const field in error.response._data.fields) {
-        setFieldError(field, m(error.response._data.fields[field]))
-      }
+      setFieldErrors(error.response._data.fields, setFieldError)
     })
+    .finally(() => loading.value = false)
 })
 </script>
 
 <template>
-  <form v-focus-trap @submit="onSubmit">
+  <form @submit="onSubmit">
     <div class="mb-3">
       <FormInputText
         id="oldPassword"
@@ -68,7 +70,7 @@ const onSubmit = handleSubmit((values) => {
       />
     </div>
     <div class="flex flex-row-reverse items-center gap-3 pt-3">
-      <PButton :label="t('forms.update_password.submit')" type="submit" />
+      <PButton :label="t('forms.update_password.submit')" type="submit" :loading="loading" />
     </div>
   </form>
 </template>

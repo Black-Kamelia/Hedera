@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
 
-const { t, m } = useI18n()
+const { t } = useI18n()
 const updateDetails = useUpdateDetails()
+const setFieldErrors = useFeedbackFormErrors()
 const { user } = useAuth()
+
+const loading = ref(false)
 
 const schema = object({
   username: string()
@@ -12,17 +15,15 @@ const schema = object({
     .required(t('forms.update_details.errors.missing_email'))
     .email(t('forms.update_details.errors.invalid_email')),
 })
-const { handleSubmit, resetForm, setFieldError, setFieldValue } = useForm({
+const { handleSubmit, setFieldError, setFieldValue } = useForm({
   validationSchema: schema,
 })
 
 const onSubmit = handleSubmit((values) => {
+  loading.value = true
   updateDetails(values)
-    .catch((error) => {
-      for (const field in error.response._data.fields) {
-        setFieldError(field, m(error.response._data.fields[field]))
-      }
-    })
+    .catch(error => setFieldErrors(error.response._data.fields, setFieldError))
+    .finally(() => loading.value = false)
 })
 
 onMounted(() => {
@@ -54,7 +55,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="flex flex-row-reverse items-center gap-3 pt-3">
-      <PButton :label="t('forms.update_details.submit')" type="submit" />
+      <PButton :label="t('forms.update_details.submit')" type="submit" :loading="loading" />
     </div>
   </form>
 </template>

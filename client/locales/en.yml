@@ -228,6 +228,8 @@ pages:
       sessions: Sessions
       tokens: Personal tokens
       settings: Settings
+    details:
+      title: Account details
     security:
       change_password: Change password
     tokens:
@@ -378,6 +380,16 @@ forms:
     fields:
       email: Email address
     submit: Send reset link
+  update_details:
+    submit: Update
+    errors:
+      missing_username: Username is required
+      invalid_username: Invalid username
+      missing_email: Email address is required
+      invalid_email: Invalid email address format
+    fields:
+      username: Username
+      email: Email address
   update_password:
     submit: Update
     errors:
@@ -496,6 +508,7 @@ actions:
     update:
       success:
         title: User edited
+        title_self: Your profile has been edited
         message: The user “{username}” has been edited
       error:
         title: Could not edit user

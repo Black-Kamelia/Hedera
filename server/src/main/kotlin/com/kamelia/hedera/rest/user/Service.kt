@@ -144,11 +144,18 @@ object UserService {
             catchErrors()
 
             toEdit.update(dto, updater)
-            ActionResponse.ok(
-                title = Actions.Users.Update.Success.TITLE.asMessage(),
-                message = Actions.Users.Update.Success.MESSAGE.asMessage("username" to toEdit.username),
-                payload = toEdit.toRepresentationDTO(),
-            )
+            if (id == updaterID) {
+                ActionResponse.ok(
+                    title = Actions.Users.Update.Success.TITLE_SELF.asMessage(),
+                    payload = toEdit.toRepresentationDTO(),
+                )
+            } else {
+                ActionResponse.ok(
+                    title = Actions.Users.Update.Success.TITLE.asMessage(),
+                    message = Actions.Users.Update.Success.MESSAGE.asMessage("username" to toEdit.username),
+                    payload = toEdit.toRepresentationDTO(),
+                )
+            }
         }
     }
 

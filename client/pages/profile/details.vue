@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import EditDetailsForm from '~/components/pages/profile/details/EditDetailsForm.vue'
-
 const { t } = useI18n()
 </script>
 

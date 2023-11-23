@@ -2,7 +2,7 @@
 import { object, string, ref as yref } from 'yup'
 import { UPDATE_PASSWORD_FORM } from '~/utils/forms'
 
-const { t, m } = useI18n()
+const { t } = useI18n()
 const updatePassword = useUpdatePassword()
 const setFieldErrors = useFeedbackFormErrors()
 

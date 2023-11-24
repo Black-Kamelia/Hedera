@@ -1,4 +1,3 @@
-import { useToast } from 'primevue/usetoast'
 import type { MessageDTO } from '~/utils/messages'
 
 export default function useFeedbackCall<

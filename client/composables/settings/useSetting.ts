@@ -1,4 +1,3 @@
-import { useToast } from 'primevue/usetoast'
 import type { Ref } from 'vue'
 
 export function useSetting<T>(

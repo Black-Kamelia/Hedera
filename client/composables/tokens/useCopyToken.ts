@@ -1,5 +1,3 @@
-import { useToast } from 'primevue/usetoast'
-
 export default function useCopyToken() {
   const { t } = useI18n()
   const toast = useToast()

@@ -1,5 +1,3 @@
-import { useToast } from 'primevue/usetoast'
-
 export default function useCopyFileLink() {
   const { t } = useI18n()
   const toast = useToast()

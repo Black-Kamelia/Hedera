@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useConfirm } from 'primevue/useconfirm'
 import { PContextMenu } from '#components'
 
 const cm = inject(FileTableContextMenuKey)

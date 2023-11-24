@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useConfirm } from 'primevue/useconfirm'
 import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
 import { UPDATE_PASSWORD_FORM } from '~/utils/forms'

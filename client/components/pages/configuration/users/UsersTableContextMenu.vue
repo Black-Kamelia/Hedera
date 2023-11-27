@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PContextMenu } from '#components'
+import DeleteUserDialog from '~/components/pages/configuration/users/DeleteUserDialog.vue'
 
 const cm = inject(UsersTableContextMenuKey)
 
@@ -12,6 +13,7 @@ const { activate, deactivate } = useUpdateUserStatus()
 const deleteUser = useDeleteUser()
 
 const editUserDialog = ref(false)
+const deleteUserDialog = ref(false)
 
 function disabled() {
   if (!selectedRowId.value) return true
@@ -73,20 +75,21 @@ const menuModel = computed(() => [
     label: t('pages.configuration.users.context_menu.delete'),
     icon: 'i-tabler-trash',
     command() {
-      confirm.require({
-        message: t('pages.configuration.users.delete_dialog.summary'),
-        header: t('pages.configuration.users.delete_dialog.title'),
-        acceptIcon: 'i-tabler-trash',
-        acceptLabel: t('pages.configuration.users.delete_dialog.submit'),
-        acceptClass: 'p-button-danger',
-        rejectLabel: t('pages.configuration.users.delete_dialog.cancel'),
-        accept: () => {
-          if (!selectedRowId.value) return
-          deleteUser(selectedRowId.value)
-            .then(refresh)
-            .finally(unselectRow)
-        },
-      })
+      deleteUserDialog.value = true
+      // confirm.require({
+      //  message: t('pages.configuration.users.delete_dialog.summary'),
+      //  header: t('pages.configuration.users.delete_dialog.title'),
+      //  acceptIcon: 'i-tabler-trash',
+      //  acceptLabel: t('pages.configuration.users.delete_dialog.submit'),
+      //  acceptClass: 'p-button-danger',
+      //  rejectLabel: t('pages.configuration.users.delete_dialog.cancel'),
+      //  accept: () => {
+      //    if (!selectedRowId.value) return
+      //    deleteUser(selectedRowId.value)
+      //      .then(refresh)
+      //      .finally(unselectRow)
+      //  },
+      // })
     },
     disabled,
   },
@@ -97,5 +100,6 @@ const menuModel = computed(() => [
   <PContextMenu ref="cm" :model="menuModel" />
 
   <EditUserDialog v-model:visible="editUserDialog" />
+  <DeleteUserDialog v-model:visible="deleteUserDialog" />
   <ConfirmDialog />
 </template>

@@ -5,6 +5,7 @@ const { data } = defineProps<{
 
 const el = ref()
 const hovered = useElementHover(el)
+const previewOpen = ref(false)
 
 const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
 
@@ -29,7 +30,14 @@ const icon = computed(() => {
   <div
     ref="el"
     class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
+    @click="previewOpen = true"
   >
+    <PDialog v-model:visible="previewOpen" modal>
+      <template #container>
+        <p>MEDIA</p>
+      </template>
+    </PDialog>
+
     <div
       class="absolute flex flex-center w-full h-full" :class="{
         preview: !isLoading && !thumbnail,

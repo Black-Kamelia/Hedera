@@ -1,10 +1,6 @@
 <script lang="ts" setup>
 import { object, string, ref as yref } from 'yup'
 
-defineEmits<{
-  (event: 'completed', payload: UserRepresentationDTO): void
-}>()
-
 const { t } = useI18n()
 const { selectedRow, refresh } = useUsersTable()
 const deleteUser = useDeleteUser()

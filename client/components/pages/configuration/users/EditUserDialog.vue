@@ -1,10 +1,6 @@
 <script lang="ts" setup>
 import { boolean, number, object, string } from 'yup'
 
-defineEmits<{
-  (event: 'completed', payload: UserRepresentationDTO): void
-}>()
-
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
 const { user } = useAuth()

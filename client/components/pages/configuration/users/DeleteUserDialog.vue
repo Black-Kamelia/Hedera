@@ -87,6 +87,7 @@ watch(visible, (val) => {
         autocomplete="off"
         autofocus
         @keydown.enter="submit"
+        @paste.prevent
       />
     </div>
 

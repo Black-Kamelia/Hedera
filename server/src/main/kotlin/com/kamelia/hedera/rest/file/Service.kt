@@ -5,6 +5,7 @@ import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
@@ -18,6 +19,8 @@ import com.kamelia.hedera.rest.token.PersonalToken
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.FileUtils
+import com.kamelia.hedera.util.toUUID
+import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -25,6 +28,7 @@ import java.util.*
 import kotlin.math.ceil
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
+val PERSONAL_TOKEN_REGEX = """^[a-f0-9]{64}$""".toRegex()
 
 object FileService {
 
@@ -32,11 +36,15 @@ object FileService {
         part: PartData.FileItem,
         creatorToken: String
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
-        val token = PersonalToken.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
+        if (!PERSONAL_TOKEN_REGEX.matches(creatorToken)) throw ExpiredOrInvalidTokenException()
 
-        if (token.deleted) throw ExpiredOrInvalidTokenException()
+        val (tokenId, token) = creatorToken.substring(0, 32) to creatorToken.substring(32)
 
-        handleFile(part, token.owner, token)
+        val personalToken = PersonalToken.findById(tokenId.toUUIDShort()) ?: throw ExpiredOrInvalidTokenException()
+        if (personalToken.deleted) throw ExpiredOrInvalidTokenException()
+        if (!Hasher.verify(token, personalToken.token).verified) throw ExpiredOrInvalidTokenException()
+
+        handleFile(part, personalToken.owner, personalToken)
     }
 
     suspend fun handleFile(

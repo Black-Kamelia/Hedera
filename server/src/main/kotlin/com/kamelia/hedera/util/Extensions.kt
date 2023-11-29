@@ -82,6 +82,11 @@ fun String.toUUID(): UUID = try {
     throw InvalidUUIDException()
 }
 
+fun String.toUUIDShort(): UUID {
+    val uuid = this.replaceFirst("""^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$""".toRegex(), "$1-$2-$3-$4-$5")
+    return uuid.toUUID()
+}
+
 val UUIDEntity.uuid: UUID
     get() = id.value
 

@@ -36,12 +36,9 @@ const submit = handleSubmit(async () => {
 })
 
 watch(visible, (val) => {
-  if (val) {
-    if (!selectedRow.value) return
-    setValues({
-      targetUsername: selectedRow.value.username,
-    })
-  }
+  if (!val) return
+  if (!selectedRow.value) return
+  setValues({ targetUsername: selectedRow.value.username })
 })
 </script>
 

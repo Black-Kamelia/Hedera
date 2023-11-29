@@ -7,6 +7,10 @@ export default function useTheme() {
       link: [
         {
           rel: 'stylesheet',
+          href: '/assets/css/reset.css',
+        },
+        {
+          rel: 'stylesheet',
           href: theme.main,
         },
         {

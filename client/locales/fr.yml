@@ -215,7 +215,8 @@ pages:
         submit: Désactiver l’utilisateur
       delete_dialog:
         title: Supprimer un utilisateur
-        summary: Cette action est irréversible et tous les fichiers de l’utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
+        summary: L'utilisateur {username} va être supprimé ainsi que tous ses fichiers. Cet utilisateur ne pourra plus se connecter ni envoyer de nouveaux fichiers. Cette action est irréversible.
+        input: Pour confirmer, veuillez saisir {username} dans le champ ci-dessous.
         cancel: Annuler
         submit: Supprimer
   debug:
@@ -444,6 +445,10 @@ forms:
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
       unlimited_disk_quota: Autoriser un quota d’espace disque illimité
+  delete_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      username_mismatch: Le nom d’utilisateur ne correspond pas
   rename_file:
     submit: Renommer
     cancel: Annuler

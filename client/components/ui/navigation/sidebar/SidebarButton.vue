@@ -21,7 +21,7 @@ const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) 
 </script>
 
 <template>
-  <PButton rounded class="flex flex-row gap-4 items-start" :class="{ active: activeRoute, open }">
+  <PButton rounded class="flex flex-row gap-4 items-center" :class="{ active: activeRoute, open }">
     <div class="flex">
       <slot name="icon">
         <i :class="icon" />

@@ -1,7 +1,33 @@
-body, h1, h2, h3, h4, h5, h6, hr, p {
+* {
+  font-weight: 400;
+}
+
+.no-animation,
+.no-animation *,
+.no-animation *:before,
+.no-animation *:after {
+  transition: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition-duration: 0s !important;
+  -webkit-transition-duration: 0s !important;
+  -moz-transition-duration: 0s !important;
+  -o-transition-duration: 0s !important;
+  animation: none !important;
+  -moz-animation: none !important;
+  -webkit-animation: none !important;
+  -o-animation: none !important;
+}
+
+body, h1, h2, h3, h4, h5, h6, hr, p, pre {
   margin: 0;
 }
 
 body {
   color: var(--text-color);
+}
+
+html {
+  line-height: 1.5;
 }

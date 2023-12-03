@@ -44,7 +44,7 @@ watch(visible, (visible) => {
   >
     <div class="grid grid-cols-1 xl:grid-cols-2 grid-gap-6 justify-items-stretch">
       <div class="flex flex-col gap-2">
-        <h2>{{ t('pages.files.table.visibility') }}</h2>
+        <p>{{ t('pages.files.table.visibility') }}</p>
         <PSelectButton
           v-model="localFilters.visibility" class="w-full" :options="visibilityOptions" option-label="name" option-value="value" multiple
           aria-labelledby="multiple" option-disabled="disabled"
@@ -59,7 +59,7 @@ watch(visible, (visible) => {
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>{{ t('pages.files.table.creation_date') }}</h2>
+        <p>{{ t('pages.files.table.creation_date') }}</p>
         <div class="flex flex-col sm:flex-row gap-3">
           <PCalendar
             v-model="localFilters.startingDate"
@@ -95,7 +95,7 @@ watch(visible, (visible) => {
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>{{ t('pages.files.table.size') }}</h2>
+        <p>{{ t('pages.files.table.size') }}</p>
         <div class="flex flex-col sm:flex-row gap-3">
           <FileSizeInput v-model="localFilters.minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
           <FileSizeInput v-model="localFilters.maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
@@ -103,7 +103,7 @@ watch(visible, (visible) => {
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>{{ t('pages.files.table.views') }}</h2>
+        <p>{{ t('pages.files.table.views') }}</p>
         <div class="flex flex-col sm:flex-row gap-3">
           <PInputNumber v-model="localFilters.minimalViews" disabled class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
           <PInputNumber v-model="localFilters.maximalViews" disabled class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
@@ -111,7 +111,7 @@ watch(visible, (visible) => {
       </div>
 
       <div class="flex flex-col gap-2">
-        <h2>{{ t('pages.files.table.format') }}</h2>
+        <p>{{ t('pages.files.table.format') }}</p>
         <PMultiSelect
           v-model="localFilters.formats"
           :options="formats"

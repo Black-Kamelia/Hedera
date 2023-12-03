@@ -14,11 +14,9 @@ function getIcon(severity: string, detail?: { icon: string }) {
   <PToast
     position="bottom-right"
     :pt="{
-      buttonContainer: { class: 'display-none' },
       container: { class: 'inline-block' },
       message: { class: 'flex flex-col items-end' },
     }"
-    @click="toast.removeAllGroups()"
   >
     <template #message="{ message: { detail, severity, summary } }">
       <div class="flex gap-2 pr-1" :class="{ 'items-center': !detail?.text }">

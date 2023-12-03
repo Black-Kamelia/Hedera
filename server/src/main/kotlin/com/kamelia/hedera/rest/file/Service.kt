@@ -38,9 +38,10 @@ object FileService {
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         if (!PERSONAL_TOKEN_REGEX.matches(creatorToken)) throw ExpiredOrInvalidTokenException()
 
-        val (tokenId, token) = creatorToken.substring(0, 32) to creatorToken.substring(32)
+        val tokenId = creatorToken.substring(0, 32).toUUIDShort()
+        val token = creatorToken.substring(32)
 
-        val personalToken = PersonalToken.findById(tokenId.toUUIDShort()) ?: throw ExpiredOrInvalidTokenException()
+        val personalToken = PersonalToken.findById(tokenId) ?: throw ExpiredOrInvalidTokenException()
         if (personalToken.deleted) throw ExpiredOrInvalidTokenException()
         if (!Hasher.verify(token, personalToken.token).verified) throw ExpiredOrInvalidTokenException()
 

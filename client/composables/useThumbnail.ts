@@ -17,7 +17,7 @@ export function useThumbnail(code: string, mimeType: string) {
   const isLoading = ref(true)
   const isError = ref(false)
 
-  if (mimeType.startsWith('image/')) {
+  if (mimeTypeToMediaType(mimeType) === 'image') {
     $fetchAPI<Blob>(`/files/${code}`, { responseType: 'blob' })
       .then(response => blobToBase64(response))
       .then(base64 => thumbnail.value = base64)

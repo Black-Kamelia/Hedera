@@ -36,28 +36,32 @@ function zoomIn() {
 function zoomOut() {
   if (zoom.value > 0.5) zoom.value = zoom.value - 0.25
 }
+
+const controls = [
+  {
+    icon: 'i-tabler-rotate-clockwise-2',
+    command() { rotateRight() },
+  },
+  {
+    icon: 'i-tabler-rotate-2',
+    command() { rotateLeft() },
+  },
+  {
+    icon: 'i-tabler-zoom-in',
+    command() { zoomIn() },
+    disabled: computed(() => zoom.value >= 2),
+  },
+  {
+    icon: 'i-tabler-zoom-out',
+    command() { zoomOut() },
+    disabled: computed(() => zoom.value <= 0.5),
+  },
+]
 </script>
 
 <template>
   <MediaPreview
-    v-model:open="previewOpen" :file="file" :controls="[
-      {
-        icon: 'i-tabler-rotate-clockwise-2',
-        command() { rotateRight() },
-      },
-      {
-        icon: 'i-tabler-rotate-2',
-        command() { rotateLeft() },
-      },
-      {
-        icon: 'i-tabler-zoom-in',
-        command() { zoomIn() },
-      },
-      {
-        icon: 'i-tabler-zoom-out',
-        command() { zoomOut() },
-      },
-    ]" @close="reset()"
+    v-model:open="previewOpen" :file="file" :controls="controls" @close="reset()"
   >
     <PProgressSpinner
       v-if="pending" :pt="{

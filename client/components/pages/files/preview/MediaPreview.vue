@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import type { Ref } from 'vue'
+
 interface Control {
   icon: string
   command: () => any
+  disabled?: Ref<boolean>
 }
 
 const { file, controls = [] } = defineProps<{
@@ -68,6 +71,7 @@ function onClose(closeCallback: () => void) {
           v-for="control in controls"
           :key="control"
           :icon="control.icon"
+          :disabled="control.disabled?.value"
           size="small"
           text
           rounded

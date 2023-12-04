@@ -43,11 +43,11 @@ function zoomOut() {
     v-model:open="previewOpen" :file="file" :controls="[
       {
         icon: 'i-tabler-rotate-clockwise-2',
-        command() { rotateLeft() },
+        command() { rotateRight() },
       },
       {
         icon: 'i-tabler-rotate-2',
-        command() { rotateRight() },
+        command() { rotateLeft() },
       },
       {
         icon: 'i-tabler-zoom-in',
@@ -59,7 +59,16 @@ function zoomOut() {
       },
     ]" @close="reset()"
   >
-    <PProgressSpinner v-if="pending" />
+    <PProgressSpinner
+      v-if="pending" :pt="{
+        circle: {
+          style: {
+            stroke: 'white',
+            animation: 'p-progress-spinner-dash 1.5s ease-in-out infinite',
+          },
+        },
+      }"
+    />
     <img
       v-else-if="!pending && !error"
       class="pointer-events-auto z-1000 max-h-full rounded-lg object-contain image-preview select-none"

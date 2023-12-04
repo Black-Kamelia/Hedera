@@ -54,6 +54,10 @@ pages:
   files:
     title: Fichiers
     link_copied: Le lien a été copié dans le presse-papier
+    preview:
+      download: Télécharger
+      failed: Impossible de charger l’aperçu
+      no_preview: Aucun aperçu disponible
     visibility:
       public: Public
       private: Privé

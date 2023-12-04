@@ -54,6 +54,10 @@ pages:
   files:
     title: Files
     link_copied: The link has been copied to the clipboard
+    preview:
+      download: Download
+      failed: Failed to load preview
+      no_preview: No preview available
     visibility:
       public: Public
       private: Private

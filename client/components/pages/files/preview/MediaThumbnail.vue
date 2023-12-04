@@ -45,10 +45,8 @@ const icon = computed(() => {
     <MediaPreview v-else v-model:open="previewOpen" :file="data" />
 
     <div
-      class="absolute flex flex-center w-full h-full preview" :class="{
-        //preview: !isLoading && !thumbnail,
-        error: !isLoading && isError,
-      }"
+      class="absolute flex flex-center w-full h-full preview"
+      :class="{ error: !isLoading && isError }"
     >
       <div v-if="isLoading || thumbnail" class="h-full w-full">
         <PSkeleton v-if="isLoading" width="6rem" height="4rem" />
@@ -65,7 +63,7 @@ const icon = computed(() => {
 
     <Transition>
       <a
-        v-show="hovered"
+        v-show="hovered || previewOpen"
         class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-md border-rounded-2 w-full h-full text-white cursor-pointer"
         @click="previewOpen = true"
       >

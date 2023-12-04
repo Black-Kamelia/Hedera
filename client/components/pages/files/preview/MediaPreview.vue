@@ -14,6 +14,16 @@ const emit = defineEmits<{
 }>()
 
 const previewOpen = defineModel<boolean>('open', { default: false })
+const { t } = useI18n()
+
+function download() {
+  $fetchAPI<Blob>(`/files/${file.code}`)
+    .then(response => downloadBlob(response, file.name))
+}
+
+function open() {
+  window.open(`/m/${file.code}`)
+}
 
 function onClose(closeCallback: () => void) {
   closeCallback()
@@ -48,6 +58,13 @@ function onClose(closeCallback: () => void) {
           @click="onClose(closeCallback)"
         />
         <PButton
+          icon="i-tabler-external-link"
+          size="small"
+          text
+          rounded
+          @click="open()"
+        />
+        <PButton
           v-for="control in controls"
           :key="control"
           :icon="control.icon"
@@ -59,7 +76,20 @@ function onClose(closeCallback: () => void) {
       </div>
       <div class="pointer-events-none w-screen h-screen">
         <div class="preview relative flex flex-row items-center justify-center p-25 h-full w-full max-h-100vh">
-          <slot />
+          <slot>
+            <div class="text-white pointer-events-auto flex flex-col items-center justify-center gap-5">
+              <i class="text-5xl" :class="mimeTypeToIcon(file.mimeType)" />
+              <h1 class="text-2xl font-semibold">
+                {{ t('pages.files.preview.no_preview') }}
+              </h1>
+              <PButton
+                icon="i-tabler-download"
+                :label="t('pages.files.preview.download')"
+                rounded
+                @click="download()"
+              />
+            </div>
+          </slot>
         </div>
       </div>
 
@@ -87,7 +117,7 @@ function onClose(closeCallback: () => void) {
 
 .blur-pill {
   background-color: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(7px);
   border-radius: 9999px;
   color: white;
 }
@@ -162,7 +192,7 @@ function onClose(closeCallback: () => void) {
 
   .title,
   .controls {
-    transition: transform 0.35s cubic-bezier(0.5, 0, 0.75, 0);
+    transition: transform 0.4s cubic-bezier(0.5, 1, 0.89, 1);
   }
 }
 </style>

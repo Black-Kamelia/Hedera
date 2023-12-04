@@ -5,6 +5,14 @@ const { file } = defineProps<{
 
 const previewOpen = defineModel<boolean>('open', { default: false })
 
+const { t } = useI18n()
+const { data, pending, error, execute } = useLazyFetchAPI<Blob>(`/files/${file.code}`, { immediate: false })
+const base64Data = computed(() => data.value ? URL.createObjectURL(data.value) : null)
+
+watch(previewOpen, (val) => {
+  if (val) execute()
+})
+
 const rotation = ref(0)
 const zoom = ref(1)
 
@@ -51,47 +59,22 @@ function zoomOut() {
       },
     ]" @close="reset()"
   >
+    <PProgressSpinner v-if="pending" />
     <img
+      v-else-if="!pending && !error"
       class="pointer-events-auto z-1000 max-h-full rounded-lg object-contain image-preview select-none"
       :style="{
         transform: `rotate(${rotation}deg) scale(${zoom})`,
       }"
-      :src="`http://localhost:8080/m/${file.code}`"
+      :src="base64Data"
       :alt="file.name"
     >
-
-    <template #controls>
-      <PButton
-        icon="i-tabler-rotate-clockwise-2"
-        size="small"
-        text
-        rounded
-        @click="rotateRight()"
-      />
-      <PButton
-        icon="i-tabler-rotate-2"
-        size="small"
-        text
-        rounded
-        @click="rotateLeft()"
-      />
-      <PButton
-        icon="i-tabler-zoom-in"
-        size="small"
-        text
-        rounded
-        :disabled="zoom >= 2"
-        @click="zoomIn()"
-      />
-      <PButton
-        icon="i-tabler-zoom-out"
-        size="small"
-        text
-        rounded
-        :disabled="zoom <= 0.5"
-        @click="zoomOut()"
-      />
-    </template>
+    <div v-else class="text-white flex flex-col items-center justify-center gap-5">
+      <i class="i-tabler-photo-exclamation text-5xl" />
+      <h1 class="text-2xl font-semibold">
+        {{ t('pages.files.preview.failed') }}
+      </h1>
+    </div>
   </MediaPreview>
 </template>
 

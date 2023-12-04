@@ -27,3 +27,24 @@ export function mimeTypeToMediaType(mimeType: string): MediaType {
       return 'unknown'
   }
 }
+
+export function mimeTypeToIcon(mimeType: string): string {
+  switch (mimeTypeToMediaType(mimeType)) {
+    case 'image':
+      return 'i-tabler-photo'
+    case 'audio':
+      return 'i-tabler-music'
+    case 'video':
+      return 'i-tabler-video'
+    case 'text':
+      return 'i-tabler-file-text'
+    case 'zip':
+      return 'i-tabler-file-zip'
+    case 'document':
+      return 'i-tabler-file-text'
+    case 'unknown':
+      return 'i-tabler-file-unknown'
+    default:
+      return 'i-tabler-file'
+  }
+}

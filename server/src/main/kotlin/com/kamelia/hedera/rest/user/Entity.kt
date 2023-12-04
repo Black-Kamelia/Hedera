@@ -50,7 +50,7 @@ object UserTable : AuditableUUIDTable("users") {
 
     val email = varchar("email", 255).uniqueIndex()
     val username = varchar("username", 128).uniqueIndex()
-    val password = varchar("password", 255)
+    val password = varchar("password", 60)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
     val forceChangePassword = bool("force_change_password")

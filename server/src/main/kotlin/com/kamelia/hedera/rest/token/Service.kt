@@ -18,14 +18,14 @@ object PersonalTokenService {
     ): ActionResponse<PersonalTokenDTO> = Connection.transaction {
         val owner = User[userId]
 
-        val token = PersonalToken.create(
+        val (unencryptedToken, token) = PersonalToken.create(
             name = dto.name,
             owner = owner
         )
         ActionResponse.created(
             title = Actions.Tokens.Create.Success.TITLE.asMessage(),
             message = Actions.Tokens.Create.Success.MESSAGE.asMessage("name" to token.name),
-            payload = token.toRepresentationDTO(token = token.token)
+            payload = token.toRepresentationDTO(token = unencryptedToken)
         )
     }
 

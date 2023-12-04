@@ -1,5 +1,6 @@
 package com.kamelia.hedera.rest.token
 
+import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserTable
@@ -21,7 +22,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object PersonalTokenTable : UUIDTable("personal_tokens") {
 
-    val token = varchar("token", 32).uniqueIndex()
+    val token = varchar("token", 60).uniqueIndex()
     val name = varchar("name", 255)
     val owner = reference("owner", UserTable)
     val deleted = bool("deleted")
@@ -33,17 +34,21 @@ class PersonalToken(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<PersonalToken>(PersonalTokenTable) {
 
-        fun findByToken(token: String): PersonalToken? = find { PersonalTokenTable.token eq token }.firstOrNull()
-
+        /**
+         * @return the unencrypted token and the entity
+         */
         fun create(
             name: String,
             owner: User,
-        ): PersonalToken = PersonalToken.new {
-            this.token = UUID.randomUUID().toString().replace("-", "")
-            this.name = name
-            this.owner = owner
-            this.deleted = false
-            this.createdAt = Instant.now()
+        ): Pair<String, PersonalToken> {
+            val token = UUID.randomUUID().toString().replace("-", "")
+            return token to PersonalToken.new {
+                this.token = Hasher.hash(token)
+                this.name = name
+                this.owner = owner
+                this.deleted = false
+                this.createdAt = Instant.now()
+            }
         }
 
         fun allWithLastUsed(

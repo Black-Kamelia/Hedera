@@ -78,10 +78,10 @@ function onClose(closeCallback: () => void) {
           @click="control.command()"
         />
       </div>
-      <div class="pointer-events-none w-screen h-screen">
-        <div class="preview relative flex flex-row items-center justify-center p-25 h-full w-full max-h-100vh">
+      <div class="pointer-events-none z-4000 w-screen h-screen">
+        <div class="preview p-25 h-full w-full flex flex-col justify-center">
           <slot>
-            <div class="text-white pointer-events-auto flex flex-col items-center justify-center gap-5">
+            <div class="m-auto text-white pointer-events-auto flex flex-col items-center justify-center gap-5">
               <i class="text-5xl" :class="mimeTypeToIcon(file.mimeType)" />
               <h1 class="text-2xl font-semibold">
                 {{ t('pages.files.preview.no_preview') }}

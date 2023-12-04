@@ -6,11 +6,13 @@ const { file } = defineProps<{
 const previewOpen = defineModel<boolean>('open', { default: false })
 
 const { t } = useI18n()
-const { data, pending, error, execute } = useLazyFetchAPI<Blob>(`/files/${file.code}`, { immediate: false })
-const base64Data = computed(() => data.value ? URL.createObjectURL(data.value) : null)
+const { data, pending, error, execute, status } = useAsyncData(`${file.id}_preview`, async () => {
+  return $fetchAPI<Blob>(`/files/${file.code}`)
+    .then(blob => URL.createObjectURL(blob))
+}, { immediate: false })
 
 watch(previewOpen, (val) => {
-  if (val) execute()
+  if (val && status.value !== 'success' && !error.value) execute()
 })
 
 const rotation = ref(0)
@@ -75,11 +77,11 @@ const controls = [
     />
     <img
       v-else-if="!pending && !error"
-      class="pointer-events-auto z-1000 max-h-full rounded-lg object-contain image-preview select-none"
+      class="pointer-events-auto m-auto max-h-full rounded-lg object-contain image-preview select-none"
       :style="{
         transform: `rotate(${rotation}deg) scale(${zoom})`,
       }"
-      :src="base64Data"
+      :src="data"
       :alt="file.name"
     >
     <div v-else class="text-white flex flex-col items-center justify-center gap-5">

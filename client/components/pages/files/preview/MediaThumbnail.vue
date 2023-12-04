@@ -42,6 +42,8 @@ const icon = computed(() => {
     class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
   >
     <ImagePreview v-if="type === 'image'" v-model:open="previewOpen" :file="data" />
+    <VideoPreview v-else-if="type === 'video'" v-model:open="previewOpen" :file="data" />
+    <AudioPreview v-else-if="type === 'audio'" v-model:open="previewOpen" :file="data" />
     <MediaPreview v-else v-model:open="previewOpen" :file="data" />
 
     <div

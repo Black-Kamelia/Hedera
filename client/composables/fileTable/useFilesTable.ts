@@ -5,7 +5,7 @@ export interface FilesTableContext {
   selectedRowId: ComputedRef<string | undefined>
   updateSelectedRow: (newRow: FileRepresentationDTO) => void
   unselectRow: () => void
-  refresh: () => Promise<void>
+  refresh: () => Promise<any>
 }
 
 export function useFilesTable() {

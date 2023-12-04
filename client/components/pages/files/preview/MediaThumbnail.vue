@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mimeTypeToMediaType } from '~/utils/mimeTypes'
+
 const { data } = defineProps<{
   data: FileRepresentationDTO
 }>()
@@ -9,20 +11,28 @@ const previewOpen = ref(false)
 
 const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
 
+const type = computed(() => mimeTypeToMediaType(data.mimeType))
 const icon = computed(() => {
-  if (data.mimeType.startsWith('image/')) {
-    if (isError) return 'i-tabler-photo-exclamation'
-    if (!isLoading && !thumbnail) return 'i-tabler-photo-x'
-
-    return 'i-tabler-photo'
+  switch (type.value) {
+    case 'image':
+      if (isError.value) return 'i-tabler-photo-exclamation'
+      if (!isLoading.value && !thumbnail.value) return 'i-tabler-photo-x'
+      return 'i-tabler-photo'
+    case 'audio':
+      return 'i-tabler-music'
+    case 'video':
+      return 'i-tabler-video'
+    case 'text':
+      return 'i-tabler-file-text'
+    case 'zip':
+      return 'i-tabler-file-zip'
+    case 'document':
+      return 'i-tabler-file-text'
+    case 'unknown':
+      return 'i-tabler-file-unknown'
+    default:
+      return 'i-tabler-file'
   }
-  if (data.mimeType.startsWith('audio/')) return 'i-tabler-music'
-  if (data.mimeType.startsWith('video/')) return 'i-tabler-video'
-  if (data.mimeType.startsWith('text/')) return 'i-tabler-file-text'
-  if (data.mimeType === 'application/zip') return 'i-tabler-file-zip'
-  if (data.mimeType === 'application/pdf') return 'i-tabler-file-text'
-  if (data.mimeType === 'application/unknown') return 'i-tabler-file-unknown'
-  return 'i-tabler-file'
 })
 </script>
 
@@ -30,17 +40,13 @@ const icon = computed(() => {
   <div
     ref="el"
     class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
-    @click="previewOpen = true"
   >
-    <PDialog v-model:visible="previewOpen" modal>
-      <template #container>
-        <p>MEDIA</p>
-      </template>
-    </PDialog>
+    <ImagePreview v-if="type === 'image'" v-model:open="previewOpen" :file="data" />
+    <MediaPreview v-else v-model:open="previewOpen" :file="data" />
 
     <div
-      class="absolute flex flex-center w-full h-full" :class="{
-        preview: !isLoading && !thumbnail,
+      class="absolute flex flex-center w-full h-full preview" :class="{
+        //preview: !isLoading && !thumbnail,
         error: !isLoading && isError,
       }"
     >
@@ -51,15 +57,17 @@ const icon = computed(() => {
           class="w-6rem h-4rem object-cover"
           :src="thumbnail"
           :alt="data.name"
+          @error="thumbnail = null"
         >
       </div>
       <i v-else :class="icon" />
     </div>
+
     <Transition>
       <a
         v-show="hovered"
-        href="#"
-        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-sm border-rounded-2 w-full h-full text-white cursor-pointer"
+        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-md border-rounded-2 w-full h-full text-white cursor-pointer"
+        @click="previewOpen = true"
       >
         <i class="text-base i-tabler-eye" />
       </a>
@@ -67,7 +75,7 @@ const icon = computed(() => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .preview::after {
   content: '';
   position: absolute;

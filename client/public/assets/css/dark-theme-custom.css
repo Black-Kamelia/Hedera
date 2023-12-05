@@ -985,3 +985,7 @@ hr {
 .p-skeleton::after {
   z-index: 0;
 }
+
+.p-dropdown-label {
+  line-height: normal;
+}

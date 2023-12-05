@@ -1,5 +1,6 @@
 package com.kamelia.hedera.rest
 
+import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
@@ -33,10 +34,12 @@ import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@ExtendWith(GlobalConfigurationSetup::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FileTest {
 
@@ -61,7 +64,7 @@ class FileTest {
 
     @AfterAll
     fun cleanUp() {
-        testFolder.deleteRecursively()
+        testFolder.resolve("upload").deleteRecursively()
     }
 
     @DisplayName("Uploading a file")
@@ -683,22 +686,22 @@ class FileTest {
         @JvmStatic
         fun uploadFileToken(): Stream<Arguments> = Stream.of(
             Arguments.of(
-                "d9efe80efb1745ea8a6c341e70ae36f9",
+                "0000000000000000000000000000000100000000000000000000000000000000",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "bb7e6bc298ff413a904786a49c6e9719",
+                "0000000000000000000000000000000200000000000000000000000000000000",
                 Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "ef4e9fd691954eda8e0493b4745882e3",
+                "0000000000000000000000000000000300000000000000000000000000000000",
                 Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "00000000000000000000000000000000",
+                "0000000000000000000000000000000000000000000000000000000000000000",
                 Named.of("guest", UUID.fromString("00000000-0000-0000-0000-000000000000")),
                 HttpStatusCode.Unauthorized
             ),

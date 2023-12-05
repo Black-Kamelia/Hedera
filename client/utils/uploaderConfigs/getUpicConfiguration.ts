@@ -11,14 +11,14 @@ class UpicConfigurationData {
   private field = 'file'
   private headers: string
   private method = 'POST'
-  private resultPath = '["payload.code"]'
+  private resultPath = '["payload", "code"]'
   private saveKeyPath = ''
   private suffix = ''
   private url: string
   private useBase64 = false
 
   constructor(baseURL: string, token: string) {
-    this.domain = baseURL
+    this.domain = `${baseURL}/m`
     this.headers = JSON.stringify([
       { key: 'Content-Type', value: 'multipart/form-data' },
       { key: 'Upload-Token', value: token },

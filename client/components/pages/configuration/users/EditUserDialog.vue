@@ -1,10 +1,6 @@
 <script lang="ts" setup>
 import { boolean, number, object, string } from 'yup'
 
-defineEmits<{
-  (event: 'completed', payload: UserRepresentationDTO): void
-}>()
-
 const { t } = useI18n()
 const dev = getRandomDeveloperUsername()
 const { user } = useAuth()
@@ -114,6 +110,9 @@ watch(visible, (val) => {
         :pt="{ root: { style: { marginTop: 0 } } }"
       >
         {{ t('pages.configuration.users.edit_dialog.password_summary') }}
+        <NuxtLink v-if="selectedRow?.id === user?.id" class="underline" to="/profile/security">
+          {{ t('pages.configuration.users.edit_dialog.password_change_yours') }}
+        </NuxtLink>
       </PMessage>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">

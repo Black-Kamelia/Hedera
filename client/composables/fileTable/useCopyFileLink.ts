@@ -2,10 +2,8 @@ export default function useCopyFileLink() {
   const { t } = useI18n()
   const toast = useToast()
   const { copy } = useClipboard()
-  const { selectedRow, unselectRow } = useFilesTable()
 
   function copyLink(linkPart: string) {
-    if (!selectedRow.value) return
     copy(`${location.origin}${linkPart}`)
       .then(() => {
         toast.add({
@@ -18,15 +16,14 @@ export default function useCopyFileLink() {
           closable: false,
         })
       })
-      .then(unselectRow)
   }
 
-  function copyFileLink() {
-    return copyLink(`/m/${selectedRow.value!.code!}`)
+  function copyFileLink(file: FileRepresentationDTO) {
+    return copyLink(`/m/${file.code}`)
   }
 
-  function copyFileCustomLink() {
-    return copyLink(`/c/${selectedRow.value!.customLink!}`)
+  function copyFileCustomLink(file: FileRepresentationDTO) {
+    return copyLink(`/c/${file.customLink}`)
   }
 
   return { copyFileLink, copyFileCustomLink }

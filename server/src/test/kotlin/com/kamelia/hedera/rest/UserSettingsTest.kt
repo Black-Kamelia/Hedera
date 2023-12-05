@@ -1,12 +1,18 @@
 package com.kamelia.hedera.rest
 
+import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.file.FileVisibility
-import com.kamelia.hedera.rest.setting.*
+import com.kamelia.hedera.rest.setting.DateStyle
+import com.kamelia.hedera.rest.setting.FileDoubleClickAction
+import com.kamelia.hedera.rest.setting.FilesSizeScale
 import com.kamelia.hedera.rest.setting.Locale
-import com.kamelia.hedera.rest.user.*
+import com.kamelia.hedera.rest.setting.TimeStyle
+import com.kamelia.hedera.rest.setting.UploadBehavior
+import com.kamelia.hedera.rest.setting.UserSettingsRepresentationDTO
+import com.kamelia.hedera.rest.setting.UserSettingsUpdateDTO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,10 +25,12 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Named
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@ExtendWith(GlobalConfigurationSetup::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserSettingsTest {
 
@@ -49,6 +57,7 @@ class UserSettingsTest {
             assertEquals(TimeStyle.MEDIUM, responseDto.preferredTimeStyle)
             assertEquals(Locale.en, responseDto.preferredLocale)
             assertEquals(UploadBehavior.INSTANT, responseDto.uploadBehavior)
+            assertEquals(FileDoubleClickAction.OPEN_NEW_TAB, responseDto.fileDoubleClickAction)
         }
     }
 
@@ -96,7 +105,8 @@ class UserSettingsTest {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.OK, updateResponse.status, updateResponse.bodyAsText())
-        val updateResponseDto = Json.decodeFromString(UserSettingsRepresentationDTO.serializer(), updateResponse.bodyAsText())
+        val updateResponseDto =
+            Json.decodeFromString(UserSettingsRepresentationDTO.serializer(), updateResponse.bodyAsText())
         newSettingsDTO.defaultFileVisibility?.let {
             assertEquals(it, updateResponseDto.defaultFileVisibility)
             assertNotEquals(responseDto.defaultFileVisibility, updateResponseDto.defaultFileVisibility)
@@ -124,6 +134,10 @@ class UserSettingsTest {
         newSettingsDTO.uploadBehavior?.let {
             assertEquals(it, updateResponseDto.uploadBehavior)
             assertNotEquals(responseDto.uploadBehavior, updateResponseDto.uploadBehavior)
+        }
+        newSettingsDTO.fileDoubleClickAction?.let {
+            assertEquals(it, updateResponseDto.fileDoubleClickAction)
+            assertNotEquals(responseDto.fileDoubleClickAction, updateResponseDto.fileDoubleClickAction)
         }
     }
 
@@ -213,6 +227,11 @@ class UserSettingsTest {
                 Arguments.of(user, "preferredTimeStyle", UserSettingsUpdateDTO(preferredTimeStyle = TimeStyle.FULL)),
                 Arguments.of(user, "preferredLocale", UserSettingsUpdateDTO(preferredLocale = Locale.fr)),
                 Arguments.of(user, "uploadBehavior", UserSettingsUpdateDTO(uploadBehavior = UploadBehavior.MANUAL)),
+                Arguments.of(
+                    user,
+                    "fileDoubleClickAction",
+                    UserSettingsUpdateDTO(fileDoubleClickAction = FileDoubleClickAction.OPEN_PREVIEW)
+                ),
             )
         }
     }

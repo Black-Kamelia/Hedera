@@ -1,7 +1,6 @@
 package com.kamelia.hedera.rest.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.database.Connection

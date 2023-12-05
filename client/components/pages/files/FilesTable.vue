@@ -6,6 +6,7 @@ import type {
   DataTableSortMeta,
 } from 'primevue/datatable'
 import type { PContextMenu } from '#components'
+import { FilesTableDoubleClickEvent } from '~/utils/events'
 
 const DEFAULT_PAGE = 0
 const DEFAULT_PAGE_SIZE = 25
@@ -15,6 +16,7 @@ const DEFAULT_QUERY = ''
 const { t, d } = useI18n()
 const filters = useFilesFilters()
 const { format } = useHumanFileSize()
+const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 
 const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
@@ -88,9 +90,12 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+function openRowContextMenu(event: Event) {
+  contextMenu.value?.show(event)
+}
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
-  window.open(`/m/${event.data.code}`)
+  fileDoubleClickEvent.emit({ file: event.data })
 }
 </script>
 
@@ -244,6 +249,22 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ d(slotProps.data.createdAt) }}</span>
         <PSkeleton v-else width="8rem" height="1rem" />
+      </template>
+    </PColumn>
+
+    <PColumn class="w-3em">
+      <template #body="slotProps">
+        <PButton
+          severity="secondary"
+          text
+          rounded
+          icon="i-tabler-dots-vertical"
+          size="small"
+          @click.stop="(e) => {
+            openRowContextMenu(e)
+            selectedRow = slotProps.data
+          }"
+        />
       </template>
     </PColumn>
   </PDataTable>

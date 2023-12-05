@@ -13,11 +13,14 @@ export interface HederaUserForcefullyLoggedOutPayload {
   reason: string
 }
 
+export type HederaConfigurationUpdatedPayload = GlobalConfigurationRepresentationDTO
+
 export type HederaWebsocketPayload =
 | { type: 'unknown'; data: HederaUnknownPayload }
 | { type: 'user-connected'; data: HederaUserConnectedPayload }
 | { type: 'user-updated'; data: HederaUserUpdatedPayload }
 | { type: 'user-forcefully-logged-out'; data: HederaUserForcefullyLoggedOutPayload }
+| { type: 'configuration-updated'; data: HederaConfigurationUpdatedPayload }
 
 export const WebsocketPacketReceivedEvent: EventBusKey<{
   payload: HederaWebsocketPayload

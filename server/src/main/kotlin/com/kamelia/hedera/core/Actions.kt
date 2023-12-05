@@ -170,6 +170,7 @@ object Actions {
             object Success {
                 private const val PREFIX = "${Update.PREFIX}.success"
                 const val TITLE = "$PREFIX.title"
+                const val TITLE_SELF = "$PREFIX.title_self"
                 const val MESSAGE = "$PREFIX.message"
             }
 

@@ -20,6 +20,16 @@ object Errors {
 
     }
 
+    object Configuration {
+
+        private const val PREFIX = "${Errors.PREFIX}.configuration"
+
+        const val GENERATION_ERROR = "$PREFIX.generation_error"
+        const val PARSE_ERROR = "$PREFIX.parse_error"
+        const val WRITE_ERROR = "$PREFIX.write_error"
+
+    }
+
     object Files {
 
         private const val PREFIX = "${Errors.PREFIX}.files"
@@ -94,6 +104,14 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.personal_tokens"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+
+    }
+
+    object Registrations {
+
+        private const val PREFIX = "${Errors.PREFIX}.registrations"
+
+        const val DISABLED = "$PREFIX.disabled"
 
     }
 

@@ -1,53 +1,54 @@
 package com.kamelia.hedera.rest.token
 
-import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
-import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
+import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserTable
 import com.kamelia.hedera.util.uuid
 import java.time.Instant
 import java.util.*
+import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object PersonalTokenTable : AuditableUUIDTable("personal_tokens") {
+object PersonalTokenTable : UUIDTable("personal_tokens") {
 
-    val token = varchar("token", 32).uniqueIndex()
+    val token = varchar("token", 60).uniqueIndex()
     val name = varchar("name", 255)
     val owner = reference("owner", UserTable)
     val deleted = bool("deleted")
-
-    init {
-        createdBy
-        updatedBy
-    }
+    val createdAt = timestamp("created_at")
 
 }
 
-class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokenTable) {
+class PersonalToken(id: EntityID<UUID>) : UUIDEntity(id) {
 
     companion object : UUIDEntityClass<PersonalToken>(PersonalTokenTable) {
 
-        fun findByToken(token: String): PersonalToken? = find { PersonalTokenTable.token eq token }.firstOrNull()
-
+        /**
+         * @return the unencrypted token and the entity
+         */
         fun create(
             name: String,
             owner: User,
-        ): PersonalToken = PersonalToken.new {
-            this.token = UUID.randomUUID().toString().replace("-", "")
-            this.name = name
-            this.owner = owner
-            this.deleted = false
-
-            onCreate(owner)
+        ): Pair<String, PersonalToken> {
+            val token = UUID.randomUUID().toString().replace("-", "")
+            return token to PersonalToken.new {
+                this.token = Hasher.hash(token)
+                this.name = name
+                this.owner = owner
+                this.deleted = false
+                this.createdAt = Instant.now()
+            }
         }
 
         fun allWithLastUsed(
@@ -69,11 +70,11 @@ class PersonalToken(id: EntityID<UUID>) : AuditableUUIDEntity(id, PersonalTokenT
     var name by PersonalTokenTable.name
     var owner by User referencedOn PersonalTokenTable.owner
     var deleted by PersonalTokenTable.deleted
+    var createdAt by PersonalTokenTable.createdAt
 
     val ownerId get() = transaction { owner.uuid }
 
-    fun delete(user: User): PersonalToken = apply {
+    override fun delete() {
         deleted = true
-        onUpdate(user)
     }
 }

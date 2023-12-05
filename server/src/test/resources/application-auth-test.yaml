@@ -13,6 +13,7 @@ liquibase:
 
 hedera:
   uploadFolder: ./_tests/upload
+  globalConfigurationFile: ./_tests/global_configuration.json
   loginThrottle: "1500"
 
   jwt:

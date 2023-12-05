@@ -1,5 +1,6 @@
 package com.kamelia.hedera.plugins
 
+import com.kamelia.hedera.core.DisabledRegistrationsException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
@@ -57,6 +58,7 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
         is IllegalActionException,
+        is DisabledRegistrationsException,
         is InsufficientDiskQuotaException,
         is InsufficientPermissionsException -> forbiddenMessage(call, cause)
 
@@ -71,10 +73,15 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
 
 private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.badRequest(cause.error))
-    is BadRequestException -> call.respondNoSuccess(Response.badRequest(MessageDTO.simple(
-        title = Errors.BAD_REQUEST_RAW.asMessage(),
-        message = (cause.message ?: cause.javaClass.name).asMessage(),
-    )))
+    is BadRequestException -> call.respondNoSuccess(
+        Response.badRequest(
+            MessageDTO.simple(
+                title = Errors.BAD_REQUEST_RAW.asMessage(),
+                message = (cause.message ?: cause.javaClass.name).asMessage(),
+            )
+        )
+    )
+
     else -> call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
 }
 
@@ -90,10 +97,15 @@ private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = 
 
 private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.notFound(cause.error))
-    is NotFoundException -> call.respondNoSuccess(Response.notFound(MessageDTO.simple(
-        title = Errors.BAD_REQUEST_RAW.asMessage(),
-        message = (cause.message ?: cause.javaClass.name).asMessage(),
-    )))
+    is NotFoundException -> call.respondNoSuccess(
+        Response.notFound(
+            MessageDTO.simple(
+                title = Errors.BAD_REQUEST_RAW.asMessage(),
+                message = (cause.message ?: cause.javaClass.name).asMessage(),
+            )
+        )
+    )
+
     else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
 }
 

@@ -16,6 +16,7 @@ const message = defineModel<{
   },
 })
 
+const registrationEnabled = ref(false)
 const loading = ref(false)
 const usernameField = ref<Nullable<CompElement>>(null)
 const passwordField = ref<Nullable<CompElement>>(null)
@@ -33,16 +34,9 @@ const { handleSubmit, resetField } = useForm({
 
 const onSubmit = handleSubmit((values) => {
   loading.value = true
-  login(values).catch(() => loading.value = false)
-})
-
-function hideErrorMessage() {
-  message.value.content = null
-}
-
-useEventBus(LoggedInEvent).on((event) => {
-  if (event.error) {
-    const status = event.error?.response?.status
+  login(values).catch((error) => {
+    loading.value = false
+    const status = error?.response?.status
 
     if (status === 500) {
       resetField('username')
@@ -63,9 +57,18 @@ useEventBus(LoggedInEvent).on((event) => {
       usernameField.value?.$el.focus()
     }
 
-    message.value.content = m(event.error.data.title)
+    message.value.content = m(error.data.title)
     message.value.severity = 'error'
-  }
+  })
+})
+
+function hideErrorMessage() {
+  message.value.content = null
+}
+
+onMounted(() => {
+  $fetchAPI<GlobalConfigurationRepresentationDTO>('/configuration/public')
+    .then(config => registrationEnabled.value = config.enableRegistrations)
 })
 </script>
 
@@ -77,7 +80,7 @@ useEventBus(LoggedInEvent).on((event) => {
 
     <div class="mb-3">
       <FormInputText
-        id="username"
+        id="login_username"
         ref="usernameField"
         class="w-full"
         name="username"
@@ -86,13 +89,14 @@ useEventBus(LoggedInEvent).on((event) => {
         :placeholder="usernamePlaceholder"
         :transform-value="usernameRestrict"
         start-icon="i-tabler-user"
+        autocomplete="username"
         @input="hideErrorMessage"
       />
     </div>
 
     <div class="mb-3">
       <FormInputText
-        id="password"
+        id="login_password"
         ref="passwordField"
         class="w-full"
         name="password"
@@ -100,6 +104,7 @@ useEventBus(LoggedInEvent).on((event) => {
         :label="t('forms.login.fields.password')"
         placeholder="••••••••••••••••"
         start-icon="i-tabler-lock"
+        autocomplete="current-password"
         @input="hideErrorMessage"
       />
     </div>
@@ -107,6 +112,9 @@ useEventBus(LoggedInEvent).on((event) => {
     <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
       <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
         {{ t('pages.login.forgot_password') }}
+      </NuxtLink>
+      <NuxtLink v-show="registrationEnabled" to="/register" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+        {{ t('pages.login.register') }}
       </NuxtLink>
     </div>
 

@@ -1,9 +1,12 @@
 package com.kamelia.hedera.websocket
 
 import com.kamelia.hedera.rest.auth.SessionManager
+import com.kamelia.hedera.rest.configuration.ConfigurationEvents
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationRepresentationDTO
 import com.kamelia.hedera.rest.user.UserEvents
 import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
+import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.defineEventListener
 import com.kamelia.hedera.util.forcefullyClose
 import com.kamelia.hedera.util.gracefullyClose
@@ -17,6 +20,7 @@ suspend fun WebSocketServerSession.handleSession(userId: UUID, sessionId: UUID) 
     // Define event listeners here
     defineEventListener(UserEvents.userUpdatedEvent, sessionId) { onUserUpdate(userId, it) },
     defineEventListener(UserEvents.userForcefullyLoggedOutEvent, sessionId) { onUserForcefullyLoggedOut(userId, it) },
+    defineEventListener(ConfigurationEvents.configurationUpdatedEvent, sessionId) { onConfigurationUpdate(userId, it) },
 )
 
 private const val USER_UPDATED = "user-updated"
@@ -30,6 +34,13 @@ private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: 
     if (payload.userId != currentId) return
     sendEvent(USER_FORCEFULLY_LOGGED_OUT, payload)
     forcefullyClose(USER_FORCEFULLY_LOGGED_OUT)
+}
+
+private const val CONFIGURATION_UPDATED = "configuration-updated"
+private suspend fun WebSocketServerSession.onConfigurationUpdate(userId: UUID, payload: GlobalConfigurationRepresentationDTO) {
+    val user = SessionManager.getUserOrNull(userId)!!
+    if (user.role === UserRole.REGULAR) return
+    sendEvent(CONFIGURATION_UPDATED, payload)
 }
 
 private const val INVALID_USER_ID = "invalid-user-id"

@@ -4,6 +4,7 @@ const color = useColorMode()
 const filters = reactive(storeToRefs(useFilesFilters()))
 const sidebar = useLocalStorage('sidebar', { open: true })
 const settings = reactive(storeToRefs(useUserSettings()))
+const configuration = reactive(storeToRefs(useGlobalConfiguration()))
 </script>
 
 <template>
@@ -16,6 +17,10 @@ const settings = reactive(storeToRefs(useUserSettings()))
 
         <PPanel class="max-w-100% w-100%" header="Theme" toggleable>
           <pre class="overflow-y-auto">{{ color }}</pre>
+        </PPanel>
+
+        <PPanel class="max-w-100% w-100%" header="Configuration" toggleable>
+          <pre class="overflow-y-auto">{{ configuration }}</pre>
         </PPanel>
       </div>
 

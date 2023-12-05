@@ -13,7 +13,7 @@ const quotaFormat = computed(() => format(quota))
 const maxFormat = computed(() => format(max))
 const unlimited = computed(() => max === -1)
 const severity = computed(() => {
-  if (unlimited) return '--green-500'
+  if (unlimited.value) return '--green-500'
   if (ratio >= 0.9) return '--red-500'
   if (ratio >= 0.8) return '--orange-500'
   return '--primary-500'

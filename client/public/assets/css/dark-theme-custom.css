@@ -314,9 +314,6 @@ hr {
 .p-treetable .p-treetable-tbody > tr.p-highlight .p-treetable-toggler,
 .p-treetable .p-treetable-tbody > tr.p-highlight .p-treetable-toggler:hover,
 .p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled):hover .p-tabview-nav-link,
-.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content,
-.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-text,
-.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-icon, .p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-submenu-icon,
 .p-megamenu .p-menuitem.p-highlight > .p-menuitem-content,
 .p-megamenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-text,
 .p-megamenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-icon, .p-megamenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-submenu-icon,
@@ -956,4 +953,31 @@ hr {
 
 .p-toast .p-toast-message .p-toast-icon-close:hover {
   background: rgba(255, 255, 255, 0.125);
+}
+
+.p-contextmenu .p-menuitem:not(.p-disabled).p-focus > .p-menuitem-content,
+.p-contextmenu .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content:hover,
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content,
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-text,
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-icon {
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-submenu-icon {
+    color: var(--text-color-secondary);
+}
+
+.p-contextmenu .p-menuitem:not(.p-disabled).p-focus.h-danger > .p-menuitem-content {
+    background: rgba(255, 207, 212, 0.06);
+}
+
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content,
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-menuitem-text,
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-menuitem-icon,
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-submenu-icon {
+    color: var(--red-300);
 }

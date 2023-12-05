@@ -113,6 +113,7 @@ const menuModel = computed(() => [
         accept: deleteFile,
       })
     },
+    class: 'h-danger',
   },
 ])
 </script>

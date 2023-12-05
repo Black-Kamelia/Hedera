@@ -91,6 +91,7 @@ const menuModel = computed(() => [
       })
     },
     disabled,
+    class: 'h-danger',
   },
 ])
 </script>

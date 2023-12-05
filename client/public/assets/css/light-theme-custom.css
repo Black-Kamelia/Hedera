@@ -48,7 +48,7 @@
   --focus-ring: 0 0 0 0.2em var(--primary-300);
   --maskbg: rgba(0, 0, 0, 0.4);
   --highlight-bg: #F5F3FF;
-  --highlight-text-color: #6D28D9;
+  --highlight-text-color: var(--primary-color);
 }
 
 :root {
@@ -418,3 +418,32 @@ hr {
 .p-toast .p-toast-message.p-toast-message-error {
   background: rgba(255, 231, 230, 0.7);
 }
+
+.p-contextmenu .p-menuitem:not(.p-disabled).p-focus > .p-menuitem-content,
+.p-contextmenu .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content:hover,
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content {
+  background: var(--surface-c);
+}
+
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content,
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-text,
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-menuitem-icon {
+  color: var(--text-color);
+}
+
+.p-contextmenu .p-menuitem.p-highlight > .p-menuitem-content .p-menuitem-link .p-submenu-icon {
+  color: var(--text-color-secondary);
+}
+
+.p-contextmenu .p-menuitem:not(.p-disabled).p-focus.h-danger > .p-menuitem-content,
+.p-contextmenu .p-menuitem:not(.p-disabled).h-danger > .p-menuitem-content:hover {
+  background: rgba(179, 39, 53, 0.03);
+}
+
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content,
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-menuitem-text,
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-menuitem-icon,
+.p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-submenu-icon {
+  color: var(--red-500);
+}
+

@@ -160,11 +160,9 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                 "createdAt" -> FileTable.createdAt
                 else -> throw UnknownSortFieldException(it)
             }
-        }
-        .limit(pageSize, page * pageSize)
-        .let {
+        }.let {
             val rows = File.wrapRows(it)
-            rows.toList() to rows.count()
+            rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
 
     fun getFilesFormats(): List<String> = files

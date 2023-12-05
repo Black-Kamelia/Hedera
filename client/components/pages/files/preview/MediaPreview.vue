@@ -160,7 +160,7 @@ function onClose(closeCallback: () => void) {
 
   .preview {
     opacity: 0;
-    transform: scale(.6);
+    transform: scale(.5);
   }
 
   .controls {
@@ -175,9 +175,11 @@ function onClose(closeCallback: () => void) {
 .preview-enter-active {
   transition: all .4s;
 
-  .mask,
+  .mask {
+    transition: all .4s ease;
+  }
   .preview {
-    transition: all .4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .title,
@@ -189,9 +191,11 @@ function onClose(closeCallback: () => void) {
 .preview-leave-active {
   transition: all .4s;
 
-  .mask,
+  .mask {
+    transition: all .4s ease;
+  }
   .preview {
-    transition: all .15s ease;
+    transition: all .2s cubic-bezier(0.76, 0, 0.24, 1);
   }
 
   .title,

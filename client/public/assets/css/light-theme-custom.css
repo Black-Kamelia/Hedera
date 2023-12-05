@@ -447,3 +447,7 @@ hr {
   color: var(--red-500);
 }
 
+.p-skeleton::after {
+  z-index: 0;
+}
+

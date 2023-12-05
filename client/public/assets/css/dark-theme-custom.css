@@ -981,3 +981,7 @@ hr {
 .p-contextmenu .p-menuitem.h-danger > .p-menuitem-content .p-menuitem-link .p-submenu-icon {
     color: var(--red-300);
 }
+
+.p-skeleton::after {
+  z-index: 0;
+}

@@ -178,11 +178,6 @@ hr {
   color: var(--text-color)
 }
 
-*[style*="border-radius: 6px"] {
-  border: 1px solid red !important;
-  /* Styles spécifiques pour les éléments avec border-radius égal à 6px */
-}
-
 .p-card {
   box-shadow: none;
 }
@@ -397,4 +392,29 @@ hr {
 
 .p-datepicker .p-datepicker-header {
   border-bottom: 1px solid var(--surface-d);
+}
+
+.p-toast-message {
+    backdrop-filter: blur(5px);
+    border: none;
+}
+
+.p-toast {
+    opacity: 1;
+}
+
+.p-toast .p-toast-message.p-toast-message-info {
+  background: rgba(233, 233, 255, 0.7);
+}
+
+.p-toast .p-toast-message.p-toast-message-success {
+  background: rgba(228, 248, 240, 0.7);
+}
+
+.p-toast .p-toast-message.p-toast-message-warn {
+  background: rgba(255, 242, 226, 0.7);
+}
+
+.p-toast .p-toast-message.p-toast-message-error {
+  background: rgba(255, 231, 230, 0.7);
 }

@@ -24,7 +24,7 @@ export default function useFeedbackCall<
           toast.add({
             severity: 'error',
             summary: t('errors.unknown'),
-            detail: { text: t('errors.network') },
+            detail: { text: t('errors.network'), icon: 'i-tabler-world-x' },
             life: 5000,
           })
           throw error

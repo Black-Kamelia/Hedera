@@ -195,24 +195,6 @@ h1, h2, h3, h4, h5, h6 {
   padding-right: calc(1.25rem + 24px);
 }
 
-.p-toast .p-toast-message .p-toast-message-content {
-  border-width: 0 !important;
-}
-
-.p-toast {
-  width: auto !important;
-  max-width: 30em;
-}
-
-.p-toast .p-toast-message,
-.p-message {
-  border: 0 none !important;
-}
-
-.p-toast-message-icon {
-  height: 1em !important;
-}
-
 .p-card:has(.p-datatable) {
   border: 1px solid var(--surface-border);
   border-radius: 8px;

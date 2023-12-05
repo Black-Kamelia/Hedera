@@ -910,3 +910,50 @@ hr {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
+
+.p-toast-message,
+.p-message {
+  backdrop-filter: blur(5px);
+  border: none;
+}
+
+.p-toast {
+  opacity: 1;
+}
+
+/* -30% sat, -15% brightness */
+.p-toast .p-toast-message.p-toast-message-info {
+  background: rgba(41, 39, 51, 0.7);
+  color: var(--primary-200);
+}
+.p-toast .p-toast-message.p-toast-message-info .p-toast-icon-close {
+  color: var(--primary-200);
+}
+
+.p-toast .p-toast-message.p-toast-message-success {
+  background: rgba(13, 41, 27, 0.7);
+  color: var(--green-200);
+}
+.p-toast .p-toast-message.p-toast-message-success .p-toast-icon-close {
+  color: var(--green-200);
+}
+
+.p-toast .p-toast-message.p-toast-message-warn {
+  background: rgba(59, 55, 38, 0.7);
+  color: var(--yellow-200);
+}
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-icon-close {
+    color: var(--yellow-200);
+}
+
+.p-toast .p-toast-message.p-toast-message-error {
+  background: rgba(64, 33, 36, 0.7);
+  color: var(--red-200);
+}
+.p-toast .p-toast-message.p-toast-message-error .p-toast-icon-close {
+  color: var(--red-200);
+}
+
+.p-toast .p-toast-message .p-toast-icon-close:hover {
+  background: rgba(255, 255, 255, 0.125);
+}

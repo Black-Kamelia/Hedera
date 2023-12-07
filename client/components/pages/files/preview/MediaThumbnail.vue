@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mimeTypeToMediaType } from '~/utils/mimeTypes'
-
 const { data } = defineProps<{
   data: FileRepresentationDTO
 }>()

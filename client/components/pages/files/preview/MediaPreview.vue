@@ -25,6 +25,10 @@ function download() {
 }
 
 function open() {
+  if (file.customLink !== undefined && file.customLink !== null) {
+    window.open(`/c/${file.customLink}`)
+    return
+  }
   window.open(`/m/${file.code}`)
 }
 

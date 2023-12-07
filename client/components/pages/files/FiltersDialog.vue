@@ -134,7 +134,7 @@ watch(visible, (visible) => {
 
     <template #footer>
       <PButton :label="t('pages.files.filters.reset')" icon="i-tabler-arrow-back-up" text @click="reset" />
-      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" autofocus @click="applyAndClose" />
+      <PButton :label="t('pages.files.filters.apply')" icon="i-tabler-check" @click="applyAndClose" />
     </template>
   </PDialog>
 </template>

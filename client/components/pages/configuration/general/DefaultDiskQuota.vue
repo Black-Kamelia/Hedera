@@ -63,7 +63,7 @@ watch(quotaPolicy, () => {
         class="w-full md:w-14rem"
         :class="{ 'p-invalid': isError }"
         :model-value="quotaPolicy"
-        @update:model-value="val => patch(val, undefined)"
+        @update:model-value="(val: DiskQuotaPolicy) => patch(val, undefined)"
       >
         <template #value="{ value: selectedOption }">
           <div v-if="selectedOption" class="flex items-center gap-2">

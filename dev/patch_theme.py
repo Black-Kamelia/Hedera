@@ -2,19 +2,9 @@ import re
 
 ROOT_CSS_VARIABLES_REGEX = r":root\s*\{[^}]*}"
 FONT_FACE_REGEX = r"@font-face\s*\{[^}]*}"
-
-
-# def get_candidate_or_none(variables: dict, value: str):
-#     if value not in variables.values():
-#         return None
-#
-#     val = None
-#     for k, v in variables.items():
-#         if v == value:
-#             if val is not None:
-#                 return None
-#             val = k
-#     return f"var(--{val})"
+CSS_COMMENT_REGEX = r'/\*[^*]*\*+(?:[^/*][^*]*\*+)*/'
+CSS_ROOT_VARIABLE_REGEX = r'--([\w-]+):\s*([^\n;]+);'
+CSS_PROP_HEXADECIMAL_REGEX = r'[\w-]+:\s*.*(#[^\n;]+).*;'
 
 
 def get_first_candidate_or_none(variables: dict, value: str):
@@ -39,7 +29,7 @@ def replace_color_values(match, variables):
 
 def patch_colors(content: str, variables: dict):
     print("✨ Replacing hardcoded colors with variables...", end='')
-    css_content_modified = re.sub(r'[\w-]+:\s*.*(#[^\n;]+).*;', lambda match: replace_color_values(match, variables), content)
+    css_content_modified = re.sub(CSS_PROP_HEXADECIMAL_REGEX, lambda match: replace_color_values(match, variables), content)
     print(" OK")
     return css_content_modified
 
@@ -77,7 +67,7 @@ def patch_font_face(content: str):
 
 def remove_comments(content: str):
     print("✨️ Removing comments ...", end='')
-    css_content_modified = re.sub(r'/\*[^*]*\*+(?:[^/*][^*]*\*+)*/', '', content, re.DOTALL)
+    css_content_modified = re.sub(CSS_COMMENT_REGEX, '', content, re.DOTALL)
     print(" OK")
     return css_content_modified
 
@@ -85,7 +75,7 @@ def remove_comments(content: str):
 def patch_theme(content: str):
     # Parsing CSS variables in root element
     variables = re.findall(ROOT_CSS_VARIABLES_REGEX, content, re.DOTALL)
-    variables = dict(re.findall(r'--([\w-]+):\s*([^\n;]+);', variables[0]))
+    variables = dict(re.findall(CSS_ROOT_VARIABLE_REGEX, variables[0]))
 
     print(f"🔎 Found {len(variables)} variables")
 

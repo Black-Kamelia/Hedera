@@ -110,5 +110,9 @@ export default defineNuxtConfig({
     components: {
       prefix: 'P',
     },
+    importPT: {
+      as: 'HederaPreset',
+      from: resolve(dirname(fileURLToPath(import.meta.url)), '/utils/hederaPreset.ts'),
+    },
   },
 })

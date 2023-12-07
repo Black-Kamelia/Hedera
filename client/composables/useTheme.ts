@@ -7,7 +7,7 @@ export default function useTheme() {
       link: [
         {
           rel: 'stylesheet',
-          href: '/assets/css/reset.css',
+          href: '/assets/css/general.css',
         },
         {
           rel: 'stylesheet',

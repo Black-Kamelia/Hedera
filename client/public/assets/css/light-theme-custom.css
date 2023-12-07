@@ -52,6 +52,12 @@
 }
 
 :root {
+  --blue-50: #f6fbfe;
+  --blue-100: #d6ecfc;
+  --blue-200: #b5ddfa;
+  --blue-300: #95cef8;
+  --blue-400: #74bff5;
+  --blue-500: #54b0f3;
   --blue-600: #4796cf;
   --blue-700: #3b7baa;
   --blue-800: #2e6186;
@@ -394,7 +400,8 @@ hr {
   border-bottom: 1px solid var(--surface-d);
 }
 
-.p-toast-message {
+.p-toast-message,
+.p-message  {
     backdrop-filter: blur(5px);
     border: none;
 }

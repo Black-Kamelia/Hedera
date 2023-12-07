@@ -6,7 +6,7 @@ const { file } = defineProps<{
 const previewOpen = defineModel<boolean>('open', { default: false })
 
 const { t } = useI18n()
-const { data, pending, error, execute, status } = useAsyncData(`${file.id}_preview`, async () => {
+const { data, pending, error, execute, status } = useAsyncData(`${file.id}_preview`, () => {
   return $fetchAPI<Blob>(`/files/${file.code}`)
     .then(blob => URL.createObjectURL(blob))
 }, { immediate: false })

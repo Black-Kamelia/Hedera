@@ -112,7 +112,7 @@ export default defineNuxtConfig({
     },
     importPT: {
       as: 'HederaPreset',
-      from: resolve(dirname(fileURLToPath(import.meta.url)), '/utils/hederaPreset.ts'),
+      from: '/utils/hederaPreset.ts',
     },
   },
 })

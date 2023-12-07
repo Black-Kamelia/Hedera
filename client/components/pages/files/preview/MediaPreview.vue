@@ -3,6 +3,7 @@ import type { Ref } from 'vue'
 
 interface Control {
   icon: string
+  tooltipKey: string
   command: () => any
   disabled?: Ref<boolean>
 }
@@ -58,6 +59,11 @@ function onClose(closeCallback: () => void) {
       <div class="mask" @click="onClose(closeCallback)" />
       <div class="controls blur-pill">
         <PButton
+          v-tooltip.bottom="{
+            value: t('pages.files.preview.controls.close'),
+            class: 'important-z-5001',
+            showDelay: 500,
+          }"
           icon="i-tabler-x"
           size="small"
           text
@@ -65,6 +71,11 @@ function onClose(closeCallback: () => void) {
           @click="onClose(closeCallback)"
         />
         <PButton
+          v-tooltip.bottom="{
+            value: t('pages.files.preview.controls.open'),
+            class: 'important-z-5001',
+            showDelay: 500,
+          }"
           icon="i-tabler-external-link"
           size="small"
           text
@@ -73,7 +84,12 @@ function onClose(closeCallback: () => void) {
         />
         <PButton
           v-for="control in controls"
-          :key="control"
+          :key="`${control.tooltipKey}-button`"
+          v-tooltip.bottom="{
+            value: t(control.tooltipKey),
+            class: 'important-z-5001',
+            showDelay: 500,
+          }"
           :icon="control.icon"
           :disabled="control.disabled?.value"
           size="small"

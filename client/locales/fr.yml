@@ -58,6 +58,13 @@ pages:
       download: Télécharger
       failed: Impossible de charger l’aperçu
       no_preview: Aucun aperçu disponible
+      controls:
+        close: Fermer
+        open: Ouvrir
+        rotate_left: Rotation à gauche
+        rotate_right: Rotation à droite
+        zoom_in: Zoom avant
+        zoom_out: Zoom arrière
     visibility:
       public: Public
       private: Privé

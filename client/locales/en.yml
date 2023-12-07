@@ -58,6 +58,13 @@ pages:
       download: Download
       failed: Failed to load preview
       no_preview: No preview available
+      controls:
+        close: Close
+        open: Open
+        rotate_left: Rotate left
+        rotate_right: Rotate right
+        zoom_in: Zoom in
+        zoom_out: Zoom out
     visibility:
       public: Public
       private: Private

@@ -42,19 +42,23 @@ function zoomOut() {
 const controls = [
   {
     icon: 'i-tabler-rotate-clockwise-2',
+    tooltipKey: 'pages.files.preview.controls.rotate_right',
     command: rotateRight,
   },
   {
     icon: 'i-tabler-rotate-2',
+    tooltipKey: 'pages.files.preview.controls.rotate_left',
     command: rotateLeft,
   },
   {
     icon: 'i-tabler-zoom-in',
+    tooltipKey: 'pages.files.preview.controls.zoom_in',
     command: zoomIn,
     disabled: computed(() => zoom.value >= 2),
   },
   {
     icon: 'i-tabler-zoom-out',
+    tooltipKey: 'pages.files.preview.controls.zoom_out',
     command: zoomOut,
     disabled: computed(() => zoom.value <= 0.5),
   },

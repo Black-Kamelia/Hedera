@@ -989,3 +989,27 @@ hr {
 .p-dropdown-label {
   line-height: normal;
 }
+
+.p-tag.p-tag-success,
+.p-badge.p-badge-success {
+  background-color: var(--green-500);
+  color: #fff;
+}
+
+.p-tag.p-tag-info,
+.p-badge.p-badge-info {
+  background-color: #5486f3;
+  color: #fff;
+}
+
+.p-tag.p-tag-warning,
+.p-badge.p-badge-warning {
+  background-color: var(--orange-500);
+  color: #212529;
+}
+
+.p-tag.p-tag-danger ,
+.p-badge.p-badge-danger {
+  background-color: var(--pink-500);
+  color: #fff;
+}

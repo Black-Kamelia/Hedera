@@ -730,7 +730,7 @@ hr {
 
 .p-inline-message.p-inline-message-info {
   background: #696cff40;
-  border: 0 solid #696cff;
+  border: 0 solid #696cff40;
   color: #e9e9ff;
 }
 
@@ -920,11 +920,11 @@ hr {
 
 /* -30% sat, -15% brightness */
 .p-toast .p-toast-message.p-toast-message-info {
-  background: rgba(41, 39, 51, 0.7);
-  color: var(--primary-200);
+  background: rgba(38, 40, 59, 0.7);
+  color: var(--indigo-200);
 }
 .p-toast .p-toast-message.p-toast-message-info .p-toast-icon-close {
-  color: var(--primary-200);
+  color: var(--indigo-200);
 }
 
 .p-toast .p-toast-message.p-toast-message-success {

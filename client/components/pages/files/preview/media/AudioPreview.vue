@@ -30,7 +30,7 @@ watch(previewOpen, (val) => {
     />
     <div v-else-if="!pending && !error" class="pointer-events-auto max-h-full m-auto">
       <audio controls class="max-h-full">
-        <source :src="data">
+        <source :src="data!">
       </audio>
     </div>
     <div v-else class="text-white flex flex-col items-center justify-center gap-5">

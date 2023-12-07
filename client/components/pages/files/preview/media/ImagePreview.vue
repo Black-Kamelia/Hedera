@@ -42,20 +42,20 @@ function zoomOut() {
 const controls = [
   {
     icon: 'i-tabler-rotate-clockwise-2',
-    command() { rotateRight() },
+    command: rotateRight,
   },
   {
     icon: 'i-tabler-rotate-2',
-    command() { rotateLeft() },
+    command: rotateLeft,
   },
   {
     icon: 'i-tabler-zoom-in',
-    command() { zoomIn() },
+    command: zoomIn,
     disabled: computed(() => zoom.value >= 2),
   },
   {
     icon: 'i-tabler-zoom-out',
-    command() { zoomOut() },
+    command: zoomOut,
     disabled: computed(() => zoom.value <= 0.5),
   },
 ]
@@ -81,7 +81,7 @@ const controls = [
       :style="{
         transform: `rotate(${rotation}deg) scale(${zoom})`,
       }"
-      :src="data"
+      :src="data!"
       :alt="file.name"
     >
     <div v-else class="text-white flex flex-col items-center justify-center gap-5">

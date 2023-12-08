@@ -43,6 +43,7 @@ object FileService {
 
         val personalToken = PersonalToken.findById(tokenId) ?: throw ExpiredOrInvalidTokenException()
         if (personalToken.deleted) throw ExpiredOrInvalidTokenException()
+        if (personalToken.token.startsWith("deleted_")) throw ExpiredOrInvalidTokenException()
         if (!Hasher.verify(token, personalToken.token).verified) throw ExpiredOrInvalidTokenException()
 
         handleFile(part, personalToken.owner, personalToken)

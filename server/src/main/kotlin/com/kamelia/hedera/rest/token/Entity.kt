@@ -75,6 +75,7 @@ class PersonalToken(id: EntityID<UUID>) : UUIDEntity(id) {
     val ownerId get() = transaction { owner.uuid }
 
     override fun delete() {
+        token = "deleted_${id.value}"
         deleted = true
     }
 }

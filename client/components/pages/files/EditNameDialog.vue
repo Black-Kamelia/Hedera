@@ -80,6 +80,7 @@ watch(visible, (val) => {
         </p>
 
         <FormInputText
+          id="filename"
           v-model="filename"
           name="filename"
           :label="t('forms.rename_file.fields.filename')"

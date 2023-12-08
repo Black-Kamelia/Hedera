@@ -156,6 +156,7 @@ const menuModel = computed(() => [
     label: t('pages.files.context_menu.delete'),
     icon: 'i-tabler-trash',
     command: _deleteFile,
+    class: 'h-danger',
   },
 ])
 </script>

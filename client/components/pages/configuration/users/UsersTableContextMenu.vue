@@ -74,6 +74,7 @@ const menuModel = computed(() => [
     icon: 'i-tabler-trash',
     command() { deleteUserDialog.value = true },
     disabled,
+    class: 'h-danger',
   },
 ])
 </script>

@@ -428,6 +428,8 @@ forms:
       missing_role: Role is required
       missing_force_change_password: Choice of forcing password change is required
       missing_disk_quota: Disk space quota is required
+      invalid_disk_quota: Invalid disk space quota
+      missing_unlimited_disk_quota: Choice of unlimited disk space quota is required
     fields:
       username: Username
       email: Email address
@@ -447,6 +449,8 @@ forms:
       invalid_email: Invalid email address format
       missing_role: Role is required
       missing_disk_quota: Disk space quota is required
+      invalid_disk_quota: Invalid disk space quota
+      missing_unlimited_disk_quota: Choice of unlimited disk space quota is required
     fields:
       username: Username
       email: Email address

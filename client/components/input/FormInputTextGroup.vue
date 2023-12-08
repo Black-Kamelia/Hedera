@@ -36,8 +36,10 @@ defineExpose({
 <template>
   <div>
     <label v-if="label" :for="id" class="block font-900 font-medium mb-2 ml-1">{{ label }}</label>
-    <span class="w-full p-inputgroup flex-1">
-      <span v-for="addon in startAddons" :key="addon" class="p-inputgroup-addon">{{ addon }}</span>
+    <PInputGroup>
+      <PInputGroupAddon v-for="addon in startAddons" :key="addon">
+        {{ addon }}
+      </PInputGroupAddon>
       <PInputText
         :id="id"
         v-bind="$attrs"
@@ -46,8 +48,10 @@ defineExpose({
         :class="{ 'p-invalid': errorMessage }"
         @input="onInput"
       />
-      <span v-for="addon in endAddons" :key="addon" class="p-inputgroup-addon">{{ addon }}</span>
-    </span>
+      <PInputGroupAddon v-for="addon in endAddons" :key="addon">
+        {{ addon }}
+      </PInputGroupAddon>
+    </PInputGroup>
     <Transition>
       <small v-if="errorMessage" :id="`${id}-error`" class="mt-1 block p-error">{{ errorMessage }}</small>
     </Transition>

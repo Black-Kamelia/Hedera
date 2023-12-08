@@ -114,7 +114,7 @@ watch(visible, (val) => {
             :label="t('forms.edit_custom_link.fields.slug')"
             :placeholder="t('forms.edit_custom_link.fields.slug_placeholder')"
             :transform-value="slugRestrict"
-            class="w-full"
+            class="flex-grow"
             :start-addons="[`${origin}/c/`]"
             autofocus
             @keydown.enter="submit"

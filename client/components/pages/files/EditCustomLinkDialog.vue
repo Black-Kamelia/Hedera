@@ -100,7 +100,7 @@ watch(visible, (val) => {
           tag="p"
         >
           <template #link>
-            <a :href="originalLink" target="_blank" class="inline-flex flew-row items-center gap-0.5">
+            <a :href="originalLink" target="_blank" class="inline-flex flex-row items-center gap-0.5">
               {{ originalLink }} <i class="h-1em w-1em i-tabler-external-link" />
             </a>
           </template>

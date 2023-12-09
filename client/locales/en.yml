@@ -149,6 +149,16 @@ pages:
     title: Favorites
   upload:
     title: Upload
+    dropzone:
+      title: Everything starts here
+      description: Drag and drop files here to upload them.
+      drop_here: Drop here
+      drop_here_subtitle: We’ll take care of the rest
+    status:
+      pending: Pending
+      uploading: Uploading
+      completed: Completed
+      error: Failed
     drag_n_drop: Drag and drop files here to upload.
     total_size: "Total size to be uploaded: {size}"
     select_files: Select files

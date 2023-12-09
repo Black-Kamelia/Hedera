@@ -149,7 +149,16 @@ pages:
     title: Favoris
   upload:
     title: Mettre en ligne
-    drag_n_drop: Déposez des fichiers ici pour les mettre en ligne.
+    dropzone:
+      title: Tout commence ici
+      description: Glisser et déposer des fichiers ici pour les mettre en ligne.
+      drop_here: Lâcher ici
+      drop_here_subtitle: On s’occupe du reste
+    status:
+      pending: En attente
+      uploading: Envoi
+      completed: Terminé
+      error: Échec
     total_size: "Taille totale à mettre en ligne: {size}"
     select_files: Choisir des fichiers
     upload_files: Envoyer les fichiers

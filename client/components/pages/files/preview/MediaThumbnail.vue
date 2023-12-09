@@ -44,32 +44,14 @@ const icon = computed(() => {
     <AudioPreview v-else-if="type === 'audio'" v-model:open="previewOpen" :file="data" />
     <MediaPreview v-else v-model:open="previewOpen" :file="data" />
 
-    <div
-      class="absolute flex flex-center w-full h-full preview"
-      :class="{ error: !isLoading && isError }"
-    >
-      <div v-if="isLoading || thumbnail" class="h-full w-full">
-        <PSkeleton v-if="isLoading" width="6rem" height="4rem" />
-        <img
-          v-if="!isLoading && thumbnail"
-          class="w-6rem h-4rem object-cover"
-          :src="thumbnail"
-          :alt="data.name"
-          @error="thumbnail = null"
-        >
-      </div>
-      <i v-else :class="icon" />
-    </div>
-
-    <Transition>
-      <a
-        v-show="hovered || previewOpen"
-        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-md border-rounded-2 w-full h-full text-white cursor-pointer"
-        @click="previewOpen = true"
-      >
-        <i class="text-base i-tabler-eye" />
-      </a>
-    </Transition>
+    <Thumbnail
+      :src="thumbnail"
+      :alt="data.name"
+      :type="data.mimeType"
+      :loading="isLoading"
+      :error="isError"
+      @open-preview="previewOpen = true"
+    />
   </div>
 </template>
 

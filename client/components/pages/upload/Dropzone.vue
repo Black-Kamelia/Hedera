@@ -40,8 +40,8 @@ function onBeforeLeave(el: Element) {
 <template>
   <div ref="dropzone" class="dropzone" :class="{ 'dropzone-over': isOverDropZone }">
     <Transition name="fade">
-      <div v-show="empty" class="placeholder">
-        <img class="w-10em" src="/assets/img/new_file.png" alt="">
+      <div v-show="empty" class="placeholder select-none">
+        <img class="w-10em pointer-events-none" src="/assets/img/new_file.png" alt="">
         <h1 class="text-2xl">
           {{ t('pages.upload.dropzone.title') }}
         </h1>
@@ -154,6 +154,11 @@ function onBeforeLeave(el: Element) {
   background-color: var(--primary-100);
   opacity: 65%;
   z-index: 200;
+}
+
+html.dark .dropzone-over::after {
+  background-color: var(--primary-900);
+  opacity: 50%;
 }
 
 .dropzone-release {

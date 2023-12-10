@@ -81,7 +81,7 @@ const icon = computed(() => {
     <Transition v-if="previewable">
       <a
         v-show="hovered"
-        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-md w-full h-full text-white cursor-pointer z-11"
+        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-md w-full h-full text-white cursor-pointer"
         :style="{ borderRadius }"
         @click="emit('openPreview')"
       >

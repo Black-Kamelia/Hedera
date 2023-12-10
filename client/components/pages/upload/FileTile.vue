@@ -66,7 +66,7 @@ onBeforeUnmount(() => URL.revokeObjectURL(thumbnail))
         class="ml-3 delete-btn "
         icon="i-tabler-x"
         rounded
-        outlined
+        text
         :pt="{ icon: { class: 'w-5 h-5' } }"
         @click="emit('remove')"
       />

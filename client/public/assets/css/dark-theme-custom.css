@@ -13,7 +13,7 @@
   --text-color: #e6e6e6;
   --text-color-secondary: #b3b3b3;
   --primary-color: var(--primary-500);
-  --primary-color-transparent: rgba(125, 104, 223, .125);
+  --primary-color-transparent: rgba(125, 104, 223, .5);
   --primary-color-text: var(--text-color);
   --surface-0: #1d1e27;
   --surface-50: #34343d;

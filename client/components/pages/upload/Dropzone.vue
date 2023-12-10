@@ -71,9 +71,6 @@ function onBeforeLeave(el: Element) {
         <h1 class="text-2xl">
           {{ t('pages.upload.dropzone.drop_here') }}
         </h1>
-        <p>
-          {{ t('pages.upload.dropzone.drop_here_subtitle') }}
-        </p>
       </div>
     </Transition>
   </div>
@@ -154,14 +151,15 @@ function onBeforeLeave(el: Element) {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--primary-300);
-  opacity: 25%;
+  background-color: var(--primary-100);
+  opacity: 65%;
   z-index: 200;
 }
 
 .dropzone-release {
   position: absolute;
   background: var(--primary-500);
+  outline: 0 solid var(--primary-color-transparent);
   color: #fff;
   border-radius: 50%;
   aspect-ratio: 1;
@@ -175,10 +173,12 @@ function onBeforeLeave(el: Element) {
 
 @keyframes breathing {
   0% {
-    padding: 3em;
+    padding: 2em;
+    outline-width: 3em;
   }
   100% {
-    padding: 6em;
+    padding: 4em;
+    outline-width: 2em;
   }
 }
 

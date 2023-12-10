@@ -151,9 +151,8 @@ pages:
     title: Upload
     dropzone:
       title: Everything starts here
-      description: Drag and drop files here to upload them.
-      drop_here: Drop here
-      drop_here_subtitle: We’ll take care of the rest
+      description: Drag and drop files in this area to upload them.
+      drop_here: Drop
     status:
       pending: Pending
       uploading: Uploading
@@ -170,7 +169,7 @@ pages:
       detail: "{count} file out of {total} has been uploaded | {count} files out of {total} have been uploaded"
     drag_n_drop: Drag and drop files here to upload.
     total_size: "Total size to be uploaded: {size}"
-    select_files: Select files
+    select_files: Browse files
     upload_files: Upload files
     clear_files: Clear pending files
     clear_done: Clear completed files

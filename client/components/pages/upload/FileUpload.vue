@@ -6,6 +6,7 @@ const uploadFile = useUploadFile()
 const files = ref<FileUpload[]>([])
 const empty = computed(() => files.value.length === 0)
 const hasFileToUpload = computed(() => files.value.some(file => file.status === 'pending'))
+const hasCompletedFiles = computed(() => files.value.some(file => file.status === 'completed' || file.status === 'error'))
 const { uploadBehavior } = storeToRefs(useUserSettings())
 const instantUpload = computed(() => uploadBehavior.value === 'INSTANT')
 
@@ -76,27 +77,30 @@ function upload() {
 
 <template>
   <div class="p-card p-5 h-full flex flex-col gap-5">
-    <div v-show="!empty" class="flex flex-row gap-2">
-      <PButton
-        icon="i-tabler-file-plus"
-        :label="t('pages.upload.select_files')"
-        outlined
-        @click="open()"
-      />
-      <PButton
-        v-show="!instantUpload"
-        icon="i-tabler-x"
-        :label="t('pages.upload.clear_files')"
-        outlined
-        @click="clear()"
-      />
-      <PButton
-        icon="i-tabler-clear-all"
-        :label="t('pages.upload.clear_done')"
-        outlined
-        @click="clearDone()"
-      />
-      <div class="flex-grow" />
+    <div v-show="!empty" class="flex flex-col lg:flex-row justify-between gap-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:flex flex-row gap-2">
+        <PButton
+          class="sm:grid-col-start-1 sm:grid-col-end-3"
+          icon="i-tabler-file-plus"
+          :label="t('pages.upload.select_files')"
+          outlined
+          @click="open()"
+        />
+        <PButton
+          v-show="!instantUpload"
+          icon="i-tabler-x"
+          :label="t('pages.upload.clear_files')"
+          outlined
+          @click="clear()"
+        />
+        <PButton
+          icon="i-tabler-clear-all"
+          :label="t('pages.upload.clear_done')"
+          outlined
+          :disabled="!hasCompletedFiles"
+          @click="clearDone()"
+        />
+      </div>
       <PButton
         v-show="!instantUpload"
         icon="i-tabler-upload"

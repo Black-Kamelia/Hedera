@@ -151,9 +151,8 @@ pages:
     title: Mettre en ligne
     dropzone:
       title: Tout commence ici
-      description: Glisser et déposer des fichiers ici pour les mettre en ligne.
-      drop_here: Lâcher ici
-      drop_here_subtitle: On s’occupe du reste
+      description: Glisser et déposer des fichiers dans cette zone pour les mettre en ligne.
+      drop_here: Relâcher
     status:
       pending: En attente
       uploading: Envoi en cours
@@ -169,9 +168,9 @@ pages:
       title: Mise en ligne terminée avec des erreurs
       detail: "{count} fichier sur {total} a été envoyé | {count} fichiers sur {total} ont été envoyés"
     total_size: "Taille totale à mettre en ligne: {size}"
-    select_files: Choisir des fichiers
+    select_files: Sélectionner des fichiers
     upload_files: Envoyer les fichiers
-    clear_files: Vider la sélection
+    clear_files: Retirer les fichiers en attente
     clear_done: Nettoyer les fichiers terminés
   analytics:
     title: Statistiques

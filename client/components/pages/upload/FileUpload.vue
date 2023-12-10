@@ -18,6 +18,10 @@ onChange((uploadedFiles) => {
   }
 })
 
+watch(files, (val) => {
+  if (val.some(file => file.status === 'pending') && instantUpload.value) upload()
+}, { deep: true })
+
 function clear() {
   files.value.splice(0)
 }
@@ -80,6 +84,7 @@ function upload() {
         @click="open()"
       />
       <PButton
+        v-show="!instantUpload"
         icon="i-tabler-x"
         :label="t('pages.upload.clear_files')"
         outlined
@@ -93,6 +98,7 @@ function upload() {
       />
       <div class="flex-grow" />
       <PButton
+        v-show="!instantUpload"
         icon="i-tabler-upload"
         :label="t('pages.upload.upload_files')"
         :disabled="!hasFileToUpload"

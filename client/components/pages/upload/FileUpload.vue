@@ -1,8 +1,13 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const toast = useToast()
+const uploadFile = useUploadFile()
 
 const files = ref<FileUpload[]>([])
 const empty = computed(() => files.value.length === 0)
+const hasFileToUpload = computed(() => files.value.some(file => file.status === 'pending'))
+const { uploadBehavior } = storeToRefs(useUserSettings())
+const instantUpload = computed(() => uploadBehavior.value === 'INSTANT')
 
 const { onChange, open } = useFileDialog({ multiple: true })
 
@@ -15,6 +20,53 @@ onChange((uploadedFiles) => {
 
 function clear() {
   files.value.splice(0)
+}
+
+function clearDone() {
+  files.value = files.value.filter(file => file.status !== 'error' && file.status !== 'completed')
+}
+
+function uploadSummary(result: UploadStatus[]) {
+  const successes = result.filter(status => status === 'completed').length
+  const failures = result.filter(status => status === 'error').length
+
+  if (successes === result.length) {
+    toast.add({
+      severity: 'success',
+      summary: t('pages.upload.success.title'),
+      detail: { text: t('pages.upload.success.detail', { count: result.length }) },
+      life: 5000,
+    })
+  } else if (failures === result.length) {
+    toast.add({
+      severity: 'error',
+      summary: t('pages.upload.fail.title'),
+      detail: { text: t('pages.upload.fail.detail', { count: result.length }) },
+      life: 5000,
+    })
+  } else {
+    toast.add({
+      severity: 'error',
+      summary: t('pages.upload.partial.title'),
+      detail: { text: t('pages.upload.partial.detail', { count: successes, total: result.length }) },
+      life: 5000,
+    })
+  }
+}
+
+function upload() {
+  if (!hasFileToUpload.value) return
+
+  const uploadPromises = files.value
+    .filter(file => file.status === 'pending')
+    .map((file) => {
+      file.status = 'uploading'
+      return uploadFile(file.file)
+        .then(() => file.status = 'completed')
+        .catch(() => file.status = 'error') as Promise<UploadStatus>
+    })
+
+  Promise.all(uploadPromises).then(uploadSummary)
 }
 </script>
 
@@ -37,11 +89,14 @@ function clear() {
         icon="i-tabler-clear-all"
         :label="t('pages.upload.clear_done')"
         outlined
+        @click="clearDone()"
       />
       <div class="flex-grow" />
       <PButton
         icon="i-tabler-upload"
         :label="t('pages.upload.upload_files')"
+        :disabled="!hasFileToUpload"
+        @click="upload()"
       />
     </div>
     <Dropzone v-model:files="files" />

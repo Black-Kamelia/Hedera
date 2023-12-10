@@ -156,19 +156,23 @@ pages:
       drop_here_subtitle: On s’occupe du reste
     status:
       pending: En attente
-      uploading: Envoi
+      uploading: Envoi en cours
       completed: Terminé
       error: Échec
+    success:
+      title: Mise en ligne terminée
+      detail: "{count} fichier a été envoyé | {count} fichiers ont été envoyés"
+    error:
+      title: Échec de la mise en ligne
+      detail: "{count} fichier n’a pas pu être envoyé | {count} fichiers n’ont pas pu être envoyés"
+    partial:
+      title: Mise en ligne terminée avec des erreurs
+      detail: "{count} fichier sur {total} a été envoyé | {count} fichiers sur {total} ont été envoyés"
     total_size: "Taille totale à mettre en ligne: {size}"
     select_files: Choisir des fichiers
     upload_files: Envoyer les fichiers
     clear_files: Vider la sélection
     clear_done: Nettoyer les fichiers terminés
-    pending: En attente
-    uploading: En cours d’envoi
-    completed: En ligne
-    error: Erreur
-    finished: Mise en ligne terminée
   analytics:
     title: Statistiques
   configuration:

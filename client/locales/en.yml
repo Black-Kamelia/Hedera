@@ -164,6 +164,7 @@ pages:
     select_files: Select files
     upload_files: Upload files
     clear_files: Clear pending files
+    clear_done: Clear completed files
     pending: Pending
     uploading: Uploading
     completed: Uploaded

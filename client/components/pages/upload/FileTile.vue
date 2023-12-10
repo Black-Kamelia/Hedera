@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { file, status } = defineProps<{
   file: File
-  status: 'pending' | 'uploading' | 'completed' | 'error'
+  status: UploadStatus
 }>()
 
 const emit = defineEmits<{
@@ -62,12 +62,12 @@ onBeforeUnmount(() => URL.revokeObjectURL(thumbnail))
         </p>
       </div>
       <PButton
-        class="small"
+        v-if="status === 'pending'"
+        class="ml-3 delete-btn "
         icon="i-tabler-x"
         rounded
         outlined
-        severity="danger"
-        :pt="{ icon: { class: 'w-4 h-4' } }"
+        :pt="{ icon: { class: 'w-5 h-5' } }"
         @click="emit('remove')"
       />
     </div>
@@ -84,9 +84,10 @@ onBeforeUnmount(() => URL.revokeObjectURL(thumbnail))
   border: 1px solid var(--surface-border);
   box-sizing: content-box;
   overflow: hidden;
+  z-index: 2;
 }
 
-.small {
+.delete-btn {
   width: 2em;
   height: 2em;
 }
@@ -95,7 +96,7 @@ onBeforeUnmount(() => URL.revokeObjectURL(thumbnail))
   display: grid;
   align-items: center;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-gap: .75em;
   width: 100%;
+  background: var(--surface-overlay);
 }
 </style>

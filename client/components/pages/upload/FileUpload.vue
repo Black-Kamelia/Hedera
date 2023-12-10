@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const files = ref<File[]>([])
+const files = ref<FileUpload[]>([])
 const empty = computed(() => files.value.length === 0)
 
 const { onChange, open } = useFileDialog({ multiple: true })
@@ -9,7 +9,7 @@ const { onChange, open } = useFileDialog({ multiple: true })
 onChange((uploadedFiles) => {
   if (!uploadedFiles) return
   for (let i = 0; i < uploadedFiles.length; i++) {
-    files.value.push(uploadedFiles[i])
+    files.value.push({ file: uploadedFiles[i], status: 'pending' })
   }
 })
 
@@ -33,13 +33,18 @@ function clear() {
         outlined
         @click="clear()"
       />
+      <PButton
+        icon="i-tabler-clear-all"
+        :label="t('pages.upload.clear_done')"
+        outlined
+      />
       <div class="flex-grow" />
       <PButton
         icon="i-tabler-upload"
         :label="t('pages.upload.upload_files')"
       />
     </div>
-    <Dropzone :files="files" />
+    <Dropzone v-model:files="files" />
   </div>
 </template>
 

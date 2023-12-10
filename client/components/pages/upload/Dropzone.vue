@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const files = defineModel<File[]>('files', { default: [] })
+const files = defineModel<FileUpload[]>('files', { default: [] })
 const empty = computed(() => files.value.length === 0)
 const dropzone = ref<HTMLElement>()
 
@@ -11,45 +11,60 @@ const { onChange, open } = useFileDialog({ multiple: true })
 onChange((uploadedFiles) => {
   if (!uploadedFiles) return
   for (let i = 0; i < uploadedFiles.length; i++) {
-    files.value.push(uploadedFiles[i])
+    files.value.push({ file: uploadedFiles[i], status: 'pending' })
   }
 })
 
 function onDrop(droppedFiles: File[] | null) {
-  if (droppedFiles) files.value.push(...droppedFiles)
+  if (droppedFiles) {
+    const newFiles = droppedFiles.map(file => ({ file, status: 'pending' } satisfies FileUpload))
+    files.value.push(...newFiles)
+  }
 }
 
 function onRemove(index: number) {
   files.value.splice(index, 1)
 }
+
+function onBeforeLeave(el: Element) {
+  const htmlEl = el as HTMLElement
+  const { marginLeft, marginTop, width, height } = window.getComputedStyle(el)
+  htmlEl.style.left = `${htmlEl.offsetLeft - Number.parseFloat(marginLeft)}px`
+  htmlEl.style.top = `${htmlEl.offsetTop - Number.parseFloat(marginTop)}px`
+  htmlEl.style.width = width
+  htmlEl.style.height = height
+  htmlEl.style.zIndex = '1'
+}
 </script>
 
 <template>
   <div ref="dropzone" class="dropzone" :class="{ 'dropzone-over': isOverDropZone }">
-    <div v-if="empty" class="area">
-      <img class="w-10em" src="/assets/img/new_file.png" alt="">
-      <h1 class="text-2xl">
-        {{ t('pages.upload.dropzone.title') }}
-      </h1>
-      <p class="pb-10">
-        {{ t('pages.upload.dropzone.description') }}
-      </p>
-      <PButton
-        rounded
-        :label="t('pages.upload.select_files')"
-        @click="open()"
-      />
-    </div>
+    <Transition name="fade">
+      <div v-show="empty" class="placeholder">
+        <img class="w-10em" src="/assets/img/new_file.png" alt="">
+        <h1 class="text-2xl">
+          {{ t('pages.upload.dropzone.title') }}
+        </h1>
+        <p class="pb-10">
+          {{ t('pages.upload.dropzone.description') }}
+        </p>
+        <PButton
+          rounded
+          :label="t('pages.upload.select_files')"
+          @click="open()"
+        />
+      </div>
+    </Transition>
 
-    <div v-else class="files">
+    <TransitionGroup name="list" class="files" tag="div" @before-leave="onBeforeLeave">
       <FileTile
-        v-for="(file, index) of files"
+        v-for="({ file, status }, index) of files"
         :key="file.name + file.type + file.size"
         :file="file"
-        status="completed"
+        :status="status"
         @remove="onRemove(index)"
       />
-    </div>
+    </TransitionGroup>
 
     <Transition name="grow">
       <div v-if="isOverDropZone" class="dropzone-release">
@@ -65,7 +80,32 @@ function onRemove(index: number) {
 </template>
 
 <style scoped lang="scss">
+.list {
+  &-move {
+    transition: all .3s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  &-enter-active {
+    transition: all .2s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  &-leave-active {
+    transition: all .2s cubic-bezier(0.32, 0, 0.67, 0);
+  }
+
+  &-leave-active {
+    position: absolute;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
 .dropzone {
+  position: relative;
+  border: 2px dashed var(--surface-border);
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,9 +113,10 @@ function onRemove(index: number) {
   width: 100%;
   overflow: hidden;
 
-  & .area {
-    border: 2px dashed var(--surface-border);
-    border-radius: 0.5rem;
+  & .placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -84,11 +125,10 @@ function onRemove(index: number) {
     height: 100%;
     width: 100%;
     transition: all .2s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
   }
 
   & .files {
-    border: 2px dashed var(--surface-border);
-    border-radius: 0.5rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -103,12 +143,8 @@ function onRemove(index: number) {
 
 .dropzone-over {
   position: relative;
-
-  & .area,
-  & .files{
-    border-radius: 0.5rem;
-    border: 2px solid var(--primary-500);
-  }
+  border-radius: 0.5rem;
+  border: 2px solid var(--primary-500);
 }
 
 .dropzone-over::after {
@@ -120,7 +156,6 @@ function onRemove(index: number) {
   height: 100%;
   background-color: var(--primary-300);
   opacity: 25%;
-  border-radius: .5em;
   z-index: 200;
 }
 
@@ -158,5 +193,17 @@ function onRemove(index: number) {
 .grow-leave-to {
   opacity: 0;
   transform: scale(.5);
+}
+
+.fade-enter-active {
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.fade-leave-active {
+  transition: all 0.2s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -44,8 +44,8 @@ function uploadSummary(result: UploadStatus[]) {
   } else if (failures === result.length) {
     toast.add({
       severity: 'error',
-      summary: t('pages.upload.fail.title'),
-      detail: { text: t('pages.upload.fail.detail', { count: result.length }) },
+      summary: t('pages.upload.error.title'),
+      detail: { text: t('pages.upload.error.detail', { count: result.length }) },
       life: 5000,
     })
   } else {

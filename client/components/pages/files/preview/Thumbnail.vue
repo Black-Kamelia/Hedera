@@ -93,7 +93,7 @@ const icon = computed(() => {
 
 <style scoped lang="scss">
 .preview {
-  &::after {
+  &::before {
     content: '';
     position: absolute;
     width: 100%;
@@ -111,7 +111,6 @@ const icon = computed(() => {
 
   & img {
     position: absolute;
-    z-index: 10;
   }
 }
 

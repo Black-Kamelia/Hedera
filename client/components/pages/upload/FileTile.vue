@@ -70,6 +70,12 @@ onBeforeUnmount(() => URL.revokeObjectURL(thumbnail))
         :pt="{ icon: { class: 'w-5 h-5' } }"
         @click="emit('remove')"
       />
+      <PProgressSpinner
+        v-else-if="status === 'uploading'"
+        class="ml-3"
+        :style="{ width: '1.5em', height: '1.5em' }"
+        stroke-width="4"
+      />
     </div>
   </div>
 </template>

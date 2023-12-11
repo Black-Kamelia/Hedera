@@ -3,18 +3,20 @@ const { data } = defineProps<{
   data: FileRepresentationDTO
 }>()
 
+onMounted(() => console.log('MOUNTED'))
+
 const el = ref()
 const hovered = useElementHover(el)
 const previewOpen = ref(false)
 
-const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
+const { thumbnail, loading, error } = useThumbnail(data.code, data.mimeType)
 
 const type = computed(() => mimeTypeToMediaType(data.mimeType))
 const icon = computed(() => {
   switch (type.value) {
     case 'image':
-      if (isError.value) return 'i-tabler-photo-exclamation'
-      if (!isLoading.value && !thumbnail.value) return 'i-tabler-photo-x'
+      if (error.value) return 'i-tabler-photo-exclamation'
+      if (!loading.value && !thumbnail.value) return 'i-tabler-photo-x'
       return 'i-tabler-photo'
     case 'audio':
       return 'i-tabler-music'
@@ -46,12 +48,12 @@ const icon = computed(() => {
 
     <div
       class="absolute flex flex-center w-full h-full preview"
-      :class="{ error: !isLoading && isError }"
+      :class="{ error: !loading && error }"
     >
-      <div v-if="isLoading || thumbnail" class="h-full w-full">
-        <PSkeleton v-if="isLoading" width="6rem" height="4rem" />
+      <div v-if="loading || thumbnail" class="h-full w-full">
+        <PSkeleton v-if="loading" width="6rem" height="4rem" />
         <img
-          v-if="!isLoading && thumbnail"
+          v-if="!loading && thumbnail"
           class="w-6rem h-4rem object-cover"
           :src="thumbnail"
           :alt="data.name"

@@ -81,7 +81,7 @@ const controls = [
     />
     <img
       v-else-if="!pending && !error"
-      class="pointer-events-auto m-auto max-h-full rounded-lg object-contain image-preview select-none"
+      class="pointer-events-auto m-auto max-w-full max-h-full rounded-lg object-contain image-preview select-none"
       :style="{
         transform: `rotate(${rotation}deg) scale(${zoom})`,
       }"

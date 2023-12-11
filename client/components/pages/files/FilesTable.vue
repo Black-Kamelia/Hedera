@@ -18,8 +18,9 @@ const filters = useFilesFilters()
 const { format } = useHumanFileSize()
 const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 
-const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
+const selectedRows = defineModel<FileRepresentationDTO[]>('selectedRows', { default: () => [] })
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
+const selecting = computed(() => selectedRows.value.length > 0)
 
 const query = defineModel<string>('query', { default: DEFAULT_QUERY })
 const debouncedQuery = useDebounce(query, 500)
@@ -153,7 +154,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
     v-model:multi-sort-meta="sort"
-    class="h-full"
+    class="h-full relative"
     data-key="id"
     lazy
     :value="loading ? Array.from({ length: rows }) : files"
@@ -168,10 +169,17 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     sort-mode="multiple"
     removable-sort
     context-menu
+    :pt="{ footer: { class: 'p-0 border-none' } }"
     @page="onPage"
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
+    <template #footer>
+      <div class="h-0 relative">
+        <ActionButtons v-model:selection="selectedRows" />
+      </div>
+    </template>
+
     <PColumn class="w-3.375em" selection-mode="multiple" />
 
     <PColumn class="w-6em" field="code" :header="t('pages.files.table.preview')" :sortable="false">

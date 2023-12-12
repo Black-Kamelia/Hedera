@@ -1,19 +1,32 @@
 <script setup lang="ts">
 import { useField } from 'vee-validate'
 import type PInputText from 'primevue/inputtext'
-import type { DropdownProps } from 'primevue/dropdown'
+import type { DropdownProps, DropdownSlots } from 'primevue/dropdown'
 
 export interface FormDropdownProps extends OnlyProps<DropdownProps> {
   id: string
   name: string
   label: string
   options: any[]
+  optionIcon?: string
+  optionLabel?: string
   startIcon?: string
   endIcon?: string
   transformValue?: (value: string) => string
 }
 
-const { id, name, label, startIcon, endIcon, transformValue = value => value } = defineProps<FormDropdownProps>()
+const {
+  id,
+  name,
+  label,
+  startIcon,
+  endIcon,
+  transformValue = value => value,
+  options,
+  optionIcon = 'icon',
+  optionLabel = 'label',
+} = defineProps<FormDropdownProps>()
+defineSlots<DropdownSlots>()
 
 const { errorMessage, value, validate } = useField<Nullable<string>>(name, _ => true, {
   validateOnValueUpdate: false,
@@ -34,6 +47,10 @@ const el = ref<Nullable<CompElement<InstanceType<typeof PInputText>>>>()
 defineExpose({
   $el: computed(() => el.value?.$el),
 })
+
+function getOption(value: string) {
+  return options.find(option => option.value === value)
+}
 </script>
 
 <template>
@@ -50,7 +67,20 @@ defineExpose({
         :options="options"
         @input="onInput"
         @change="onChange"
-      />
+      >
+        <template #value="{ value: selectedOption }">
+          <div v-if="selectedOption" class="flex items-center gap-2">
+            <i :class="getOption(selectedOption)![optionIcon]" />
+            <div>{{ getOption(selectedOption)![optionLabel] }}</div>
+          </div>
+        </template>
+        <template #option="slotProps">
+          <div class="flex items-center gap-2">
+            <i :class="slotProps.option[optionIcon]" />
+            <div>{{ slotProps.option[optionLabel] }}</div>
+          </div>
+        </template>
+      </PDropdown>
       <i v-if="endIcon" :class="endIcon" />
     </span>
     <Transition>

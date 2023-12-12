@@ -18,14 +18,22 @@ import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.token.PersonalToken
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.rest.user.UserTable
 import com.kamelia.hedera.util.FileUtils
-import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
+import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
+import org.jetbrains.exposed.dao.DaoEntityID
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
 val PERSONAL_TOKEN_REGEX = """^[a-f0-9]{64}$""".toRegex()
@@ -195,6 +203,25 @@ object FileService {
         )
     }
 
+    suspend fun updateFilesVisibility(
+        userID: UUID,
+        dto: BulkUpdateDTO,
+    ): ActionResponse<Nothing> = Connection.transaction {
+        val user = User[userID]
+
+        val updatedFiles = FileTable.update({ FileTable.id inList dto.ids }) {
+            dto.fileVisibility?.let { visibility -> it[FileTable.visibility] = visibility }
+            it[FileTable.updatedAt] = Instant.now()
+            it[FileTable.updatedBy] = DaoEntityID(user.uuid, UserTable)
+        }
+
+        println("Updated $updatedFiles files out of ${dto.ids.size}")
+
+        ActionResponse.ok(
+            title = Actions.Files.Update.Visibility.Success.TITLE.asMessage(),
+        )
+    }
+
     suspend fun updateFileName(
         fileId: UUID,
         userId: UUID,
@@ -301,6 +328,36 @@ object FileService {
             title = Actions.Files.Delete.Success.TITLE.asMessage(),
             message = Actions.Files.Delete.Success.MESSAGE.asMessage("name" to file.name),
             payload = file.toRepresentationDTO()
+        )
+    }
+
+    suspend fun deleteFiles(
+        fileIds: List<UUID>,
+        userId: UUID,
+    ): ActionResponse<Nothing> = Connection.transaction {
+        val user = User[userId]
+
+        /*
+        We need to delete all files in one shot.
+        We need to update the quota accordingly.
+        We need to delete the files from the disk.
+        We need to handle permissions.
+        And finally, we need to provide a summary of the operation.
+         */
+
+        val files = File.find { FileTable.id inList fileIds }
+        val filesToDelete = files.filter { it.ownerId == user.uuid || user.role ne UserRole.REGULAR }
+        val filesToIgnore = files.filter { it.ownerId != user.uuid && user.role eq UserRole.REGULAR }
+
+        val totalSize = filesToDelete.sumOf { it.size }
+        user.decreaseCurrentDiskQuota(totalSize)
+
+        filesToDelete.forEach { it.delete() }
+        FileUtils.deleteBulk(user.uuid, filesToDelete.map { it.code })
+
+        ActionResponse.ok(
+            title = Actions.Files.Delete.Success.TITLE.asMessage(),
+            message = Actions.Files.Delete.Success.MESSAGE.asMessage("count" to "0"),
         )
     }
 }

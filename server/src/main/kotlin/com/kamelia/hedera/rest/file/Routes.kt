@@ -23,7 +23,9 @@ import com.kamelia.hedera.util.respondFileInline
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import java.util.*
 
 fun Route.filesRoutes() = route("/files") {
     uploadFileFromToken()
@@ -38,6 +40,11 @@ fun Route.filesRoutes() = route("/files") {
         editFileCustomLink()
         removeFileCustomLink()
         deleteFile()
+
+        route("/bulk") {
+            editFileVisibilityBulk()
+            deleteBulk()
+        }
     }
 
     authenticate(AuthJwt, optional = true) {
@@ -148,6 +155,12 @@ private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility"
     call.respond(FileService.updateFileVisibility(fileId, userId, body))
 }
 
+private fun Route.editFileVisibilityBulk() = post<BulkUpdateDTO>("/visibility") { body ->
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.updateFilesVisibility(userId, body))
+}
+
 private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
     val fileId = call.getUUID("uuid")
     val userId = call.authenticatedUser!!.uuid
@@ -174,4 +187,10 @@ private fun Route.deleteFile() = delete("/{uuid}") {
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.deleteFile(fileId, userId))
+}
+
+private fun Route.deleteBulk() = post<BulkDeleteDTO>("/delete") { body ->
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.deleteFiles(body.ids, userId))
 }

@@ -155,7 +155,7 @@ private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility"
     call.respond(FileService.updateFileVisibility(fileId, userId, body))
 }
 
-private fun Route.editFileVisibilityBulk() = post<BulkUpdateDTO>("/visibility") { body ->
+private fun Route.editFileVisibilityBulk() = post<BulkUpdateVisibilityDTO>("/visibility") { body ->
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.updateFilesVisibility(userId, body))

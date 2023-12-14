@@ -8,6 +8,24 @@ object Actions {
 
         private const val PREFIX = "${Actions.PREFIX}.files"
 
+        object BulkUpdate {
+
+            private const val PREFIX = "${Files.PREFIX}.bulk_update"
+
+            object Visibility {
+
+                private const val PREFIX = "${BulkUpdate.PREFIX}.visibility"
+
+                object Success {
+                    private const val PREFIX = "${Visibility.PREFIX}.success"
+                    const val TITLE = "$PREFIX.title"
+                    const val MESSAGE = "$PREFIX.message"
+                }
+
+            }
+
+        }
+
         object Update {
 
             private const val PREFIX = "${Files.PREFIX}.update"

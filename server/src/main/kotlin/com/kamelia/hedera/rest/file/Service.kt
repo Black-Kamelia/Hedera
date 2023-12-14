@@ -28,11 +28,7 @@ import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
 import org.jetbrains.exposed.dao.DaoEntityID
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
@@ -205,20 +201,27 @@ object FileService {
 
     suspend fun updateFilesVisibility(
         userID: UUID,
-        dto: BulkUpdateDTO,
-    ): ActionResponse<Nothing> = Connection.transaction {
+        dto: BulkUpdateVisibilityDTO,
+    ): ActionResponse<BulkActionSummaryDTO> = Connection.transaction {
         val user = User[userID]
 
         val updatedFiles = FileTable.update({ FileTable.id inList dto.ids }) {
-            dto.fileVisibility?.let { visibility -> it[FileTable.visibility] = visibility }
-            it[FileTable.updatedAt] = Instant.now()
-            it[FileTable.updatedBy] = DaoEntityID(user.uuid, UserTable)
+            it[visibility] = dto.fileVisibility
+            it[updatedAt] = Instant.now()
+            it[updatedBy] = DaoEntityID(user.uuid, UserTable)
         }
 
-        println("Updated $updatedFiles files out of ${dto.ids.size}")
-
         ActionResponse.ok(
-            title = Actions.Files.Update.Visibility.Success.TITLE.asMessage(),
+            title = Actions.Files.BulkUpdate.Visibility.Success.TITLE.asMessage(),
+            message = Actions.Files.BulkUpdate.Visibility.Success.MESSAGE.asMessage(
+                "count" to updatedFiles.toString(),
+                "newVisibility" to dto.fileVisibility.toMessageKey()
+            ),
+            payload = BulkActionSummaryDTO(
+                updatedFiles,
+                dto.ids.size - updatedFiles,
+                dto.ids.size,
+            )
         )
     }
 
@@ -345,15 +348,14 @@ object FileService {
         And finally, we need to provide a summary of the operation.
          */
 
-        val files = File.find { FileTable.id inList fileIds }
-        val filesToDelete = files.filter { it.ownerId == user.uuid || user.role ne UserRole.REGULAR }
-        val filesToIgnore = files.filter { it.ownerId != user.uuid && user.role eq UserRole.REGULAR }
+        val condition = FileTable.id inList fileIds
 
-        val totalSize = filesToDelete.sumOf { it.size }
+        val files = File.find(condition)
+
+        val totalSize = files.sumOf { it.size }
         user.decreaseCurrentDiskQuota(totalSize)
 
-        filesToDelete.forEach { it.delete() }
-        FileUtils.deleteBulk(user.uuid, filesToDelete.map { it.code })
+        files.forEach { FileUtils.delete(it.ownerId, it.code) }
 
         ActionResponse.ok(
             title = Actions.Files.Delete.Success.TITLE.asMessage(),

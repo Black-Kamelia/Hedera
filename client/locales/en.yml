@@ -94,6 +94,15 @@ pages:
       download: Download
       delete: Delete
       unselect: Unselect
+    bulk_actions:
+      edit_visibility:
+        header: Change the visibility of the selected files
+        description: "The selected file will be modified. Are you sure you want to change the visibility of this file? | The {count} selected files will be modified. Are you sure you want to change the visibility of these files?"
+        cancel: Cancel
+        submit: Change visibility
+      delete:
+        header: Delete the selected files
+        description: "The selected file will be deleted. This action is irreversible. Are you sure you want to delete this file? | The {count} selected files will be deleted. This action is irreversible. Are you sure you want to delete these files?"
     advanced_filters: Advanced filters
     filters:
       minimum_size: Minimum size
@@ -472,6 +481,14 @@ forms:
       name_too_long: The name must be at most {max} characters long
     fields:
       filename: New file name
+  bulk_change_visibility:
+    submit: Change visibility
+    cancel: Cancel
+    errors:
+      missing_visibility: Visibility is required
+    fields:
+      visibility: Visibility
+      visibility_placeholder: Select a visibility
   edit_custom_link:
     submit: Save
     cancel: Cancel
@@ -489,6 +506,11 @@ actions:
       success:
         title: Successfully deleted
         message: The file “{name}” has been deleted
+    bulk_update:
+      visibility:
+        success:
+          title: Visibility changed
+          message: "This file is now {newVisibility} | {count} files are now {newVisibility}"
     update:
       visibility:
         success:

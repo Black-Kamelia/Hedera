@@ -34,7 +34,10 @@ export default function useI18n(fallback = 'en') {
         Object.entries(parameters).map(([key, value]) => [key, i18n.t(value, {}, { missingWarn: false })]),
       )
 
-      // return the final translation
+      if (Object.entries(parameters).some(([key, _]) => key === 'count')) {
+        const count = Number.parseInt(parameters.count!)
+        return i18n.t(key, mapped, count)
+      }
       return i18n.t(key, mapped)
     }
 

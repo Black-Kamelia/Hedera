@@ -68,13 +68,6 @@ object FileUtils {
         if (file.exists()) file.delete()
     }
 
-    fun deleteBulk(owner: UUID, ids: List<String>) {
-        ids.forEach {
-            val file = UPLOAD_PATH.resolve(owner.toString()).resolve(it).toFile()
-            if (file.exists()) file.delete()
-        }
-    }
-
     private fun generateUniqueCode(): String {
         repeat(10) {
             val code = String.random(10)

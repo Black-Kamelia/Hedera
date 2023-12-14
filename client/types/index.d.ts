@@ -103,6 +103,12 @@ declare global {
     createdAt: string,
   }
 
+  interface BulkActionSummaryDTO {
+    successes: number
+    fails: number
+    total: number
+  }
+
   interface TokenData {
     accessToken: string
     accessTokenExpiration: number

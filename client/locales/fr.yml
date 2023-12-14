@@ -94,6 +94,15 @@ pages:
       download: Télécharger
       delete: Supprimer
       unselect: Désélectionner
+    bulk_actions:
+      edit_visibility:
+        header: Modifier la visibilité des fichiers sélectionnés
+        description: "Le fichier sélectionné va être modifié. Êtes-vous sûr(e) de vouloir modifier la visibilité de ce fichier ? | Les {count} fichiers sélectionnés vont être modifiés. Êtes-vous sûr(e) de vouloir modifier la visibilité de ces fichiers ?"
+        cancel: Annuler
+        submit: Modifier la visibilité
+      delete:
+        header: Supprimer les fichiers sélectionnés
+        description: Le fichier sélectionné va être supprimé. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ce fichier ? | Les {count} fichiers sélectionnés vont être supprimés. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ces fichiers ?
     advanced_filters: Filtres avancés
     filters:
       minimum_size: Taille minimale
@@ -472,6 +481,14 @@ forms:
       name_too_long: Le nom du fichier doit contenir au plus {max} caractères
     fields:
       filename: Nouveau nom du fichier
+  bulk_change_visibility:
+    submit: Modifier la visibilité
+    cancel: Annuler
+    errors:
+      missing_visibility: Visibilité requise
+    fields:
+      visibility: Visibilité
+      visibility_placeholder: Sélectionner une visibilité
   edit_custom_link:
     submit: Sauvegarder
     cancel: Annuler
@@ -489,6 +506,11 @@ actions:
       success:
         title: Fichier supprimé
         message: Le fichier “{name}” a été supprimé
+    bulk_update:
+      visibility:
+        success:
+          title: Visibilité modifiée
+          message: "Ce fichier est désormais {newVisibility} | {count} fichiers sont désormais {newVisibility}"
     update:
       visibility:
         success:

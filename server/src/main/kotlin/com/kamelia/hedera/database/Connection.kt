@@ -40,8 +40,9 @@ object Connection {
 
     suspend fun <T> transaction(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        transactionIsolation: Int? = null,
         block: suspend Transaction.() -> T,
-    ): T = newSuspendedTransaction(dispatcher, database) {
+    ): T = newSuspendedTransaction(dispatcher, database, transactionIsolation) {
         if (Environment.isDev) {
             addLogger(StdOutSqlLogger)
         }

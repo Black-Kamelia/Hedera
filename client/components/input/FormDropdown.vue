@@ -65,12 +65,13 @@ function getOption(value: string) {
         v-model="value"
         :class="{ 'p-invalid': errorMessage }"
         :options="options"
+        :pt="{ input: { class: 'min-h-3em' } }"
         @input="onInput"
         @change="onChange"
       >
         <template #value="{ value: selectedOption }">
           <div v-if="selectedOption" class="flex items-center gap-2">
-            <i :class="getOption(selectedOption)![optionIcon]" />
+            <i :class="getOption(selectedOption)![optionIcon]" class="h-1.5em" />
             <div>{{ getOption(selectedOption)![optionLabel] }}</div>
           </div>
         </template>

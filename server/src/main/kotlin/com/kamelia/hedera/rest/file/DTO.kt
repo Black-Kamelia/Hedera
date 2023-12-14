@@ -64,12 +64,19 @@ data class FilePageDTO(
 ) : DTO
 
 @Serializable
-data class BulkUpdateDTO(
+data class BulkUpdateVisibilityDTO(
     val ids: List<UUID>,
-    val fileVisibility: FileVisibility? = null,
+    val fileVisibility: FileVisibility,
 ) : DTO
 
 @Serializable
 data class BulkDeleteDTO(
     val ids: List<UUID>,
+) : DTO
+
+@Serializable
+data class BulkActionSummaryDTO(
+    val successes: Int,
+    val fails: Int,
+    val total: Int,
 ) : DTO

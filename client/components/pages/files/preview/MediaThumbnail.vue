@@ -3,42 +3,15 @@ const { data } = defineProps<{
   data: FileRepresentationDTO
 }>()
 
-const el = ref()
-const hovered = useElementHover(el)
 const previewOpen = ref(false)
 
 const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
 
 const type = computed(() => mimeTypeToMediaType(data.mimeType))
-const icon = computed(() => {
-  switch (type.value) {
-    case 'image':
-      if (isError.value) return 'i-tabler-photo-exclamation'
-      if (!isLoading.value && !thumbnail.value) return 'i-tabler-photo-x'
-      return 'i-tabler-photo'
-    case 'audio':
-      return 'i-tabler-music'
-    case 'video':
-      return 'i-tabler-video'
-    case 'text':
-      return 'i-tabler-file-text'
-    case 'zip':
-      return 'i-tabler-file-zip'
-    case 'document':
-      return 'i-tabler-file-text'
-    case 'unknown':
-      return 'i-tabler-file-unknown'
-    default:
-      return 'i-tabler-file'
-  }
-})
 </script>
 
 <template>
-  <div
-    ref="el"
-    class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
-  >
+  <div class="relative w-6rem h-4rem border-rounded-2 overflow-hidden">
     <ImagePreview v-if="type === 'image'" v-model:open="previewOpen" :file="data" />
     <VideoPreview v-else-if="type === 'video'" v-model:open="previewOpen" :file="data" />
     <AudioPreview v-else-if="type === 'audio'" v-model:open="previewOpen" :file="data" />

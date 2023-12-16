@@ -1,4 +1,16 @@
 <script setup lang="ts">
+interface ThumnailProps {
+  src: string | null
+  alt: string
+  type: string
+  loading?: boolean
+  error?: boolean
+  previewable?: boolean
+  width?: string
+  height?: string
+  borderRadius?: string
+}
+
 const {
   src,
   alt,
@@ -9,23 +21,13 @@ const {
   width = '6rem',
   height = '4rem',
   borderRadius = '0.5rem',
-} = defineProps<{
-  src: string | null
-  alt: string
-  type: string
-  loading?: boolean
-  error?: boolean
-  previewable?: boolean
-  width?: string
-  height?: string
-  borderRadius?: string
-}>()
+} = defineProps<ThumnailProps>()
 
 const emit = defineEmits<{
   (event: 'openPreview'): void
 }>()
 
-const el = ref()
+const el = ref<HTMLElement>()
 const hovered = useElementHover(el)
 
 const imgError = ref(false)
@@ -109,26 +111,18 @@ const icon = computed(() => {
     font-size: 1.5rem;
   }
 
-  & img {
+  img {
     position: absolute;
   }
 }
 
 .error {
-  &::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
+  &::before {
     background-color: var(--red-500);
-    opacity: 12.5%;
   }
 
   & > i {
-    display: block;
-    opacity: 100%;
     color: var(--red-500);
-    font-size: 1.5rem;
   }
 }
 

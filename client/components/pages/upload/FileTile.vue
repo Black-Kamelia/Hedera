@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import useObjectURL from '~/composables/useObjectURL'
+
 const { file, status } = defineProps<{
   file: File
   status: UploadStatus
@@ -11,8 +13,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { format } = useHumanFileSize()
 
-const thumbnail = URL.createObjectURL(file)
-onBeforeUnmount(() => URL.revokeObjectURL(thumbnail))
+const thumbnail = useObjectURL(file)
 </script>
 
 <template>

@@ -5,32 +5,15 @@ const selection = defineModel<FileRepresentationDTO[]>('selection', { default: (
 const selecting = computed(() => selection.value.length > 0)
 
 const { t } = useI18n()
-const confirm = useConfirm()
-const bulkDelete = useBulkDelete()
-
-const { refresh } = useFilesTable()
 
 const editVisibilityDialog = ref(false)
-
-function deleteFiles() {
-  confirm.require({
-    header: t('pages.files.bulk_actions.delete.header'),
-    message: t('pages.files.bulk_actions.delete.description', { count: selection.value.length }),
-    acceptIcon: 'i-tabler-trash',
-    acceptLabel: t('pages.files.delete.submit'),
-    acceptClass: 'p-button-danger',
-    rejectLabel: t('pages.files.delete.cancel'),
-    accept: () => bulkDelete(selection.value.map(file => file.id)).then(refresh),
-  })
-}
+const deleteDialog = ref(false)
 </script>
 
 <template>
   <div class="actions">
-    <BulkEditVisibilityDialog
-      v-model:visible="editVisibilityDialog"
-      :selection="selection"
-    />
+    <BulkEditVisibilityDialog v-model:visible="editVisibilityDialog" v-model:selection="selection" />
+    <BulkDeleteDialog v-model:visible="deleteDialog" v-model:selection="selection" />
 
     <Transition>
       <div v-show="selecting">
@@ -72,7 +55,7 @@ function deleteFiles() {
           icon="i-tabler-trash"
           severity="danger"
           rounded
-          @click="deleteFiles"
+          @click="deleteDialog = true"
         />
       </div>
     </Transition>

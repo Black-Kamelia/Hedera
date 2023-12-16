@@ -103,6 +103,8 @@ pages:
       delete:
         header: Supprimer les fichiers sélectionnés
         description: Le fichier sélectionné va être supprimé. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ce fichier ? | Les {count} fichiers sélectionnés vont être supprimés. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ces fichiers ?
+        cancel: Annuler
+        submit: Supprimer
     advanced_filters: Filtres avancés
     filters:
       minimum_size: Taille minimale

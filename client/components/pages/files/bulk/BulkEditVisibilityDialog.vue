@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
 
-const { selection } = defineProps<{
-  selection: FileRepresentationDTO[]
-}>()
+const selection = defineModel<FileRepresentationDTO[]>('selection', { default: () => [] })
 
 const { t } = useI18n()
 const bulkEditFileVisibility = useBulkEditVisibility()
+const { refresh } = useFilesTable()
 
 const visible = defineModel<boolean>('visible', { default: false })
 const loading = ref(false)
@@ -28,7 +27,9 @@ const { handleSubmit, resetForm } = useForm({
 const submit = handleSubmit((values) => {
   loading.value = true
 
-  bulkEditFileVisibility(selection.map(file => file.id), values.visibility)
+  bulkEditFileVisibility(selection.value.map(file => file.id), values.visibility)
+    .then(() => selection.value = [])
+    .then(refresh)
     .finally(() => {
       visible.value = false
       loading.value = false

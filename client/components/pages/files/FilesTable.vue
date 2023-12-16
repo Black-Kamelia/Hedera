@@ -18,9 +18,8 @@ const filters = useFilesFilters()
 const { format } = useHumanFileSize()
 const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 
-const selectedRows = defineModel<FileRepresentationDTO[]>('selectedRows', { default: () => [] })
+const selectedRows = ref<FileRepresentationDTO[]>([])
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
-const selecting = computed(() => selectedRows.value.length > 0)
 
 const query = defineModel<string>('query', { default: DEFAULT_QUERY })
 const debouncedQuery = useDebounce(query, 500)

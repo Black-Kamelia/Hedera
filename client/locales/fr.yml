@@ -504,6 +504,10 @@ forms:
 
 actions:
   files:
+    bulk_delete:
+      success:
+        title: Fichiers supprimés
+        message: "Ce fichier a été supprimé | {count} fichiers ont été supprimés"
     delete:
       success:
         title: Fichier supprimé
@@ -572,6 +576,7 @@ actions:
 
 errors:
   unknown: Une erreur inattendue est survenue
+  unknown_message: "Indication : {hint}"
   network: Connexion au serveur impossible
   auth:
     invalid_credentials: Nom d’utilisateur ou mot de passe incorrect

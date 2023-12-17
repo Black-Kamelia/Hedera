@@ -103,6 +103,8 @@ pages:
       delete:
         header: Delete the selected files
         description: "The selected file will be deleted. This action is irreversible. Are you sure you want to delete this file? | The {count} selected files will be deleted. This action is irreversible. Are you sure you want to delete these files?"
+        cancel: Cancel
+        submit: Delete
     advanced_filters: Advanced filters
     filters:
       minimum_size: Minimum size
@@ -502,6 +504,10 @@ forms:
 
 actions:
   files:
+    bulk_delete:
+      success:
+        title: Successfully deleted
+        message: "This file has been deleted | {count} files have been deleted"
     delete:
       success:
         title: Successfully deleted
@@ -570,6 +576,7 @@ actions:
 
 errors:
   unknown: An unknown error has occurred
+  unknown_message: "Hint: {hint}"
   network: Network is unreachable
   auth:
     invalid_credentials: Username or password is incorrect

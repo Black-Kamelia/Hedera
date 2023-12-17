@@ -13,7 +13,7 @@
   --text-color: #e6e6e6;
   --text-color-secondary: #b3b3b3;
   --primary-color: var(--primary-500);
-  --primary-color-transparent: rgba(125, 104, 223, .125);
+  --primary-color-transparent: rgba(125, 104, 223, .5);
   --primary-color-text: var(--text-color);
   --surface-0: #1d1e27;
   --surface-50: #34343d;
@@ -1012,4 +1012,9 @@ hr {
 .p-badge.p-badge-danger {
   background-color: var(--pink-500);
   color: #fff;
+}
+
+.p-progress-spinner-circle {
+  animation: p-progress-spinner-dash 1.5s ease-in-out infinite;
+  stroke: var(--text-color);
 }

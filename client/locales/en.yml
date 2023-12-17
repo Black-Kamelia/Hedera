@@ -149,16 +149,29 @@ pages:
     title: Favorites
   upload:
     title: Upload
-    drag_n_drop: Drag and drop files here to upload.
+    dropzone:
+      title: Everything starts here
+      description: Drag and drop files in this area to upload them.
+      drop_here: Drop
+    status:
+      pending: Pending
+      uploading: Uploading
+      completed: Completed
+      error: Failed
+    success:
+      title: Upload completed
+      detail: "{count} file has been uploaded | {count} files have been uploaded"
+    error:
+      title: Upload failed
+      detail: "{count} file could not be uploaded | {count} files could not be uploaded"
+    partial:
+      title: Upload completed with errors
+      detail: "{count} file out of {total} has been uploaded | {count} files out of {total} have been uploaded"
     total_size: "Total size to be uploaded: {size}"
-    select_files: Select files
+    select_files: Browse files
     upload_files: Upload files
     clear_files: Clear pending files
-    pending: Pending
-    uploading: Uploading
-    completed: Uploaded
-    error: Error
-    finished: Upload finished
+    clear_done: Clear completed files
   analytics:
     title: Analytics
   configuration:

@@ -43,6 +43,12 @@ declare global {
 
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
+
+  export type UploadStatus = 'pending' | 'uploading' | 'completed' | 'error'
+  export interface FileUpload {
+    file: File
+    status: UploadStatus
+  }
 }
 // END SECTION: Others
 

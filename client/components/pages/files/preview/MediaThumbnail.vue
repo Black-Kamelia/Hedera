@@ -3,75 +3,28 @@ const { data } = defineProps<{
   data: FileRepresentationDTO
 }>()
 
-onMounted(() => console.log('MOUNTED'))
-
-const el = ref()
-const hovered = useElementHover(el)
 const previewOpen = ref(false)
 
 const { thumbnail, loading, error } = useThumbnail(data.code, data.mimeType)
 
 const type = computed(() => mimeTypeToMediaType(data.mimeType))
-const icon = computed(() => {
-  switch (type.value) {
-    case 'image':
-      if (error.value) return 'i-tabler-photo-exclamation'
-      if (!loading.value && !thumbnail.value) return 'i-tabler-photo-x'
-      return 'i-tabler-photo'
-    case 'audio':
-      return 'i-tabler-music'
-    case 'video':
-      return 'i-tabler-video'
-    case 'text':
-      return 'i-tabler-file-text'
-    case 'zip':
-      return 'i-tabler-file-zip'
-    case 'document':
-      return 'i-tabler-file-text'
-    case 'unknown':
-      return 'i-tabler-file-unknown'
-    default:
-      return 'i-tabler-file'
-  }
-})
 </script>
 
 <template>
-  <div
-    ref="el"
-    class="relative w-6rem h-4rem border-rounded-2 overflow-hidden"
-  >
+  <div class="relative w-6rem h-4rem border-rounded-2 overflow-hidden">
     <ImagePreview v-if="type === 'image'" v-model:open="previewOpen" :file="data" />
     <VideoPreview v-else-if="type === 'video'" v-model:open="previewOpen" :file="data" />
     <AudioPreview v-else-if="type === 'audio'" v-model:open="previewOpen" :file="data" />
     <MediaPreview v-else v-model:open="previewOpen" :file="data" />
 
-    <div
-      class="absolute flex flex-center w-full h-full preview"
-      :class="{ error: !loading && error }"
-    >
-      <div v-if="loading || thumbnail" class="h-full w-full">
-        <PSkeleton v-if="loading" width="6rem" height="4rem" />
-        <img
-          v-if="!loading && thumbnail"
-          class="w-6rem h-4rem object-cover"
-          :src="thumbnail"
-          :alt="data.name"
-          @error="thumbnail = null"
-        >
-      </div>
-      <i v-else :class="icon" />
-    </div>
-
-    <Transition>
-      <a
-        v-show="hovered || previewOpen"
-        class="absolute flex flex-center bg-[var(--primary-color-transparent)] backdrop-blur-md border-rounded-2 w-full h-full text-white cursor-pointer"
-        @click="previewOpen = true"
-      >
-        <i class="text-base i-tabler-eye" />
-      </a>
-    </Transition>
+    <Thumbnail
+      :src="thumbnail"
+      :alt="data.name"
+      :type="data.mimeType"
+      :loading="loading"
+      :error="error"
+      @open-preview="previewOpen = true"
+    />
   </div>
 </template>
 

@@ -15,6 +15,10 @@ watch(previewOpen, (val) => {
   if (val && status.value !== 'success' && !error.value) execute()
 })
 
+onBeforeUnmount(() => {
+  if (data.value) URL.revokeObjectURL(data.value)
+})
+
 const rotation = ref(0)
 const zoom = ref(1)
 

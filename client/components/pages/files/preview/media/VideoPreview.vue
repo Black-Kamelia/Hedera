@@ -14,6 +14,10 @@ const { data, pending, error, execute, status } = useAsyncData(`${file.id}_previ
 watch(previewOpen, (val) => {
   if (val && status.value !== 'success' && !error.value) execute()
 })
+
+onBeforeUnmount(() => {
+  if (data.value) URL.revokeObjectURL(data.value)
+})
 </script>
 
 <template>

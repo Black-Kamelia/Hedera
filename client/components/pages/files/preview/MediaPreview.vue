@@ -190,26 +190,26 @@ function onClose(closeCallback: () => void) {
 }
 
 .preview-enter-active {
-  transition: all .4s;
+  transition: all .3s;
 
   .mask {
-    transition: all .4s ease;
+    transition: all .3s ease;
   }
   .preview {
-    transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all .2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .title,
   .controls {
-    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   }
 }
 
 .preview-leave-active {
-  transition: all .4s;
+  transition: all .3s;
 
   .mask {
-    transition: all .4s ease;
+    transition: all .3s ease;
   }
   .preview {
     transition: all .2s cubic-bezier(0.76, 0, 0.24, 1);
@@ -217,7 +217,7 @@ function onClose(closeCallback: () => void) {
 
   .title,
   .controls {
-    transition: transform 0.4s cubic-bezier(0.5, 1, 0.89, 1);
+    transition: transform 0.3s cubic-bezier(0.5, 1, 0.89, 1);
   }
 }
 </style>

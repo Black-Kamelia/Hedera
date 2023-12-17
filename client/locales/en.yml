@@ -167,7 +167,6 @@ pages:
     partial:
       title: Upload completed with errors
       detail: "{count} file out of {total} has been uploaded | {count} files out of {total} have been uploaded"
-    drag_n_drop: Drag and drop files here to upload.
     total_size: "Total size to be uploaded: {size}"
     select_files: Browse files
     upload_files: Upload files

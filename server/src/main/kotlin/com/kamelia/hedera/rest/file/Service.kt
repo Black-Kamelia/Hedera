@@ -203,16 +203,16 @@ object FileService {
         )
     }
 
-    suspend fun updateFilesVisibility(
-        userID: UUID,
+    suspend fun bulkUpdateFilesVisibility(
+        userId: UUID,
         dto: BulkUpdateVisibilityDTO,
     ): ActionResponse<BulkActionSummaryDTO> = Connection.transaction {
-        val user = User[userID]
+        val condition = (FileTable.id inList dto.ids) and (FileTable.owner eq DaoEntityID(userId, UserTable))
 
-        val updatedFiles = FileTable.update({ FileTable.id inList dto.ids }) {
+        val updatedFiles = FileTable.update({ condition }) {
             it[visibility] = dto.fileVisibility
             it[updatedAt] = Instant.now()
-            it[updatedBy] = DaoEntityID(user.uuid, UserTable)
+            it[updatedBy] = DaoEntityID(userId, UserTable)
         }
 
         ActionResponse.ok(
@@ -338,40 +338,32 @@ object FileService {
         )
     }
 
-    suspend fun deleteFiles(
+    suspend fun bulkDeleteFiles(
         fileIds: List<UUID>,
         userId: UUID,
-    ): ActionResponse<Nothing> = Connection.transaction {
-        val user = User[userId]
+    ): ActionResponse<BulkActionSummaryDTO> = Connection.transaction {
+        val condition = (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(userId, UserTable))
 
-        /*
-        We need to delete all files in one shot.
-        We need to update the quota accordingly.
-        We need to delete the files from the disk.
-        We need to handle permissions.
-        And finally, we need to provide a summary of the operation.
-         */
-
-        val files = File.find {
-            (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(user.uuid, UserTable))
-        }
-        val totalSize = files.sumOf { it.size }
-
-        val deleted = FileTable.deleteWhere {
-            (id inList  fileIds) and (owner eq DaoEntityID(user.uuid, UserTable))
-        }
-
+        val files = File.find { condition }.toMutableList()
+        val deleted = FileTable.deleteWhere { condition }
         if (deleted != fileIds.size) {
-            rollback()
-            throw HederaException("NOOON")
+            val remainingFiles = File.find { condition }.toList()
+            files.removeAll(remainingFiles)
         }
 
-        user.decreaseCurrentDiskQuota(totalSize)
         files.forEach { FileUtils.delete(it.ownerId, it.code) }
+
+        val user = User[userId]
+        user.decreaseCurrentDiskQuota(files.sumOf { it.size })
 
         ActionResponse.ok(
             title = Actions.Files.BulkDelete.Success.TITLE.asMessage(),
             message = Actions.Files.BulkDelete.Success.MESSAGE.asMessage("count" to deleted.toString()),
+            payload = BulkActionSummaryDTO(
+                deleted,
+                fileIds.size - deleted,
+                fileIds.size,
+            )
         )
     }
 }

@@ -158,7 +158,7 @@ private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility"
 private fun Route.editFileVisibilityBulk() = post<BulkUpdateVisibilityDTO>("/visibility") { body ->
     val userId = call.authenticatedUser!!.uuid
 
-    call.respond(FileService.updateFilesVisibility(userId, body))
+    call.respond(FileService.bulkUpdateFilesVisibility(userId, body))
 }
 
 private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
@@ -192,5 +192,5 @@ private fun Route.deleteFile() = delete("/{uuid}") {
 private fun Route.deleteBulk() = post<BulkDeleteDTO>("/delete") { body ->
     val userId = call.authenticatedUser!!.uuid
 
-    call.respond(FileService.deleteFiles(body.ids, userId))
+    call.respond(FileService.bulkDeleteFiles(body.ids, userId))
 }

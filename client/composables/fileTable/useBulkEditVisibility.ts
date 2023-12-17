@@ -7,7 +7,7 @@ export function useBulkEditVisibility() {
   const handleError = useErrorToast()
 
   return function bulkEditVisibility(fileIds: string[], visibility: FileVisibility) {
-    return new Promise<void | MessageDTO<void>>((resolve, reject) => {
+    return new Promise<void | MessageDTO<BulkActionSummaryDTO>>((resolve, reject) => {
       $fetchAPI<MessageDTO<BulkActionSummaryDTO>>('/files/bulk/visibility', {
         method: 'POST',
         body: {

@@ -10,6 +10,7 @@ object Errors {
     const val BAD_REQUEST_RAW = "$PREFIX.bad_request_raw"
     const val NOT_FOUND_RAW = "$PREFIX.not_found_raw"
     const val UNKNOWN = "$PREFIX.unknown"
+    const val UNKNOWN_MESSAGE = "$PREFIX.unknown_message"
 
     object Auth {
 

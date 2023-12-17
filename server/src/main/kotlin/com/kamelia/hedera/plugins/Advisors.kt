@@ -39,7 +39,7 @@ fun Application.configureExceptionAdvisors() {
 
 private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
     if (Environment.isDev) {
-        call.application.environment.log.info("Exception caught: ${cause.javaClass.name}", cause)
+        call.application.environment.log.info("[DEV] Exception caught: ${cause.javaClass.name}", cause)
     }
 
     when (cause) {
@@ -82,17 +82,17 @@ private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
         )
     )
 
-    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.badRequest(Errors.UNKNOWN))
 }
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.unauthorized(cause.error))
-    else -> call.respondNoSuccess(Response.unauthorized(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.unauthorized(Errors.UNKNOWN))
 }
 
 private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.forbidden(cause.error))
-    else -> call.respondNoSuccess(Response.forbidden(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.forbidden(Errors.UNKNOWN))
 }
 
 private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
@@ -106,10 +106,16 @@ private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (ca
         )
     )
 
-    else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.notFound(Errors.UNKNOWN))
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO(Errors.UNKNOWN)))
+    call.respondNoSuccess(Response.error(
+        HttpStatusCode.InternalServerError,
+        MessageDTO.simple(
+            title = Errors.UNKNOWN.asMessage(),
+            message = cause.message?.let { Errors.UNKNOWN_MESSAGE.asMessage("hint" to it) },
+        )
+    ))
     call.application.log.error("Unexpected error", cause)
 }

@@ -6,6 +6,7 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.Hasher
+import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
@@ -28,7 +29,10 @@ import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
 import org.jetbrains.exposed.dao.DaoEntityID
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
@@ -348,18 +352,26 @@ object FileService {
         And finally, we need to provide a summary of the operation.
          */
 
-        val condition = FileTable.id inList fileIds
-
-        val files = File.find(condition)
-
+        val files = File.find {
+            (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(user.uuid, UserTable))
+        }
         val totalSize = files.sumOf { it.size }
-        user.decreaseCurrentDiskQuota(totalSize)
 
+        val deleted = FileTable.deleteWhere {
+            (id inList  fileIds) and (owner eq DaoEntityID(user.uuid, UserTable))
+        }
+
+        if (deleted != fileIds.size) {
+            rollback()
+            throw HederaException("NOOON")
+        }
+
+        user.decreaseCurrentDiskQuota(totalSize)
         files.forEach { FileUtils.delete(it.ownerId, it.code) }
 
         ActionResponse.ok(
-            title = Actions.Files.Delete.Success.TITLE.asMessage(),
-            message = Actions.Files.Delete.Success.MESSAGE.asMessage("count" to "0"),
+            title = Actions.Files.BulkDelete.Success.TITLE.asMessage(),
+            message = Actions.Files.BulkDelete.Success.MESSAGE.asMessage("count" to deleted.toString()),
         )
     }
 }

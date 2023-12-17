@@ -196,15 +196,15 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     }
 
     suspend fun increaseCurrentDiskQuota(size: Long): User = apply {
-        require(size >= 0)
-        require(maximumDiskQuota < 0 || currentDiskQuota + size <= maximumDiskQuota)
+        check(size >= 0) { "Added size must be positive" }
+        check(maximumDiskQuota < 0 || currentDiskQuota + size <= maximumDiskQuota) { "Quota exceeded" }
         currentDiskQuota += size
         SessionManager.updateSession(uuid, this)
     }
 
     suspend fun decreaseCurrentDiskQuota(size: Long): User = apply {
-        require(size >= 0)
-        require(size <= currentDiskQuota)
+        check(size >= 0) { "Subtracted size must be positive" }
+        check(size <= currentDiskQuota) { "Quota cannot be negative" }
         currentDiskQuota -= size
         SessionManager.updateSession(uuid, this)
     }

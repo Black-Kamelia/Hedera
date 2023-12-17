@@ -104,6 +104,18 @@ object Actions {
 
         }
 
+        object BulkDelete {
+
+            private const val PREFIX = "${Files.PREFIX}.bulk_delete"
+
+            object Success {
+                private const val PREFIX = "${BulkDelete.PREFIX}.success"
+                const val TITLE = "$PREFIX.title"
+                const val MESSAGE = "$PREFIX.message"
+            }
+
+        }
+
     }
 
     object Tokens {

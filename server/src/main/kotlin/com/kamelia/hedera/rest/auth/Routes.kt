@@ -2,8 +2,8 @@ package com.kamelia.hedera.rest.auth
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.MissingTokenException
-import com.kamelia.hedera.core.respond
-import com.kamelia.hedera.core.respondNoSuccess
+import com.kamelia.hedera.core.response.respond
+import com.kamelia.hedera.core.response.respondNoSuccess
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.util.accessToken

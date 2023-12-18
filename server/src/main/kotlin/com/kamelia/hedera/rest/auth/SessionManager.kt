@@ -4,7 +4,7 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
 import com.kamelia.hedera.rest.user.User

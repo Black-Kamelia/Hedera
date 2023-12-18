@@ -2,7 +2,7 @@ package com.kamelia.hedera.rest.configuration
 
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.util.Environment
 import java.io.File
 import kotlinx.coroutines.runBlocking

@@ -2,10 +2,10 @@ package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.FileNotFoundException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respond
-import com.kamelia.hedera.core.respondNoSuccess
-import com.kamelia.hedera.core.respondNothing
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.respond
+import com.kamelia.hedera.core.response.respondNoSuccess
+import com.kamelia.hedera.core.response.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.FileUtils
@@ -23,9 +23,7 @@ import com.kamelia.hedera.util.respondFileInline
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import java.util.*
 
 fun Route.filesRoutes() = route("/files") {
     uploadFileFromToken()

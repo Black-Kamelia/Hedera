@@ -1,18 +1,18 @@
 package com.kamelia.hedera.rest.user
 
-import com.kamelia.hedera.core.ActionResponse
 import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.DisabledRegistrationsException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
-import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UserNotFoundException
 import com.kamelia.hedera.core.ValidationScope
-import com.kamelia.hedera.core.asMessage
+import com.kamelia.hedera.core.response.ActionResponse
+import com.kamelia.hedera.core.response.MessageDTO
+import com.kamelia.hedera.core.response.MessageKeyDTO
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.auth.SessionManager

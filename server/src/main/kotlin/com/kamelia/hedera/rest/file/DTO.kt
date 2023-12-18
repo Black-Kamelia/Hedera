@@ -73,10 +73,3 @@ data class BulkUpdateVisibilityDTO(
 data class BulkDeleteDTO(
     val ids: List<UUID>,
 ) : DTO
-
-@Serializable
-data class BulkActionSummaryDTO(
-    val successes: Int,
-    val fails: Int,
-    val total: Int,
-) : DTO

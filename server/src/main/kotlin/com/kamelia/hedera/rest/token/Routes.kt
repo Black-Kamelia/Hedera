@@ -1,6 +1,6 @@
 package com.kamelia.hedera.rest.token
 
-import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.getUUID

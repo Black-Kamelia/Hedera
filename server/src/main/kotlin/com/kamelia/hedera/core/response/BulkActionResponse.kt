@@ -7,9 +7,17 @@ import io.ktor.http.*
 
 class BulkActionResponse private constructor(
     status: HttpStatusCode,
-    success: ResultData<MessageDTO<out BulkActionSummaryDTO>>? = null,
-    error: ResultData<MessageDTO<out DTO>>? = null,
+    private val success: ResultData<MessageDTO<out BulkActionSummaryDTO>>? = null,
+    private val error: ResultData<MessageDTO<out DTO>>? = null,
 ) : ActionResponse<BulkActionSummaryDTO>(status, success, error) {
+
+    fun withMessageParameters(vararg parameters: Pair<String, MessageKeyDTO>): BulkActionResponse {
+        val messageParameters = success?.data?.message?.parameters ?: return this
+        val newMessageParameters = messageParameters.plus(parameters)
+        val newMessage = success.data.message.copy(parameters = newMessageParameters)
+        val newSuccess = success.copy(data = success.data.copy(message = newMessage))
+        return BulkActionResponse(status, newSuccess, error)
+    }
 
     companion object {
 

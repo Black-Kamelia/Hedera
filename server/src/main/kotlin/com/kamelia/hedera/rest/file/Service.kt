@@ -220,7 +220,7 @@ object FileService {
             BulkActions.Files.Update.Visibility,
             success = updatedFiles,
             total = dto.ids.size,
-        )
+        ).withMessageParameters("newVisibility" to dto.fileVisibility.toMessageKey().asMessage())
     }
 
     suspend fun updateFileName(

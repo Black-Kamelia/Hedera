@@ -31,11 +31,11 @@ export default function useI18n(fallback = 'en') {
     if (parameters) {
       // map every value to a translated value
       const mapped = Object.fromEntries(
-        Object.entries(parameters).map(([key, value]) => [key, i18n.t(value, {}, { missingWarn: false })]),
+        Object.entries(parameters).map(([key, value]) => [key, m(value)]),
       )
 
-      if (Object.entries(parameters).some(([key, _]) => key === 'count')) {
-        const count = Number.parseInt(parameters.count!)
+      if (Object.entries(parameters).some(([key, _]) => key === 'success' || key === 'fail')) {
+        const count = Number.parseInt(parameters.success?.key ?? parameters.fail?.key ?? '0')
         return i18n.t(key, mapped, count)
       }
       return i18n.t(key, mapped)

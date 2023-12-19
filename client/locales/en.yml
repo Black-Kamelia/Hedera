@@ -517,19 +517,10 @@ forms:
 
 actions:
   files:
-    bulk_delete:
-      success:
-        title: Successfully deleted
-        message: "This file has been deleted | {count} files have been deleted"
     delete:
       success:
         title: Successfully deleted
         message: The file “{name}” has been deleted
-    bulk_update:
-      visibility:
-        success:
-          title: Visibility changed
-          message: "This file is now {newVisibility} | {count} files are now {newVisibility}"
     update:
       visibility:
         success:
@@ -566,10 +557,12 @@ actions:
       success:
         title: User deactivated
         message: The user “{username}” has been deactivated
+    self_update:
+      success:
+        title: Your profile has been edited
     update:
       success:
         title: User edited
-        title_self: Your profile has been edited
         message: The user “{username}” has been edited
       error:
         title: Could not edit user
@@ -586,6 +579,30 @@ actions:
       success:
         title: Token deleted
         message: The token “{name}” has been deleted
+
+bulk_actions:
+  files:
+    update:
+      visibility:
+        success:
+          title: Visibility changed
+          message: "This file is now {newVisibility} | {success} files are now {newVisibility}"
+        partial:
+          title: Visibility changed with errors
+          message: "{success} file out of {total} is now {newVisibility} | {success} files out of {total} are now {newVisibility}"
+        fail:
+          title: Failed to change visibility of files
+          message: "This file could not be modified | {fail} files could not be modified"
+    delete:
+      success:
+        title: Files deleted
+        message: "This file has been deleted | {count} files have been deleted"
+      partial:
+        title: Files deleted with errors
+        message: "{count} file out of {total} has been deleted | {count} files out of {total} have been deleted"
+      fail:
+        title: Failed to delete files
+        message: "This file could not be deleted | {count} files could not be deleted"
 
 errors:
   unknown: An unknown error has occurred

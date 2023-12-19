@@ -517,19 +517,10 @@ forms:
 
 actions:
   files:
-    bulk_delete:
-      success:
-        title: Fichiers supprimés
-        message: "Ce fichier a été supprimé | {count} fichiers ont été supprimés"
     delete:
       success:
         title: Fichier supprimé
         message: Le fichier “{name}” a été supprimé
-    bulk_update:
-      visibility:
-        success:
-          title: Visibilité modifiée
-          message: "Ce fichier est désormais {newVisibility} | {count} fichiers sont désormais {newVisibility}"
     update:
       visibility:
         success:
@@ -566,10 +557,12 @@ actions:
       success:
         title: Utilisateur désactivé
         message: L’utilisateur “{username}” a été désactivé
+    self_update:
+      success:
+        title: Votre profil a été mis à jour
     update:
       success:
         title: Utilisateur édité
-        title_self: Votre profil a été édité
         message: L’utilisateur “{username}” a été édité
       error:
         title: Impossible d’éditer l’utilisateur

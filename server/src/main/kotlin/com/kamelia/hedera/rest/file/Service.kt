@@ -1,6 +1,6 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.Actions
+import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
@@ -95,8 +95,8 @@ object FileService {
         ).toRepresentationDTO()
 
         return ActionResponse.created(
-            title = Actions.Files.Upload.Success.TITLE.asMessage(),
-            message = Actions.Files.Upload.Success.MESSAGE.asMessage("name" to filename),
+            title = Actions.Files.Upload.success.title,
+            message = Actions.Files.Upload.success.message.withParameters("name" to filename),
             payload = file
         )
     }
@@ -194,8 +194,8 @@ object FileService {
         val payload = updatedFile.toRepresentationDTO()
 
         ActionResponse.ok(
-            title = Actions.Files.Update.Visibility.Success.TITLE.asMessage(),
-            message = Actions.Files.Update.Visibility.Success.MESSAGE.asMessage(
+            title = Actions.Files.Update.Visibility.success.title,
+            message = Actions.Files.Update.Visibility.success.message.withParameters(
                 "name" to file.name,
                 "oldVisibility" to oldVisibility.toMessageKey(),
                 "newVisibility" to payload.visibility.toMessageKey()
@@ -246,8 +246,8 @@ object FileService {
 
             ActionResponse.ok(
                 payload = payload,
-                title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
-                message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
+                title = Actions.Files.Update.Name.success.title,
+                message = Actions.Files.Update.Name.success.message.withParameters(
                     "oldName" to oldName,
                     "newName" to payload.name,
                 ),
@@ -283,8 +283,8 @@ object FileService {
 
             ActionResponse.ok(
                 payload = payload,
-                title = Actions.Files.Update.CustomLink.Success.TITLE.asMessage(),
-                message = Actions.Files.Update.CustomLink.Success.MESSAGE.asMessage(
+                title = Actions.Files.Update.CustomLink.success.title,
+                message = Actions.Files.Update.CustomLink.success.message.withParameters(
                     "newCustomLink" to (payload.customLink ?: ""),
                 ),
             )
@@ -303,7 +303,7 @@ object FileService {
 
         ActionResponse.ok(
             payload = payload,
-            title = Actions.Files.Update.RemoveCustomLink.Success.TITLE.asMessage(),
+            title = Actions.Files.Update.RemoveCustomLink.success.title,
         )
     }
 
@@ -326,8 +326,8 @@ object FileService {
         FileUtils.delete(file.ownerId, file.code)
 
         ActionResponse.ok(
-            title = Actions.Files.Delete.Success.TITLE.asMessage(),
-            message = Actions.Files.Delete.Success.MESSAGE.asMessage("name" to file.name),
+            title = Actions.Files.Delete.success.title,
+            message = Actions.Files.Delete.success.message.withParameters("name" to file.name),
             payload = file.toRepresentationDTO()
         )
     }

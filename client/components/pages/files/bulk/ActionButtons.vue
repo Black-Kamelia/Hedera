@@ -29,16 +29,6 @@ const deleteDialog = ref(false)
     <Transition>
       <div v-show="selecting">
         <PButton
-          v-tooltip.top="{ value: t('pages.files.context_menu.download'), class: 'translate-y--1' }"
-          class="shadow-lg"
-          icon="i-tabler-download"
-          rounded
-        />
-      </div>
-    </Transition>
-    <Transition>
-      <div v-show="selecting">
-        <PButton
           v-tooltip.top="{ value: t('pages.files.context_menu.change_visibility'), class: 'translate-y--1' }"
           class="shadow-lg"
           icon="i-tabler-eye-edit"

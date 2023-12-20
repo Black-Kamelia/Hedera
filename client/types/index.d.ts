@@ -109,9 +109,11 @@ declare global {
     createdAt: string,
   }
 
-  interface BulkActionSummaryDTO {
-    successes: number
-    fails: number
+  interface BulkActionSummaryDTO<E> {
+    success: number
+    successItems: E[]
+    fail: number
+    failItems: E[]
     total: number
   }
 

@@ -196,7 +196,7 @@ function onClose(closeCallback: () => void) {
     transition: all .3s ease;
   }
   .preview {
-    transition: all .2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all .25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .title,
@@ -212,7 +212,7 @@ function onClose(closeCallback: () => void) {
     transition: all .3s ease;
   }
   .preview {
-    transition: all .2s cubic-bezier(0.76, 0, 0.24, 1);
+    transition: all .25s cubic-bezier(0.76, 0, 0.24, 1);
   }
 
   .title,

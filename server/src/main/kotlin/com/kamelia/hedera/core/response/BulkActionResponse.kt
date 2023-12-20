@@ -5,13 +5,13 @@ import com.kamelia.hedera.core.constant.BulkActionMessageContainer
 import com.kamelia.hedera.rest.core.DTO
 import io.ktor.http.*
 
-class BulkActionResponse private constructor(
+class BulkActionResponse<E> private constructor(
     status: HttpStatusCode,
-    private val success: ResultData<MessageDTO<out BulkActionSummaryDTO>>? = null,
+    private val success: ResultData<MessageDTO<out BulkActionSummaryDTO<out E>>>? = null,
     private val error: ResultData<MessageDTO<out DTO>>? = null,
-) : ActionResponse<BulkActionSummaryDTO>(status, success, error) {
+) : ActionResponse<BulkActionSummaryDTO<out E>>(status, success, error) {
 
-    fun withMessageParameters(vararg parameters: Pair<String, MessageKeyDTO>): BulkActionResponse {
+    fun withMessageParameters(vararg parameters: Pair<String, MessageKeyDTO>): BulkActionResponse<E> {
         val messageParameters = success?.data?.message?.parameters ?: return this
         val newMessageParameters = messageParameters.plus(parameters)
         val newMessage = success.data.message.copy(parameters = newMessageParameters)
@@ -21,23 +21,23 @@ class BulkActionResponse private constructor(
 
     companion object {
 
-        fun of(
+        fun <E> of(
             container: BulkActionMessage,
-            success: Int = 0,
-            fail: Int = 0,
+            success: List<E> = emptyList(),
+            fail: List<E> = emptyList(),
             total: Int = 0,
-        ): BulkActionResponse = when {
-            success == total -> success(container.success, success, fail, total)
-            fail == total -> fail(container.fail, success, fail, total)
+        ): BulkActionResponse<E> = when {
+            success.size == total -> success(container.success, success, fail, total)
+            fail.size == total -> fail(container.fail, success, fail, total)
             else -> partial(container.partial, success, fail, total)
         }
 
-        private fun success(
+        private fun <E> success(
             container: BulkActionMessageContainer,
-            success: Int = 0,
-            fail: Int = 0,
+            success: List<E> = emptyList(),
+            fail: List<E> = emptyList(),
             total: Int = 0,
-        ): BulkActionResponse = buildResponse(
+        ): BulkActionResponse<E> = buildResponse(
             container.title,
             container::message,
             success,
@@ -45,12 +45,12 @@ class BulkActionResponse private constructor(
             total
         )
 
-        private fun partial(
+        private fun <E> partial(
             container: BulkActionMessageContainer,
-            success: Int = 0,
-            fail: Int = 0,
+            success: List<E> = emptyList(),
+            fail: List<E> = emptyList(),
             total: Int = 0,
-        ): BulkActionResponse = buildResponse(
+        ): BulkActionResponse<E> = buildResponse(
             container.title,
             container::message,
             success,
@@ -58,12 +58,12 @@ class BulkActionResponse private constructor(
             total
         )
 
-        private fun fail(
+        private fun <E> fail(
             container: BulkActionMessageContainer,
-            success: Int = 0,
-            fail: Int = 0,
+            success: List<E> = emptyList(),
+            fail: List<E> = emptyList(),
             total: Int = 0,
-        ): BulkActionResponse = buildResponse(
+        ): BulkActionResponse<E> = buildResponse(
             container.title,
             container::message,
             success,
@@ -71,19 +71,19 @@ class BulkActionResponse private constructor(
             total
         )
 
-        private fun buildResponse(
+        private fun <E> buildResponse(
             title: MessageKeyDTO,
             message: (Int, Int, Int) -> MessageKeyDTO,
-            success: Int = 0,
-            fail: Int = 0,
+            success: List<E> = emptyList(),
+            fail: List<E> = emptyList(),
             total: Int = 0,
-        ): BulkActionResponse = BulkActionResponse(
+        ): BulkActionResponse<E> = BulkActionResponse(
             HttpStatusCode.OK,
             ResultData(
                 MessageDTO(
                     title,
-                    message(success, fail, total),
-                    BulkActionSummaryDTO(success, fail, total),
+                    message(success.size, fail.size, total),
+                    BulkActionSummaryDTO(success.size, success, fail.size, fail, total),
                     null
                 )
             )

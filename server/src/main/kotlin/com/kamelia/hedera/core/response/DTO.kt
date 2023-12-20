@@ -1,7 +1,12 @@
+@file:UseSerializers(UUIDSerializer::class)
+
 package com.kamelia.hedera.core.response
 
 import com.kamelia.hedera.rest.core.DTO
+import com.kamelia.hedera.util.UUIDSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
+
 
 @Serializable
 data class MessageKeyDTO(
@@ -20,6 +25,7 @@ data class MessageKeyDTO(
 fun String.asMessage() = MessageKeyDTO(this)
 fun String.asMessage(parameters: Map<String, String>? = null) =
     MessageKeyDTO(this, parameters?.mapValues { MessageKeyDTO(it.value) })
+
 fun String.asMessage(vararg parameters: Pair<String, String>) =
     MessageKeyDTO(this, mapOf(*(parameters.map { (k, v) -> k to MessageKeyDTO(v) }.toTypedArray())))
 
@@ -54,8 +60,10 @@ data class MessageDTO<T : DTO>(
 }
 
 @Serializable
-data class BulkActionSummaryDTO(
-    val successes: Int,
-    val fails: Int,
+data class BulkActionSummaryDTO<E>(
+    val success: Int,
+    val successItems: List<E>,
+    val fail: Int,
+    val failItems: List<E>,
     val total: Int,
 ) : DTO

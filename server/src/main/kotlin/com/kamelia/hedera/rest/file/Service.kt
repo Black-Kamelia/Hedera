@@ -1,6 +1,5 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
@@ -8,6 +7,7 @@ import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.constant.BulkActions
 import com.kamelia.hedera.core.response.ActionResponse
 import com.kamelia.hedera.core.response.BulkActionResponse
@@ -207,10 +207,11 @@ object FileService {
     suspend fun bulkUpdateFilesVisibility(
         userId: UUID,
         dto: BulkUpdateVisibilityDTO,
-    ): BulkActionResponse = Connection.transaction {
+    ): BulkActionResponse<String> = Connection.transaction {
         val condition = (FileTable.id inList dto.ids) and (FileTable.owner eq DaoEntityID(userId, UserTable))
 
-        val updatedFiles = FileTable.update({ condition }) {
+        val files = File.find(condition).toSet()
+        FileTable.update({ condition }) {
             it[visibility] = dto.fileVisibility
             it[updatedAt] = Instant.now()
             it[updatedBy] = DaoEntityID(userId, UserTable)
@@ -218,7 +219,7 @@ object FileService {
 
         BulkActionResponse.of(
             BulkActions.Files.Update.Visibility,
-            success = updatedFiles,
+            success = files.map { it.id.value.toString() },
             total = dto.ids.size,
         ).withMessageParameters("newVisibility" to dto.fileVisibility.toMessageKey().asMessage())
     }
@@ -335,25 +336,24 @@ object FileService {
     suspend fun bulkDeleteFiles(
         fileIds: List<UUID>,
         userId: UUID,
-    ): BulkActionResponse = Connection.transaction {
-        val condition = (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(userId, UserTable))
+    ): BulkActionResponse<String> = Connection.transaction {
+        // Select all files to delete
+        val files = File.find {
+            (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(userId, UserTable))
+        }.toSet()
+        // Try to delete all files from the disk
+        val deletedFiles = files.filter { FileUtils.delete(it.ownerId, it.code) }.toSet()
+        // Delete all disk-deleted files from the database
+        FileTable.deleteWhere { FileTable.id inList deletedFiles.map { it.id } }
 
-        val files = File.find { condition }.toMutableList()
-        val deleted = FileTable.deleteWhere { condition }
-        if (deleted != fileIds.size) {
-            val remainingFiles = File.find { condition }.toList()
-            files.removeAll(remainingFiles)
-        }
-
-        files.forEach { FileUtils.delete(it.ownerId, it.code) }
-
+        // Decrease the current disk quota of the user
         val user = User[userId]
-        user.decreaseCurrentDiskQuota(files.sumOf { it.size })
+        user.decreaseCurrentDiskQuota(deletedFiles.sumOf { it.size })
 
         BulkActionResponse.of(
             BulkActions.Files.Delete,
-            success = deleted,
-            fail = fileIds.size - deleted,
+            success = deletedFiles.map { it.id.value.toString() },
+            fail = files.minus(deletedFiles).map { it.id.value.toString() },
             total = fileIds.size,
         )
     }

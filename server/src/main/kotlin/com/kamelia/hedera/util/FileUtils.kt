@@ -62,10 +62,12 @@ object FileUtils {
      *
      * @param owner the owner of the file
      * @param code the code of the file
+     * @return true if the file was deleted, false otherwise
      */
-    fun delete(owner: UUID, code: String) {
+    fun delete(owner: UUID, code: String): Boolean {
         val file = UPLOAD_PATH.resolve(owner.toString()).resolve(code).toFile()
-        if (file.exists()) file.delete()
+        if (file.exists()) return file.delete()
+        return false
     }
 
     private fun generateUniqueCode(): String {

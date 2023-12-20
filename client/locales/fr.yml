@@ -586,23 +586,23 @@ bulk_actions:
       visibility:
         success:
           title: Visibilité modifiée
-          message: "Ce fichier est désormais {newVisibility} | {success} fichiers sont désormais {newVisibility}"
+          message: "Le fichier est désormais {newVisibility} | {success} fichiers sont désormais {newVisibility}"
         partial:
           title: Visibilité modifiée avec des erreurs
           message: "{success} fichier sur {total} est désormais {newVisibility} | {success} fichiers sur {total} sont désormais {newVisibility}"
         fail:
           title: Échec de la modification de la visibilité des fichiers
-          message: "Ce fichier n’a pas pu être modifié | {fail} fichiers n’ont pas pu être modifiés"
+          message: "Le fichier n’a pas pu être modifié | {fail} fichiers n’ont pas pu être modifiés"
     delete:
       success:
         title: Fichiers supprimés
-        message: "Ce fichier a été supprimé | {count} fichiers ont été supprimés"
+        message: "Le fichier a été supprimé | {success} fichiers ont été supprimés"
       partial:
         title: Fichiers supprimés avec des erreurs
-        message: "{count} fichier sur {total} a été supprimé | {count} fichiers sur {total} ont été supprimés"
+        message: "{success} fichier sur {total} a été supprimé | {success} fichiers sur {total} ont été supprimés"
       fail:
         title: Échec de la suppression des fichiers
-        message: "Ce fichier n’a pas pu être supprimé | {count} fichiers n’ont pas pu être supprimés"
+        message: "Le fichier n’a pas pu être supprimé | {fail} fichiers n’ont pas pu être supprimés"
 
 errors:
   unknown: Une erreur inattendue est survenue

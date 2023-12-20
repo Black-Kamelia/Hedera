@@ -586,23 +586,23 @@ bulk_actions:
       visibility:
         success:
           title: Visibility changed
-          message: "This file is now {newVisibility} | {success} files are now {newVisibility}"
+          message: "The file is now {newVisibility} | {success} files are now {newVisibility}"
         partial:
           title: Visibility changed with errors
           message: "{success} file out of {total} is now {newVisibility} | {success} files out of {total} are now {newVisibility}"
         fail:
           title: Failed to change visibility of files
-          message: "This file could not be modified | {fail} files could not be modified"
+          message: "The file could not be modified | {fail} files could not be modified"
     delete:
       success:
         title: Files deleted
-        message: "This file has been deleted | {count} files have been deleted"
+        message: "The file has been deleted | {success} files have been deleted"
       partial:
         title: Files deleted with errors
-        message: "{count} file out of {total} has been deleted | {count} files out of {total} have been deleted"
+        message: "{success} file out of {total} has been deleted | {success} files out of {total} have been deleted"
       fail:
         title: Failed to delete files
-        message: "This file could not be deleted | {count} files could not be deleted"
+        message: "The file could not be deleted | {fail} files could not be deleted"
 
 errors:
   unknown: An unknown error has occurred

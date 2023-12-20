@@ -13,7 +13,7 @@ const pending = ref(false)
 
 const roles = computed(() => selectedRow.value?.role === 'OWNER'
   ? [
-      { label: t('pages.configuration.users.role.owner'), value: 'OWNER', icon: 'i-tabler-shield' },
+      { label: t('pages.configuration.users.role.owner'), value: 'OWNER', icon: 'i-tabler-shield-chevron' },
       { label: t('pages.configuration.users.role.admin'), value: 'ADMIN', icon: 'i-tabler-shield' },
       { label: t('pages.configuration.users.role.regular'), value: 'REGULAR', icon: 'i-tabler-user' },
     ]

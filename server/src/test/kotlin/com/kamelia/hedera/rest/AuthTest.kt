@@ -4,7 +4,7 @@ import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
 import com.kamelia.hedera.loginBlocking

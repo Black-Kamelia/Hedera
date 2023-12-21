@@ -5,7 +5,7 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -139,8 +139,8 @@ class FileTest {
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
         val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
-        assertEquals(error.title.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.title.parameters!!["header"], "Content-Type")
+        assertEquals(Errors.Headers.MISSING_HEADER, error.title.key)
+        assertEquals("Content-Type", error.title.parameters!!["header"]!!.key)
     }
 
     @DisplayName("Uploading a file with no file")

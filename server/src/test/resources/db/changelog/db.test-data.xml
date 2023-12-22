@@ -4,9 +4,17 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
     <changeSet author="test" id="data">
-        <loadData tableName="users_settings" file="classpath:db/data/users-settings.csv" />
-        <loadData tableName="users" file="classpath:db/data/users.csv"  />
-        <loadData tableName="files" file="classpath:db/data/files.csv" />
-        <loadData tableName="personal_tokens" file="classpath:db/data/personal-tokens.csv" />
+        <loadData tableName="users_settings" file="classpath:db/data/settings/users-settings.csv" />
+        <loadData tableName="users_settings" file="classpath:db/data/settings/users-settings-tests.csv" />
+
+        <loadData tableName="users" file="classpath:db/data/users/users-tests.csv"  />
+        <loadData tableName="users" file="classpath:db/data/users/users-settings-tests.csv"  />
+        <loadData tableName="users" file="classpath:db/data/users/files-tests.csv"  />
+        <loadData tableName="users" file="classpath:db/data/users/personal-tokens-tests.csv"  />
+
+        <loadData tableName="files" file="classpath:db/data/files/files-tests.csv" />
+
+        <loadData tableName="personal_tokens" file="classpath:db/data/tokens/personal-tokens-tests.csv" />
+        <loadData tableName="personal_tokens" file="classpath:db/data/tokens/files-tests.csv" />
     </changeSet>
 </databaseChangeLog>

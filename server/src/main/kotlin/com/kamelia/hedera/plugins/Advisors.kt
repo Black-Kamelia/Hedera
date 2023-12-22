@@ -81,7 +81,7 @@ private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
         )
     )
 
-    else -> call.respondNoSuccess(Response.badRequest(Errors.UNKNOWN))
+    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: Errors.UNKNOWN))
 }
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) = when (cause) {

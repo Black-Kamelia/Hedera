@@ -5,6 +5,7 @@ import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.util.Environment
 import java.io.File
+import kotlin.io.path.createParentDirectories
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -83,7 +84,12 @@ object GlobalConfigurationService {
     }
 
     private fun generateDefaultConfiguration(file: File) {
-        if (!file.createNewFile()) throw HederaException(Errors.Configuration.GENERATION_ERROR)
+        file.toPath().createParentDirectories()
+        try  {
+            if (!file.createNewFile()) throw HederaException(Errors.Configuration.GENERATION_ERROR)
+        } catch (e: Exception) {
+            throw HederaException(Errors.Configuration.GENERATION_ERROR)
+        }
         file.writeText(Json.encodeToString(GlobalConfiguration()))
     }
 

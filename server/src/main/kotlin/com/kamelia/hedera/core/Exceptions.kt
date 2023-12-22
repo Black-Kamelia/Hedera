@@ -4,7 +4,7 @@ import com.kamelia.hedera.core.response.MessageKeyDTO
 import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 
-open class HederaException(val error: MessageKeyDTO) : Exception() {
+open class HederaException(val error: MessageKeyDTO) : Exception(error.key) {
 
     constructor(key: String) : this(MessageKeyDTO(key))
 

@@ -26,9 +26,11 @@ fun Application.module() = runBlocking {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
     Environment.application = this@module
     if (isDev) log.info("Running in development mode")
+
     Connection.init()
     MimeTypes.init()
     GlobalConfigurationService.init()
+
     configureExceptionAdvisors()
     configureLiquibase()
     configureAuthentication()

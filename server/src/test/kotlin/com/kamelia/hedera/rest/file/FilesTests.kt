@@ -69,7 +69,7 @@ class FilesTests {
             ),
         ),
         UserFilesTestsInput(
-            uploadToken = "00000001000100000001000000000000",
+            uploadToken = "0000000100010000000100000000000000000000000000000000000000000000",
             viewOwnFileCode = mapOfVisibility("0100010001", "0100010002", "0100010003"),
             viewPubliclyFileCode = mapOfVisibility("0100080001", "0100080002", "0100080003"),
             viewPubliclyFileCustomLink = mapOfVisibility(
@@ -247,7 +247,7 @@ class FilesTests {
             ),
         ),
         UserFilesTestsInput(
-            uploadToken = "00000002000100000001000000000000",
+            uploadToken = "0000000200010000000100000000000000000000000000000000000000000000",
             viewOwnFileCode = mapOfVisibility("0200010001", "0200010002", "0200010003"),
             viewPubliclyFileCode = mapOfVisibility("0200080001", "0200080002", "0200080003"),
             viewPubliclyFileCustomLink = mapOfVisibility(
@@ -425,7 +425,7 @@ class FilesTests {
             ),
         ),
         UserFilesTestsInput(
-            uploadToken = "00000003000100000001000000000000",
+            uploadToken = "0000000300010000000100000000000000000000000000000000000000000000",
             viewOwnFileCode = mapOfVisibility("0300010001", "0300010002", "0300010003"),
             viewPubliclyFileCode = mapOfVisibility("0300080001", "0300080002", "0300080003"),
             viewPubliclyFileCustomLink = mapOfVisibility(

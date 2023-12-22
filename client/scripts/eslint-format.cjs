@@ -5,8 +5,9 @@ const fix = process.argv.includes('--fix') || process.argv.includes('-F')
 
 const defaultOutput = 'eslint-report.html'
 let outputIndex = process.argv.indexOf('-o')
-if (outputIndex === -1)
+if (outputIndex === -1) {
   outputIndex = process.argv.indexOf('--output')
+}
 const output = outputIndex > -1 ? (process.argv[outputIndex + 1] ?? defaultOutput) : defaultOutput
 
 const defaultExtensions = ['.js', '.ts', '.vue', '.json']
@@ -22,7 +23,7 @@ const eslint = new ESLint({
 
 async function main() {
   const results = await eslint.lintFiles('.')
-  if (results.some((result) => result.errorCount > 0 || result.warningCount > 0)) {
+  if (results.some(result => result.errorCount > 0 || result.warningCount > 0)) {
     process.exitCode = 1
   }
   await ESLint.outputFixes(results)

@@ -1,0 +1,5 @@
+{
+  "enableRegistrations": true,
+  "defaultDiskQuotaPolicy": "UNLIMITED",
+  "defaultDiskQuota": null
+}

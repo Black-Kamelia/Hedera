@@ -12,7 +12,8 @@ liquibase:
   master: "classpath:db/db.changelog-test.xml"
 
 hedera:
-  uploadFolder: ./_tests/upload
+  uploadFolder: _tests/upload
+  globalConfigurationFile: _tests/global_configuration.json
   loginThrottle: "1500"
 
   jwt:

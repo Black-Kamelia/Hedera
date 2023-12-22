@@ -1,4 +1,4 @@
-import type { MessageDTO } from 'utils/messages'
+import type { MessageDTO } from '#imports'
 
 export function useUploadFile() {
   return function (file: File) {

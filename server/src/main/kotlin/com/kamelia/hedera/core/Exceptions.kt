@@ -43,3 +43,5 @@ class FileNotFoundException : HederaException(Errors.Files.NOT_FOUND)
 class UserNotFoundException : HederaException(Errors.Users.NOT_FOUND)
 
 class PersonalTokenNotFoundException : HederaException(Errors.PersonalTokens.NOT_FOUND)
+
+class DisabledRegistrationsException : HederaException(Errors.Registrations.DISABLED)

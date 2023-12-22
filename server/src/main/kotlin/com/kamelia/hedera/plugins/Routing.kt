@@ -3,6 +3,7 @@ package com.kamelia.hedera.plugins
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.respondNoSuccess
 import com.kamelia.hedera.rest.auth.authRoutes
+import com.kamelia.hedera.rest.configuration.globalConfigurationRoutes
 import com.kamelia.hedera.rest.file.filesRoutes
 import com.kamelia.hedera.rest.file.rawFileCustomLinkRoute
 import com.kamelia.hedera.rest.file.rawFileRoute
@@ -25,6 +26,7 @@ fun Application.configureRouting() {
             userSettingsRoutes()
             filesRoutes()
             personalTokensRoutes()
+            globalConfigurationRoutes()
         }
 
         rawFileRoute()

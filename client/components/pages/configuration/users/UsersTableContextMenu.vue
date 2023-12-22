@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { PContextMenu } from '#components'
 
-const emit = defineEmits<{
-  (event: 'onEdit'): void
-}>()
-
 const cm = inject(UsersTableContextMenuKey)
 
 const { t } = useI18n()
@@ -13,7 +9,9 @@ const confirm = useConfirm()
 const { selectedRow, selectedRowId, unselectRow, refresh } = useUsersTable()
 
 const { activate, deactivate } = useUpdateUserStatus()
-const deleteUser = useDeleteUser()
+
+const editUserDialog = ref(false)
+const deleteUserDialog = ref(false)
 
 function disabled() {
   if (!selectedRowId.value) return true
@@ -67,30 +65,16 @@ const menuModel = computed(() => [
   {
     label: t('pages.configuration.users.context_menu.edit'),
     icon: 'i-tabler-pencil',
-    command: () => emit('onEdit'),
+    command() { editUserDialog.value = true },
   },
   statusToggle.value,
   { separator: true },
   {
     label: t('pages.configuration.users.context_menu.delete'),
     icon: 'i-tabler-trash',
-    command() {
-      confirm.require({
-        message: t('pages.configuration.users.delete_dialog.summary'),
-        header: t('pages.configuration.users.delete_dialog.title'),
-        acceptIcon: 'i-tabler-trash',
-        acceptLabel: t('pages.configuration.users.delete_dialog.submit'),
-        acceptClass: 'p-button-danger',
-        rejectLabel: t('pages.configuration.users.delete_dialog.cancel'),
-        accept: () => {
-          if (!selectedRowId.value) return
-          deleteUser(selectedRowId.value)
-            .then(refresh)
-            .finally(unselectRow)
-        },
-      })
-    },
+    command() { deleteUserDialog.value = true },
     disabled,
+    class: 'h-danger',
   },
 ])
 </script>
@@ -98,6 +82,7 @@ const menuModel = computed(() => [
 <template>
   <PContextMenu ref="cm" :model="menuModel" />
 
-  <PDynamicDialog />
+  <EditUserDialog v-model:visible="editUserDialog" />
+  <DeleteUserDialog v-model:visible="deleteUserDialog" />
   <ConfirmDialog />
 </template>

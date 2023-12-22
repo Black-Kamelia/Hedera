@@ -5,7 +5,6 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.IllegalActionException
-import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.InvalidUUIDException
 import com.kamelia.hedera.core.MissingHeaderException
@@ -13,7 +12,6 @@ import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MultipartParseException
 import com.kamelia.hedera.plugins.UserPrincipal
 import com.kamelia.hedera.rest.auth.UserState
-import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -26,7 +24,6 @@ import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
 import java.io.File
 import java.util.*
-import kotlin.math.roundToLong
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.sql.ComplexExpression
 import org.jetbrains.exposed.sql.Expression
@@ -34,7 +31,6 @@ import org.jetbrains.exposed.sql.LikeEscapeOp
 import org.jetbrains.exposed.sql.LikePattern
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.QueryBuilder
-import org.jetbrains.exposed.sql.append
 import org.jetbrains.exposed.sql.stringParam
 import org.jetbrains.exposed.sql.vendors.PostgreSQLDialect
 import org.jetbrains.exposed.sql.vendors.currentDialect
@@ -84,6 +80,11 @@ fun String.toUUID(): UUID = try {
     UUID.fromString(this)
 } catch (e: IllegalArgumentException) {
     throw InvalidUUIDException()
+}
+
+fun String.toUUIDShort(): UUID {
+    val uuid = this.replaceFirst("""^(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})$""".toRegex(), "$1-$2-$3-$4-$5")
+    return uuid.toUUID()
 }
 
 val UUIDEntity.uuid: UUID

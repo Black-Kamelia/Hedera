@@ -1,7 +1,7 @@
 package com.kamelia.hedera.util
 
-import io.ktor.http.ContentType
-import io.ktor.server.application.Application
+import io.ktor.http.*
+import io.ktor.server.application.*
 
 object Environment {
 
@@ -16,6 +16,7 @@ object Environment {
     val liquibaseMaster get() = config.property("liquibase.master").getString()
 
     val uploadFolder get() = config.property("hedera.uploadFolder").getString()
+    val globalConfigurationFile get() = config.property("hedera.globalConfigurationFile").getString()
     val searchMaxDistance get() = config.property("hedera.searchMaxDistance").getString().toDouble()
     val loginThrottle get() = config.property("hedera.loginThrottle").getString().toLong()
 

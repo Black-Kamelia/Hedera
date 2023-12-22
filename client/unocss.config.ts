@@ -13,6 +13,7 @@ export default defineConfig({
   shortcuts: [
     ['flex-center', 'flex items-center justify-center'],
     ['grid-center', 'grid place-items-center'],
+    ['main-card', 'p-10 sm:mx-0 mx-3'],
   ],
   presets: [
     presetUno(),
@@ -54,5 +55,6 @@ export default defineConfig({
     'i-tabler-alert-triangle-filled',
     'i-tabler-alert-circle-filled',
     'i-tabler-clipboard-check',
+    'i-tabler-world-x',
   ],
 })

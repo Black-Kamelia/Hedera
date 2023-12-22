@@ -1,5 +1,6 @@
 package com.kamelia.hedera.rest2
 
+import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.login
@@ -24,10 +25,12 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Named
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@ExtendWith(GlobalConfigurationSetup::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserSettingsTest {
 

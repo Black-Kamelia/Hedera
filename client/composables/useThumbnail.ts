@@ -4,9 +4,6 @@ import { blobToBase64 } from '~/utils/blobs'
 /**
  * Composable for getting a thumbnail of a file. If the file type does not support thumbnails, the thumbnail will be null.
  *
- * MIME types supported:
- * - `image/*`
- *
  * @param code File code
  * @param mimeType File MIME type
  *
@@ -17,7 +14,7 @@ export function useThumbnail(code: string, mimeType: string) {
   const isLoading = ref(true)
   const isError = ref(false)
 
-  if (mimeType.startsWith('image/')) {
+  if (mimeTypeToMediaType(mimeType) === 'image') {
     $fetchAPI<Blob>(`/files/${code}`, { responseType: 'blob' })
       .then(response => blobToBase64(response))
       .then(base64 => thumbnail.value = base64)

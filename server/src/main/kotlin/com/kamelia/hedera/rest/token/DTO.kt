@@ -11,7 +11,7 @@ import kotlinx.serialization.UseSerializers
 
 fun PersonalToken.toRepresentationDTO(token: String? = null, lastUsed: Instant? = null) = PersonalTokenDTO(
     id = id.value,
-    token = token,
+    token = "${id.value.toString().replace("-", "")}$token",
     name = name,
     createdAt = createdAt.toString(),
     lastUsed = lastUsed?.toString(),

@@ -20,10 +20,6 @@ export default defineNuxtConfig({
     layoutTransition: { name: 'layout-in', appear: true },
   },
   ssr: false,
-  css: [
-    '@unocss/reset/tailwind.css',
-    'primevue/resources/primevue.css',
-  ],
   imports: { // add folders here to auto-import them in your application
     dirs: [
       'stores/**',
@@ -45,7 +41,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/color-mode',
-    '@notkamui/nuxt-primevue',
+    'nuxt-primevue',
   ],
   devtools: {
     enabled: true,
@@ -99,11 +95,6 @@ export default defineNuxtConfig({
       FieldArray: 'VFieldArray',
     },
   },
-  pinia: {
-    autoImports: [
-      'storeToRefs',
-    ],
-  },
   colorMode: {
     preference: 'system',
     fallback: 'light',
@@ -112,7 +103,16 @@ export default defineNuxtConfig({
     storageKey: 'color-scheme',
   },
   primevue: {
-    ripple: false,
-    inputStyle: 'filled',
+    options: {
+      ripple: false,
+      inputStyle: 'filled',
+    },
+    components: {
+      prefix: 'P',
+    },
+    importPT: {
+      as: 'HederaPreset',
+      from: '/utils/hederaPreset.ts',
+    },
   },
 })

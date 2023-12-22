@@ -6,8 +6,7 @@ import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.secretAccess
 import com.kamelia.hedera.util.Environment.secretRefresh
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import kotlinx.serialization.Serializable
 
 @Serializable

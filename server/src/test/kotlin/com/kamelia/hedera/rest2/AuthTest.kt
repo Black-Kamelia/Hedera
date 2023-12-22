@@ -1,5 +1,6 @@
 package com.kamelia.hedera.rest2
 
+import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
@@ -26,7 +27,9 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(GlobalConfigurationSetup::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class AuthTest {

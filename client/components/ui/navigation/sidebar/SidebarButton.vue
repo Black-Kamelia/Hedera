@@ -21,7 +21,7 @@ const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) 
 </script>
 
 <template>
-  <PButton rounded class="flex flex-row gap-4 items-start" :class="{ active: activeRoute, open }">
+  <PButton unstyled rounded class="flex flex-row gap-4 items-center sidebar-button" :class="{ active: activeRoute, open }">
     <div class="flex">
       <slot name="icon">
         <i :class="icon" />
@@ -39,10 +39,14 @@ const activeRoute = computed(() => active?.(router.currentRoute.value.fullPath) 
 </template>
 
 <style scoped lang="scss">
-.p-button {
+.sidebar-button {
   background-color: transparent;
   color: var(--primary-color-text);
   padding: .75rem;
+  border-radius: 3em;
+  font-size: 1rem;
+  font-family: var(--font-family);
+  cursor: pointer;
   transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, padding .3s ease;
 
   &.open {

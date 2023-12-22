@@ -8,12 +8,15 @@ const route = useRoute()
 const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
 const { currentRoute } = useRouter()
+const { fetchConfiguration, updateConfiguration } = useGlobalConfiguration()
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {
     case 'user-connected':
     case 'user-updated': {
-      setUser(payload.data)
+      const user = payload.data
+      setUser(user)
+      if (!user.forceChangePassword && (user.role === 'ADMIN' || user.role === 'OWNER')) fetchConfiguration()
       break
     }
     case 'user-forcefully-logged-out': {
@@ -26,6 +29,9 @@ useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
       })
       break
     }
+    case 'configuration-updated':
+      updateConfiguration(payload.data)
+      break
   }
 })
 useEventBus(RefreshTokenExpiredEvent).on(() => {
@@ -56,6 +62,35 @@ const animation = useLocalStorage('animations', true)
 </template>
 
 <style lang="scss">
+.card-slide-left-enter-active,
+.card-slide-left-leave-active,
+.card-slide-right-enter-active,
+.card-slide-right-leave-active {
+  transition: all .5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.card-slide-left-leave-active,
+.card-slide-right-leave-active {
+  position: absolute;
+  top: 0;
+}
+
+.card-slide-left-leave-to,
+.card-slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-100%) scaleX(1);
+}
+
+.card-slide-left-enter-from,
+.card-slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(100%) scaleX(1);
+}
+
+.scroll:not(:has(.slide-left-enter-active)) {
+  overflow-y: auto;
+}
+
 :root {
   --easeInOutExpo: cubic-bezier(0.87, 0, 0.13, 1);
   --easeOutExpo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -193,24 +228,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .p-input-icon-right > .p-inputtext {
   padding-right: calc(1.25rem + 24px);
-}
-
-.p-toast .p-toast-message .p-toast-message-content {
-  border-width: 0 !important;
-}
-
-.p-toast {
-  width: auto !important;
-  max-width: 30em;
-}
-
-.p-toast .p-toast-message,
-.p-message {
-  border: 0 none !important;
-}
-
-.p-toast-message-icon {
-  height: 1em !important;
 }
 
 .p-card:has(.p-datatable) {

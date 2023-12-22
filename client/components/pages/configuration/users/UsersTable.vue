@@ -40,7 +40,6 @@ const selectedRowId = computed(() => selectedRow.value?.id)
 const loading = computed(() => pending.value && debouncedPending.value)
 
 const createUserDialog = ref(false)
-const editUserDialog = ref(false)
 
 provide(UsersTableKey, {
   selectedRow,
@@ -60,10 +59,13 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+function openRowContextMenu(event: Event) {
+  contextMenu.value?.show(event)
+}
 </script>
 
 <template>
-  <UsersTableContextMenu @on-edit="editUserDialog = true" />
+  <UsersTableContextMenu />
 
   <div class="p-card flex flex-row items-center gap-7 w-full overflow-hidden">
     <PDataTable
@@ -95,16 +97,6 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
         <template #body="slotProps">
           <span v-if="slotProps.data">{{ slotProps.data.username }}</span>
           <PSkeleton v-else width="5rem" height="1rem" />
-        </template>
-      </PColumn>
-
-      <PColumn sortable field="email" :header="t('pages.configuration.users.table.email')">
-        <template #sorticon="slotProps">
-          <SortIcon v-bind="slotProps" />
-        </template>
-        <template #body="slotProps">
-          <span v-if="slotProps.data">{{ slotProps.data.email }}</span>
-          <PSkeleton v-else width="12.5rem" height="1rem" />
         </template>
       </PColumn>
 
@@ -172,6 +164,22 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
           <PSkeleton v-else width="8rem" height="1rem" />
         </template>
       </PColumn>
+
+      <PColumn class="w-3em">
+        <template #body="slotProps">
+          <PButton
+            severity="secondary"
+            text
+            rounded
+            icon="i-tabler-dots-vertical"
+            size="small"
+            @click.stop="(e) => {
+              openRowContextMenu(e)
+              selectedRow = slotProps.data
+            }"
+          />
+        </template>
+      </PColumn>
     </PDataTable>
   </div>
 
@@ -185,5 +193,4 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   </div>
 
   <CreateUserDialog v-model:visible="createUserDialog" />
-  <EditUserDialog v-model:visible="editUserDialog" />
 </template>

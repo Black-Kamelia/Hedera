@@ -90,21 +90,12 @@ function onPage(event: DataTablePageEvent) {
 function onRowContextMenu(event: DataTableRowContextMenuEvent) {
   contextMenu.value?.show(event.originalEvent)
 }
+function openRowContextMenu(event: Event) {
+  contextMenu.value?.show(event)
+}
 
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   fileDoubleClickEvent.emit({ file: event.data })
-}
-
-function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
-  const order = Number(props.sortOrder)
-  return h('i', {
-    class: {
-      'ml-1 text-xs block': true,
-      'i-tabler-arrows-sort': !props.sorted,
-      'i-tabler-sort-descending': order > 0,
-      'i-tabler-sort-ascending': order < 0,
-    },
-  })
 }
 </script>
 
@@ -186,7 +177,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
     <PColumn class="w-6em" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
-          <MediaPreview :key="slotProps.data.mimeType" :data="slotProps.data" />
+          <MediaThumbnail :key="slotProps.data.mimeType" :data="slotProps.data" />
         </Transition>
         <PSkeleton v-else width="6rem" height="4rem" />
       </template>
@@ -199,7 +190,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
       :header="t('pages.files.table.name')"
     >
       <template #sorticon="slotProps">
-        <RenderIcon v-bind="slotProps" />
+        <SortIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
@@ -211,7 +202,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
 
     <PColumn field="size" sortable :header="t('pages.files.table.size')">
       <template #sorticon="slotProps">
-        <RenderIcon v-bind="slotProps" />
+        <SortIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ format(slotProps.data.size) }}</span>
@@ -226,7 +217,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
       :header="t('pages.files.table.format')"
     >
       <template #sorticon="slotProps">
-        <RenderIcon v-bind="slotProps" />
+        <SortIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
@@ -238,7 +229,7 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
 
     <PColumn field="visibility" sortable :header="t('pages.files.table.visibility')">
       <template #sorticon="slotProps">
-        <RenderIcon v-bind="slotProps" />
+        <SortIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <Transition v-if="slotProps.data" name="fade" mode="out-in">
@@ -253,11 +244,27 @@ function RenderIcon(props: { sorted: boolean; sortOrder: boolean }) {
 
     <PColumn field="createdAt" sortable :header="t('pages.files.table.creation_date')">
       <template #sorticon="slotProps">
-        <RenderIcon v-bind="slotProps" />
+        <SortIcon v-bind="slotProps" />
       </template>
       <template #body="slotProps">
         <span v-if="slotProps.data">{{ d(slotProps.data.createdAt) }}</span>
         <PSkeleton v-else width="8rem" height="1rem" />
+      </template>
+    </PColumn>
+
+    <PColumn class="w-3em">
+      <template #body="slotProps">
+        <PButton
+          severity="secondary"
+          text
+          rounded
+          icon="i-tabler-dots-vertical"
+          size="small"
+          @click.stop="(e) => {
+            openRowContextMenu(e)
+            selectedRow = slotProps.data
+          }"
+        />
       </template>
     </PColumn>
   </PDataTable>

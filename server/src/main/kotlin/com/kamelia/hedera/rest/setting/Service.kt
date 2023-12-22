@@ -1,6 +1,5 @@
 package com.kamelia.hedera.rest.setting
 
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.database.Connection
 import java.util.*

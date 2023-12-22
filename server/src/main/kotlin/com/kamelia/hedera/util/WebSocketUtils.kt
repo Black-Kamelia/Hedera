@@ -1,11 +1,10 @@
 package com.kamelia.hedera.util
 
 import com.kamelia.hedera.core.Event
-import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.DTO
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import java.util.UUID
+import java.util.*
 import kotlinx.serialization.Serializable
 
 suspend fun <E> WebSocketServerSession.defineEventListener(event: Event<E>, sessionId: UUID, listener: suspend (E) -> Unit): () -> Unit {

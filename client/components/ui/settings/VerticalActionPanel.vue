@@ -13,7 +13,7 @@ const { t } = useI18n()
   <div class="p-card p-7">
     <div class="flex flex-row justify-between flex-wrap">
       <div class="flex flex-row items-center flex-wrap">
-        <h2 class="text-lg font-bold mr-3">
+        <h2 class="text-lg mr-3">
           {{ header }}
         </h2>
         <PInlineMessage v-if="localSetting" class="px-2 py-1" severity="warn">

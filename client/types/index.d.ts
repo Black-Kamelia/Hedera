@@ -34,8 +34,21 @@ declare global {
 
 // BEGIN SECTION: Others
 declare global {
+  interface AuthState {
+    name: 'REGISTER' | 'RESET_PASSWORD' | 'LOGIN' | 'COMPLETE_OTP' | 'CHANGE_PASSWORD'
+    index: number
+    subtitleKey: string
+    route?: string
+  }
+
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
+
+  export type UploadStatus = 'pending' | 'uploading' | 'completed' | 'error'
+  export interface FileUpload {
+    file: File
+    status: UploadStatus
+  }
 }
 // END SECTION: Others
 
@@ -118,6 +131,17 @@ declare global {
     createdAt: string
   }
 
+  interface UserUpdateDTO {
+    username?: string
+    email?: string
+  }
+
+  interface UserSignupDTO {
+    username: string
+    email: string
+    password: string
+  }
+
   interface UserCreationDTO {
     username: string
     email: string
@@ -164,6 +188,22 @@ declare global {
     name: string
     createdAt: string
     lastUsed?: string
+  }
+
+  type DiskQuotaPolicy = 'UNLIMITED' | 'LIMITED'
+
+  interface GlobalConfiguration {
+    enableRegistrations: boolean
+    defaultDiskQuotaPolicy: DiskQuotaPolicy
+    defaultDiskQuota: number | null
+  }
+
+  interface GlobalConfigurationRepresentationDTO extends GlobalConfiguration {}
+
+  interface GlobalConfigurationUpdateDTO {
+    enableRegistrations?: boolean
+    defaultDiskQuotaPolicy?: DiskQuotaPolicy
+    defaultDiskQuota?: number
   }
 }
 // END SECTION: DTO

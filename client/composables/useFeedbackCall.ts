@@ -1,11 +1,13 @@
 import type { MessageDTO } from '~/utils/messages'
+import useErrorToast from '~/composables/useErrorToast'
 
 export default function useFeedbackCall<
   T,
   F extends (...args: Parameters<F>) => Promise<MessageDTO<T>>,
 >(requestFactory: F, ignoreErrors = false) {
-  const { t, m } = useI18n()
+  const { m } = useI18n()
   const toast = useToast()
+  const handleError = useErrorToast()
 
   return function call(...args: Parameters<F>): Promise<MessageDTO<T> | void> {
     return requestFactory(...args)
@@ -20,23 +22,7 @@ export default function useFeedbackCall<
       })
       .catch((error) => {
         if (ignoreErrors) throw error
-        if (!error.response) {
-          toast.add({
-            severity: 'error',
-            summary: t('errors.unknown'),
-            detail: { text: t('errors.network') },
-            life: 5000,
-          })
-          throw error
-        }
-        const { title, message } = error.response._data
-        toast.add({
-          severity: 'error',
-          summary: m(title),
-          detail: { text: message ? m(message) : null },
-          life: 5000,
-        })
-        throw error
+        handleError(error)
       })
   }
 }

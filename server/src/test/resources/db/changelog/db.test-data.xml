@@ -11,6 +11,7 @@
         <loadData tableName="users" file="classpath:db/data/users/users-settings-tests.csv"  />
         <loadData tableName="users" file="classpath:db/data/users/files-tests.csv"  />
         <loadData tableName="users" file="classpath:db/data/users/personal-tokens-tests.csv"  />
+        <loadData tableName="users" file="classpath:db/data/users/global-configuration-tests.csv"  />
 
         <loadData tableName="files" file="classpath:db/data/files/files-tests.csv" />
 

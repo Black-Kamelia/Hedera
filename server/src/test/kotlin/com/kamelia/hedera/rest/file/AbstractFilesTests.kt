@@ -274,24 +274,3 @@ abstract class AbstractFilesTests(
         }
     }
 }
-
-open class FilesTestsExpectedResults(
-    val uploadFile: HttpStatusCode,
-    val listFiles: HttpStatusCode,
-
-    val viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val updateCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val removeCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-    val deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
-)
-
-open class FilesTestsInput(
-    val viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
-    val renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
-    val updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
-    val updateCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
-    val removeCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
-    val deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
-)

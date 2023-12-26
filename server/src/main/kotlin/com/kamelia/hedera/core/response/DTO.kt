@@ -17,17 +17,16 @@ data class MessageKeyDTO(
 
     fun withParameters(vararg parameters: Pair<String, String>): MessageKeyDTO {
         val params = parameters.map { (k, v) -> k to MessageKeyDTO(v) }.toTypedArray()
-        this.parameters?.let { return copy(parameters = it.plus(params)) }
-        return copy(parameters = mapOf(*params))
+        if (this.parameters != null) {
+            return copy(parameters = this.parameters.plus(params))
+        }
+        return copy(parameters = params.toMap())
     }
 }
 
 fun String.asMessage() = MessageKeyDTO(this)
-fun String.asMessage(parameters: Map<String, String>? = null) =
-    MessageKeyDTO(this, parameters?.mapValues { MessageKeyDTO(it.value) })
-
 fun String.asMessage(vararg parameters: Pair<String, String>) =
-    MessageKeyDTO(this, mapOf(*(parameters.map { (k, v) -> k to MessageKeyDTO(v) }.toTypedArray())))
+    MessageKeyDTO(this, parameters.associate { (k, v) -> k to MessageKeyDTO(v) })
 
 @Serializable
 data class MessageDTO<T : DTO>(

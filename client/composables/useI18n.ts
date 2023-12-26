@@ -34,7 +34,7 @@ export default function useI18n(fallback = 'en') {
         Object.entries(parameters).map(([key, value]) => [key, m(value)]),
       )
 
-      if (Object.entries(parameters).some(([key, _]) => key === 'success' || key === 'fail')) {
+      if (Object.keys(parameters).some(key => key === 'success' || key === 'fail')) {
         const count = Number.parseInt(parameters.success?.key ?? parameters.fail?.key ?? '0')
         return i18n.t(key, mapped, count)
       }

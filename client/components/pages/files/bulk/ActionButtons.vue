@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import BulkEditVisibilityDialog from '~/components/pages/files/bulk/BulkEditVisibilityDialog.vue'
-
 const selection = defineModel<FileRepresentationDTO[]>('selection', { default: () => [] })
 const selecting = computed(() => selection.value.length > 0)
 

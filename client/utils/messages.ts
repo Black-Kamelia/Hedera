@@ -1,6 +1,6 @@
 export interface MessageKeyDTO {
   key: string
-  parameters?: { [key: string]: MessageKeyDTO }
+  parameters?: Record<string, MessageKeyDTO>
 }
 
 export interface MessageDTO<T> {

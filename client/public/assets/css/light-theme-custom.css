@@ -393,7 +393,7 @@ hr {
 }
 
 .p-datepicker .p-datepicker-buttonbar,
-.p-datepicker .p-timepicker{
+.p-datepicker .p-timepicker {
   border-top: 1px solid var(--surface-d);
 }
 
@@ -402,13 +402,13 @@ hr {
 }
 
 .p-toast-message,
-.p-message  {
-    backdrop-filter: blur(5px);
-    border: none;
+.p-message {
+  backdrop-filter: blur(5px);
+  border: none;
 }
 
 .p-toast {
-    opacity: 1;
+  opacity: 1;
 }
 
 .p-toast .p-toast-message.p-toast-message-info {
@@ -481,7 +481,7 @@ hr {
   color: #fff;
 }
 
-.p-tag.p-tag-danger ,
+.p-tag.p-tag-danger,
 .p-badge.p-badge-danger {
   background-color: var(--pink-500);
   color: #fff;

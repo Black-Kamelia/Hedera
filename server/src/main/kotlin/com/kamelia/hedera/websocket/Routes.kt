@@ -1,8 +1,8 @@
 package com.kamelia.hedera.websocket
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respondNoError
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.respondNoError
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.util.forcefullyClose
 import com.kamelia.hedera.util.userOrNull

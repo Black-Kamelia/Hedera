@@ -1,6 +1,6 @@
 package com.kamelia.hedera.rest.setting
 
-import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.util.authenticatedUser
 import io.ktor.server.application.*

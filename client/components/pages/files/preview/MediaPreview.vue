@@ -65,7 +65,6 @@ function onClose(closeCallback: () => void) {
             showDelay: 500,
           }"
           icon="i-tabler-x"
-          size="small"
           text
           rounded
           @click="onClose(closeCallback)"
@@ -77,7 +76,6 @@ function onClose(closeCallback: () => void) {
             showDelay: 500,
           }"
           icon="i-tabler-external-link"
-          size="small"
           text
           rounded
           @click="open()"
@@ -92,14 +90,13 @@ function onClose(closeCallback: () => void) {
           }"
           :icon="control.icon"
           :disabled="control.disabled?.value"
-          size="small"
           text
           rounded
           @click="control.command()"
         />
       </div>
       <div class="pointer-events-none z-4000 w-screen h-screen">
-        <div class="preview p-25 h-full w-full flex flex-col justify-center">
+        <div class="preview p-5 sm:p-15 md:p-25 h-full w-full flex flex-col justify-center">
           <slot>
             <div class="m-auto text-white pointer-events-auto flex flex-col items-center justify-center gap-5">
               <i class="text-5xl" :class="mimeTypeToIcon(file.mimeType)" />
@@ -199,7 +196,7 @@ function onClose(closeCallback: () => void) {
     transition: all .3s ease;
   }
   .preview {
-    transition: all .2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all .25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .title,
@@ -215,7 +212,7 @@ function onClose(closeCallback: () => void) {
     transition: all .3s ease;
   }
   .preview {
-    transition: all .2s cubic-bezier(0.76, 0, 0.24, 1);
+    transition: all .25s cubic-bezier(0.76, 0, 0.24, 1);
   }
 
   .title,

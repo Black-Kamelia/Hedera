@@ -1,8 +1,8 @@
 package com.kamelia.hedera.plugins
 
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.MessageKeyDTO
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.response.MessageKeyDTO
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.rest.auth.UserState
 import io.ktor.http.*
 import io.ktor.server.application.*

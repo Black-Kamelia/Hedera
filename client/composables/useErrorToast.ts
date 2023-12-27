@@ -1,10 +1,18 @@
-import type { FetchError } from 'ofetch'
+import { FetchError } from 'ofetch'
 
 export default function useErrorToast() {
   const toast = useToast()
   const { t, m } = useI18n()
 
   function handleError(error: FetchError) {
+    if (!(error instanceof FetchError)) {
+      toast.add({
+        severity: 'error',
+        summary: t('errors.unknown'),
+        life: 5000,
+      })
+      throw error
+    }
     if (!error.response) {
       toast.add({
         severity: 'error',

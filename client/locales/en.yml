@@ -94,6 +94,17 @@ pages:
       download: Download
       delete: Delete
       unselect: Unselect
+    bulk_actions:
+      edit_visibility:
+        header: Change the visibility of the selected files
+        description: "The selected file will be modified. Are you sure you want to change the visibility of this file? | The {count} selected files will be modified. Are you sure you want to change the visibility of these files?"
+        cancel: Cancel
+        submit: Change visibility
+      delete:
+        header: Delete the selected files
+        description: "The selected file will be deleted. This action is irreversible. Are you sure you want to delete this file? | The {count} selected files will be deleted. This action is irreversible. Are you sure you want to delete these files?"
+        cancel: Cancel
+        submit: Delete
     advanced_filters: Advanced filters
     filters:
       minimum_size: Minimum size
@@ -485,6 +496,14 @@ forms:
       name_too_long: The name must be at most {max} characters long
     fields:
       filename: New file name
+  bulk_change_visibility:
+    submit: Change visibility
+    cancel: Cancel
+    errors:
+      missing_visibility: Visibility is required
+    fields:
+      visibility: Visibility
+      visibility_placeholder: Select a visibility
   edit_custom_link:
     submit: Save
     cancel: Cancel
@@ -538,10 +557,12 @@ actions:
       success:
         title: User deactivated
         message: The user “{username}” has been deactivated
+    self_update:
+      success:
+        title: Your profile has been edited
     update:
       success:
         title: User edited
-        title_self: Your profile has been edited
         message: The user “{username}” has been edited
       error:
         title: Could not edit user
@@ -559,8 +580,33 @@ actions:
         title: Token deleted
         message: The token “{name}” has been deleted
 
+bulk_actions:
+  files:
+    update:
+      visibility:
+        success:
+          title: Visibility changed
+          message: "The file is now {newVisibility} | {success} files are now {newVisibility}"
+        partial:
+          title: Visibility changed with errors
+          message: "{success} file out of {total} is now {newVisibility} | {success} files out of {total} are now {newVisibility}"
+        fail:
+          title: Failed to change visibility of files
+          message: "The file could not be modified | {fail} files could not be modified"
+    delete:
+      success:
+        title: Files deleted
+        message: "The file has been deleted | {success} files have been deleted"
+      partial:
+        title: Files deleted with errors
+        message: "{success} file out of {total} has been deleted | {success} files out of {total} have been deleted"
+      fail:
+        title: Failed to delete files
+        message: "The file could not be deleted | {fail} files could not be deleted"
+
 errors:
   unknown: An unknown error has occurred
+  unknown_message: "Hint: {hint}"
   network: Network is unreachable
   auth:
     invalid_credentials: Username or password is incorrect

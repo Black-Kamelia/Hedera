@@ -94,6 +94,17 @@ pages:
       download: Télécharger
       delete: Supprimer
       unselect: Désélectionner
+    bulk_actions:
+      edit_visibility:
+        header: Modifier la visibilité des fichiers sélectionnés
+        description: "Le fichier sélectionné va être modifié. Êtes-vous sûr(e) de vouloir modifier la visibilité de ce fichier ? | Les {count} fichiers sélectionnés vont être modifiés. Êtes-vous sûr(e) de vouloir modifier la visibilité de ces fichiers ?"
+        cancel: Annuler
+        submit: Modifier la visibilité
+      delete:
+        header: Supprimer les fichiers sélectionnés
+        description: Le fichier sélectionné va être supprimé. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ce fichier ? | Les {count} fichiers sélectionnés vont être supprimés. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ces fichiers ?
+        cancel: Annuler
+        submit: Supprimer
     advanced_filters: Filtres avancés
     filters:
       minimum_size: Taille minimale
@@ -485,6 +496,14 @@ forms:
       name_too_long: Le nom du fichier doit contenir au plus {max} caractères
     fields:
       filename: Nouveau nom du fichier
+  bulk_change_visibility:
+    submit: Modifier la visibilité
+    cancel: Annuler
+    errors:
+      missing_visibility: Visibilité requise
+    fields:
+      visibility: Visibilité
+      visibility_placeholder: Sélectionner une visibilité
   edit_custom_link:
     submit: Sauvegarder
     cancel: Annuler
@@ -538,10 +557,12 @@ actions:
       success:
         title: Utilisateur désactivé
         message: L’utilisateur “{username}” a été désactivé
+    self_update:
+      success:
+        title: Votre profil a été mis à jour
     update:
       success:
         title: Utilisateur édité
-        title_self: Votre profil a été édité
         message: L’utilisateur “{username}” a été édité
       error:
         title: Impossible d’éditer l’utilisateur
@@ -559,8 +580,33 @@ actions:
         title: Jeton supprimé
         message: Le jeton “{name}” a été supprimé
 
+bulk_actions:
+  files:
+    update:
+      visibility:
+        success:
+          title: Visibilité modifiée
+          message: "Le fichier est désormais {newVisibility} | {success} fichiers sont désormais {newVisibility}"
+        partial:
+          title: Visibilité modifiée avec des erreurs
+          message: "{success} fichier sur {total} est désormais {newVisibility} | {success} fichiers sur {total} sont désormais {newVisibility}"
+        fail:
+          title: Échec de la modification de la visibilité des fichiers
+          message: "Le fichier n’a pas pu être modifié | {fail} fichiers n’ont pas pu être modifiés"
+    delete:
+      success:
+        title: Fichiers supprimés
+        message: "Le fichier a été supprimé | {success} fichiers ont été supprimés"
+      partial:
+        title: Fichiers supprimés avec des erreurs
+        message: "{success} fichier sur {total} a été supprimé | {success} fichiers sur {total} ont été supprimés"
+      fail:
+        title: Échec de la suppression des fichiers
+        message: "Le fichier n’a pas pu être supprimé | {fail} fichiers n’ont pas pu être supprimés"
+
 errors:
   unknown: Une erreur inattendue est survenue
+  unknown_message: "Indication : {hint}"
   network: Connexion au serveur impossible
   auth:
     invalid_credentials: Nom d’utilisateur ou mot de passe incorrect

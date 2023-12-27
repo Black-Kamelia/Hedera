@@ -124,27 +124,6 @@ watch(visible, (visible) => {
       </div>
 
       <div class="flex flex-col gap-2">
-        <p>{{ t('pages.files.table.format') }}</p>
-        <PMultiSelect
-          v-model="localFilters.formats"
-          :options="formats"
-          option-label="name"
-          option-value="name"
-          :placeholder="t('pages.files.filters.all_formats')"
-          class="min-w-0"
-          filter
-          :loading="formatsPending"
-          :selected-items-label="t('pages.files.filters.formats')"
-        >
-          <template #value="slotOptions">
-            <span v-if="formatsPending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
-            <span v-else-if="slotOptions.value.length === 0">{{ slotOptions.placeholder }}</span>
-            <span v-else>{{ t('pages.files.filters.formats', { count: slotOptions.value.length }) }}</span>
-          </template>
-        </PMultiSelect>
-      </div>
-
-      <div class="flex flex-col gap-2">
         <p>{{ t('pages.files.table.token') }}</p>
         <PMultiSelect
           v-model="localFilters.tokens"
@@ -175,6 +154,27 @@ watch(visible, (visible) => {
               <PCheckbox v-model="localFilters.noToken" input-id="noToken" binary />
               <label for="noToken">{{ t('pages.files.filters.files_without_token') }}</label>
             </div>
+          </template>
+        </PMultiSelect>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p>{{ t('pages.files.table.format') }}</p>
+        <PMultiSelect
+          v-model="localFilters.formats"
+          :options="formats"
+          option-label="name"
+          option-value="name"
+          :placeholder="t('pages.files.filters.all_formats')"
+          class="min-w-0"
+          filter
+          :loading="formatsPending"
+          :selected-items-label="t('pages.files.filters.formats')"
+        >
+          <template #value="slotOptions">
+            <span v-if="formatsPending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
+            <span v-else-if="slotOptions.value.length === 0">{{ slotOptions.placeholder }}</span>
+            <span v-else>{{ t('pages.files.filters.formats', { count: slotOptions.value.length }) }}</span>
           </template>
         </PMultiSelect>
       </div>

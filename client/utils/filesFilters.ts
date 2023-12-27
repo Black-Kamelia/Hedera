@@ -55,6 +55,33 @@ export function filtersToDefinition(filters: ReturnType<typeof useFilesFilters>,
     })))
   }
 
+  if (filters.tokens.length > 0) {
+    const tokensFilter: FilterObject[] = filters.tokens.map(token => ({
+      field: 'token',
+      operator: 'eq',
+      value: token,
+      type: 'POSITIVE',
+    }))
+
+    if (filters.noToken) {
+      tokensFilter.push({
+        field: 'token',
+        operator: 'eqn',
+        value: '',
+        type: 'POSITIVE',
+      })
+    }
+
+    filtersDefinition.push(tokensFilter)
+  } else if (filters.noToken) {
+    filtersDefinition.push([{
+      field: 'token',
+      operator: 'eqn',
+      value: '',
+      type: 'POSITIVE',
+    }])
+  }
+
   if (query !== undefined && query.length > 0) {
     filtersDefinition.push([{
       field: 'name',

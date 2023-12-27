@@ -38,6 +38,15 @@ object PersonalTokenService {
         Response.ok(tokens)
     }
 
+    suspend fun getPersonalTokensWithUsage(
+        userId: UUID,
+    ): Response<List<PersonalTokenDTO>> = Connection.transaction {
+        val tokens = PersonalToken.allWithUsage(userId)
+            .map { (token, usage) -> token.toRepresentationDTO(usage = usage, deleted = token.deleted) }
+
+        Response.ok(tokens)
+    }
+
     suspend fun deletePersonalToken(
         userId: UUID,
         tokenId: UUID,

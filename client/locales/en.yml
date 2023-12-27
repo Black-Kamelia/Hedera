@@ -76,6 +76,7 @@ pages:
       name: Name
       size: Size
       format: Format
+      token: Personal token
       owner: Owner
       visibility: Visibility
       creation_date: Creation date
@@ -103,7 +104,13 @@ pages:
       start_date: Start date
       end_date: End date
       formats: "{count} format selected | {count} formats selected"
+      tokens: "{count} personal token selected | {count} personal tokens selected"
+      tokens_files: "No file | {count} file | {count} files"
       all_formats: All formats
+      tokens_unset: Indifferent
+      files_without_token: Files sent without personal token
+      token_deleted: Deleted
+      no_token: Files without personal token
       reset: Reset
       apply: Apply filters
     rename:

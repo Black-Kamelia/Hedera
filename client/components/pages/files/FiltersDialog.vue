@@ -4,6 +4,8 @@ import { FileDeletedEvent } from '~/utils/events'
 const visible = defineModel<boolean>('visible')
 
 const { t } = useI18n()
+const filters = useFilesFilters()
+const localFilters = reactiveFilters(filters)
 
 const visibilityOptions = [
   { name: t('pages.files.visibility.public'), value: 'PUBLIC', icon: 'i-tabler-world' },
@@ -11,12 +13,22 @@ const visibilityOptions = [
   { name: t('pages.files.visibility.protected'), value: 'PROTECTED', disabled: true, icon: 'i-tabler-lock' },
   { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ]
+const tokenPlaceholder = computed(() => {
+  if (localFilters.noToken) {
+    return t('pages.files.filters.no_token')
+  } else {
+    return t('pages.files.filters.tokens_unset')
+  }
+})
 
-const { data, pending, refresh } = useFetchAPI<Array<string>>('/files/formats', { method: 'GET' })
-const formats = computed(() => data.value?.map(type => ({ name: type })) ?? [])
+const { data: formats, pending: formatsPending, refresh } = useAsyncData(() => {
+  return $fetchAPI<Array<string>>('/files/filters/formats', { method: 'GET' })
+    .then(tokens => tokens?.map(type => ({ name: type })) ?? [])
+})
+const { data: tokens, pending: tokensPending } = useAsyncData(() => {
+  return $fetchAPI<Array<PersonalTokenDTO>>('/files/filters/tokens', { method: 'GET' })
+})
 
-const filters = useFilesFilters()
-const localFilters = reactiveFilters(filters)
 useEventBus(FileDeletedEvent).on(() => refresh())
 
 function applyAndClose() {
@@ -97,16 +109,8 @@ watch(visible, (visible) => {
       <div class="flex flex-col gap-2">
         <p>{{ t('pages.files.table.size') }}</p>
         <div class="flex flex-col sm:flex-row gap-3">
-          <FileSizeInput v-model="localFilters.minimalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
-          <FileSizeInput v-model="localFilters.maximalSize" class="w-full" :pt="{ input: { class: 'w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <p>{{ t('pages.files.table.views') }}</p>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <PInputNumber v-model="localFilters.minimalViews" disabled class="w-full" :placeholder="t('pages.files.filters.minimal_views')" />
-          <PInputNumber v-model="localFilters.maximalViews" disabled class="w-full" :placeholder="t('pages.files.filters.maximal_views')" />
+          <FileSizeInput v-model="localFilters.minimalSize" class="w-full" :pt="{ input: { class: 'min-h-3.125em w-full' } }" :placeholder="t('pages.files.filters.minimum_size')" />
+          <FileSizeInput v-model="localFilters.maximalSize" class="w-full" :pt="{ input: { class: 'min-h-3.125em w-full' } }" :placeholder="t('pages.files.filters.maximum_size')" />
         </div>
       </div>
 
@@ -120,13 +124,48 @@ watch(visible, (visible) => {
           :placeholder="t('pages.files.filters.all_formats')"
           class="min-w-0"
           filter
-          :loading="pending"
+          :loading="formatsPending"
           :selected-items-label="t('pages.files.filters.formats')"
         >
           <template #value="slotOptions">
-            <span v-if="pending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
+            <span v-if="formatsPending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
             <span v-else-if="slotOptions.value.length === 0">{{ slotOptions.placeholder }}</span>
             <span v-else>{{ t('pages.files.filters.formats', { count: slotOptions.value.length }) }}</span>
+          </template>
+        </PMultiSelect>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p>{{ t('pages.files.table.token') }}</p>
+        <PMultiSelect
+          v-model="localFilters.tokens"
+          :options="tokens"
+          option-label="name"
+          option-value="id"
+          :placeholder="tokenPlaceholder"
+          class="min-w-0"
+          filter
+          :loading="tokensPending"
+          :selected-items-label="t('pages.files.filters.tokens')"
+        >
+          <template #value="slotOptions">
+            <span v-if="tokensPending"><PSkeleton class="my-1" width="10rem" height="1rem" /></span>
+            <span v-else-if="slotOptions.value.length === 0">{{ slotOptions.placeholder }}</span>
+            <span v-else>{{ t('pages.files.filters.tokens', { count: slotOptions.value.length }) }}</span>
+          </template>
+          <template #option="slotOptions">
+            <div class="flex flex-row gap-2 items-center">
+              {{ slotOptions.option.name }}
+              <span class="p-text-secondary">{{ t('pages.files.filters.tokens_files', { count: slotOptions.option.usage }) }}</span>
+              <PTag v-if="slotOptions.option.deleted" :value="t('pages.files.filters.token_deleted')" severity="danger" rounded />
+            </div>
+          </template>
+          <template #footer>
+            <hr>
+            <div class="p-5 flex flex-row gap-2">
+              <PCheckbox v-model="localFilters.noToken" input-id="noToken" binary />
+              <label for="noToken">{{ t('pages.files.filters.files_without_token') }}</label>
+            </div>
           </template>
         </PMultiSelect>
       </div>

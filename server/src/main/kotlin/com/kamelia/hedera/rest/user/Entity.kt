@@ -148,6 +148,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                 "size" -> FileTable.size.filter(it)
                 "visibility" -> FileTable.visibility.filter(it)
                 "createdAt" -> FileTable.createdAt.filter(it)
+                "token" -> FileTable.uploadToken.filter(it)
                 else -> throw UnknownFilterFieldException(it.field)
             }
         }

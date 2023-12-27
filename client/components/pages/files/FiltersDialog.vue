@@ -10,7 +10,6 @@ const localFilters = reactiveFilters(filters)
 const visibilityOptions = [
   { name: t('pages.files.visibility.public'), value: 'PUBLIC', icon: 'i-tabler-world' },
   { name: t('pages.files.visibility.unlisted'), value: 'UNLISTED', icon: 'i-tabler-link' },
-  { name: t('pages.files.visibility.protected'), value: 'PROTECTED', disabled: true, icon: 'i-tabler-lock' },
   { name: t('pages.files.visibility.private'), value: 'PRIVATE', icon: 'i-tabler-eye-off' },
 ]
 const tokenPlaceholder = computed(() => {
@@ -58,8 +57,18 @@ watch(visible, (visible) => {
       <div class="flex flex-col gap-2">
         <p>{{ t('pages.files.table.visibility') }}</p>
         <PSelectButton
-          v-model="localFilters.visibility" class="w-full" :options="visibilityOptions" option-label="name" option-value="value" multiple
-          aria-labelledby="multiple" option-disabled="disabled"
+          v-model="localFilters.visibility"
+          class="w-full"
+          :options="visibilityOptions"
+          option-label="name"
+          option-value="value"
+          multiple
+          aria-labelledby="multiple"
+          option-disabled="disabled"
+          :pt="{
+            root: { class: 'grid grid-cols-3' },
+            button: { class: 'justify-center' },
+          }"
         >
           <template #option="slotProps">
             <div class="flex flex-row gap-2">

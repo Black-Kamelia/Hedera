@@ -38,26 +38,15 @@ function searchSize(event: AutoCompleteCompleteEvent) {
   }
 
   const value = Number(match[1])
-  const decimalValue = match[1].match(/[0-9]+\.[0-9]+/)
   const unit = match[2].toLowerCase()
   const shift = sizes.value.find(item => item.name.toLowerCase() === unit)?.shift
 
   if (shift !== undefined) {
-    if (shift === 0 && decimalValue) {
-      suggestions.value = []
-      return
-    }
     suggestions.value = [{ value: value.toFixed(2).toString(), shift }]
   } else {
-    let results = sizes.value
+    suggestions.value = sizes.value
       .filter(item => item.name.toLowerCase().startsWith(unit))
-      .map(item => ({ value: value.toString(), shift: item.shift }))
-
-    if (decimalValue) {
-      results = results.filter(item => item.shift !== 0)
-    }
-
-    suggestions.value = results
+      .map(item => ({ value: value.toFixed(2).toString(), shift: item.shift }))
   }
 }
 
@@ -110,6 +99,7 @@ watch(model, (val) => {
     v-bind="$attrs"
     :suggestions="suggestions"
     :option-label="labelFormat"
+    :delay="0"
 
     :pt="{ input: { class: 'w-full', style: { opacity: '100%' } } }"
     @complete="searchSize"

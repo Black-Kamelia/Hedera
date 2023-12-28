@@ -1,7 +1,7 @@
 const VALID_ROUTES = ['login', 'register', 'reset-password', 'update-password']
 
-const SLIDE_LEFT = { name: 'slide-left' }
-const SLIDE_RIGHT = { name: 'slide-right' }
+const SLIDE_LEFT = { name: 'card-slide-left' }
+const SLIDE_RIGHT = { name: 'card-slide-right' }
 
 const INDICES = {
   'register': -2,

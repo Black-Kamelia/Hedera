@@ -43,6 +43,12 @@ declare global {
 
   type OTP_LENGTH_T = 6
   type OTP = Tuple<Nullable<number>, OTP_LENGTH_T>
+
+  export type UploadStatus = 'pending' | 'uploading' | 'completed' | 'error'
+  export interface FileUpload {
+    file: File
+    status: UploadStatus
+  }
 }
 // END SECTION: Others
 
@@ -103,6 +109,14 @@ declare global {
     createdAt: string,
   }
 
+  interface BulkActionSummaryDTO<E> {
+    success: number
+    successItems: E[]
+    fail: number
+    failItems: E[]
+    total: number
+  }
+
   interface TokenData {
     accessToken: string
     accessTokenExpiration: number
@@ -123,6 +137,11 @@ declare global {
     currentDiskQuotaRatio: number
     maximumDiskQuota: number
     createdAt: string
+  }
+
+  interface UserUpdateDTO {
+    username?: string
+    email?: string
   }
 
   interface UserSignupDTO {

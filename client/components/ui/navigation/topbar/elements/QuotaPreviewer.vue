@@ -21,20 +21,23 @@ const severity = computed(() => {
 </script>
 
 <template>
-  <div class="flex-center flex-col gap-1.5 h-full quota">
+  <div class="flex-center flex-col gap-1.5 h-full">
     <PProgressBar
       class="max-h-2 w-full"
       :value="unlimited ? 100 : ratio * 100"
       :show-value="false"
       :pt="{ value: { style: { background: `var(${severity})` } } }"
     />
-    <span v-if="!unlimited" class="text-xs mb--1">{{ quotaFormat }} / {{ maxFormat }}</span>
-    <span v-else class="text-xs mb--1">{{ quotaFormat }} / {{ t('unlimited_quota') }}</span>
+    <span v-if="!unlimited" class="quota-caption text-xs mb--1">{{ quotaFormat }} / {{ maxFormat }}</span>
+    <span v-else class="quota-caption text-xs mb--1">{{ quotaFormat }} / {{ t('unlimited_quota') }}</span>
   </div>
 </template>
 
 <style scoped>
-.quota {
+.quota-caption {
   min-width: 10rem;
+  margin: 0 1em;
+  text-wrap: nowrap;
+  text-align: center;
 }
 </style>

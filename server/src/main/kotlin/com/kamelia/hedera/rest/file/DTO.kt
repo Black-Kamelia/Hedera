@@ -62,3 +62,14 @@ data class FileOwnerDTO(
 data class FilePageDTO(
     val page: PageDTO<FileRepresentationDTO>,
 ) : DTO
+
+@Serializable
+data class BulkUpdateVisibilityDTO(
+    val ids: List<UUID>,
+    val fileVisibility: FileVisibility,
+) : DTO
+
+@Serializable
+data class BulkDeleteDTO(
+    val ids: List<UUID>,
+) : DTO

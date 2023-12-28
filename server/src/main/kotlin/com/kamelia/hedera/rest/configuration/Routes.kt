@@ -1,10 +1,11 @@
 package com.kamelia.hedera.rest.configuration
 
-import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.util.adminRestrict
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.globalConfigurationRoutes() = route("/configuration") {

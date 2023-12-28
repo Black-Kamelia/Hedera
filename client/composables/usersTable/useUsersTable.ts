@@ -4,7 +4,7 @@ export interface UsersTableContext {
   selectedRow: Readonly<Ref<Nullable<UserRepresentationDTO>>>
   selectedRowId: ComputedRef<string | undefined>
   unselectRow: () => void
-  refresh: () => Promise<void>
+  refresh: () => Promise<any>
 }
 
 export function useUsersTable() {

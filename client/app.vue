@@ -62,27 +62,27 @@ const animation = useLocalStorage('animations', true)
 </template>
 
 <style lang="scss">
-.slide-left-enter-active,
-.slide-left-leave-active,
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all .5s cubic-bezier(0.65, 0, 0.35, 1);
+.card-slide-left-enter-active,
+.card-slide-left-leave-active,
+.card-slide-right-enter-active,
+.card-slide-right-leave-active {
+  transition: all .5s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-.slide-left-leave-active,
-.slide-right-leave-active {
+.card-slide-left-leave-active,
+.card-slide-right-leave-active {
   position: absolute;
   top: 0;
 }
 
-.slide-left-leave-to,
-.slide-right-enter-from {
+.card-slide-left-leave-to,
+.card-slide-right-enter-from {
   opacity: 0;
   transform: translateX(-100%) scaleX(1);
 }
 
-.slide-left-enter-from,
-.slide-right-leave-to {
+.card-slide-left-enter-from,
+.card-slide-right-leave-to {
   opacity: 0;
   transform: translateX(100%) scaleX(1);
 }
@@ -228,24 +228,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .p-input-icon-right > .p-inputtext {
   padding-right: calc(1.25rem + 24px);
-}
-
-.p-toast .p-toast-message .p-toast-message-content {
-  border-width: 0 !important;
-}
-
-.p-toast {
-  width: auto !important;
-  max-width: 30em;
-}
-
-.p-toast .p-toast-message,
-.p-message {
-  border: 0 none !important;
-}
-
-.p-toast-message-icon {
-  height: 1em !important;
 }
 
 .p-card:has(.p-datatable) {

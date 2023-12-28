@@ -100,7 +100,7 @@ watch(visible, (val) => {
           tag="p"
         >
           <template #link>
-            <a :href="originalLink" target="_blank" class="inline-flex flew-row items-center gap-0.5">
+            <a :href="originalLink" target="_blank" class="inline-flex flex-row items-center gap-0.5">
               {{ originalLink }} <i class="h-1em w-1em i-tabler-external-link" />
             </a>
           </template>
@@ -114,7 +114,7 @@ watch(visible, (val) => {
             :label="t('forms.edit_custom_link.fields.slug')"
             :placeholder="t('forms.edit_custom_link.fields.slug_placeholder')"
             :transform-value="slugRestrict"
-            class="w-full"
+            class="flex-grow"
             :start-addons="[`${origin}/c/`]"
             autofocus
             @keydown.enter="submit"

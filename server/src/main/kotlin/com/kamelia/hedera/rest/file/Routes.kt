@@ -2,10 +2,10 @@ package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.FileNotFoundException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respond
-import com.kamelia.hedera.core.respondNoSuccess
-import com.kamelia.hedera.core.respondNothing
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.respond
+import com.kamelia.hedera.core.response.respondNoSuccess
+import com.kamelia.hedera.core.response.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.FileUtils
@@ -38,6 +38,11 @@ fun Route.filesRoutes() = route("/files") {
         editFileCustomLink()
         removeFileCustomLink()
         deleteFile()
+
+        route("/bulk") {
+            editFileVisibilityBulk()
+            deleteBulk()
+        }
     }
 
     authenticate(AuthJwt, optional = true) {
@@ -148,6 +153,12 @@ private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility"
     call.respond(FileService.updateFileVisibility(fileId, userId, body))
 }
 
+private fun Route.editFileVisibilityBulk() = post<BulkUpdateVisibilityDTO>("/visibility") { body ->
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.bulkUpdateFilesVisibility(userId, body))
+}
+
 private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
     val fileId = call.getUUID("uuid")
     val userId = call.authenticatedUser!!.uuid
@@ -174,4 +185,10 @@ private fun Route.deleteFile() = delete("/{uuid}") {
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.deleteFile(fileId, userId))
+}
+
+private fun Route.deleteBulk() = post<BulkDeleteDTO>("/delete") { body ->
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.bulkDeleteFiles(body.ids, userId))
 }

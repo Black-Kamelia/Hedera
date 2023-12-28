@@ -1,15 +1,18 @@
 package com.kamelia.hedera.rest.file
 
-import com.kamelia.hedera.core.ActionResponse
-import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.asMessage
+import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.constant.BulkActions
+import com.kamelia.hedera.core.response.ActionResponse
+import com.kamelia.hedera.core.response.BulkActionResponse
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
@@ -17,14 +20,24 @@ import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.token.PersonalToken
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
+import com.kamelia.hedera.rest.user.UserTable
 import com.kamelia.hedera.util.FileUtils
+import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
+import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
+import org.jetbrains.exposed.dao.DaoEntityID
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.update
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
+val PERSONAL_TOKEN_REGEX = """^[a-f0-9]{64}$""".toRegex()
 
 object FileService {
 
@@ -32,11 +45,17 @@ object FileService {
         part: PartData.FileItem,
         creatorToken: String
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
-        val token = PersonalToken.findByToken(creatorToken) ?: throw ExpiredOrInvalidTokenException()
+        if (!PERSONAL_TOKEN_REGEX.matches(creatorToken)) throw ExpiredOrInvalidTokenException()
 
-        if (token.deleted) throw ExpiredOrInvalidTokenException()
+        val tokenId = creatorToken.substring(0, 32).toUUIDShort()
+        val token = creatorToken.substring(32)
 
-        handleFile(part, token.owner, token)
+        val personalToken = PersonalToken.findById(tokenId) ?: throw ExpiredOrInvalidTokenException()
+        if (personalToken.deleted) throw ExpiredOrInvalidTokenException()
+        if (personalToken.token.startsWith("deleted_")) throw ExpiredOrInvalidTokenException()
+        if (!Hasher.verify(token, personalToken.token).verified) throw ExpiredOrInvalidTokenException()
+
+        handleFile(part, personalToken.owner, personalToken)
     }
 
     suspend fun handleFile(
@@ -76,8 +95,8 @@ object FileService {
         ).toRepresentationDTO()
 
         return ActionResponse.created(
-            title = Actions.Files.Upload.Success.TITLE.asMessage(),
-            message = Actions.Files.Upload.Success.MESSAGE.asMessage("name" to filename),
+            title = Actions.Files.Upload.success.title,
+            message = Actions.Files.Upload.success.message.withParameters("name" to filename),
             payload = file
         )
     }
@@ -175,14 +194,34 @@ object FileService {
         val payload = updatedFile.toRepresentationDTO()
 
         ActionResponse.ok(
-            title = Actions.Files.Update.Visibility.Success.TITLE.asMessage(),
-            message = Actions.Files.Update.Visibility.Success.MESSAGE.asMessage(
+            title = Actions.Files.Update.Visibility.success.title,
+            message = Actions.Files.Update.Visibility.success.message.withParameters(
                 "name" to file.name,
                 "oldVisibility" to oldVisibility.toMessageKey(),
                 "newVisibility" to payload.visibility.toMessageKey()
             ),
             payload = payload
         )
+    }
+
+    suspend fun bulkUpdateFilesVisibility(
+        userId: UUID,
+        dto: BulkUpdateVisibilityDTO,
+    ): BulkActionResponse<String> = Connection.transaction {
+        val condition = (FileTable.id inList dto.ids) and (FileTable.owner eq DaoEntityID(userId, UserTable))
+
+        val files = File.find(condition).toSet()
+        FileTable.update({ condition }) {
+            it[visibility] = dto.fileVisibility
+            it[updatedAt] = Instant.now()
+            it[updatedBy] = DaoEntityID(userId, UserTable)
+        }
+
+        BulkActionResponse.of(
+            BulkActions.Files.Update.Visibility,
+            success = files.map { it.id.value.toString() },
+            total = dto.ids.size,
+        ).withMessageParameters("newVisibility" to dto.fileVisibility.toMessageKey().asMessage())
     }
 
     suspend fun updateFileName(
@@ -208,8 +247,8 @@ object FileService {
 
             ActionResponse.ok(
                 payload = payload,
-                title = Actions.Files.Update.Name.Success.TITLE.asMessage(),
-                message = Actions.Files.Update.Name.Success.MESSAGE.asMessage(
+                title = Actions.Files.Update.Name.success.title,
+                message = Actions.Files.Update.Name.success.message.withParameters(
                     "oldName" to oldName,
                     "newName" to payload.name,
                 ),
@@ -245,8 +284,8 @@ object FileService {
 
             ActionResponse.ok(
                 payload = payload,
-                title = Actions.Files.Update.CustomLink.Success.TITLE.asMessage(),
-                message = Actions.Files.Update.CustomLink.Success.MESSAGE.asMessage(
+                title = Actions.Files.Update.CustomLink.success.title,
+                message = Actions.Files.Update.CustomLink.success.message.withParameters(
                     "newCustomLink" to (payload.customLink ?: ""),
                 ),
             )
@@ -265,7 +304,7 @@ object FileService {
 
         ActionResponse.ok(
             payload = payload,
-            title = Actions.Files.Update.RemoveCustomLink.Success.TITLE.asMessage(),
+            title = Actions.Files.Update.RemoveCustomLink.success.title,
         )
     }
 
@@ -288,9 +327,34 @@ object FileService {
         FileUtils.delete(file.ownerId, file.code)
 
         ActionResponse.ok(
-            title = Actions.Files.Delete.Success.TITLE.asMessage(),
-            message = Actions.Files.Delete.Success.MESSAGE.asMessage("name" to file.name),
+            title = Actions.Files.Delete.success.title,
+            message = Actions.Files.Delete.success.message.withParameters("name" to file.name),
             payload = file.toRepresentationDTO()
+        )
+    }
+
+    suspend fun bulkDeleteFiles(
+        fileIds: List<UUID>,
+        userId: UUID,
+    ): BulkActionResponse<String> = Connection.transaction {
+        // Select all files to delete
+        val files = File.find {
+            (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(userId, UserTable))
+        }.toSet()
+        // Try to delete all files from the disk
+        val deletedFiles = files.filter { FileUtils.delete(it.ownerId, it.code) }.toSet()
+        // Delete all disk-deleted files from the database
+        FileTable.deleteWhere { FileTable.id inList deletedFiles.map { it.id } }
+
+        // Decrease the current disk quota of the user
+        val user = User[userId]
+        user.decreaseCurrentDiskQuota(deletedFiles.sumOf { it.size })
+
+        BulkActionResponse.of(
+            BulkActions.Files.Delete,
+            success = deletedFiles.map { it.id.value.toString() },
+            fail = files.minus(deletedFiles).map { it.id.value.toString() },
+            total = fileIds.size,
         )
     }
 }

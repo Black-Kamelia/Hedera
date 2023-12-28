@@ -1,7 +1,7 @@
 package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.respond
+import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.util.adminRestrict

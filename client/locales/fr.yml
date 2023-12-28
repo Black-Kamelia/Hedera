@@ -54,6 +54,17 @@ pages:
   files:
     title: Fichiers
     link_copied: Le lien a été copié dans le presse-papier
+    preview:
+      download: Télécharger
+      failed: Impossible de charger l’aperçu
+      no_preview: Aucun aperçu disponible
+      controls:
+        close: Fermer
+        open: Ouvrir
+        rotate_left: Rotation à gauche
+        rotate_right: Rotation à droite
+        zoom_in: Zoom avant
+        zoom_out: Zoom arrière
     visibility:
       public: Public
       private: Privé
@@ -83,6 +94,17 @@ pages:
       download: Télécharger
       delete: Supprimer
       unselect: Désélectionner
+    bulk_actions:
+      edit_visibility:
+        header: Modifier la visibilité des fichiers sélectionnés
+        description: "Le fichier sélectionné va être modifié. Êtes-vous sûr(e) de vouloir modifier la visibilité de ce fichier ? | Les {count} fichiers sélectionnés vont être modifiés. Êtes-vous sûr(e) de vouloir modifier la visibilité de ces fichiers ?"
+        cancel: Annuler
+        submit: Modifier la visibilité
+      delete:
+        header: Supprimer les fichiers sélectionnés
+        description: Le fichier sélectionné va être supprimé. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ce fichier ? | Les {count} fichiers sélectionnés vont être supprimés. Cette action est irréversible. Êtes-vous sûr(e) de vouloir supprimer ces fichiers ?
+        cancel: Annuler
+        submit: Supprimer
     advanced_filters: Filtres avancés
     filters:
       minimum_size: Taille minimale
@@ -138,16 +160,29 @@ pages:
     title: Favoris
   upload:
     title: Mettre en ligne
-    drag_n_drop: Déposez des fichiers ici pour les mettre en ligne.
+    dropzone:
+      title: Tout commence ici
+      description: Glisser et déposer des fichiers dans cette zone pour les mettre en ligne.
+      drop_here: Relâcher
+    status:
+      pending: En attente
+      uploading: Envoi en cours
+      completed: Terminé
+      error: Échec
+    success:
+      title: Mise en ligne terminée
+      detail: "{count} fichier a été envoyé | {count} fichiers ont été envoyés"
+    error:
+      title: Échec de la mise en ligne
+      detail: "{count} fichier n’a pas pu être envoyé | {count} fichiers n’ont pas pu être envoyés"
+    partial:
+      title: Mise en ligne terminée avec des erreurs
+      detail: "{count} fichier sur {total} a été envoyé | {count} fichiers sur {total} ont été envoyés"
     total_size: "Taille totale à mettre en ligne: {size}"
-    select_files: Choisir des fichiers
+    select_files: Sélectionner des fichiers
     upload_files: Envoyer les fichiers
-    clear_files: Vider la sélection
-    pending: En attente
-    uploading: En cours d’envoi
-    completed: En ligne
-    error: Erreur
-    finished: Mise en ligne terminée
+    clear_files: Retirer les fichiers en attente
+    clear_done: Nettoyer les fichiers terminés
   analytics:
     title: Statistiques
   configuration:
@@ -200,6 +235,7 @@ pages:
       edit_dialog:
         title: Éditer un utilisateur
         password_summary: Par mesure de sécurité, le mot de passe d’un utilisateur ne peut être modifié que par lui-même.
+        password_change_yours: Modifier votre mot de passe
         cancel: Annuler
         submit: Sauvegarder
       activate_dialog:
@@ -214,7 +250,8 @@ pages:
         submit: Désactiver l’utilisateur
       delete_dialog:
         title: Supprimer un utilisateur
-        summary: Cette action est irréversible et tous les fichiers de l’utilisateur seront définitivement supprimés. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?
+        summary: L'utilisateur {username} va être supprimé ainsi que tous ses fichiers. Cet utilisateur ne pourra plus se connecter ni envoyer de nouveaux fichiers. Cette action est irréversible.
+        input: Pour confirmer, veuillez saisir {username} dans le champ ci-dessous.
         cancel: Annuler
         submit: Supprimer
   debug:
@@ -227,6 +264,8 @@ pages:
       sessions: Sessions
       tokens: Jetons personnels
       settings: Paramètres
+    details:
+      title: Informations du compte
     security:
       change_password: Modifier le mot de passe
     tokens:
@@ -377,6 +416,16 @@ forms:
     fields:
       email: Adresse e-mail
     submit: Envoyer le lien de réinitialisation
+  update_details:
+    submit: Mettre à jour
+    errors:
+      missing_username: Nom d’utilisateur requis
+      invalid_username: Nom d’utilisateur invalide
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+    fields:
+      username: Nom d’utilisateur
+      email: Adresse e-mail
   update_password:
     submit: Mettre à jour
     errors:
@@ -403,6 +452,8 @@ forms:
       missing_role: Rôle requis
       missing_force_change_password: Choix sur la modification du mot de passe obligatoire requis
       missing_disk_quota: Quota d’espace disque requis
+      invalid_disk_quota: Quota d’espace disque invalide
+      missing_unlimited_disk_quota: Choix sur le quota d’espace disque illimité requis
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail
@@ -422,6 +473,8 @@ forms:
       invalid_email: Format d’adresse e-mail invalide
       missing_role: Rôle requis
       missing_disk_quota: Quota d’espace disque requis
+      invalid_disk_quota: Quota d’espace disque invalide
+      missing_unlimited_disk_quota: Choix sur le quota d’espace disque illimité requis
     fields:
       username: Nom d’utilisateur
       email: Adresse e-mail
@@ -431,6 +484,10 @@ forms:
       disk_quota_placeholder: Saisir une taille
       disk_quota_placeholder_unlimited: Illimité
       unlimited_disk_quota: Autoriser un quota d’espace disque illimité
+  delete_user:
+    errors:
+      missing_username: Nom d’utilisateur requis
+      username_mismatch: Le nom d’utilisateur ne correspond pas
   rename_file:
     submit: Renommer
     cancel: Annuler
@@ -439,6 +496,14 @@ forms:
       name_too_long: Le nom du fichier doit contenir au plus {max} caractères
     fields:
       filename: Nouveau nom du fichier
+  bulk_change_visibility:
+    submit: Modifier la visibilité
+    cancel: Annuler
+    errors:
+      missing_visibility: Visibilité requise
+    fields:
+      visibility: Visibilité
+      visibility_placeholder: Sélectionner une visibilité
   edit_custom_link:
     submit: Sauvegarder
     cancel: Annuler
@@ -492,6 +557,9 @@ actions:
       success:
         title: Utilisateur désactivé
         message: L’utilisateur “{username}” a été désactivé
+    self_update:
+      success:
+        title: Votre profil a été mis à jour
     update:
       success:
         title: Utilisateur édité
@@ -512,8 +580,33 @@ actions:
         title: Jeton supprimé
         message: Le jeton “{name}” a été supprimé
 
+bulk_actions:
+  files:
+    update:
+      visibility:
+        success:
+          title: Visibilité modifiée
+          message: "Le fichier est désormais {newVisibility} | {success} fichiers sont désormais {newVisibility}"
+        partial:
+          title: Visibilité modifiée avec des erreurs
+          message: "{success} fichier sur {total} est désormais {newVisibility} | {success} fichiers sur {total} sont désormais {newVisibility}"
+        fail:
+          title: Échec de la modification de la visibilité des fichiers
+          message: "Le fichier n’a pas pu être modifié | {fail} fichiers n’ont pas pu être modifiés"
+    delete:
+      success:
+        title: Fichiers supprimés
+        message: "Le fichier a été supprimé | {success} fichiers ont été supprimés"
+      partial:
+        title: Fichiers supprimés avec des erreurs
+        message: "{success} fichier sur {total} a été supprimé | {success} fichiers sur {total} ont été supprimés"
+      fail:
+        title: Échec de la suppression des fichiers
+        message: "Le fichier n’a pas pu être supprimé | {fail} fichiers n’ont pas pu être supprimés"
+
 errors:
   unknown: Une erreur inattendue est survenue
+  unknown_message: "Indication : {hint}"
   network: Connexion au serveur impossible
   auth:
     invalid_credentials: Nom d’utilisateur ou mot de passe incorrect

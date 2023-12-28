@@ -1,18 +1,18 @@
 package com.kamelia.hedera.rest.user
 
-import com.kamelia.hedera.core.ActionResponse
-import com.kamelia.hedera.core.Actions
 import com.kamelia.hedera.core.DisabledRegistrationsException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
-import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
-import com.kamelia.hedera.core.Response
 import com.kamelia.hedera.core.UserNotFoundException
 import com.kamelia.hedera.core.ValidationScope
-import com.kamelia.hedera.core.asMessage
+import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.response.ActionResponse
+import com.kamelia.hedera.core.response.MessageDTO
+import com.kamelia.hedera.core.response.MessageKeyDTO
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.auth.SessionManager
@@ -61,7 +61,7 @@ object UserService {
     suspend fun createUser(
         dto: UserCreationDTO
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate(MessageDTO.simple(Actions.Users.Create.Error.TITLE.asMessage())) {
+        validate(MessageDTO.simple(Actions.Users.Create.fail.title)) {
             checkEmail(dto.email)
             checkUsername(dto.username)
             checkPassword(dto.password)
@@ -75,8 +75,8 @@ object UserService {
 
             val user = User.create(dto)
             ActionResponse.created(
-                title = Actions.Users.Create.Success.TITLE.asMessage(),
-                message = Actions.Users.Create.Success.MESSAGE.asMessage("username" to user.username),
+                title = Actions.Users.Create.success.title,
+                message = Actions.Users.Create.success.message.withParameters("username" to user.username),
                 payload = user.toRepresentationDTO(),
             )
         }
@@ -111,7 +111,7 @@ object UserService {
         dto: UserUpdateDTO,
         updaterID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate(MessageDTO.simple(Actions.Users.Update.Error.TITLE.asMessage())) {
+        validate(MessageDTO.simple(Actions.Users.Update.fail.title)) {
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
 
             checkEmail(dto.email, toEdit)
@@ -144,11 +144,18 @@ object UserService {
             catchErrors()
 
             toEdit.update(dto, updater)
-            ActionResponse.ok(
-                title = Actions.Users.Update.Success.TITLE.asMessage(),
-                message = Actions.Users.Update.Success.MESSAGE.asMessage("username" to toEdit.username),
-                payload = toEdit.toRepresentationDTO(),
-            )
+            if (id == updaterID) {
+                ActionResponse.ok(
+                    title = Actions.Users.SelfUpdate.success.title,
+                    payload = toEdit.toRepresentationDTO(),
+                )
+            } else {
+                ActionResponse.ok(
+                    title = Actions.Users.Update.success.title,
+                    message = Actions.Users.Update.success.message.withParameters("username" to toEdit.username),
+                    payload = toEdit.toRepresentationDTO(),
+                )
+            }
         }
     }
 
@@ -168,13 +175,13 @@ object UserService {
 
         if (enable) {
             ActionResponse.ok(
-                title = MessageKeyDTO(Actions.Users.Activate.Success.TITLE),
-                message = Actions.Users.Activate.Success.MESSAGE.asMessage("username" to toEdit.username),
+                title = Actions.Users.Activate.success.title,
+                message = Actions.Users.Activate.success.message.withParameters("username" to toEdit.username),
             )
         } else {
             ActionResponse.ok(
-                title = MessageKeyDTO(Actions.Users.Deactivate.Success.TITLE),
-                message = Actions.Users.Deactivate.Success.MESSAGE.asMessage("username" to toEdit.username),
+                title = Actions.Users.Deactivate.success.title,
+                message = Actions.Users.Deactivate.success.message.withParameters("username" to toEdit.username),
             )
         }
     }
@@ -186,7 +193,7 @@ object UserService {
         dto: UserPasswordUpdateDTO,
         forced: Boolean,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
-        validate(MessageDTO.simple(Actions.Users.UpdatePassword.Error.TITLE.asMessage())) {
+        validate(MessageDTO.simple(Actions.Users.UpdatePassword.fail.title)) {
             checkPassword(dto.newPassword)
 
             val toEdit = User.findById(id) ?: throw UserNotFoundException()
@@ -212,7 +219,7 @@ object UserService {
             }
 
             ActionResponse.ok(
-                title = Actions.Users.UpdatePassword.Success.TITLE.asMessage(),
+                title = Actions.Users.UpdatePassword.success.title,
                 payload = toEdit.toRepresentationDTO()
             )
         }
@@ -225,8 +232,8 @@ object UserService {
 
         toDelete.delete()
         ActionResponse.ok(
-            title = Actions.Users.Delete.Success.TITLE.asMessage(),
-            message = Actions.Users.Delete.Success.MESSAGE.asMessage("username" to toDelete.username),
+            title = Actions.Users.Delete.success.title,
+            message = Actions.Users.Delete.success.message.withParameters("username" to toDelete.username),
             payload = toDelete.toRepresentationDTO()
         )
     }

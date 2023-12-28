@@ -1,11 +1,11 @@
 package com.kamelia.hedera.rest.token
 
-import com.kamelia.hedera.core.ActionResponse
-import com.kamelia.hedera.core.Actions
+import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.asMessage
+import com.kamelia.hedera.core.response.ActionResponse
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.user.User
 import java.util.*
@@ -18,14 +18,14 @@ object PersonalTokenService {
     ): ActionResponse<PersonalTokenDTO> = Connection.transaction {
         val owner = User[userId]
 
-        val token = PersonalToken.create(
+        val (unencryptedToken, token) = PersonalToken.create(
             name = dto.name,
             owner = owner
         )
         ActionResponse.created(
-            title = Actions.Tokens.Create.Success.TITLE.asMessage(),
-            message = Actions.Tokens.Create.Success.MESSAGE.asMessage("name" to token.name),
-            payload = token.toRepresentationDTO(token = token.token)
+            title = Actions.Tokens.Create.success.title,
+            message = Actions.Tokens.Create.success.message.withParameters("name" to token.name),
+            payload = token.toRepresentationDTO(token = unencryptedToken)
         )
     }
 
@@ -43,15 +43,14 @@ object PersonalTokenService {
         tokenId: UUID,
     ): ActionResponse<Nothing> = Connection.transaction {
         val token = PersonalToken.findById(tokenId) ?: throw PersonalTokenNotFoundException()
-        val user = User[userId]
 
         if (token.deleted) throw PersonalTokenNotFoundException()
         if (token.ownerId != userId) throw IllegalActionException()
 
-        token.delete(user)
+        token.delete()
         ActionResponse.ok(
-            title = Actions.Tokens.Delete.Success.TITLE.asMessage(),
-            message = Actions.Tokens.Delete.Success.MESSAGE.asMessage("name" to token.name)
+            title = Actions.Tokens.Delete.success.title,
+            message = Actions.Tokens.Delete.success.message.withParameters("name" to token.name)
         )
     }
 

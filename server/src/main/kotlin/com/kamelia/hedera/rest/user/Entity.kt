@@ -50,7 +50,7 @@ object UserTable : AuditableUUIDTable("users") {
 
     val email = varchar("email", 255).uniqueIndex()
     val username = varchar("username", 128).uniqueIndex()
-    val password = varchar("password", 255)
+    val password = varchar("password", 60)
     val role = enumerationByName("role", 32, UserRole::class)
     val enabled = bool("enabled")
     val forceChangePassword = bool("force_change_password")
@@ -160,11 +160,9 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
                 "createdAt" -> FileTable.createdAt
                 else -> throw UnknownSortFieldException(it)
             }
-        }
-        .limit(pageSize, page * pageSize)
-        .let {
+        }.let {
             val rows = File.wrapRows(it)
-            rows.toList() to rows.count()
+            rows.limit(pageSize, page * pageSize).toList() to rows.count()
         }
 
     fun getFilesFormats(): List<String> = files
@@ -198,15 +196,15 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     }
 
     suspend fun increaseCurrentDiskQuota(size: Long): User = apply {
-        require(size >= 0)
-        require(maximumDiskQuota < 0 || currentDiskQuota + size <= maximumDiskQuota)
+        check(size >= 0) { "Added size must be positive" }
+        check(maximumDiskQuota < 0 || currentDiskQuota + size <= maximumDiskQuota) { "Quota exceeded" }
         currentDiskQuota += size
         SessionManager.updateSession(uuid, this)
     }
 
     suspend fun decreaseCurrentDiskQuota(size: Long): User = apply {
-        require(size >= 0)
-        require(size <= currentDiskQuota)
+        check(size >= 0) { "Subtracted size must be positive" }
+        check(size <= currentDiskQuota) { "Quota cannot be negative" }
         currentDiskQuota -= size
         SessionManager.updateSession(uuid, this)
     }

@@ -55,5 +55,6 @@ export default defineConfig({
     'i-tabler-alert-triangle-filled',
     'i-tabler-alert-circle-filled',
     'i-tabler-clipboard-check',
+    'i-tabler-world-x',
   ],
 })

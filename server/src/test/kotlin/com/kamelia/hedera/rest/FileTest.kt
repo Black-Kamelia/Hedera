@@ -5,7 +5,7 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -139,8 +139,8 @@ class FileTest {
         }
         assertEquals(HttpStatusCode.BadRequest, response.status, response.bodyAsText())
         val error = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
-        assertEquals(error.title.key, Errors.Headers.MISSING_HEADER)
-        assertEquals(error.title.parameters!!["header"], "Content-Type")
+        assertEquals(Errors.Headers.MISSING_HEADER, error.title.key)
+        assertEquals("Content-Type", error.title.parameters!!["header"]!!.key)
     }
 
     @DisplayName("Uploading a file with no file")
@@ -686,22 +686,22 @@ class FileTest {
         @JvmStatic
         fun uploadFileToken(): Stream<Arguments> = Stream.of(
             Arguments.of(
-                "d9efe80efb1745ea8a6c341e70ae36f9",
+                "0000000000000000000000000000000100000000000000000000000000000000",
                 Named.of("superadmin", UUID.fromString("00000000-0000-0000-0000-000000000001")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "bb7e6bc298ff413a904786a49c6e9719",
+                "0000000000000000000000000000000200000000000000000000000000000000",
                 Named.of("admin", UUID.fromString("00000000-0000-0000-0000-000000000002")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "ef4e9fd691954eda8e0493b4745882e3",
+                "0000000000000000000000000000000300000000000000000000000000000000",
                 Named.of("regular user", UUID.fromString("00000000-0000-0000-0000-000000000003")),
                 HttpStatusCode.Created
             ),
             Arguments.of(
-                "00000000000000000000000000000000",
+                "0000000000000000000000000000000000000000000000000000000000000000",
                 Named.of("guest", UUID.fromString("00000000-0000-0000-0000-000000000000")),
                 HttpStatusCode.Unauthorized
             ),

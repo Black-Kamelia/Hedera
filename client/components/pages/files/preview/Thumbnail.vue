@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { Vue3BlurhashCanvas } from 'vue3-blurhash'
+
 interface ThumnailProps {
   src: string | null
+  blurhash?: string | null
   alt: string
   type: string
   loading?: boolean
-  error?: boolean
+  error?: boolean | null
   previewable?: boolean
   width?: string
   height?: string
@@ -13,6 +16,7 @@ interface ThumnailProps {
 
 const {
   src,
+  blurhash = null,
   alt,
   type,
   loading = false,
@@ -66,16 +70,25 @@ const icon = computed(() => {
       class="absolute flex flex-center w-full h-full preview"
       :class="{ error: !loading && error }"
     >
-      <div v-if="!imgError && (loading || src)" class="h-full w-full">
-        <PSkeleton v-if="loading" width="6rem" height="4rem" />
+      <div v-if="!imgError && (loading || src)" class="relative h-full w-full">
+        <PSkeleton v-if="loading && !blurhash" width="6rem" height="4rem" />
         <img
-          v-if="!loading && src"
+          v-else-if="!loading && src"
           class="object-cover"
           :src="src"
           :alt="alt"
           :style="{ width, height }"
           @error="imgError = true"
         >
+        <Transition v-if="blurhash" name="fade">
+          <Vue3BlurhashCanvas
+            v-show="loading"
+            class="absolute"
+            :hash="blurhash"
+            :alt="alt"
+            :style="{ width, height }"
+          />
+        </Transition>
       </div>
       <i v-else :class="icon" />
     </div>
@@ -133,6 +146,16 @@ const icon = computed(() => {
 
 .v-enter-from,
 .v-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

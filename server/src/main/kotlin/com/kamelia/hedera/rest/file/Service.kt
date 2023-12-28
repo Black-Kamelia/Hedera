@@ -26,6 +26,7 @@ import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.trbl.blurhash.BlurHash
 import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
@@ -35,6 +36,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
+import javax.imageio.ImageIO
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
 val PERSONAL_TOKEN_REGEX = """^[a-f0-9]{64}$""".toRegex()
@@ -84,11 +86,13 @@ object FileService {
 
         creator.increaseCurrentDiskQuota(size)
 
+        val blurhash = getBlurhashOrNull(creator.uuid, code, type)
         val file = File.create(
             code = code,
             name = filename,
             mimeType = type,
             size = size,
+            blurhash = blurhash,
             visibility = creator.settings.defaultFileVisibility,
             creator = creator,
             uploadToken = uploadToken,
@@ -99,6 +103,20 @@ object FileService {
             message = Actions.Files.Upload.success.message.withParameters("name" to filename),
             payload = file
         )
+    }
+
+    private fun getBlurhashOrNull(
+        owner: UUID,
+        code: String,
+        type: String
+    ): String? = when(type) {
+        "image/png",
+        "image/jpeg" -> {
+            val file = FileUtils.getOrNull(owner, code)
+            val bufferedImage = ImageIO.read(file)
+            BlurHash.encode(bufferedImage, 6, 3)
+        }
+        else -> null
     }
 
     private fun getFile(

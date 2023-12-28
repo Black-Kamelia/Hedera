@@ -103,6 +103,7 @@ declare global {
     name: string,
     mimeType: string,
     size: number,
+    blurhash: string | null,
     visibility: string,
     customLink: Nullable<string>,
     owner: FileOwnerDTO,

@@ -47,3 +47,5 @@ class UserNotFoundException : HederaException(Errors.Users.NOT_FOUND)
 class PersonalTokenNotFoundException : HederaException(Errors.PersonalTokens.NOT_FOUND)
 
 class DisabledRegistrationsException : HederaException(Errors.Registrations.DISABLED)
+
+class ThumbnailGenerationException : HederaException(Errors.Thumbnails.GENERATION)

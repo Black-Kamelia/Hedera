@@ -17,26 +17,25 @@ import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.rest.token.PersonalToken
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.UserTable
-import com.kamelia.hedera.util.FileUtils
 import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.trbl.blurhash.BlurHash
 import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
 import org.jetbrains.exposed.dao.DaoEntityID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
-import javax.imageio.ImageIO
 
 val CUSTOM_LINK_REGEX = """^[a-z0-9]+(-[a-z0-9]+)*$""".toRegex()
 val PERSONAL_TOKEN_REGEX = """^[a-f0-9]{64}$""".toRegex()
@@ -74,49 +73,31 @@ object FileService {
         creator: User,
         uploadToken: PersonalToken? = null,
     ): ActionResponse<FileRepresentationDTO> {
-        val filename = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
-        require(filename.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
+        val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
+        require(fileName.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
-        val (code, type, size) = FileUtils.write(creator.uuid, part, filename)
 
-        // TODO: Find a way to determine size BEFORE writing to disk...
-        if (!creator.unlimitedDiskQuota && creator.currentDiskQuota + size > creator.maximumDiskQuota) {
-            throw InsufficientDiskQuotaException()
-        }
+        val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
+        creator.increaseCurrentDiskQuota(uploadedFile.size)
 
-        creator.increaseCurrentDiskQuota(size)
-
-        val blurhash = getBlurhashOrNull(creator.uuid, code, type)
+        val thumbnail = ThumbnailService.createThumbnail(uploadedFile.file, uploadedFile.mimeType, uploadedFile.code)
+        val blurhash = ThumbnailService.getBlurhashOrNull(thumbnail)
         val file = File.create(
-            code = code,
-            name = filename,
-            mimeType = type,
-            size = size,
+            code = uploadedFile.code,
+            name = fileName,
+            mimeType = uploadedFile.mimeType,
+            size = uploadedFile.size,
             blurhash = blurhash,
             visibility = creator.settings.defaultFileVisibility,
             creator = creator,
             uploadToken = uploadToken,
-        ).toRepresentationDTO()
+        )
 
         return ActionResponse.created(
             title = Actions.Files.Upload.success.title,
-            message = Actions.Files.Upload.success.message.withParameters("name" to filename),
-            payload = file
+            message = Actions.Files.Upload.success.message.withParameters("name" to fileName),
+            payload = file.toRepresentationDTO()
         )
-    }
-
-    private fun getBlurhashOrNull(
-        owner: UUID,
-        code: String,
-        type: String
-    ): String? = when(type) {
-        "image/png",
-        "image/jpeg" -> {
-            val file = FileUtils.getOrNull(owner, code)
-            val bufferedImage = ImageIO.read(file)
-            BlurHash.encode(bufferedImage, 6, 3)
-        }
-        else -> null
     }
 
     private fun getFile(
@@ -342,7 +323,7 @@ object FileService {
 
         file.owner.decreaseCurrentDiskQuota(file.size)
         file.delete()
-        FileUtils.delete(file.ownerId, file.code)
+        DiskFileService.delete(file.ownerId, file.code)
 
         ActionResponse.ok(
             title = Actions.Files.Delete.success.title,
@@ -360,7 +341,7 @@ object FileService {
             (FileTable.id inList fileIds) and (FileTable.owner eq DaoEntityID(userId, UserTable))
         }.toSet()
         // Try to delete all files from the disk
-        val deletedFiles = files.filter { FileUtils.delete(it.ownerId, it.code) }.toSet()
+        val deletedFiles = files.filter { DiskFileService.delete(it.ownerId, it.code) }.toSet()
         // Delete all disk-deleted files from the database
         FileTable.deleteWhere { FileTable.id inList deletedFiles.map { it.id } }
 

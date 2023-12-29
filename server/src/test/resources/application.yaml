@@ -13,6 +13,7 @@ liquibase:
 
 hedera:
   uploadFolder: _tests/upload
+  thumbnailFolder: _tests/thumbnails
   globalConfigurationFile: _tests/global_configuration.json
   loginThrottle: "0"
 

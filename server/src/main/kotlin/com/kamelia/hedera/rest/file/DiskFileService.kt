@@ -49,7 +49,8 @@ object DiskFileService {
         filePart: PartData.FileItem,
         fileName: String,
     ): UploadedFileContainer = withContext(Dispatchers.IO) {
-        val availableDiskQuota = owner.maximumDiskQuota - owner.currentDiskQuota
+        val maximumDiskQuota = owner.maximumDiskQuota
+        var diskQuota = owner.currentDiskQuota
 
         val fileCode = generateUniqueCode()
         val filePath = Files.createDirectories(UPLOAD_PATH.resolve(owner.id.toString())).resolve(fileCode)
@@ -57,12 +58,11 @@ object DiskFileService {
         val inputStream = filePart.streamProvider()
         val outputStream = Files.newOutputStream(filePath)
         val buffer = ByteArray(1024 * 1024 * 10) // 10.0 MB buffer
-        var leftSpace = availableDiskQuota
 
         do {
             val readBytes = inputStream.readNBytes(buffer, 0, buffer.size)
-            leftSpace -= readBytes
-            if (leftSpace < 0) {
+            diskQuota += readBytes
+            if (diskQuota >= maximumDiskQuota && maximumDiskQuota != -1L) {
                 Files.delete(filePath)
                 throw InsufficientDiskQuotaException()
             }

@@ -41,7 +41,7 @@ object FileTable : AuditableUUIDTable("files") {
     val name = varchar("name", 255)
     val mimeType = varchar("mime_type", 64)
     val size = long("size")
-    val blurhash = varchar("blurhash", 40).nullable()
+    val blurhash = varchar("blurhash", 52).nullable()
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", UserTable)
     val uploadToken = reference("upload_token", PersonalTokenTable).nullable()

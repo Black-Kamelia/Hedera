@@ -115,7 +115,7 @@
             <column name="size" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="blurhash" type="VARCHAR(40)"> <!-- Length = 4 + 2 * X * Y chars -->
+            <column name="blurhash" type="VARCHAR(52)"> <!-- Length = 4 + 2 * X * Y chars -->
                 <constraints nullable="true"/>
             </column>
             <column name="visibility" type="VARCHAR(16)">

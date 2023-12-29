@@ -28,7 +28,7 @@ object ThumbnailService {
     ): String? {
         if (file == null) return null
         val bufferedImage = ImageIO.read(file)
-        return BlurHash.encode(bufferedImage, 6, 3)
+        return BlurHash.encode(bufferedImage, 6, 4)
     }
 
     fun createThumbnail(

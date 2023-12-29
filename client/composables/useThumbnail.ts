@@ -11,7 +11,7 @@ import { blobToBase64 } from '~/utils/blobs'
 export function useThumbnail(code: string, mimeType: string) {
   if (mimeTypeToMediaType(mimeType) === 'image') {
     const { data, pending, error } = useAsyncData(`${code}_preview`, () => {
-      return $fetchAPI<Blob>(`/files/${code}`, { responseType: 'blob' })
+      return $fetchAPI<Blob>(`/files/${code}/thumbnail`, { responseType: 'blob' })
         .then(response => blobToBase64(response))
         .catch(() => null)
     })

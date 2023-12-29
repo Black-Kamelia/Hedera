@@ -31,24 +31,23 @@ const sizes = computed<{ name: string; shift: FileSizeShift }[]>(() => {
 const suggestions = ref<FileSize[]>([])
 
 function searchSize(event: AutoCompleteCompleteEvent) {
-  if (event.query.match(/^ *[0-9]+\.[0-9]+ *$/)) {
-    suggestions.value = sizes.value
-      .filter(item => item.shift !== 0)
-      .map(item => ({
-        value: Number(event.query).toFixed(2),
-        shift: item.shift,
-      }))
+  const match = event.query.match(/^ *([0-9]+(?:\.[0-9]*)?) *(\w*?) *$/)
+  if (match === null) {
+    suggestions.value = []
     return
   }
-  if (event.query.match(/^ *[0-9]+ *$/)) {
+
+  const value = Number(match[1])
+  const unit = match[2].toLowerCase()
+  const shift = sizes.value.find(item => item.name.toLowerCase() === unit)?.shift
+
+  if (shift !== undefined) {
+    suggestions.value = [{ value: value.toFixed(2).toString(), shift }]
+  } else {
     suggestions.value = sizes.value
-      .map(item => ({
-        value: Number(event.query).toFixed(2),
-        shift: item.shift,
-      }))
-    return
+      .filter(item => item.name.toLowerCase().startsWith(unit))
+      .map(item => ({ value: value.toFixed(2).toString(), shift: item.shift }))
   }
-  suggestions.value = []
 }
 
 const el = ref<Nullable<CompElement<InstanceType<typeof PAutoComplete>>>>()
@@ -62,11 +61,30 @@ function labelFormat(item: FileSize) {
     case 'DECIMAL': return `${item.value} ${t(`size_units.decimal.${item.shift}`)}`
   }
 }
-function onSelect(event: AutoCompleteItemSelectEvent) {
-  inputModel.value = event.value
+function select(item: FileSize) {
+  inputModel.value = item
   switch (filesSizeScale.value) {
-    case 'BINARY': return model.value = event.value ? Math.ceil(event.value.value * 2 ** event.value.shift) : null
-    case 'DECIMAL': return model.value = event.value ? Math.ceil(event.value.value * 10 ** event.value.shift) : null
+    case 'BINARY': return model.value = item ? Math.ceil(Number(item.value) * 2 ** item.shift) : null
+    case 'DECIMAL': return model.value = item ? Math.ceil(Number(item.value) * 10 ** item.shift) : null
+  }
+}
+
+function onSelect(event: AutoCompleteItemSelectEvent) {
+  suggestions.value = []
+  select(event.value)
+}
+function onBlur() {
+  if (suggestions.value.length === 1) {
+    select(suggestions.value[0])
+    return
+  }
+  if (model.value === null) {
+    inputModel.value = null
+    model.value = null
+    return
+  }
+  if (model.value !== undefined) {
+    inputModel.value = computeShift(model.value)
   }
 }
 watch(model, (val) => {
@@ -81,11 +99,13 @@ watch(model, (val) => {
     v-bind="$attrs"
     :suggestions="suggestions"
     :option-label="labelFormat"
-    force-selection
+    :delay="0"
+
     :pt="{ input: { class: 'w-full', style: { opacity: '100%' } } }"
     @complete="searchSize"
     @clear="model = null"
     @item-select="onSelect"
+    @blur="onBlur"
   >
     <template #empty>
       <p class="py-3 px-5 text-[--text-color-secondary]">

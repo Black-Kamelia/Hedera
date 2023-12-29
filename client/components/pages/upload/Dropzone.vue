@@ -58,10 +58,11 @@ function onBeforeLeave(el: Element) {
 
     <TransitionGroup name="list" class="files" tag="div" @before-leave="onBeforeLeave">
       <FileTile
-        v-for="({ file, status }, index) of files"
+        v-for="({ file, status, statusDetail }, index) of files"
         :key="file.name + file.type + file.size"
         :file="file"
         :status="status"
+        :reason="statusDetail"
         @remove="onRemove(index)"
       />
     </TransitionGroup>

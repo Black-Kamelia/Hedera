@@ -48,6 +48,7 @@ declare global {
   export interface FileUpload {
     file: File
     status: UploadStatus
+    statusDetail?: string
   }
 }
 // END SECTION: Others

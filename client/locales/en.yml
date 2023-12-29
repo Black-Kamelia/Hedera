@@ -628,6 +628,7 @@ errors:
       already_exists: This email address is already taken
     disk_quota:
       invalid_disk_quota: Invalid disk quota
+    insufficient_disk_quota: Insufficient disk quota
 
 theme:
   system: System

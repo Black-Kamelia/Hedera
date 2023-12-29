@@ -628,6 +628,7 @@ errors:
       already_exists: Cette adresse e-mail est déjà utilisée
     disk_quota:
       invalid_disk_quota: Quota d’espace disque invalide
+    insufficient_disk_quota: Quota d’espace disque insuffisant
 
 theme:
   system: Système

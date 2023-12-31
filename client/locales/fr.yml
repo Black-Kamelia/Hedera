@@ -110,7 +110,7 @@ pages:
       tokens_unset: Indifférent
       files_without_token: Fichiers envoyés sans jeton personnel
       token_deleted: Supprimé
-      no_token: Fichiers sans jeton personnel
+      no_token: Fichiers sans jeton personnel seulement
       reset: Réinitialiser
       apply: Appliquer les filtres
     rename:

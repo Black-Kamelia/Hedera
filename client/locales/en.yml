@@ -110,7 +110,7 @@ pages:
       tokens_unset: Indifferent
       files_without_token: Files sent without personal token
       token_deleted: Deleted
-      no_token: Files without personal token
+      no_token: Files without personal token only
       reset: Reset
       apply: Apply filters
     rename:

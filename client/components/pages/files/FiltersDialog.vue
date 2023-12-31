@@ -24,9 +24,7 @@ const { data: formats, pending: formatsPending, refresh } = useAsyncData(() => {
   return $fetchAPI<Array<string>>('/files/filters/formats', { method: 'GET' })
     .then(tokens => tokens?.map(type => ({ name: type })) ?? [])
 })
-const { data: tokens, pending: tokensPending } = useAsyncData(() => {
-  return $fetchAPI<Array<PersonalTokenDTO>>('/files/filters/tokens', { method: 'GET' })
-})
+const { data: tokens, pending: tokensPending } = useFetchAPI<Array<PersonalTokenDTO>>('/files/filters/tokens', { method: 'GET' })
 
 useEventBus(FileDeletedEvent).on(() => refresh())
 
@@ -127,7 +125,7 @@ watch(visible, (visible) => {
         <p>{{ t('pages.files.table.token') }}</p>
         <PMultiSelect
           v-model="localFilters.tokens"
-          :options="tokens"
+          :options="tokens ?? []"
           option-label="name"
           option-value="id"
           :placeholder="tokenPlaceholder"
@@ -162,7 +160,7 @@ watch(visible, (visible) => {
         <p>{{ t('pages.files.table.format') }}</p>
         <PMultiSelect
           v-model="localFilters.formats"
-          :options="formats"
+          :options="formats ?? []"
           option-label="name"
           option-value="name"
           :placeholder="t('pages.files.filters.all_formats')"

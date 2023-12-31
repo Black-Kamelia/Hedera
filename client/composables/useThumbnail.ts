@@ -1,5 +1,7 @@
 import { blobToBase64 } from '~/utils/blobs'
 
+const SUPPORTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif']
+
 /**
  * Composable for getting a thumbnail of a file. If the file type does not support thumbnails, the thumbnail will be null.
  *
@@ -9,7 +11,7 @@ import { blobToBase64 } from '~/utils/blobs'
  * @returns Thumbnail, loading state and error state
  */
 export function useThumbnail(code: string, mimeType: string) {
-  if (mimeTypeToMediaType(mimeType) === 'image') {
+  if (SUPPORTED_IMAGE_TYPES.includes(mimeType)) {
     const { data, pending, error } = useAsyncData(`${code}_preview`, () => {
       return $fetchAPI<Blob>(`/files/${code}/thumbnail`, { responseType: 'blob' })
         .then(response => blobToBase64(response))

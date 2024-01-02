@@ -24,11 +24,19 @@ data class GlobalConfiguration(
     val enableRegistrations: Boolean = false,
     val defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
     val defaultDiskQuota: Long? = 524288000, // 500 MiB
+    val maximumThumbnailCount: Int = 500,
 ) {
     fun toDTO() = GlobalConfigurationRepresentationDTO(
         enableRegistrations,
         defaultDiskQuotaPolicy,
-        defaultDiskQuota
+        defaultDiskQuota,
+        maximumThumbnailCount,
+    )
+
+    fun toPublicDTO() = PublicGlobalConfigurationRepresentationDTO(
+        enableRegistrations,
+        defaultDiskQuotaPolicy,
+        defaultDiskQuota,
     )
 }
 
@@ -56,9 +64,8 @@ object GlobalConfigurationService {
         Response.ok(_currentConfiguration.toDTO())
     }
 
-    /* May change in the future if we need to hide some settings */
-    suspend fun getConfigurationPublic(): Response<GlobalConfigurationRepresentationDTO>  = mutex.withLock {
-        Response.ok(_currentConfiguration.toDTO())
+    suspend fun getConfigurationPublic(): Response<PublicGlobalConfigurationRepresentationDTO>  = mutex.withLock {
+        Response.ok(_currentConfiguration.toPublicDTO())
     }
 
     suspend fun updateConfiguration(
@@ -70,11 +77,13 @@ object GlobalConfigurationService {
             dto.defaultDiskQuotaPolicy == DiskQuotaPolicy.LIMITED && dto.defaultDiskQuota != null -> dto.defaultDiskQuotaPolicy to dto.defaultDiskQuota
             else -> _currentConfiguration.defaultDiskQuotaPolicy to _currentConfiguration.defaultDiskQuota
         }
+        val maximumThumbnailCount = dto.maximumThumbnailCount ?: _currentConfiguration.maximumThumbnailCount
 
         _currentConfiguration = GlobalConfiguration(
             enableRegistrations,
             defaultDiskQuotaPolicy,
-            defaultDiskQuota
+            defaultDiskQuota,
+            maximumThumbnailCount,
         )
 
         val response = _currentConfiguration.toDTO()

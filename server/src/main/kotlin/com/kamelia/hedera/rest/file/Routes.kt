@@ -139,10 +139,10 @@ private fun Route.getFileThumbnail() = get("/{code}/thumbnail") {
 
     val thumbnail = ThumbnailService.getThumbnail(authedId, code)
 
-    if (thumbnail == null) {
-        call.respond("")
+    if (thumbnail == null || !thumbnail.exists()) {
+        call.respondNothing(Response.notFound())
     } else {
-        call.respondFile(thumbnail, "e", "image/jpg")
+        call.respondFile(thumbnail, thumbnail.name, "image/jpg")
     }
 }
 

@@ -206,6 +206,7 @@ declare global {
     enableRegistrations: boolean
     defaultDiskQuotaPolicy: DiskQuotaPolicy
     defaultDiskQuota: number | null
+    maximumThumbnailCount: number
   }
 
   interface GlobalConfigurationRepresentationDTO extends GlobalConfiguration {}

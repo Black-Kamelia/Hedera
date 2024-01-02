@@ -18,6 +18,11 @@ const menus = computed(() => [
     icon: 'i-tabler-users',
     path: '/configuration/users',
   },
+  {
+    label: t('pages.configuration.menu.maintenance'),
+    icon: 'i-tabler-tool',
+    path: '/configuration/maintenance',
+  },
 ])
 
 const { currentRoute } = useRouter()

@@ -13,6 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
 import java.util.*
+import kotlin.io.path.createDirectories
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
@@ -45,11 +46,8 @@ object ThumbnailService {
     private val mutex = Mutex()
     private val thumbnails = sortedSetOf<ThumbnailContainer>()
 
-    init {
-        Files.createDirectories(THUMBNAIL_PATH)
-    }
-
     suspend fun init() = mutex.withReentrantLock {
+        Files.createDirectories(THUMBNAIL_PATH.createDirectories())
         Files.list(THUMBNAIL_PATH).forEach {
             val creationDate = Instant.ofEpochMilli(it.toFile().lastModified())
             thumbnails.add(ThumbnailContainer(creationDate, it))

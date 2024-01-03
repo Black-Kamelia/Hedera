@@ -8,6 +8,7 @@ import com.kamelia.hedera.core.response.respondNoSuccess
 import com.kamelia.hedera.core.response.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
+import com.kamelia.hedera.rest.token.PersonalTokenService
 import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.util.adminRestrict
 import com.kamelia.hedera.util.authenticatedUser
@@ -34,6 +35,12 @@ fun Route.filesRoutes() = route("/files") {
         searchFiles()
         getFileThumbnail()
         getFilesFormats()
+
+        route("/filters") {
+            getFilesFormats()
+            getPersonalTokens()
+        }
+
         // editFile()
         editFileVisibility()
         editFileName()
@@ -159,6 +166,12 @@ private fun Route.getFilesFormats() = get("/formats") {
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.getFilesFormats(userId))
+}
+
+private fun Route.getPersonalTokens() = get("/tokens") {
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(PersonalTokenService.getPersonalTokensWithUsage(userId))
 }
 
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->

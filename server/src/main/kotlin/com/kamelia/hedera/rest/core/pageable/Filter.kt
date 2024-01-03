@@ -14,6 +14,7 @@ import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
@@ -36,7 +37,7 @@ inline fun <reified T : Comparable<T>> comparableFilters() = mapOf<String, (Colu
 
 val stringFilters = comparableFilters<String>() + mapOf(
     "like" to { c, v -> c.lowerCase() like v.lowercase() },
-    "fuzzy" to { c, v -> (c fuzzy v) or (c.lowerCase() like "%${v.lowercase()}%")  },
+    "fuzzy" to { c, v -> (c fuzzy v) or (c.lowerCase() like "%${v.lowercase()}%") },
     "nlike" to { c, v -> c notLike v }
 )
 
@@ -46,9 +47,10 @@ val longFilters = comparableFilters<Long>()
 
 val booleanFilters = comparableFilters<Boolean>()
 
-val uuidFilters = mapOf<String, (Column<EntityID<UUID>>, UUID) -> Op<Boolean>>(
+val uuidFilters = mapOf<String, (Column<EntityID<UUID>>, UUID?) -> Op<Boolean>>(
     "eq" to { c, v -> c eq v },
     "ne" to { c, v -> c neq v },
+    "eqn" to { c, _ -> c.isNull() }
 )
 
 val fileVisibilityFilters = comparableFilters<FileVisibility>()
@@ -58,7 +60,7 @@ val userRoleFilters = comparableFilters<UserRole>()
 val instantFilters = comparableFilters<Instant>()
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean> = when (T::class) {
+inline fun <reified T : Any?> Column<T>.filter(filter: FilterObject): Op<Boolean> = when (T::class) {
     String::class -> stringFilters[filter.operator]?.let { it(this as Column<String>, filter.value) }
     Int::class -> intFilters[filter.operator]?.let {
         val value = filter.value.toIntOrNull()
@@ -74,7 +76,7 @@ inline fun <reified T : Any> Column<T>.filter(filter: FilterObject): Op<Boolean>
     }
     EntityID::class -> uuidFilters[filter.operator]?.let {
         val value = filter.value.toUUIDOrNull()
-        if (value != null) it(this as Column<EntityID<UUID>>, value) else null
+        it(this as Column<EntityID<UUID>>, value)
     }
     FileVisibility::class -> fileVisibilityFilters[filter.operator]?.let {
         val value = FileVisibility.valueOfOrNull(filter.value)

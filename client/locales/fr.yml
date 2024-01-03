@@ -76,6 +76,7 @@ pages:
       name: Nom
       size: Taille
       format: Format
+      token: Jeton personnel
       owner: Propriétaire
       visibility: Visibilité
       creation_date: Date de création
@@ -114,7 +115,13 @@ pages:
       start_date: Date de début
       end_date: Date de fin
       formats: "{count} format sélectionné | {count} formats sélectionnés"
+      tokens: "{count} jeton personnel sélectionné | {count} jetons personnels sélectionnés"
+      tokens_files: "Aucun fichier | {count} fichier | {count} fichiers"
       all_formats: Tous les formats
+      tokens_unset: Indifférent
+      files_without_token: Fichiers envoyés sans jeton personnel
+      token_deleted: Supprimé
+      no_token: Fichiers sans jeton personnel seulement
       reset: Réinitialiser
       apply: Appliquer les filtres
     rename:

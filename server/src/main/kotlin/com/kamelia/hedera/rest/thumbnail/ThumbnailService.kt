@@ -3,7 +3,6 @@ package com.kamelia.hedera.rest.thumbnail
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.response.ActionResponse
-import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.file.DiskFileService
@@ -149,7 +148,7 @@ object ThumbnailService {
             LOGGER.info("Generated thumbnail for file $fileCode (took ${t2 - t1}ms)")
 
             mutex.withReentrantLock {
-                val userThumbnails = thumbnails.putIfAbsent(ownerId, TreeSet())!!
+                val userThumbnails = thumbnails.computeIfAbsent(ownerId) { TreeSet() }
                 userThumbnails.add(ThumbnailContainer(Instant.now(), thumbnail.toPath()))
                 clearOldestFiles(ownerId)
             }

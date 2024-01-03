@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.configuration
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.util.Environment
 import java.io.File
 import kotlin.io.path.createParentDirectories
@@ -89,7 +90,9 @@ object GlobalConfigurationService {
         val response = _currentConfiguration.toDTO()
         writeConfiguration()
         ConfigurationEvents.configurationUpdatedEvent(response)
-        return Response.ok(response)
+        Response.ok(response)
+    }.also {
+        ThumbnailService.clearOldestFiles()
     }
 
     private fun generateDefaultConfiguration(file: File) {

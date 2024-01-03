@@ -55,7 +55,7 @@ object ThumbnailService {
             thumbnails.add(ThumbnailContainer(creationDate, it))
         }
         LOGGER.info("Loaded ${thumbnails.size} thumbnails")
-        checkThumbnailCount()
+        clearOldestFiles()
     }
 
     fun getBlurhashOrNull(
@@ -74,7 +74,7 @@ object ThumbnailService {
         }
     }
 
-    suspend fun checkThumbnailCount() = withContext(Dispatchers.IO) {
+    suspend fun clearOldestFiles() = withContext(Dispatchers.IO) {
         mutex.withReentrantLock {
             val maximum = GlobalConfigurationService.currentConfiguration.maximumThumbnailCount
 
@@ -109,7 +109,7 @@ object ThumbnailService {
 
             mutex.withReentrantLock {
                 thumbnails.add(ThumbnailContainer(Instant.now(), thumbnail.toPath()))
-                checkThumbnailCount()
+                clearOldestFiles()
             }
             thumbnail
         } catch (e: UnsupportedFormatException) {

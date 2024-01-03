@@ -1022,3 +1022,7 @@ hr {
   animation: p-progress-spinner-dash 1.5s ease-in-out infinite;
   stroke: var(--text-color);
 }
+
+hr {
+  border-color: var(--surface-a);
+}

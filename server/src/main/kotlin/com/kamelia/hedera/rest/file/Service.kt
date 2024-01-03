@@ -76,11 +76,10 @@ object FileService {
         val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
         require(fileName.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
-
         val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
         creator.increaseCurrentDiskQuota(uploadedFile.size)
 
-        val thumbnail = ThumbnailService.createThumbnail(uploadedFile.file, uploadedFile.mimeType, uploadedFile.code)
+        val thumbnail = ThumbnailService.createThumbnail(uploadedFile.file, creator.id.value, uploadedFile.mimeType, uploadedFile.code)
         val blurhash = ThumbnailService.getBlurhashOrNull(thumbnail)
         val file = File.create(
             code = uploadedFile.code,

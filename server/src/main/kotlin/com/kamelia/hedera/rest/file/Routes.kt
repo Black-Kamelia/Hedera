@@ -32,6 +32,7 @@ fun Route.filesRoutes() = route("/files") {
     authenticate(AuthJwt) {
         uploadFile()
         searchFiles()
+        getFileThumbnail()
         getFilesFormats()
         // editFile()
         editFileVisibility()
@@ -48,7 +49,6 @@ fun Route.filesRoutes() = route("/files") {
 
     authenticate(AuthJwt, optional = true) {
         getFile()
-        getFileThumbnail()
     }
 }
 
@@ -134,7 +134,7 @@ private fun Route.getFile() = get("/{code}") {
 }
 
 private fun Route.getFileThumbnail() = get("/{code}/thumbnail") {
-    val authedId = call.authenticatedUser?.uuid
+    val authedId = call.authenticatedUser!!.uuid
     val code = call.getParam("code")
 
     val thumbnail = ThumbnailService.getThumbnail(authedId, code)

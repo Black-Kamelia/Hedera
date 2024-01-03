@@ -15,7 +15,7 @@ export const useGlobalConfiguration = defineStore('globalConfiguration', (): Glo
   const toggleRegistrations = ref<boolean>(false)
   const defaultDiskQuotaPolicy = ref<DiskQuotaPolicy>('LIMITED')
   const defaultDiskQuota = ref<number | null>(524288000) // 500 MiB
-  const maximumThumbnailCount = ref<number>(500)
+  const maximumThumbnailCount = ref<number>(150)
 
   function updateConfiguration(configuration: Partial<GlobalConfiguration>) {
     if (configuration.enableRegistrations !== undefined) toggleRegistrations.value = configuration.enableRegistrations

@@ -25,7 +25,7 @@ data class GlobalConfiguration(
     val enableRegistrations: Boolean = false,
     val defaultDiskQuotaPolicy: DiskQuotaPolicy = DiskQuotaPolicy.LIMITED,
     val defaultDiskQuota: Long? = 524288000, // 500 MiB
-    val maximumThumbnailCount: Int = 500,
+    val maximumThumbnailCount: Int = 150,
 ) {
     fun toDTO() = GlobalConfigurationRepresentationDTO(
         enableRegistrations,

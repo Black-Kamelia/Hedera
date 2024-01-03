@@ -72,6 +72,14 @@ object ThumbnailService {
         }
     }
 
+    suspend fun clearFolder() = withContext(Dispatchers.IO) {
+        mutex.withReentrantLock {
+            Files.walk(THUMBNAIL_PATH).forEach {
+                if (Files.isRegularFile(it)) Files.delete(it)
+            }
+        }
+    }
+
     suspend fun clearOldestFiles() = withContext(Dispatchers.IO) {
         mutex.withReentrantLock {
             val maximum = GlobalConfigurationService.currentConfiguration.maximumThumbnailCount

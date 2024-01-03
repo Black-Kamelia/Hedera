@@ -1,6 +1,8 @@
 package com.kamelia.hedera.rest.configuration
 
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.response.respond
+import com.kamelia.hedera.core.response.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.util.adminRestrict
@@ -16,6 +18,7 @@ fun Route.globalConfigurationRoutes() = route("/configuration") {
 
         route("/maintenance") {
             getThumbnailCacheSize()
+            clearThumbnailCache()
         }
     }
     getConfigurationPublic()
@@ -38,4 +41,10 @@ private fun Route.updateConfiguration() = patch<GlobalConfigurationUpdateDTO> { 
 private fun Route.getThumbnailCacheSize() = get("/thumbnail-cache-size") {
     adminRestrict()
     call.respond(ThumbnailService.getFolderSize())
+}
+
+private fun Route.clearThumbnailCache() = post("/clear-thumbnail-cache") {
+    adminRestrict()
+    ThumbnailService.clearFolder()
+    call.respondNothing(Response.ok())
 }

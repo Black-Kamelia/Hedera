@@ -18,7 +18,7 @@ const maximumThumbnailCount = computed(() => config.maximumThumbnailCount)
     <DefaultDiskQuota :quota-policy-value="defaultDiskQuotaPolicy" :quota-value="defaultDiskQuota" />
 
     <h1 class="text-2xl mt-6">
-      Miniatures de fichiers
+      {{ t('pages.configuration.general.headers.files') }}
     </h1>
 
     <MaximumThumbnailCount :value="maximumThumbnailCount" />

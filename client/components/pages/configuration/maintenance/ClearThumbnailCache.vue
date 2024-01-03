@@ -3,10 +3,10 @@ const { t } = useI18n()
 const { format } = useHumanFileSize()
 const { data: cacheSize, pending: pendingCacheSize, refresh } = useFetchAPI<number>('/configuration/maintenance/thumbnail-cache-size')
 
-const { execute, status } = useFetchAPI('/configuration/maintenance/clear-thumbnail-cache', { method: 'POST', immediate: false })
+const { clearCache, status } = useClearThumbnailCache()
 
 function clear() {
-  execute().then(() => refresh())
+  clearCache().then(() => refresh())
 }
 </script>
 
@@ -21,6 +21,8 @@ function clear() {
       :loading="status === 'pending'"
       @click="clear()"
     />
+
+    <ConfirmDialog />
 
     <template #cta>
       <i18n-t

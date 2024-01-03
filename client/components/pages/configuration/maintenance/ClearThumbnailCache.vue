@@ -3,7 +3,7 @@ const { t } = useI18n()
 const { format } = useHumanFileSize()
 const { data: cacheSize, pending: pendingCacheSize, refresh } = useFetchAPI<number>('/configuration/maintenance/thumbnail-cache-size')
 
-const { clearCache, status } = useClearThumbnailCache()
+const clearCache = useClearThumbnailCache()
 
 function clear() {
   clearCache().then(() => refresh())
@@ -18,7 +18,6 @@ function clear() {
     <PButton
       :label="t('pages.configuration.maintenance.clear_thumbnail_cache.clear_cache')"
       class="min-w-12em"
-      :loading="status === 'pending'"
       @click="clear()"
     />
 

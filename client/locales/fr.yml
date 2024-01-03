@@ -562,6 +562,10 @@ actions:
       remove_custom_link:
         success:
           title: Lien personnalisé supprimé
+  maintenance:
+    clear_thumbnail_cache:
+      success:
+        title: Le cache des miniatures a été vidé
   users:
     update_password:
       success:

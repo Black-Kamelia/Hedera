@@ -45,6 +45,5 @@ private fun Route.getThumbnailCacheSize() = get("/thumbnail-cache-size") {
 
 private fun Route.clearThumbnailCache() = post("/clear-thumbnail-cache") {
     adminRestrict()
-    ThumbnailService.clearFolder()
-    call.respondNothing(Response.ok())
+    call.respond(ThumbnailService.clearCache())
 }

@@ -1,6 +1,9 @@
 package com.kamelia.hedera.rest.thumbnail
 
 import com.kamelia.hedera.core.FileNotFoundException
+import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.response.ActionResponse
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.file.DiskFileService
@@ -86,11 +89,15 @@ object ThumbnailService {
         }
     }
 
-    suspend fun clearFolder() = withContext(Dispatchers.IO) {
+    suspend fun clearCache(): ActionResponse<Nothing> = withContext(Dispatchers.IO) {
         mutex.withReentrantLock {
             Files.walk(THUMBNAIL_PATH).forEach {
                 if (Files.isRegularFile(it)) launch { Files.delete(it) }
             }
+
+            ActionResponse.ok(
+                title = Actions.Maintenance.ClearThumbnailCache.success.title,
+            )
         }
     }
 

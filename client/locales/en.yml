@@ -562,6 +562,10 @@ actions:
       remove_custom_link:
         success:
           title: Custom link removed
+  maintenance:
+    clear_thumbnail_cache:
+      success:
+        title: The thumbnail cache has been cleared
   users:
     update_password:
       success:

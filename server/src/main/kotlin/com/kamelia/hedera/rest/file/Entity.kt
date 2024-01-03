@@ -114,7 +114,7 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
     var uploadToken by PersonalToken optionalReferencedOn FileTable.uploadToken
     var customLink by FileTable.customLink
 
-    val ownerId get() = transaction { owner.uuid }
+    val ownerId get() = readValues[FileTable.owner].value
 
     fun update(dto: FileUpdateDTO, updater: User): File = apply {
         dto.name?.let { name = it }

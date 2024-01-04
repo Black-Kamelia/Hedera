@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Vue3BlurhashCanvas } from 'vue3-blurhash'
-
 interface ThumnailProps {
   src: string | null
   blurhash?: string | null
@@ -81,7 +79,7 @@ const icon = computed(() => {
           @error="imgError = true"
         >
         <Transition v-if="blurhash" name="fade">
-          <Vue3BlurhashCanvas
+          <Blurhash
             v-show="loading"
             class="absolute"
             :hash="blurhash"

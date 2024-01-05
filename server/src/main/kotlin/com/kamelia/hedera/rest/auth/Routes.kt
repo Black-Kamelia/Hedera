@@ -2,10 +2,14 @@ package com.kamelia.hedera.rest.auth
 
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.MissingTokenException
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.core.response.respondNoSuccess
+import com.kamelia.hedera.core.response.respondNothing
+import com.kamelia.hedera.mail.MailService
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
+import com.kamelia.hedera.rest.user.PasswordResetService
 import com.kamelia.hedera.util.accessToken
 import com.kamelia.hedera.util.authToken
 import com.kamelia.hedera.util.authenticatedUser
@@ -16,6 +20,7 @@ import io.ktor.server.routing.*
 
 fun Route.authRoutes() = route("/") {
     login()
+    resetPassword()
 
     authenticate(AuthJwt) {
         logoutAll()
@@ -24,6 +29,10 @@ fun Route.authRoutes() = route("/") {
     authenticate(RefreshJwt) {
         refresh()
     }
+}
+
+private fun Route.resetPassword() = post<ResetPasswordDTO>("/reset-password") { body ->
+    call.respond(PasswordResetService.requestResetPasswordToken(body))
 }
 
 private fun Route.login() = post<LoginDTO>("/login") { body ->

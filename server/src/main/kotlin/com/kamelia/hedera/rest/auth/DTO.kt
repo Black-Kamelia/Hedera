@@ -18,6 +18,11 @@ data class LoginDTO(
 ) : DTO
 
 @Serializable
+data class ResetPasswordDTO(
+    val email: String,
+) : DTO
+
+@Serializable
 data class SessionOpeningDTO(
     val sessionId: UUID,
     val tokens: TokenData,

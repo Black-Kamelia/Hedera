@@ -42,6 +42,7 @@ open class Response<out T>(
         fun error(status: HttpStatusCode, error: MessageKeyDTO) =
             error(status, MessageDTO.simple(error))
 
+        fun ok() = success<Nothing>(HttpStatusCode.OK, null)
         fun <S> ok(value: S) = success(HttpStatusCode.OK, value)
         fun <S> created(value: S) = success(HttpStatusCode.Created, value)
         fun noContent() = success<Nothing>(HttpStatusCode.NoContent)

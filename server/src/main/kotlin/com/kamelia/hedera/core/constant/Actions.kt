@@ -18,6 +18,12 @@ object Actions : Namespace("actions") {
 
     }
 
+    object Maintenance : Namespace("maintenance", this) {
+
+        object ClearThumbnailCache : ActionMessage("clear_thumbnail_cache", this)
+
+    }
+
     object Tokens : Namespace("tokens", this) {
 
         object Create : ActionMessage("create", this)
@@ -25,7 +31,7 @@ object Actions : Namespace("actions") {
 
     }
 
-    object Users  : Namespace("users", this) {
+    object Users : Namespace("users", this) {
 
         object Create : ActionMessage("create", this)
         object Activate : ActionMessage("activate", this)

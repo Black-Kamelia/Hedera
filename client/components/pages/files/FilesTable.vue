@@ -183,9 +183,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
     <PColumn class="w-6em" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
-        <Transition v-if="slotProps.data" name="fade" mode="out-in">
-          <MediaThumbnail :key="slotProps.data.mimeType" :data="slotProps.data" />
-        </Transition>
+        <MediaThumbnail v-if="slotProps.data" :key="slotProps.data.code" :data="slotProps.data" />
         <PSkeleton v-else width="6rem" height="4rem" />
       </template>
     </PColumn>

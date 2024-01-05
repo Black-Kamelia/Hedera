@@ -48,6 +48,7 @@ declare global {
   export interface FileUpload {
     file: File
     status: UploadStatus
+    statusDetail?: string
   }
 }
 // END SECTION: Others
@@ -103,6 +104,7 @@ declare global {
     name: string,
     mimeType: string,
     size: number,
+    blurhash: string | null,
     visibility: string,
     customLink: Nullable<string>,
     owner: FileOwnerDTO,
@@ -204,6 +206,7 @@ declare global {
     enableRegistrations: boolean
     defaultDiskQuotaPolicy: DiskQuotaPolicy
     defaultDiskQuota: number | null
+    maximumThumbnailCount: number
   }
 
   interface GlobalConfigurationRepresentationDTO extends GlobalConfiguration {}

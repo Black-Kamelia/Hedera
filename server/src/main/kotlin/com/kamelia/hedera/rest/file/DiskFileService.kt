@@ -1,6 +1,11 @@
-package com.kamelia.hedera.util
+package com.kamelia.hedera.rest.file
 
+import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.UploadCodeGenerationException
+import com.kamelia.hedera.rest.user.User
+import com.kamelia.hedera.util.Environment
+import com.kamelia.hedera.util.MimeTypes
+import com.kamelia.hedera.util.random
 import io.ktor.http.content.*
 import java.io.File
 import java.nio.file.Files
@@ -10,7 +15,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.kamelia.hedera.rest.file.File as HederaFile
 
-object FileUtils {
+class UploadedFileContainer(
+    val code: String,
+    val name: String,
+    val size: Long,
+    val mimeType: String,
+    val file: File,
+)
+
+object DiskFileService {
 
     private val UPLOAD_PATH = Path.of(Environment.uploadFolder)
 
@@ -29,6 +42,43 @@ object FileUtils {
     fun getOrNull(owner: UUID, code: String): File? {
         val file = UPLOAD_PATH.resolve(owner.toString()).resolve(code).toFile()
         return if (file.exists()) file else null
+    }
+
+    suspend fun receiveFile(
+        owner: User,
+        filePart: PartData.FileItem,
+        fileName: String,
+    ): UploadedFileContainer = withContext(Dispatchers.IO) {
+        val maximumDiskQuota = owner.maximumDiskQuota
+        var diskQuota = owner.currentDiskQuota
+
+        val fileCode = generateUniqueCode()
+        val filePath = Files.createDirectories(UPLOAD_PATH.resolve(owner.id.toString())).resolve(fileCode)
+
+        val inputStream = filePart.streamProvider()
+        val outputStream = Files.newOutputStream(filePath)
+        val buffer = ByteArray(1024 * 1024 * 10) // 10.0 MB buffer
+
+        do {
+            val readBytes = inputStream.readNBytes(buffer, 0, buffer.size)
+            diskQuota += readBytes
+            if (diskQuota >= maximumDiskQuota && maximumDiskQuota != -1L) {
+                Files.delete(filePath)
+                throw InsufficientDiskQuotaException()
+            }
+            outputStream.write(buffer, 0, readBytes)
+        } while (readBytes != 0)
+
+        outputStream.close()
+        inputStream.close()
+
+        UploadedFileContainer(
+            code = fileCode,
+            name = fileName,
+            size = Files.size(filePath),
+            mimeType = MimeTypes.typeFromFile(fileName),
+            file = filePath.toFile()
+        )
     }
 
     /**

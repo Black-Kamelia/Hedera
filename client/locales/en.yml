@@ -577,6 +577,9 @@ actions:
       success:
         title: User deleted
         message: The user “{username}” has been deleted
+    request_password_reset:
+      success:
+        title: A link to reset your password has been sent to your email address
   tokens:
     create:
       success:
@@ -635,6 +638,7 @@ errors:
       already_exists: This email address is already taken
     disk_quota:
       invalid_disk_quota: Invalid disk quota
+    reset_password_request_not_sent: Failed to send the password reset email, please contact an administrator
 
 theme:
   system: System

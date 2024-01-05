@@ -32,3 +32,13 @@ hedera:
     name: "$HEDERA_DATABASE_NAME:hedera"
     username: "$HEDERA_DATABASE_USERNAME:hedera"
     password: "$HEDERA_DATABASE_PASSWORD:hedera"
+
+  mail:
+    host: "$HEDERA_MAIL_HOST:127.0.0.1"
+    port: "$HEDERA_MAIL_PORT:587"
+    tls: "$HEDERA_MAIL_TLS:true"
+    auth: "$HEDERA_MAIL_AUTH:true"
+    username: "$HEDERA_MAIL_USERNAME:hedera"
+    password: "$HEDERA_MAIL_PASSWORD:hedera"
+    from: "$HEDERA_MAIL_FROM:noreply@example.com"
+    fromName: "$HEDERA_MAIL_FROM_NAME:Hedera"

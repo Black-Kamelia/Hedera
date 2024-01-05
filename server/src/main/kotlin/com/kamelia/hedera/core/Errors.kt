@@ -12,6 +12,8 @@ object Errors {
     const val UNKNOWN = "$PREFIX.unknown"
     const val UNKNOWN_MESSAGE = "$PREFIX.unknown_message"
 
+    const val MAIL_NOT_SENT = "$PREFIX.mail_not_sent"
+
     object Auth {
 
         private const val PREFIX = "${Errors.PREFIX}.auth"
@@ -149,6 +151,7 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.users"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+        const val RESET_PASSWORD_REQUEST_NOT_SENT = "$PREFIX.reset_password_request_not_sent"
         const val FORCE_CHANGE_PASSWORD = "$PREFIX.force_change_password"
         const val FORCE_CHANGE_PASSWORD_CONFLICT = "$PREFIX.force_change_password_conflict"
         const val INSUFFICIENT_DISK_QUOTA = "$PREFIX.insufficient_disk_quota"

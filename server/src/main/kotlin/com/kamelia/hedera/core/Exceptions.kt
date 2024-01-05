@@ -47,3 +47,7 @@ class UserNotFoundException : HederaException(Errors.Users.NOT_FOUND)
 class PersonalTokenNotFoundException : HederaException(Errors.PersonalTokens.NOT_FOUND)
 
 class DisabledRegistrationsException : HederaException(Errors.Registrations.DISABLED)
+
+class MailSendingException : HederaException(Errors.MAIL_NOT_SENT)
+
+class PasswordResetMessagingException : HederaException(Errors.Users.RESET_PASSWORD_REQUEST_NOT_SENT)

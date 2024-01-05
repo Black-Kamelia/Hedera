@@ -32,6 +32,15 @@ object Environment {
     val databaseName get() = config.property("hedera.database.name").getString()
     val databaseUsername get() = config.property("hedera.database.username").getString()
     val databasePassword get() = config.property("hedera.database.password").getString()
+
+    val mailHost get() = config.property("hedera.mail.host").getString()
+    val mailPort get() = config.property("hedera.mail.port").getString().toInt()
+    val mailUseTLS get() = config.property("hedera.mail.tls").getString()
+    val mailUseAuth get() = config.property("hedera.mail.auth").getString()
+    val mailUsername get() = config.property("hedera.mail.username").getString()
+    val mailPassword get() = config.property("hedera.mail.password").getString()
+    val mailFrom get() = config.property("hedera.mail.from").getString()
+    val mailFromName get() = config.property("hedera.mail.fromName").getString()
 }
 
 val ApplicationJSON = ContentType.parse("application/json")

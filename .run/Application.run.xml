@@ -5,6 +5,11 @@
       <env name="HEDERA_JWT_SECRET" value="secret" />
       <env name="HEDERA_JWT_REFRESH_SECRET" value="secretRefresh" />
       <env name="HEDERA_JWT_WS_SECRET" value="secretWSToken" />
+      <env name="HEDERA_MAIL_AUTH" value="false" />
+      <env name="HEDERA_MAIL_FROM" value="hedera@localhost" />
+      <env name="HEDERA_MAIL_HOST" value="localhost" />
+      <env name="HEDERA_MAIL_PORT" value="1025" />
+      <env name="HEDERA_MAIL_TLS" value="false" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.kamelia.hedera.ApplicationKt" />
     <module name="Hedera.server.main" />

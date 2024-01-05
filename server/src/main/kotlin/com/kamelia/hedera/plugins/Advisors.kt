@@ -14,6 +14,7 @@ import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.MultipartParseException
+import com.kamelia.hedera.core.PasswordResetMessagingException
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
@@ -66,6 +67,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is PersonalTokenNotFoundException,
         is NotFoundException -> notFound(call, cause)
 
+        is PasswordResetMessagingException -> serverError(call, cause)
+
         else -> unhandledError(call, cause)
     }
 }
@@ -106,6 +109,11 @@ private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (ca
     )
 
     else -> call.respondNoSuccess(Response.notFound(Errors.UNKNOWN))
+}
+
+private suspend fun serverError(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, cause.error))
+    else -> call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, Errors.UNKNOWN.asMessage()))
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {

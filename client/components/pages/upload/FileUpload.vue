@@ -72,10 +72,8 @@ function upload() {
         .then(() => file.status = 'completed')
         .catch((error) => {
           if (error !== undefined && error instanceof FetchError && error.response) {
-            console.log(error.response._data)
             file.statusDetail = m(error.response._data.title)
           }
-
           file.status = 'error'
         }) as Promise<UploadStatus>
     })

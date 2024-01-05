@@ -83,7 +83,7 @@ object ThumbnailService {
     suspend fun getFolderSize(): Long = withContext(Dispatchers.IO) {
         mutex.withReentrantLock {
             Files.walk(THUMBNAIL_PATH).reduce(0L, { acc, path ->
-                if (Files.isRegularFile(path)) acc + Files.size(path) else acc
+                if (Files.isRegularFile(path)) acc + runBlocking { Files.size(path) } else acc
             }, { acc1, acc2 -> acc1 + acc2 })
         }
     }
@@ -91,7 +91,7 @@ object ThumbnailService {
     suspend fun clearCache(): ActionResponse<Nothing> = withContext(Dispatchers.IO) {
         mutex.withReentrantLock {
             Files.walk(THUMBNAIL_PATH).forEach {
-                if (Files.isRegularFile(it)) launch { Files.delete(it) }
+                if (Files.isRegularFile(it)) runBlocking { Files.delete(it) }
             }
 
             ActionResponse.ok(
@@ -102,9 +102,7 @@ object ThumbnailService {
 
     suspend fun clearOldestFiles() = withContext(Dispatchers.IO) {
         mutex.withReentrantLock {
-            thumbnails.keys.forEach { userId ->
-                launch { clearOldestFiles(userId) }
-            }
+            thumbnails.keys.forEach { userId -> clearOldestFiles(userId) }
         }
     }
 

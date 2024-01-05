@@ -25,20 +25,5 @@ watchDebounced(model, (val) => {
         {{ t('pages.configuration.general.maximum_thumbnail_count.advice') }}
       </p>
     </template>
-
-    <!--
-    <template #cta>
-      <i18n-t
-        keypath="pages.configuration.general.maximum_thumbnail_count.cache_size"
-        tag="div"
-        scope="global"
-        class="flex flew-row gap-1 items-center"
-      >
-        <template #size>
-          <PSkeleton height="1rem" width="5rem" />
-        </template>
-      </i18n-t>
-    </template>
-    -->
   </HorizontalActionPanel>
 </template>

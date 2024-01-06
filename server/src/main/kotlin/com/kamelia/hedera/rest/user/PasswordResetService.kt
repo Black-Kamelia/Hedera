@@ -1,16 +1,18 @@
 package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.UserNotFoundException
-import com.kamelia.hedera.core.constant.Actions
-import com.kamelia.hedera.core.response.ActionResponse
-import com.kamelia.hedera.core.response.asMessage
+import com.kamelia.hedera.core.TooManyPasswordResetRequestsException
+import com.kamelia.hedera.core.ValidationScope
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.mail.MailService
+import com.kamelia.hedera.rest.auth.CheckResetPasswordTokenDTO
 import com.kamelia.hedera.rest.auth.ResetPasswordDTO
-import com.kamelia.hedera.rest.auth.SessionManager
+import com.kamelia.hedera.rest.auth.ResetPasswordRequestDTO
+import com.kamelia.hedera.rest.auth.ResetPasswordTokenDTO
 import com.kamelia.hedera.util.launchPeriodic
+import io.ktor.http.*
 import io.ktor.util.logging.*
 import java.time.Instant
 import java.util.*
@@ -25,6 +27,12 @@ class ResetPasswordTokenContainer(
     val userId: UUID,
     val expiration: Instant,
 )
+
+sealed interface TokenCheckResult {
+    data class ValidToken(val container: ResetPasswordTokenContainer) : TokenCheckResult
+    data object TokenNotFound : TokenCheckResult
+    data object TokenExpired : TokenCheckResult
+}
 
 object PasswordResetService {
 
@@ -52,7 +60,11 @@ object PasswordResetService {
         }
     }
 
-    private suspend fun generateResetPasswordToken(userId: UUID): String = mutex.withLock {
+    private suspend fun generateToken(userId: UUID): String = mutex.withLock {
+        if (resetPasswordTokens.filterValues { it.userId == userId }.count() >= 100) {
+            throw TooManyPasswordResetRequestsException()
+        }
+
         val token = UUID.randomUUID().toString().replace("-", "")
         resetPasswordTokens[token] = ResetPasswordTokenContainer(
             userId = userId,
@@ -62,33 +74,79 @@ object PasswordResetService {
     }
 
     suspend fun requestResetPasswordToken(
-        dto: ResetPasswordDTO
-    ): ActionResponse<Nothing> = Connection.transaction {
-        validate {
-            val user = User.findByEmail(dto.email)
+        dto: ResetPasswordRequestDTO
+    ): Response<Nothing> = Connection.transaction {
+        val user = User.findByEmail(dto.email) ?: return@transaction Response.ok()
 
-            if (user == null) {
-                raiseError("email", Errors.Users.NOT_FOUND)
+        val token = generateToken(user.id.value)
+        MailService.sendResetPasswordMail(user, token)
+
+        Response.ok()
+    }
+
+    private suspend fun checkToken(token: String): TokenCheckResult = mutex.withLock {
+        val tokenContainer = resetPasswordTokens[token]
+        val now = Instant.now()
+
+        if (tokenContainer == null) {
+            TokenCheckResult.TokenNotFound
+        } else if (!tokenContainer.expiration.isAfter(now)) {
+            // if token is expired for more than 10 minutes, remove it
+            if (tokenContainer.expiration.plusSeconds(60 * 10).isBefore(now)) {
+                resetPasswordTokens.remove(token)
             }
-
-            catchErrors()
-
-            val token = generateResetPasswordToken(user!!.id.value)
-            MailService.sendResetPasswordMail(user, token)
-
-            ActionResponse.ok(
-                title = Actions.Users.RequestPasswordReset.success.title,
-            )
+            TokenCheckResult.TokenExpired
+        } else {
+            TokenCheckResult.ValidToken(tokenContainer)
         }
     }
 
-    suspend fun checkResetPasswordToken(token: String, userId: UUID): Boolean = mutex.withLock {
-        val tokenContainer = resetPasswordTokens[token] ?: return false
-        return tokenContainer.userId == userId && tokenContainer.expiration.isAfter(Instant.now())
+    suspend fun checkResetPasswordToken(
+        dto: CheckResetPasswordTokenDTO
+    ): Response<ResetPasswordTokenDTO> = validate {
+        val result = validateToken(dto.token)
+        catchErrors()
+        val tokenContainer = (result as TokenCheckResult.ValidToken).container
+
+        Response.ok(
+            ResetPasswordTokenDTO(
+                userId = tokenContainer.userId,
+                expiration = tokenContainer.expiration.toString(),
+            )
+        )
     }
 
-    suspend fun removeResetPasswordToken(token: String): Boolean = mutex.withLock {
+    private suspend fun removeResetPasswordToken(token: String): Boolean = mutex.withLock {
         return resetPasswordTokens.remove(token) != null
+    }
+
+    suspend fun resetPassword(
+        dto: ResetPasswordDTO
+    ): Response<Nothing> = Connection.transaction {
+        validate {
+            val result = validateToken(dto.token)
+            catchErrors()
+            val tokenContainer = (result as TokenCheckResult.ValidToken).container
+
+            val user = User[tokenContainer.userId]
+            user.updatePassword(UserPasswordUpdateDTO(newPassword = dto.password))
+
+            removeResetPasswordToken(dto.token)
+            Response.ok()
+        }
+    }
+
+    private suspend fun ValidationScope.validateToken(token: String): TokenCheckResult {
+        val result = checkToken(token)
+
+        if (result is TokenCheckResult.TokenNotFound) {
+            raiseError("token", Errors.Users.ResetPassword.TOKEN_NOT_FOUND, HttpStatusCode.Unauthorized)
+        }
+        if (result is TokenCheckResult.TokenExpired) {
+            raiseError("token", Errors.Users.ResetPassword.TOKEN_EXPIRED, HttpStatusCode.Unauthorized)
+        }
+
+        return result
     }
 
 }

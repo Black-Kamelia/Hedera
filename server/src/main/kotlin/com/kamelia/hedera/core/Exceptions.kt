@@ -50,4 +50,6 @@ class DisabledRegistrationsException : HederaException(Errors.Registrations.DISA
 
 class MailSendingException : HederaException(Errors.MAIL_NOT_SENT)
 
-class PasswordResetMessagingException : HederaException(Errors.Users.RESET_PASSWORD_REQUEST_NOT_SENT)
+class PasswordResetMessagingException : HederaException(Errors.Users.ResetPassword.REQUEST_NOT_SENT)
+
+class TooManyPasswordResetRequestsException : HederaException(Errors.Users.ResetPassword.TOO_MANY_REQUESTS)

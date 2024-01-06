@@ -20,6 +20,8 @@ import io.ktor.server.routing.*
 
 fun Route.authRoutes() = route("/") {
     login()
+    requestResetPasswordToken()
+    checkResetPasswordToken()
     resetPassword()
 
     authenticate(AuthJwt) {
@@ -31,8 +33,16 @@ fun Route.authRoutes() = route("/") {
     }
 }
 
+private fun Route.requestResetPasswordToken() = post<ResetPasswordRequestDTO>("/request-reset-password") { body ->
+    call.respondNoSuccess(PasswordResetService.requestResetPasswordToken(body))
+}
+
+private fun Route.checkResetPasswordToken() = post<CheckResetPasswordTokenDTO>("/check-reset-password-token") { body ->
+    call.respond(PasswordResetService.checkResetPasswordToken(body))
+}
+
 private fun Route.resetPassword() = post<ResetPasswordDTO>("/reset-password") { body ->
-    call.respond(PasswordResetService.requestResetPasswordToken(body))
+    call.respondNoSuccess(PasswordResetService.resetPassword(body))
 }
 
 private fun Route.login() = post<LoginDTO>("/login") { body ->

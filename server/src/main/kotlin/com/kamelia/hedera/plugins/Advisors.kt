@@ -16,6 +16,7 @@ import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.MultipartParseException
 import com.kamelia.hedera.core.PasswordResetMessagingException
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
+import com.kamelia.hedera.core.TooManyPasswordResetRequestsException
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
 import com.kamelia.hedera.core.UserNotFoundException
@@ -60,7 +61,8 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is IllegalActionException,
         is DisabledRegistrationsException,
         is InsufficientDiskQuotaException,
-        is InsufficientPermissionsException -> forbiddenMessage(call, cause)
+        is InsufficientPermissionsException,
+        is TooManyPasswordResetRequestsException -> forbiddenMessage(call, cause)
 
         is FileNotFoundException,
         is UserNotFoundException,

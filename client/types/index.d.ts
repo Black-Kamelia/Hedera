@@ -213,6 +213,11 @@ declare global {
     defaultDiskQuotaPolicy?: DiskQuotaPolicy
     defaultDiskQuota?: number
   }
+
+  interface ResetPasswordTokenDTO {
+    userId: string
+    expiration: string
+  }
 }
 // END SECTION: DTO
 

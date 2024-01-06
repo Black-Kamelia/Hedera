@@ -1,88 +1,86 @@
 <script lang="ts" setup>
-import { object, string } from 'yup'
+import { object, string, ref as yref } from 'yup'
 import { useForm } from 'vee-validate'
+import { DateTime } from 'luxon'
+import { UPDATE_PASSWORD_FORM } from '~/utils/forms'
+
+const { token, tokenMetadata } = defineProps<{
+  token: string
+  tokenMetadata: ResetPasswordTokenDTO
+}>()
 
 const { t } = useI18n()
 const setFieldErrors = useFeedbackFormErrors()
 
-const usernamePlaceholder = getRandomDeveloperUsername()
 const loading = ref(false)
-const message = ref<{
-  content: string | null
-  severity: 'success' | 'info' | 'warn' | 'error' | undefined
-}>({
-  content: null,
-  severity: undefined,
-})
-
 const schema = object({
-  email: string()
-    .required(t('forms.register.errors.missing_email'))
-    .email(t('forms.create_user.errors.invalid_email')),
-
+  password: string()
+    .required(t('forms.reset_password.errors.missing_password'))
+    .min(UPDATE_PASSWORD_FORM.password.min, t('forms.reset_password.errors.password_too_short', { min: UPDATE_PASSWORD_FORM.password.min }))
+    .max(UPDATE_PASSWORD_FORM.password.max, t('forms.reset_password.errors.password_too_long', { max: UPDATE_PASSWORD_FORM.password.max })),
+  passwordConfirmation: string()
+    .required(t('forms.reset_password.errors.missing_password_confirmation'))
+    .oneOf([yref('password')], t('forms.reset_password.errors.passwords_mismatch')),
 })
-const { handleSubmit, setFieldError, resetForm } = useForm({ validationSchema: schema })
+const { handleSubmit, setFieldError } = useForm({ validationSchema: schema })
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit((values) => {
   loading.value = true
-  $fetchAPI<any>('/reset-password', { method: 'POST', body: values })
-    .then((response) => {
-      resetForm()
-      message.value.content = t(response.title.key)
-      message.value.severity = 'success'
+  values.token = token
+  $fetchAPI<void>('/reset-password', { method: 'POST', body: values })
+    .then(() => {
+      navigateTo({ path: '/login', query: { reason: 'password_reset' } })
     })
     .catch((err) => {
-      if (err.response) {
-        if (err.response._data.fields) {
-          setFieldErrors(err.response._data.fields, setFieldError)
-        } else {
-          message.value.content = t(err.response._data.title.key)
-          message.value.severity = 'error'
-        }
+      if (err.response && err.response._data.fields) {
+        setFieldErrors(err.response._data.fields, setFieldError)
       }
     })
-    .finally(() => {
-      loading.value = false
-    })
+    .finally(() => loading.value = false)
 })
 
-function hideErrorMessage() {
-  message.value.content = null
-}
+const expiration = computed(() => {
+  return DateTime.fromISO(tokenMetadata.expiration).plus({ minute: 1 }).toRelative({ unit: 'minutes' })
+})
 </script>
 
 <template>
   <form @submit="onSubmit">
     <PMessage
-      v-show="(message.content && message.severity)"
       :pt="{ root: { class: 'important-mt-0' } }"
-      :severity="message.severity"
-      :icon="{
-        success: 'i-tabler-circle-check-filled',
-        info: 'i-tabler-info-circle-filled',
-        warn: 'i-tabler-alert-triangle-filled',
-        error: 'i-tabler-alert-circle-filled',
-      }[message.severity!]" :closable="false"
+      severity="info"
+      icon="i-tabler-info-circle-filled"
+      :closable="false"
     >
-      {{ message.content }}
+      {{ t('forms.reset_password.message', { expiration }) }}
     </PMessage>
 
     <div class="mb-3">
       <FormInputText
-        id="resetPwd_email"
+        id="resetPwd_newPassword"
         class="w-full"
-        name="email"
-        type="email"
-        :label="t('forms.register.fields.email')"
-        :placeholder="`${usernamePlaceholder}@example.com`"
-        start-icon="i-tabler-mail"
-        autocomplete="email"
-        @input="hideErrorMessage()"
+        name="password"
+        type="password"
+        autocomplete="new-password"
+        :label="t('forms.reset_password.fields.password')"
+        placeholder="••••••••••••••••"
       />
     </div>
 
-    <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+    <div class="mb-3">
+      <FormInputText
+        id="resetPwd_confirmNewPassword"
+        class="w-full"
+        name="passwordConfirmation"
+        type="password"
+        autocomplete="new-password"
+        :label="t('forms.reset_password.fields.password_confirmation')"
+        placeholder="••••••••••••••••"
+      />
+    </div>
+
+    <div class="flex flex-row items-center justify-end mb-6 px-2 w-100%">
+      <NuxtLink to="/login" class="font-medium no-underline text-blue-500 text-right cursor-pointer">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>

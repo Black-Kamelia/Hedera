@@ -74,7 +74,18 @@ onMounted(() => {
 
 <template>
   <form @submit="onSubmit">
-    <PMessage v-show="message.content" :pt="{ root: { class: 'important-mt-0' } }" :severity="message.severity" icon="i-tabler-alert-circle-filled" :closable="false">
+    <PMessage
+      v-show="message.content"
+      :pt="{ root: { class: 'important-mt-0' } }"
+      :severity="message.severity"
+      :icon="{
+        success: 'i-tabler-circle-check-filled',
+        info: 'i-tabler-info-circle-filled',
+        warn: 'i-tabler-alert-triangle-filled',
+        error: 'i-tabler-alert-circle-filled',
+      }[message.severity!]"
+      :closable="false"
+    >
       {{ message.content }}
     </PMessage>
 
@@ -109,11 +120,11 @@ onMounted(() => {
       />
     </div>
 
-    <div class="flex flex-row-reverse items-center justify-between mb-6 w-100%">
-      <NuxtLink to="/reset-password" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+    <div class="flex flex-row-reverse items-center justify-between mb-6 px-2 w-100%">
+      <NuxtLink to="/reset-password" class="font-medium no-underline text-blue-500 text-right cursor-pointer">
         {{ t('pages.login.forgot_password') }}
       </NuxtLink>
-      <NuxtLink v-show="registrationEnabled" to="/register" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+      <NuxtLink v-show="registrationEnabled" to="/register" class="font-medium no-underline text-blue-500 text-right cursor-pointer">
         {{ t('pages.login.register') }}
       </NuxtLink>
     </div>

@@ -2,6 +2,7 @@
 const { t } = useI18n()
 
 type ResetPasswordState = 'REQUEST_TOKEN' | 'INPUT_TOKEN' | 'RESET_PASSWORD'
+const STATES_ORDER: ResetPasswordState[] = ['REQUEST_TOKEN', 'INPUT_TOKEN', 'RESET_PASSWORD']
 
 usePageName(() => t('pages.reset_password.title'))
 definePageMeta({
@@ -19,6 +20,15 @@ const resetTokenParam = computed(() => {
 })
 
 const state = ref<ResetPasswordState>('REQUEST_TOKEN')
+const stateHistory = useRefHistory(state, { capacity: 2 })
+
+const stateTransition = computed(() => {
+  const history = stateHistory.history.value
+  if (history.length < 2) return 'LEFT'
+  const [next, prev] = history
+  return STATES_ORDER.indexOf(prev.snapshot) < STATES_ORDER.indexOf(next.snapshot) ? 'LEFT' : 'RIGHT'
+})
+
 const resetToken = ref('')
 const resetTokenMetadata = ref<ResetPasswordTokenDTO>()
 
@@ -32,6 +42,8 @@ watch(resetTokenParam, (token) => {
   if (token !== null) {
     state.value = 'INPUT_TOKEN'
     resetToken.value = token
+  } else {
+    resetToken.value = ''
   }
 }, { immediate: true })
 </script>
@@ -42,7 +54,7 @@ watch(resetTokenParam, (token) => {
       {{ t('pages.reset_password.title') }}
     </h2>
 
-    <SlideTransitionContainer>
+    <SlideTransitionContainer :direction="stateTransition" gap="2.5em">
       <ResetPasswordRequestForm
         v-if="state === 'REQUEST_TOKEN'"
         class="w-125"
@@ -53,6 +65,7 @@ watch(resetTokenParam, (token) => {
         :token="resetToken"
         class="w-125"
         @completed="onTokenValidated"
+        @back="state = 'REQUEST_TOKEN'"
       />
       <ResetPasswordForm
         v-if="state === 'RESET_PASSWORD' && resetTokenMetadata"

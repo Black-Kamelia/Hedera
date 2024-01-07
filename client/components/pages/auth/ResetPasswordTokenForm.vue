@@ -7,6 +7,7 @@ const { token } = defineProps<{
 }>()
 const emit = defineEmits<{
   (event: 'completed', token: string, dto: ResetPasswordTokenDTO): void
+  (event: 'back'): void
 }>()
 
 const { t } = useI18n()
@@ -18,7 +19,7 @@ const schema = object({
     .required(t('forms.reset_password_token.errors.missing_token'))
     .matches(/^[0-9a-f]{32}$/, t('forms.reset_password_token.errors.invalid_token')),
 })
-const { handleSubmit, setFieldError, setFieldValue } = useForm({ validationSchema: schema })
+const { handleSubmit, setFieldError, setFieldValue, resetForm } = useForm({ validationSchema: schema })
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
@@ -31,6 +32,12 @@ const onSubmit = handleSubmit(async (values) => {
     })
     .finally(() => loading.value = false)
 })
+
+function back() {
+  emit('back')
+  resetForm()
+  navigateTo({ path: '/reset-password' }, { replace: true })
+}
 
 onMounted(() => {
   if (token) {
@@ -65,7 +72,10 @@ onMounted(() => {
       />
     </div>
 
-    <div class="flex flex-row items-center justify-end mb-6 px-2 w-100%">
+    <div class="flex flex-row items-center justify-between mb-6 px-2 w-100%">
+      <NuxtLink class="font-medium no-underline text-blue-500 text-right cursor-pointer" @click="back()">
+        {{ t('pages.reset_password.back') }}
+      </NuxtLink>
       <NuxtLink to="/login" class="font-medium no-underline text-blue-500 text-right cursor-pointer">
         {{ t('pages.reset_password.login') }}
       </NuxtLink>

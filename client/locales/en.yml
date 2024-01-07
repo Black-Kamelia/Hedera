@@ -53,6 +53,7 @@ pages:
     title: Reset password
     login: Back to login
     input_token: I have a key
+    back: I didn’t receive a key
   files:
     title: Files
     link_copied: The link has been copied to the clipboard

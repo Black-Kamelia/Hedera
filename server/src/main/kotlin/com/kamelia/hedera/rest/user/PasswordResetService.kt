@@ -61,9 +61,10 @@ object PasswordResetService {
     }
 
     private suspend fun generateToken(userId: UUID): String = mutex.withLock {
-        if (resetPasswordTokens.filterValues { it.userId == userId }.count() >= 100) {
-            throw TooManyPasswordResetRequestsException()
-        }
+        // Remove all previous requests for this user
+        resetPasswordTokens.entries
+            .filter { it.value.userId == userId }
+            .forEach { resetPasswordTokens.remove(it.key) }
 
         val token = UUID.randomUUID().toString().replace("-", "")
         resetPasswordTokens[token] = ResetPasswordTokenContainer(

@@ -1,9 +1,11 @@
 package com.kamelia.hedera.mail
 
-import com.kamelia.hedera.core.HederaException
 import com.kamelia.hedera.core.MailSendingException
 import com.kamelia.hedera.core.PasswordResetMessagingException
+import com.kamelia.hedera.plugins.toHTML
+import com.kamelia.hedera.rest.setting.Locale
 import com.kamelia.hedera.rest.user.User
+import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.mailFrom
 import com.kamelia.hedera.util.Environment.mailFromName
 import com.kamelia.hedera.util.Environment.mailHost
@@ -12,6 +14,7 @@ import com.kamelia.hedera.util.Environment.mailPort
 import com.kamelia.hedera.util.Environment.mailUseAuth
 import com.kamelia.hedera.util.Environment.mailUseTLS
 import com.kamelia.hedera.util.Environment.mailUsername
+import io.ktor.server.freemarker.*
 import jakarta.mail.Authenticator
 import jakarta.mail.MessagingException
 import jakarta.mail.PasswordAuthentication
@@ -67,23 +70,21 @@ object MailService {
         user: User,
         token: String,
     ) {
-        val subject = "Reset your password"
-        val html = """
-            <html>
-                <body>
-                    <h1>Reset your password</h1>
-                    <p>Hello ${user.username},</p>
-                    <p>
-                        You have requested to reset your password.
-                        Please click on the following link to reset your password:
-                    </p>
-                    <p><a href="http://localhost:3000/reset-password?token=$token">Reset password</a></p>
-                    <p>Or</p>
-                    <p>Input this token: <strong><pre>$token</pre></strong></p>
-                    <p>If you did not request to reset your password, please ignore this email.</p>
-                </body>
-            </html>
-        """.trimIndent()
+        val userSettings = user.settings
+        val subject = when(userSettings.preferredLocale) {
+            Locale.fr -> "Réinitialiser votre mot de passe"
+            Locale.en -> "Reset your password"
+        }
+        val localeFolder = when(userSettings.preferredLocale) {
+            Locale.fr -> "fr"
+            Locale.en -> "en"
+        }
+        val html = FreeMarkerContent("mails/$localeFolder/ResetPasswordRequest.ftl", mapOf(
+            "URL" to Environment.URL,
+            "username" to user.username,
+            "email" to user.email,
+            "token" to token,
+        )).toHTML()
 
         try {
             sendMail(user.email, subject, html)
@@ -91,5 +92,4 @@ object MailService {
             throw PasswordResetMessagingException()
         }
     }
-
 }

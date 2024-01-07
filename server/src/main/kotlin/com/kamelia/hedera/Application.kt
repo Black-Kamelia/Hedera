@@ -5,6 +5,7 @@ import com.kamelia.hedera.database.configureLiquibase
 import com.kamelia.hedera.plugins.configureAuthentication
 import com.kamelia.hedera.plugins.configureCORS
 import com.kamelia.hedera.plugins.configureExceptionAdvisors
+import com.kamelia.hedera.plugins.configureFreemarker
 import com.kamelia.hedera.plugins.configureRouting
 import com.kamelia.hedera.plugins.configureSerialization
 import com.kamelia.hedera.plugins.configureWebSockets
@@ -39,6 +40,7 @@ fun Application.module() = runBlocking {
     configureCORS()
     configureRouting()
     configureWebSockets()
+    configureFreemarker()
     install(AutoHeadResponse)
 
     SessionManager.startPruning()

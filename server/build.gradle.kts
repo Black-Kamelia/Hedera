@@ -45,6 +45,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
     implementation("io.ktor", "ktor-server-websockets", ktorVersion)
+    implementation("io.ktor", "ktor-server-freemarker", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -58,6 +59,9 @@ dependencies {
     implementation("com.zaxxer", "HikariCP", hikaricpVersion)
     implementation("at.favre.lib", "bcrypt", bcryptVersion)
     implementation("com.sun.mail", "jakarta.mail", "2.0.1")
+    implementation("io.ktor:ktor-server-core-jvm:2.3.2")
+    implementation("io.ktor:ktor-server-velocity-jvm:2.3.2")
+    implementation("io.ktor:ktor-server-freemarker-jvm:2.3.2")
 
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)

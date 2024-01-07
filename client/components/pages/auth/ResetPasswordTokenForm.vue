@@ -12,6 +12,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const setFieldErrors = useFeedbackFormErrors()
+const { finish } = useLoadingIndicator()
 
 const loading = ref(false)
 const schema = object({
@@ -37,6 +38,7 @@ function back() {
   emit('back')
   resetForm()
   navigateTo({ path: '/reset-password' }, { replace: true })
+  finish()
 }
 
 onMounted(() => {

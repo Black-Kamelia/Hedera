@@ -81,7 +81,7 @@ onMounted(() => {
       :icon="{
         success: 'i-tabler-circle-check-filled',
         info: 'i-tabler-info-circle-filled',
-        warn: 'i-tabler-alert-triangle-filled',
+        warn: 'i-tabler-alert-circle-filled',
         error: 'i-tabler-alert-circle-filled',
       }[message.severity!]"
       :closable="false"

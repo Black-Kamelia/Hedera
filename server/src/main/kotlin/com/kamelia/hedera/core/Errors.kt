@@ -179,7 +179,7 @@ object Errors {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.reset_password"
 
-            const val REQUEST_NOT_SENT = "${Users.PREFIX}.reset_password_request_not_sent"
+            const val REQUEST_NOT_SENT = "$PREFIX.request_not_sent"
             const val TOKEN_NOT_FOUND = "$PREFIX.token_not_found"
             const val TOKEN_EXPIRED = "$PREFIX.token_expired"
             const val TOO_MANY_REQUESTS = "$PREFIX.too_many_requests"

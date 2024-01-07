@@ -40,6 +40,7 @@ pages:
       password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
       session_terminated: Votre session a été terminée
       registration_disabled: Les inscriptions ne sont pas activées
+      password_reset: Votre mot de passe a été réinitialisé, veuillez vous reconnecter
   complete_otp:
     title: Authentification à deux facteurs
   register:
@@ -51,6 +52,7 @@ pages:
   reset_password:
     title: Réinitialiser le mot de passe
     login: Retour à la connexion
+    input_token: Je possède une clé
   files:
     title: Fichiers
     link_copied: Le lien a été copié dans le presse-papier
@@ -416,13 +418,6 @@ forms:
     fields:
       password: Nouveau mot de passe
       confirm_password: Confirmer le nouveau mot de passe
-  reset_password:
-    errors:
-      missing_email: Adresse e-mail requise
-      invalid_email: Format d’adresse e-mail invalide
-    fields:
-      email: Adresse e-mail
-    submit: Envoyer le lien de réinitialisation
   update_details:
     submit: Mettre à jour
     errors:
@@ -521,6 +516,33 @@ forms:
     errors:
       missing_slug: Identifiant requis
       invalid_slug: Format d’identifiant invalide
+  reset_password_request:
+    submit: Envoyer le lien de réinitialisation
+    errors:
+      missing_email: Adresse e-mail requise
+      invalid_email: Format d’adresse e-mail invalide
+    fields:
+      email: Adresse e-mail
+  reset_password_token:
+    submit: Continuer
+    message: Veuillez saisir la clé de réinitialisation que vous avez reçue par e-mail
+    errors:
+      missing_token: Clé de réinitialisation requise
+      invalid_token: Lien de réinitialisation invalide
+    fields:
+      token: Clé de réinitialisation
+  reset_password:
+    submit: Réinitialiser le mot de passe
+    message: Votre clé de réinitialisation expire {expiration}
+    errors:
+      missing_password: Mot de passe requis
+      password_too_short: Le mot de passe doit contenir au moins {min} caractères
+      password_too_long: Le mot de passe doit contenir au plus {max} caractères
+      missing_password_confirmation: Confirmation du mot de passe requise
+      passwords_mismatch: Les mots de passe ne correspondent pas
+    fields:
+      password: Nouveau mot de passe
+      password_confirmation: Confirmer le nouveau mot de passe
 
 actions:
   files:
@@ -627,6 +649,7 @@ errors:
     custom_link:
       already_exists: Ce lien personnalisé existe déjà
   users:
+    not_found: Cet utilisateur n’existe pas
     password:
       incorrect_password: Mot de passe incorrect
     username:
@@ -635,6 +658,11 @@ errors:
       already_exists: Cette adresse e-mail est déjà utilisée
     disk_quota:
       invalid_disk_quota: Quota d’espace disque invalide
+    reset_password:
+      too_many_requests: Veuillez patienter avant de redemander un lien de réinitialisation
+      token_not_found: Lien de réinitialisation invalide
+      token_expired: Ce lien de réinitialisation a expiré
+      request_not_sent: Impossible d’envoyer le lien de réinitialisation, contactez un administrateur
 
 theme:
   system: Système

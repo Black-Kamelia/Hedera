@@ -6,8 +6,7 @@ const emit = defineEmits<{
   (event: 'completed'): void
 }>()
 
-const { t } = useI18n()
-const setFieldErrors = useFeedbackFormErrors()
+const { t, m } = useI18n()
 
 const usernamePlaceholder = getRandomDeveloperUsername()
 const loading = ref(false)
@@ -25,15 +24,16 @@ const schema = object({
     .email(t('forms.reset_password_request.errors.invalid_email')),
 
 })
-const { handleSubmit, setFieldError } = useForm({ validationSchema: schema })
+const { handleSubmit } = useForm({ validationSchema: schema })
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
   $fetchAPI<void>('/request-reset-password', { method: 'POST', body: values })
     .then(() => emit('completed'))
     .catch((err) => {
-      if (err.response && err.response._data.fields) {
-        setFieldErrors(err.response._data.fields, setFieldError)
+      if (err.response) {
+        message.value.content = m(err.response._data.title)
+        message.value.severity = 'error'
       }
     })
     .finally(() => loading.value = false)

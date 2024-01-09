@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <title></title>
@@ -108,7 +106,7 @@
         .inner-footer {
             font-family: 'Red Hat Text', sans-serif;
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.25;
             background-color: #f6f9fc;
             color: #708da9;
             padding: 16px;
@@ -138,30 +136,21 @@
     </style>
 </head>
 <body style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; min-width:100%; padding:0'>
-<style>
-    @media only screen and (max-width: 456px) {
-        .inner-header,
-        .inner-body,
-        .inner-footer {
-            width: 100%;
-            margin: 0;
-        }
-    }
-</style>
 
 <table cellpadding="0" cellspacing="0"
        style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; background-color:white; height:100%; min-width:100%; width:100%'
-       height="100%" width="100%">
+       bgcolor="white" height="100%" width="100%">
     <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
         <td align="center"
             style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
             <table width="100%" cellpadding="0" cellspacing="0"
-                   style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; background-color:white; min-width:100%; width:100%'>
+                   style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; background-color:white; min-width:100%; width:100%'
+                   bgcolor="white">
                 <!-- Header -->
                 <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                     <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                         <table style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; Margin:0 auto; width:456px; background-color:white; color:#043d75; font-size:16px; line-height:1.5; padding:16px'
-                               width="456">
+                               width="456" bgcolor="white">
                             <tr align="center"
                                 style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td align="center"
@@ -172,7 +161,7 @@
                                             height="16"></tr>
                                         <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                             <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                                <img src="http://localhost:3000/favicon.svg" alt="Hedera logo"
+                                                <img src="${URL}/favicon.svg" alt="Hedera logo"
                                                      width="38px" height="38px"></td>
                                             <td width="8px"
                                                 style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'></td>
@@ -193,69 +182,61 @@
         <td align="center"
             style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
             <table width="100%" cellpadding="0" cellspacing="0"
-                   style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; background-color:white; min-width:100%; width:100%'>
+                   style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; background-color:white; min-width:100%; width:100%'
+                   bgcolor="white">
                 <!-- Main -->
                 <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                     <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                         <table style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; Margin:0 auto; width:456px; background-color:white; color:#043d75; font-size:16px; line-height:1.5; padding:16px'
-                               width="456">
+                               width="456" bgcolor="white">
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <h2 style='Margin:0; font-family:"Red Hat Display", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; font-size:22px; font-weight:500; Margin-bottom:8px'>
-                                        Réinitialiser votre mot de passe</h2>
+                                    <h2 style='Margin:0; font-family:"Red Hat Display", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; font-size:22px; font-weight:500; Margin-bottom:8px'>${subject}</h2>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>
-                                        Bonjour ${username},</p>
+                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>${greetings}</p>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>
-                                        Vous avez récemment demandé à réinitialiser votre mot de passe pour votre compte
-                                        Hedera. Si ce n'était pas vous, veuillez ignorer ce message.</p>
+                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>${paragraph1}</p>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>
-                                        Vous pouvez réinitialiser votre mot de passe en cliquant sur le bouton
-                                        ci-dessous :</p>
+                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>${paragraph2}</p>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td align="center"
                                     style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                     <a href="${URL}/reset-password?token=${token}"
-                                       style='color:white; text-decoration:none; background-color:#7d68df; border-radius:6px; display:inline-block; font-family:"Red Hat Text", sans-serif; font-size:16px; Margin:4px 0 16px 0; padding:12px 20px'>Réinitialiser
-                                        le mot de passe</a>
+                                       style='color:white; text-decoration:none; background-color:#7d68df; border-radius:6px; display:inline-block; font-family:"Red Hat Text", sans-serif; font-size:16px; Margin:4px 0 16px 0; padding:12px 20px'
+                                       bgcolor="#7d68df">${button}</a>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>
-                                        Ou, vous pouvez copier et coller la clé de réinitialisation suivante dans le
-                                        formulaire de réinitialisation du mot de passe :</p>
+                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>${paragraph3}</p>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td align="center"
                                     style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <pre style='Margin:4px 0 16px 0; background-color:#f5f5f5; border:1px solid #e5e5e5; border-radius:6px; display:inline-block; font-family:"Red Hat Text", sans-serif; padding:8px 16px'>${token}</pre>
+                                    <pre style='Margin:4px 0 16px 0; background-color:#f5f5f5; border:1px solid #e5e5e5; border-radius:6px; display:inline-block; font-family:"Red Hat Text", sans-serif; padding:8px 16px'
+                                         bgcolor="#f5f5f5">${token}</pre>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>
-                                        La clé de réinitialisation est valide pendant 10 minutes seulement.</p>
+                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-bottom:4px'>${paragraph4}</p>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-top:8px'>
-                                        Cordialement,</p>
+                                    <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji; Margin-top:8px'>${salutations}</p>
                                     <p style='Margin:0; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                         Hedera</p>
                                 </td>
@@ -270,25 +251,21 @@
         <td align="center"
             style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
             <table width="100%" cellpadding="0" cellspacing="0"
-                   style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; Margin:0 auto; width:100%; background-color:#f6f9fc; min-width:100%; color:#708da9; font-size:16px; line-height:1.5; padding:16px'>
+                   style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; Margin:0 auto; width:100%; background-color:#f6f9fc; min-width:100%; color:#708da9; font-size:16px; line-height:1.25; padding:16px'
+                   bgcolor="#f6f9fc">
                 <!-- Footer -->
                 <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                     <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                        <table style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; Margin:0 auto; width:456px; background-color:#f6f9fc; color:#708da9; font-size:16px; line-height:1.5; padding:16px'
-                               width="456">
+                        <table style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", sans-serif; Margin:0 auto; width:456px; background-color:#f6f9fc; color:#708da9; font-size:16px; line-height:1.25; padding:16px'
+                               width="456" bgcolor="#f6f9fc">
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <small>
-                                        Ce message a été envoyé à ${email}. Si vous pensez avoir reçu cet message par
-                                        erreur, veuillez l'ignorer et le supprimer.
-                                    </small>
+                                    <small>${footer1}</small>
                                 </td>
                             </tr>
                             <tr style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
                                 <td style='box-sizing:border-box; position:relative; font-family:"Red Hat Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'>
-                                    <small>
-                                        Ce message a été envoyé automatiquement, veuillez ne pas répondre à ce message.
-                                    </small>
+                                    <small>${footer2}</small>
                                 </td>
                             </tr>
                         </table>

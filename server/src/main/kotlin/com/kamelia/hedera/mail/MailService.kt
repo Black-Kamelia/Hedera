@@ -70,19 +70,20 @@ object MailService {
         user: User,
         token: String,
     ) {
-        val userSettings = user.settings
-        val subject = when(userSettings.preferredLocale) {
-            Locale.fr -> "Réinitialiser votre mot de passe"
-            Locale.en -> "Reset your password"
-        }
-        val localeFolder = when(userSettings.preferredLocale) {
-            Locale.fr -> "fr"
-            Locale.en -> "en"
-        }
-        val html = FreeMarkerContent("mails/$localeFolder/ResetPasswordRequest.ftl", mapOf(
+        val locale = user.settings.preferredLocale
+        val subject = RESET_PASSWORD_VALUES[locale]!!["subject"]!!
+        val html = FreeMarkerContent("mails/ResetPasswordRequest.ftl", mapOf(
             "URL" to Environment.URL,
-            "username" to user.username,
-            "email" to user.email,
+            "subject" to RESET_PASSWORD_VALUES[locale]!!["subject"]!!,
+            "greetings" to RESET_PASSWORD_VALUES[locale]!!["greetings"]!!.replace("{username}", user.username),
+            "paragraph1" to RESET_PASSWORD_VALUES[locale]!!["paragraph1"]!!,
+            "paragraph2" to RESET_PASSWORD_VALUES[locale]!!["paragraph2"]!!,
+            "paragraph3" to RESET_PASSWORD_VALUES[locale]!!["paragraph3"]!!,
+            "paragraph4" to RESET_PASSWORD_VALUES[locale]!!["paragraph4"]!!,
+            "button" to RESET_PASSWORD_VALUES[locale]!!["button"]!!,
+            "salutations" to RESET_PASSWORD_VALUES[locale]!!["salutations"]!!,
+            "footer1" to RESET_PASSWORD_VALUES[locale]!!["footer1"]!!.replace("{email}", user.email),
+            "footer2" to RESET_PASSWORD_VALUES[locale]!!["footer2"]!!,
             "token" to token,
         )).toHTML()
 

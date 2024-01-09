@@ -53,7 +53,7 @@ pages:
     title: Réinitialiser le mot de passe
     login: Retour à la connexion
     input_token: Je possède une clé
-    back: Je n’ai pas reçu de clé
+    back: Revenir en arrière
   files:
     title: Fichiers
     link_copied: Le lien a été copié dans le presse-papier

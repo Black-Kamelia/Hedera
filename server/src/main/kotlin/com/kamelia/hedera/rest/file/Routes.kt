@@ -9,7 +9,7 @@ import com.kamelia.hedera.core.response.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.token.PersonalTokenService
-import com.kamelia.hedera.util.FileUtils
+import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.util.adminRestrict
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.doWithForm
@@ -24,6 +24,7 @@ import com.kamelia.hedera.util.respondFileInline
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.filesRoutes() = route("/files") {
@@ -32,6 +33,8 @@ fun Route.filesRoutes() = route("/files") {
     authenticate(AuthJwt) {
         uploadFile()
         searchFiles()
+        getFileThumbnail()
+        getFilesFormats()
 
         route("/filters") {
             getFilesFormats()
@@ -64,7 +67,7 @@ fun Route.rawFileRoute() = get("""/m/(?<code>[a-zA-Z0-9]{10})""".toRegex()) {
     try {
         FileService.getFileFromCode(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.owner.id, code)
+            val file = DiskFileService.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
@@ -83,7 +86,7 @@ fun Route.rawFileCustomLinkRoute() = get("""/c/(?<link>[a-z0-9\-]+)""".toRegex()
     try {
         FileService.getFileFromCustomLink(link).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.owner.id, data.code)
+            val file = DiskFileService.getOrNull(data.owner.id, data.code)
             if (file != null) {
                 call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
@@ -123,7 +126,7 @@ private fun Route.getFile() = get("/{code}") {
     FileService.getFileFromCode(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.owner.id, code)
+            val file = DiskFileService.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
@@ -135,6 +138,19 @@ private fun Route.getFile() = get("/{code}") {
             call.respondNothing(Response.notFound())
         },
     )
+}
+
+private fun Route.getFileThumbnail() = get("/{code}/thumbnail") {
+    val authedId = call.authenticatedUser!!.uuid
+    val code = call.getParam("code")
+
+    val thumbnail = ThumbnailService.getThumbnail(authedId, code)
+
+    if (thumbnail == null || !thumbnail.exists()) {
+        call.respondNothing(Response.notFound())
+    } else {
+        call.respondFile(thumbnail, thumbnail.name, "image/jpg")
+    }
 }
 
 private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->

@@ -48,6 +48,8 @@ class PersonalTokenNotFoundException : HederaException(Errors.PersonalTokens.NOT
 
 class DisabledRegistrationsException : HederaException(Errors.Registrations.DISABLED)
 
+class ThumbnailGenerationException : HederaException(Errors.Thumbnails.GENERATION)
+
 class MailSendingException : HederaException(Errors.MAIL_NOT_SENT)
 
 class PasswordResetMessagingException : HederaException(Errors.Users.ResetPassword.REQUEST_NOT_SENT)

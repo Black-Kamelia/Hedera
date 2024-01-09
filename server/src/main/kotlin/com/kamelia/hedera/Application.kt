@@ -11,6 +11,7 @@ import com.kamelia.hedera.plugins.configureSerialization
 import com.kamelia.hedera.plugins.configureWebSockets
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
+import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.rest.user.PasswordResetService
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.isDev
@@ -32,6 +33,7 @@ fun Application.module() = runBlocking {
     Connection.init()
     MimeTypes.init()
     GlobalConfigurationService.init()
+    ThumbnailService.init()
 
     configureExceptionAdvisors()
     configureLiquibase()

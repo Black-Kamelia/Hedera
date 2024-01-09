@@ -200,9 +200,11 @@ pages:
     menu:
       general: Général
       users: Utilisateurs
+      maintenance: Maintenance
     general:
       headers:
         registrations: Inscriptions des utilisateurs
+        files: Fichiers
       toggle_registration:
         title: Autoriser les inscriptions
         description: Si cette option est activée, les visiteurs pourront créer un compte sur votre instance Hedera. Dans le cas contraire, seuls les administrateurs pourront créer des comptes.
@@ -213,6 +215,10 @@ pages:
         limited: Limité
         choose: Choisir une politique
         placeholder: Saisir une taille
+      maximum_thumbnail_count:
+        title: Nombre de miniatures à conserver
+        description: Définir le nombre maximal de miniatures à conserver en cache pour chaque utilisateur. Les miniatures les plus anciennes seront supprimées lorsque de nouvelles miniatures doivent être générées.
+        advice: Une valeur trop faible peut entraîner une utilisation excessive du processeur, tandis qu'une valeur trop élevée peut entraîner une utilisation accrue de l’espace disque. La plage recommandée se situe entre 100 et 200.
     users:
       title: Utilisateurs
       role:
@@ -264,6 +270,18 @@ pages:
         input: Pour confirmer, veuillez saisir {username} dans le champ ci-dessous.
         cancel: Annuler
         submit: Supprimer
+    maintenance:
+      title: Maintenance
+      clear_thumbnail_cache:
+        title: Vider le cache des miniatures
+        description: Supprimer toutes les miniatures de fichiers stockées en cache. Les miniatures seront recréées dès lors que les fichiers seront à nouveau listés.
+        clear_cache: Vider le cache
+        cache_size: 'Taille actuelle du cache : {size}'
+      clear_thumbnail_cache_dialog:
+        title: Vider le cache des miniatures
+        summary: Le processeur pourra être plus sollicité qu'habituellement lors des prochaines recherches de fichiers. Cette action est irréversible. Êtes-vous sûr(e) de vouloir vider le cache des miniatures ?
+        cancel: Annuler
+        submit: Vider le cache
   debug:
     title: Débogage
   profile:
@@ -567,6 +585,10 @@ actions:
       remove_custom_link:
         success:
           title: Lien personnalisé supprimé
+  maintenance:
+    clear_thumbnail_cache:
+      success:
+        title: Le cache des miniatures a été vidé
   users:
     update_password:
       success:
@@ -659,6 +681,7 @@ errors:
       already_exists: Cette adresse e-mail est déjà utilisée
     disk_quota:
       invalid_disk_quota: Quota d’espace disque invalide
+    insufficient_disk_quota: Quota d’espace disque insuffisant
     reset_password:
       too_many_requests: Veuillez patienter avant de redemander un lien de réinitialisation
       token_not_found: Lien de réinitialisation invalide

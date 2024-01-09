@@ -200,9 +200,11 @@ pages:
     menu:
       general: General
       users: Users
+      maintenance: Maintenance
     general:
       headers:
         registrations: Registrations of new users
+        files: Files
       toggle_registration:
         title: Allow registrations
         description: If this option is enabled, visitors will be able to create an account on your Hedera instance. Otherwise, only administrators will be able to create accounts.
@@ -213,6 +215,10 @@ pages:
         limited: Limited
         choose: Choose a policy
         placeholder: Enter a size
+      maximum_thumbnail_count:
+        title: Amount of thumbnails to keep
+        description: Set the maximum amount of thumbnails to keep in cache for each user. The oldest thumbnails will be deleted when new thumbnails need to be generated.
+        advice: A value that is too low can lead to excessive CPU usage, while a value that is too high can lead to increased disk space usage. The recommended range is between 100 and 200.
     users:
       title: Users
       role:
@@ -264,6 +270,18 @@ pages:
         input: To confirm, please enter {username} in the field below.
         cancel: Cancel
         submit: Delete
+    maintenance:
+      title: Maintenance
+      clear_thumbnail_cache:
+        title: Clear thumbnail cache
+        description: Delete all file thumbnails stored in cache. Thumbnails will be recreated as soon as the files are listed again.
+        clear_cache: Clear cache
+        cache_size: 'Current cache size: {size}'
+      clear_thumbnail_cache_dialog:
+        title: Clear thumbnail cache
+        summary: The CPU may be more solicited than usual during the next file searches. This action is irreversible. Are you sure you want to clear the thumbnail cache?
+        cancel: Cancel
+        submit: Clear cache
   debug:
     title: Debug
   profile:
@@ -567,6 +585,10 @@ actions:
       remove_custom_link:
         success:
           title: Custom link removed
+  maintenance:
+    clear_thumbnail_cache:
+      success:
+        title: The thumbnail cache has been cleared
   users:
     update_password:
       success:
@@ -659,6 +681,7 @@ errors:
       already_exists: This email address is already taken
     disk_quota:
       invalid_disk_quota: Invalid disk quota
+    insufficient_disk_quota: Insufficient disk quota
     reset_password:
       too_many_requests: Please wait before requesting a new reset link
       token_not_found: This reset key is invalid

@@ -58,10 +58,9 @@ dependencies {
     implementation("org.liquibase", "liquibase-core", liquibaseVersion)
     implementation("com.zaxxer", "HikariCP", hikaricpVersion)
     implementation("at.favre.lib", "bcrypt", bcryptVersion)
+    implementation("io.trbl", "blurhash", "1.0.0")
+    implementation("net.coobird", "thumbnailator", "0.4.20")
     implementation("com.sun.mail", "jakarta.mail", "2.0.1")
-    implementation("io.ktor:ktor-server-core-jvm:2.3.2")
-    implementation("io.ktor:ktor-server-velocity-jvm:2.3.2")
-    implementation("io.ktor:ktor-server-freemarker-jvm:2.3.2")
 
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)

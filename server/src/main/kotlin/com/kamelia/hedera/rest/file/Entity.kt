@@ -7,6 +7,7 @@ import com.kamelia.hedera.rest.token.PersonalTokenTable
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserTable
 import com.kamelia.hedera.util.uuid
+import io.trbl.blurhash.BlurHash
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -40,6 +41,7 @@ object FileTable : AuditableUUIDTable("files") {
     val name = varchar("name", 255)
     val mimeType = varchar("mime_type", 64)
     val size = long("size")
+    val blurhash = varchar("blurhash", 52).nullable()
     val visibility = enumerationByName("visibility", 16, FileVisibility::class)
     val owner = reference("owner", UserTable)
     val uploadToken = reference("upload_token", PersonalTokenTable).nullable()
@@ -83,6 +85,7 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
             name: String,
             mimeType: String,
             size: Long,
+            blurhash: String? = null,
             visibility: FileVisibility,
             creator: User,
             uploadToken: PersonalToken? = null,
@@ -91,6 +94,7 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
             this.name = name
             this.mimeType = mimeType
             this.size = size
+            this.blurhash = blurhash
             this.visibility = visibility
             this.owner = creator
             this.uploadToken = uploadToken
@@ -104,12 +108,13 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
     var name by FileTable.name
     var mimeType by FileTable.mimeType
     var size by FileTable.size
+    var blurhash by FileTable.blurhash
     var visibility by FileTable.visibility
     var owner by User referencedOn FileTable.owner
     var uploadToken by PersonalToken optionalReferencedOn FileTable.uploadToken
     var customLink by FileTable.customLink
 
-    val ownerId get() = transaction { owner.uuid }
+    val ownerId get() = readValues[FileTable.owner].value
 
     fun update(dto: FileUpdateDTO, updater: User): File = apply {
         dto.name?.let { name = it }

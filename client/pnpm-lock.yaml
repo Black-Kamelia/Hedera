@@ -56,6 +56,9 @@ devDependencies:
   '@vueuse/nuxt':
     specifier: ^10.7.0
     version: 10.7.1(nuxt@3.9.0)(vue@3.3.13)
+  blurhash:
+    specifier: ^2.0.5
+    version: 2.0.5
   clean-css:
     specifier: ^5.3.3
     version: 5.3.3
@@ -1621,6 +1624,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: true
     bundledDependencies:
       - napi-wasm
@@ -3730,6 +3734,10 @@ packages:
 
   /birpc@0.2.14:
     resolution: {integrity: sha512-37FHE8rqsYM5JEKCnXFyHpBCzvgHEExwVVTq+nUmloInU7l8ezD1TpOhKpS8oe1DTYFqEK27rFZVKG43oTqXRA==}
+    dev: true
+
+  /blurhash@2.0.5:
+    resolution: {integrity: sha512-cRygWd7kGBQO3VEhPiTgq4Wc43ctsM+o46urrmPOiuAe+07fzlSB9OJVdpgDL0jPqXUVQ9ht7aq7kxOeJHRK+w==}
     dev: true
 
   /boolbase@1.0.0:
@@ -6384,6 +6392,10 @@ packages:
     resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
+    dev: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
     dev: true
 
   /natural-compare@1.4.0:

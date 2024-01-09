@@ -19,10 +19,11 @@ const type = computed(() => mimeTypeToMediaType(data.mimeType))
 
     <Thumbnail
       :src="thumbnail"
+      :blurhash="data.blurhash"
       :alt="data.name"
       :type="data.mimeType"
       :loading="loading"
-      :error="error"
+      :error="error as boolean"
       @open-preview="previewOpen = true"
     />
   </div>

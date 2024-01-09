@@ -126,6 +126,14 @@ object Errors {
 
     }
 
+    object Thumbnails {
+
+        private const val PREFIX = "${Errors.PREFIX}.thumbnails"
+
+        const val GENERATION = "$PREFIX.generation"
+
+    }
+
     object Tokens {
 
         private const val PREFIX = "${Errors.PREFIX}.tokens"

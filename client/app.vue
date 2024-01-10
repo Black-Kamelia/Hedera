@@ -42,8 +42,12 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
     query: { reason: 'expired', redirect },
   })
 })
-useEventBus(LoggedOutEvent).on((event) => {
-  navigateTo('/login', { replace: true })
+useEventBus(LoggedOutEvent).on(() => {
+  const redirect = currentRoute.value.query.redirect
+  navigateTo({
+    path: '/login',
+    query: { redirect },
+  }, { replace: true })
 })
 
 watch(locale, value => Settings.defaultLocale = value, { immediate: true })

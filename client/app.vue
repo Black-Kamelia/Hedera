@@ -43,7 +43,6 @@ useEventBus(RefreshTokenExpiredEvent).on(() => {
   })
 })
 useEventBus(LoggedOutEvent).on((event) => {
-  if (event && event.abortLogin) return
   navigateTo('/login', { replace: true })
 })
 

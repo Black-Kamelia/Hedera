@@ -61,11 +61,6 @@ useEventBus(LoggedInEvent).on((event) => {
     }
   }
 })
-useEventBus(LoggedOutEvent).on((event) => {
-  if (event?.abortLogin) {
-    navigateTo('/login', { replace: true })
-  }
-})
 </script>
 
 <template>

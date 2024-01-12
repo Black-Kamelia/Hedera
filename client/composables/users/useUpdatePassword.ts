@@ -1,11 +1,7 @@
 import type { MessageDTO } from '~/utils/messages'
 
 export default function useUpdatePassword() {
-  const { user, isAuthenticated } = storeToRefs(useAuth())
-
-  if (!isAuthenticated.value) {
-    throw new Error('User is not authenticated')
-  }
+  const { user } = storeToRefs(useAuth())
 
   const call = useFeedbackCall((oldPassword: string | null, newPassword: string, forced: boolean) => {
     return $fetchAPI<MessageDTO<UserRepresentationDTO>>(`/users/${user.value!.id}/password`, {

@@ -13,7 +13,6 @@ export const ForcePasswordChangeDoneEvent: EventBusKey<{}>
   = Symbol('force-password-change-done')
 
 export const LoggedOutEvent: EventBusKey<{
-  abortLogin: boolean
   error?: FetchError
 }> = Symbol('logged-out')
 

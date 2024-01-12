@@ -63,7 +63,7 @@ const onSubmit = handleSubmit((values) => {
           rejectClass: 'hidden',
           acceptLabel: 'Back to login',
           acceptIcon: 'i-tabler-arrow-left',
-          accept: () => logout(true),
+          accept: () => logout(),
         })
       }
       loading.value = false
@@ -110,7 +110,7 @@ const onSubmit = handleSubmit((values) => {
     </div>
 
     <div class="mt-6 flex flex-col-reverse sm:flex-row gap-3">
-      <PButton :label="t('global.logout')" class="w-full" :disabled="loading" outlined @click="logout(true)" />
+      <PButton :label="t('global.logout')" class="w-full" :disabled="loading" outlined @click="logout()" />
       <PButton :label="t('forms.change_password.submit')" class="w-full" type="submit" :loading="loading" />
     </div>
 

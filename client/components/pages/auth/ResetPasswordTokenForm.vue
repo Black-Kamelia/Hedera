@@ -22,12 +22,12 @@ const schema = object({
 })
 const { handleSubmit, setFieldError, setFieldValue, resetForm } = useForm({ validationSchema: schema })
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit((values) => {
   loading.value = true
   $fetchAPI<ResetPasswordTokenDTO>('/check-reset-password-token', { method: 'POST', body: values })
     .then(response => emit('completed', values.token, response))
     .catch((err) => {
-      if (err.response && err.response._data.fields) {
+      if (err.response?._data.fields) {
         setFieldErrors(err.response._data.fields, setFieldError)
       }
     })

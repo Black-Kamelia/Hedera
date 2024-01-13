@@ -32,7 +32,7 @@ const onSubmit = handleSubmit((values) => {
       navigateTo({ path: '/login', query: { reason: 'password_reset' } })
     })
     .catch((err) => {
-      if (err.response && err.response._data.fields) {
+      if (err.response?._data.fields) {
         setFieldErrors(err.response._data.fields, setFieldError)
       }
     })

@@ -26,15 +26,14 @@ const schema = object({
 })
 const { handleSubmit } = useForm({ validationSchema: schema })
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit((values) => {
   loading.value = true
   $fetchAPI<void>('/request-reset-password', { method: 'POST', body: values })
     .then(() => emit('completed'))
     .catch((err) => {
-      if (err.response) {
-        message.value.content = m(err.response._data.title)
-        message.value.severity = 'error'
-      }
+      if (!err.response) return
+      message.value.content = m(err.response._data.title)
+      message.value.severity = 'error'
     })
     .finally(() => loading.value = false)
 })

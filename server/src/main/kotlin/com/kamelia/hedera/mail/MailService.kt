@@ -30,10 +30,10 @@ import kotlinx.coroutines.withContext
 object MailService {
 
     private val props = Properties().apply {
-        this["mail.smtp.host"] = mailHost
-        this["mail.smtp.port"] = mailPort
-        this["mail.smtp.auth"] = mailUseAuth
-        this["mail.smtp.starttls.enable"] = mailUseTLS
+        set("mail.smtp.host", mailHost)
+        set("mail.smtp.port", mailPort)
+        set("mail.smtp.auth", mailUseAuth)
+        set("mail.smtp.starttls.enable", mailUseTLS)
     }
     private val session= Session.getInstance(props, object : Authenticator() {
         override fun getPasswordAuthentication(): PasswordAuthentication {

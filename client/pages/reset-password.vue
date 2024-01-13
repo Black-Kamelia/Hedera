@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-type ResetPasswordState = 'REQUEST_TOKEN' | 'INPUT_TOKEN' | 'RESET_PASSWORD'
-const STATES_ORDER: ResetPasswordState[] = ['REQUEST_TOKEN', 'INPUT_TOKEN', 'RESET_PASSWORD']
+const STATES_ORDER = ['REQUEST_TOKEN', 'INPUT_TOKEN', 'RESET_PASSWORD'] as const
+type ResetPasswordState = typeof STATES_ORDER[number]
 
 usePageName(() => t('pages.reset_password.title'))
 definePageMeta({

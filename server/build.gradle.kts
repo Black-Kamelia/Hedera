@@ -108,6 +108,11 @@ tasks {
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_REFRESH_SECRET" to "secretRefresh",
             "HEDERA_JWT_WS_SECRET" to "secretWSToken",
+            "HEDERA_MAIL_AUTH" to "false",
+            "HEDERA_MAIL_FROM" to "hedera@localhost",
+            "HEDERA_MAIL_HOST" to "localhost",
+            "HEDERA_MAIL_PORT" to "1025",
+            "HEDERA_MAIL_TLS" to "false",
         )
         classpath = sourceSets["main"].runtimeClasspath
         mainClass.set("com.kamelia.hedera.ApplicationKt")

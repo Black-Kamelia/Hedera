@@ -561,7 +561,7 @@ forms:
       passwords_mismatch: The passwords do not match
     fields:
       password: New password
-      confirm_password: Confirm new password
+      password_confirmation: Confirm new password
 
 actions:
   files:

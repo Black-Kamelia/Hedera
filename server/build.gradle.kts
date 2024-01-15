@@ -45,6 +45,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-auto-head-response", ktorVersion)
     implementation("io.ktor", "ktor-server-config-yaml", ktorVersion)
     implementation("io.ktor", "ktor-server-websockets", ktorVersion)
+    implementation("io.ktor", "ktor-server-freemarker", ktorVersion)
 
     implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -59,6 +60,7 @@ dependencies {
     implementation("at.favre.lib", "bcrypt", bcryptVersion)
     implementation("io.trbl", "blurhash", "1.0.0")
     implementation("net.coobird", "thumbnailator", "0.4.20")
+    implementation("com.sun.mail", "jakarta.mail", "2.0.1")
 
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)
@@ -106,6 +108,11 @@ tasks {
             "HEDERA_JWT_SECRET" to "secret",
             "HEDERA_JWT_REFRESH_SECRET" to "secretRefresh",
             "HEDERA_JWT_WS_SECRET" to "secretWSToken",
+            "HEDERA_MAIL_AUTH" to "false",
+            "HEDERA_MAIL_FROM" to "hedera@localhost",
+            "HEDERA_MAIL_HOST" to "localhost",
+            "HEDERA_MAIL_PORT" to "1025",
+            "HEDERA_MAIL_TLS" to "false",
         )
         classpath = sourceSets["main"].runtimeClasspath
         mainClass.set("com.kamelia.hedera.ApplicationKt")

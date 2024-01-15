@@ -26,6 +26,9 @@ onMounted(() => {
     if (query.reason === 'registration_disabled') {
       message.severity = 'error'
     }
+    if (query.reason === 'password_reset') {
+      message.severity = 'success'
+    }
   }
 })
 

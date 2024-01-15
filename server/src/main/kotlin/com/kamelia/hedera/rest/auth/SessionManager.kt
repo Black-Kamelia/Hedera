@@ -17,6 +17,7 @@ import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
+import io.ktor.util.logging.*
 import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -29,6 +30,7 @@ import kotlinx.coroutines.sync.Mutex
 
 object SessionManager {
 
+    private val LOGGER = KtorSimpleLogger("SessionManager")
     private val PURGE_INTERVAL = 5.minutes
 
     private val mutex = Mutex()
@@ -43,17 +45,25 @@ object SessionManager {
         if (pruneJob != null) return
         pruneJob = coroutineScope.launchPeriodic(PURGE_INTERVAL) {
             val now = System.currentTimeMillis()
+            var sessionCount = 0
+            var refreshTokenCount = 0
             mutex.withReentrantLock {
                 sessions.entries.removeIf {
-                    it.value.tokenData.accessTokenExpiration < now
+                    val b = it.value.tokenData.accessTokenExpiration < now
+                    if (b) sessionCount++
+                    b
                 }
                 loggedUsers.entries.removeIf {
                     sessions.values.none { session -> session.user.uuid == it.key }
                 }
                 refreshTokens.entries.removeIf {
-                    it.value.refreshTokenExpiration < now
+                    val b = it.value.refreshTokenExpiration < now
+                    if (b) refreshTokenCount++
+                    b
                 }
             }
+            if (sessionCount > 0) LOGGER.info("Pruned $sessionCount sessions")
+            if (refreshTokenCount > 0) LOGGER.info("Pruned $refreshTokenCount refresh tokens")
         }
     }
 

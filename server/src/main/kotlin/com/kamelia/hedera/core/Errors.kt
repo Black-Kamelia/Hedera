@@ -12,6 +12,8 @@ object Errors {
     const val UNKNOWN = "$PREFIX.unknown"
     const val UNKNOWN_MESSAGE = "$PREFIX.unknown_message"
 
+    const val MAIL_NOT_SENT = "$PREFIX.mail_not_sent"
+
     object Auth {
 
         private const val PREFIX = "${Errors.PREFIX}.auth"
@@ -178,6 +180,17 @@ object Errors {
             const val TOO_LONG = "$PREFIX.too_long"
             const val INCORRECT_PASSWORD = "$PREFIX.incorrect_password"
             const val MISSING_OLD_PASSWORD = "$PREFIX.missing_old_password"
+
+        }
+
+        object ResetPassword {
+
+            private const val PREFIX = "${Errors.Users.PREFIX}.reset_password"
+
+            const val REQUEST_NOT_SENT = "$PREFIX.request_not_sent"
+            const val TOKEN_NOT_FOUND = "$PREFIX.token_not_found"
+            const val TOKEN_EXPIRED = "$PREFIX.token_expired"
+            const val TOO_MANY_REQUESTS = "$PREFIX.too_many_requests"
 
         }
 

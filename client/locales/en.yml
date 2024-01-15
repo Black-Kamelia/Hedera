@@ -40,6 +40,7 @@ pages:
       password_changed: Your password has been changed, please log in again
       session_terminated: Your session has been terminated
       registration_disabled: Registrations are not enabled
+      password_reset: Your password has been reset, please log in again
   complete_otp:
     title: Two-factor authentication
   register:
@@ -51,6 +52,8 @@ pages:
   reset_password:
     title: Reset password
     login: Back to login
+    input_token: I have a key
+    back: Go back
   files:
     title: Files
     link_copied: The link has been copied to the clipboard
@@ -434,13 +437,6 @@ forms:
     fields:
       password: New password
       confirm_password: Confirm the new password
-  reset_password:
-    errors:
-      missing_email: Email is required
-      invalid_email: Invalid email address format
-    fields:
-      email: Email address
-    submit: Send reset link
   update_details:
     submit: Update
     errors:
@@ -539,6 +535,33 @@ forms:
     errors:
       missing_slug: Slug is required
       invalid_slug: Invalid slug format
+  reset_password_request:
+    submit: Send reset link
+    errors:
+      missing_email: Email is required
+      invalid_email: Invalid email address format
+    fields:
+      email: Email address
+  reset_password_token:
+    submit: Continue
+    message: Please input the reset key you received by email
+    errors:
+      missing_token: Reset key is required
+      invalid_token: Invalid reset key format
+    fields:
+      token: Reset key
+  reset_password:
+    submit: Reset password
+    message: Your reset key expires {expiration}
+    errors:
+      missing_password: Password is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      missing_password_confirmation: Password confirmation is required
+      passwords_mismatch: The passwords do not match
+    fields:
+      password: New password
+      password_confirmation: Confirm new password
 
 actions:
   files:
@@ -649,6 +672,7 @@ errors:
     custom_link:
       already_exists: This custom link is already taken
   users:
+    not_found: This user does not exist
     password:
       incorrect_password: Incorrect password
     username:
@@ -658,6 +682,11 @@ errors:
     disk_quota:
       invalid_disk_quota: Invalid disk quota
     insufficient_disk_quota: Insufficient disk quota
+    reset_password:
+      too_many_requests: Please wait before requesting a new reset link
+      token_not_found: This reset key is invalid
+      token_expired: This reset key has expired
+      request_not_sent: Failed to send the password reset email, please contact an administrator
 
 theme:
   system: System

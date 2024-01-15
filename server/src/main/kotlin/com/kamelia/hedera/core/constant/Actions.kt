@@ -39,6 +39,7 @@ object Actions : Namespace("actions") {
         object SelfUpdate : ActionMessage("self_update", this)
         object Update : ActionMessage("update", this)
         object UpdatePassword : ActionMessage("update_password", this)
+        object RequestPasswordReset : ActionMessage("request_password_reset", this)
         object Delete : ActionMessage("delete", this)
 
     }

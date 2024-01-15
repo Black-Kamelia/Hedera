@@ -38,3 +38,4 @@ gradle-app.setting
 .DS_Store
 executables/
 uploads/
+global_configuration.json

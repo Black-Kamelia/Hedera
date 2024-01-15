@@ -5,12 +5,14 @@ import com.kamelia.hedera.database.configureLiquibase
 import com.kamelia.hedera.plugins.configureAuthentication
 import com.kamelia.hedera.plugins.configureCORS
 import com.kamelia.hedera.plugins.configureExceptionAdvisors
+import com.kamelia.hedera.plugins.configureFreemarker
 import com.kamelia.hedera.plugins.configureRouting
 import com.kamelia.hedera.plugins.configureSerialization
 import com.kamelia.hedera.plugins.configureWebSockets
 import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.thumbnail.ThumbnailService
+import com.kamelia.hedera.rest.user.PasswordResetService
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.isDev
 import com.kamelia.hedera.util.MimeTypes
@@ -40,7 +42,9 @@ fun Application.module() = runBlocking {
     configureCORS()
     configureRouting()
     configureWebSockets()
+    configureFreemarker()
     install(AutoHeadResponse)
 
     SessionManager.startPruning()
+    PasswordResetService.startPruning()
 }

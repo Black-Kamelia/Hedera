@@ -557,7 +557,7 @@ forms:
       missing_password: Password is required
       password_too_short: The password must be at least {min} characters long
       password_too_long: The password must be at most {max} characters long
-      missing_confirm_password: Password confirmation is required
+      missing_password_confirmation: Password confirmation is required
       passwords_mismatch: The passwords do not match
     fields:
       password: New password

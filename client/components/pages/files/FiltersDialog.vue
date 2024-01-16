@@ -1,11 +1,13 @@
 <script lang="ts" setup>
+import { DateTime } from 'luxon'
 import { FileDeletedEvent } from '~/utils/events'
 
 const visible = defineModel<boolean>('visible')
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const filters = useFilesFilters()
 const localFilters = reactiveFilters(filters)
+const { config } = usePrimeVue()
 
 const visibilityOptions = [
   { name: t('pages.files.visibility.public'), value: 'PUBLIC', icon: 'i-tabler-world' },
@@ -35,6 +37,16 @@ function applyAndClose() {
 
 function reset() {
   resetFilters(localFilters)
+}
+
+function inputDate(event: Event, mapper: (date: Date) => void) {
+  const value = (event.target as HTMLInputElement)?.value
+  const date = DateTime
+    .fromFormat(value, config?.locale?.dateFormat ?? 'mm/dd/yy', { locale: locale.value })
+    .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+
+  if (!date.isValid) return
+  mapper(date.toJSDate())
 }
 
 watch(visible, (visible) => {
@@ -90,6 +102,7 @@ watch(visible, (visible) => {
             show-icon
             hour-format="24"
             :show-on-focus="false"
+            @change="(e: InputEvent) => inputDate(e, date => localFilters.startingDate = date)"
           >
             <template #dropdownicon>
               <i class="i-tabler-calendar-event" />
@@ -105,6 +118,7 @@ watch(visible, (visible) => {
             show-icon
             hour-format="24"
             :show-on-focus="false"
+            @change="(e: InputEvent) => inputDate(e, date => localFilters.endingDate = date)"
           >
             <template #dropdownicon>
               <i class="i-tabler-calendar-event" />

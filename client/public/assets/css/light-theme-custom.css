@@ -491,3 +491,11 @@ hr {
   animation: p-progress-spinner-dash 1.5s ease-in-out infinite;
   stroke: var(--text-color);
 }
+
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover,
+.p-input-filled .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover,
+.p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover,
+.p-input-filled .p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
+  background-color: var(--primary-600);
+  border-color: var(--primary-600);
+}

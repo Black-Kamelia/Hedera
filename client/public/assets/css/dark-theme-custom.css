@@ -1023,6 +1023,6 @@ hr {
   stroke: var(--text-color);
 }
 
-hr {
+hr.sep {
   border-color: var(--surface-a);
 }

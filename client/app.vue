@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { Settings } from 'luxon'
-import fr from 'public/assets/locale/fr.json'
-import en from 'public/assets/locale/en.json'
 
 useTheme()
 useWebsocketAutoConnect()
@@ -11,18 +9,6 @@ const { setTokens, setUser } = useAuth()
 const { locale } = useI18n()
 const { currentRoute } = useRouter()
 const { fetchConfiguration, updateConfiguration } = useGlobalConfiguration()
-const primeVue = usePrimeVue()
-
-onMounted(() => {
-  switch (locale.value) {
-    case 'fr':
-      primeVue.config.locale = fr
-      break
-    case 'en':
-      primeVue.config.locale = en
-      break
-  }
-})
 
 useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
   switch (payload.type) {

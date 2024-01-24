@@ -1,15 +1,30 @@
 import type { DateTimeOptions } from 'vue-i18n'
 import { useI18n as _useI18n } from 'vue-i18n'
+import fr from 'public/assets/locale/fr.json'
+import en from 'public/assets/locale/en.json'
 import type { MessageKeyDTO } from '~/utils/messages'
 
 export default function useI18n(fallback = 'en') {
   const i18n = _useI18n()
   const locale = useLocale(fallback)
   const { preferredTimeStyle, preferredDateStyle } = useUserSettings()
+  const primeVue = usePrimeVue()
+
+  function updatePrimeVueLocale(newLocale: string) {
+    switch (newLocale) {
+      case 'fr':
+        primeVue.config.locale = fr
+        break
+      case 'en':
+        primeVue.config.locale = en
+        break
+    }
+  }
 
   watch(locale, (value) => {
     i18n.locale.value = value
-  })
+    updatePrimeVueLocale(value)
+  }, { immediate: true })
 
   function d(date: Date | string | number, options?: DateTimeOptions): string {
     if (!options) {

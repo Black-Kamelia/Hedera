@@ -21,14 +21,10 @@ export default function useI18n(fallback = 'en') {
     }
   }
 
-  onMounted(() => {
-    updatePrimeVueLocale(locale.value)
-  })
-
   watch(locale, (value) => {
     i18n.locale.value = value
     updatePrimeVueLocale(value)
-  })
+  }, { immediate: true })
 
   function d(date: Date | string | number, options?: DateTimeOptions): string {
     if (!options) {

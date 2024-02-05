@@ -15,6 +15,7 @@ import com.kamelia.hedera.rest.file.FileTable
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.setting.UserSettings
 import com.kamelia.hedera.rest.setting.UserSettingsTable
+import com.kamelia.hedera.rest.user.DiskQuotaService.setMaximumDiskQuota
 import com.kamelia.hedera.util.uuid
 import java.util.*
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -175,7 +176,10 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         dto.username?.let { username = it }
         dto.email?.let { email = it }
         dto.role?.let { role = it }
-        dto.diskQuota?.let { maximumDiskQuota = it }
+        dto.diskQuota?.let {
+            setMaximumDiskQuota(it, false)
+            maximumDiskQuota = it
+        }
 
         SessionManager.updateSession(uuid, this)
         onUpdate(updater)
@@ -195,19 +199,4 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         SessionManager.updateSession(uuid, this)
         onUpdate(this)
     }
-
-    suspend fun increaseCurrentDiskQuota(size: Long): User = apply {
-        check(size >= 0) { "Added size must be positive" }
-        check(maximumDiskQuota < 0 || currentDiskQuota + size <= maximumDiskQuota) { "Quota exceeded" }
-        currentDiskQuota += size
-        SessionManager.updateSession(uuid, this)
-    }
-
-    suspend fun decreaseCurrentDiskQuota(size: Long): User = apply {
-        check(size >= 0) { "Subtracted size must be positive" }
-        check(size <= currentDiskQuota) { "Quota cannot be negative" }
-        currentDiskQuota -= size
-        SessionManager.updateSession(uuid, this)
-    }
-
 }

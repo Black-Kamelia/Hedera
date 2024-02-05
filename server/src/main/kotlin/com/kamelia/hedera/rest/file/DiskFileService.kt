@@ -2,6 +2,7 @@ package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.UploadCodeGenerationException
+import com.kamelia.hedera.rest.user.DiskQuotaService.getDiskQuota
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.MimeTypes
@@ -49,8 +50,8 @@ object DiskFileService {
         filePart: PartData.FileItem,
         fileName: String,
     ): UploadedFileContainer = withContext(Dispatchers.IO) {
-        val maximumDiskQuota = owner.maximumDiskQuota
-        var diskQuota = owner.currentDiskQuota
+        val (diskQuota, maximumDiskQuota) = owner.getDiskQuota()
+        var tmpDiskQuota = diskQuota
 
         val fileCode = generateUniqueCode()
         val filePath = Files.createDirectories(UPLOAD_PATH.resolve(owner.id.toString())).resolve(fileCode)
@@ -61,8 +62,8 @@ object DiskFileService {
 
         do {
             val readBytes = inputStream.readNBytes(buffer, 0, buffer.size)
-            diskQuota += readBytes
-            if (diskQuota >= maximumDiskQuota && maximumDiskQuota != -1L) {
+            tmpDiskQuota += readBytes
+            if (tmpDiskQuota >= maximumDiskQuota && maximumDiskQuota != -1L) {
                 Files.delete(filePath)
                 throw InsufficientDiskQuotaException()
             }
@@ -79,32 +80,6 @@ object DiskFileService {
             mimeType = MimeTypes.typeFromFile(fileName),
             file = filePath.toFile()
         )
-    }
-
-    /**
-     * Writes the content of the [file] to the disk.
-     * The file name on the disk is generated with a unique code.
-     * The file will then be written in `[UPLOAD_PATH]/[owner]/[code]`.
-     *
-     * @param file the file to write to the disk
-     * @param owner the owner of the file
-     *
-     * @return the code of the file, the mime-type of the file, and the size of the file in bytes
-     */
-    suspend fun write(
-        owner: UUID,
-        file: PartData.FileItem,
-        filename: String
-    ): Triple<String, String, Long> = withContext(Dispatchers.IO) {
-        val fileBytes = file.streamProvider().readBytes()
-        val fileCode = generateUniqueCode()
-        val directory = UPLOAD_PATH.resolve(owner.toString())
-        Files.createDirectories(directory)
-        val filePath = directory.resolve(fileCode)
-        Files.write(filePath, fileBytes)
-        val fileMimeType = MimeTypes.typeFromFile(filename)
-        val fileSize = Files.size(filePath)
-        Triple(fileCode, fileMimeType, fileSize)
     }
 
     /**

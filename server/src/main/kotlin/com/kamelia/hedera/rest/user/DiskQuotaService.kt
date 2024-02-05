@@ -39,7 +39,7 @@ object DiskQuotaService {
     }
 
     suspend fun User.setMaximumDiskQuota(maximum: Long, persist: Boolean = true) = withLock {
-        check(maximum >= 0) { "Maximum disk quota must be positive" }
+        check(maximum >= -1) { "Maximum disk quota must be positive or unlimited" }
         quotas[id.value] = currentDiskQuota to maximum
         if (persist) {
             saveQuota()

@@ -8,25 +8,67 @@ import java.sql.Connection.TRANSACTION_REPEATABLE_READ
 import java.util.*
 import kotlinx.coroutines.sync.Mutex
 
+class DiskQuotaContainer(
+    var current: Long,
+    var maximum: Long,
+) {
+    operator fun component1() = current
+    operator fun component2() = maximum
+}
+
 object DiskQuotaService {
 
-    private val quotas = mutableMapOf<UUID, Pair<Long, Long>>()
+    private val quotas = mutableMapOf<UUID, DiskQuotaContainer>()
     private val mutex = Mutex()
 
-    private suspend fun User.getDiskQuotaOrInsert(): Pair<Long, Long> {
-        if (!quotas.containsKey(id.value)) {
-            quotas[id.value] = Connection.transaction(transactionIsolation = TRANSACTION_REPEATABLE_READ) {
+    suspend fun User.getDiskQuota(): DiskQuotaContainer = withLock {
+        getDiskQuotaOrInsert()
+    }
+
+    suspend fun User.setMaximumDiskQuota(maximum: Long, persist: Boolean = true) = withLock {
+        val quota = getDiskQuotaOrInsert()
+        check(maximum >= -1) { "Maximum disk quota must be positive or unlimited" }
+        quota.maximum = maximum
+        if (persist) {
+            saveQuota(quota)
+        }
+    }
+
+    suspend fun User.increaseDiskQuota(size: Long) = withLock {
+        val quota = getDiskQuotaOrInsert()
+        val (current, maximum) = quota
+
+        check(size >= 0) { "Added size must be positive" }
+        check(maximum < 0 || current + size <= maximum) { "Insufficient disk quota" }
+
+        quota.current += size
+        saveQuota(quota)
+    }
+
+    suspend fun User.decreaseDiskQuota(size: Long) = withLock {
+        val quota = getDiskQuotaOrInsert()
+        val (current, maximum) = quota
+
+        check(size >= 0) { "Subtracted size must be positive" }
+        check(current - size >= 0) { "Quota cannot be negative" }
+
+        quota.current -= size
+        saveQuota(quota)
+    }
+
+    private suspend fun User.getDiskQuotaOrInsert(): DiskQuotaContainer {
+        return quotas.getOrPut(id.value) {
+            Connection.transaction(transactionIsolation = TRANSACTION_REPEATABLE_READ) {
                 repetitionAttempts = 10
                 minRepetitionDelay = 500
 
-                currentDiskQuota to maximumDiskQuota
+                DiskQuotaContainer(currentDiskQuota, maximumDiskQuota)
             }
         }
-        return quotas[id.value]!!
     }
 
-    private suspend fun User.saveQuota() {
-        val (current, maximum) = quotas[id.value] ?: return
+    private suspend fun User.saveQuota(quota: DiskQuotaContainer) {
+        val (current, maximum) = quota
         Connection.transaction {
             currentDiskQuota = current
             maximumDiskQuota = maximum
@@ -34,42 +76,6 @@ object DiskQuotaService {
         SessionManager.updateSession(this.uuid, this)
     }
 
-    suspend fun User.getDiskQuota(): Pair<Long, Long> = withLock {
-        getDiskQuotaOrInsert()
-    }
-
-    suspend fun User.setMaximumDiskQuota(maximum: Long, persist: Boolean = true) = withLock {
-        check(maximum >= -1) { "Maximum disk quota must be positive or unlimited" }
-        quotas[id.value] = currentDiskQuota to maximum
-        if (persist) {
-            saveQuota()
-        }
-    }
-
-    suspend fun User.increaseDiskQuota(size: Long) = withLock {
-        val (current, maximum) = getDiskQuotaOrInsert()
-
-        check(size >= 0) { "Added size must be positive" }
-        check(maximum < 0 || current + size <= maximum) { "Insufficient disk quota" }
-
-        quotas[id.value] = current + size to maximum
-        saveQuota()
-    }
-
-    suspend fun User.decreaseDiskQuota(size: Long) = withLock {
-        val (current, maximum) = getDiskQuotaOrInsert()
-
-        check(size >= 0) { "Subtracted size must be positive" }
-        check(current - size >= 0) { "Quota cannot be negative" }
-
-        quotas[id.value] = current - size to maximum
-        saveQuota()
-    }
-
-    private suspend fun <T> withLock(block: suspend () -> T): T {
-        return mutex.withReentrantLock {
-            block()
-        }
-    }
+    private suspend inline fun <T> withLock(noinline block: suspend () -> T): T = mutex.withReentrantLock(block)
 
 }

@@ -5,7 +5,6 @@ import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
-import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.constant.BulkActions
@@ -19,6 +18,8 @@ import com.kamelia.hedera.rest.core.pageable.PageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.rest.token.PersonalToken
+import com.kamelia.hedera.rest.user.DiskQuotaService.decreaseDiskQuota
+import com.kamelia.hedera.rest.user.DiskQuotaService.increaseDiskQuota
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.UserTable
@@ -32,7 +33,6 @@ import kotlin.math.ceil
 import org.jetbrains.exposed.dao.DaoEntityID
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
-import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
@@ -77,7 +77,7 @@ object FileService {
         require(fileName.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
-        creator.increaseCurrentDiskQuota(uploadedFile.size)
+        creator.increaseDiskQuota(uploadedFile.size)
 
         val thumbnail = ThumbnailService.createThumbnail(uploadedFile.file, creator.id.value, uploadedFile.mimeType, uploadedFile.code)
         val blurhash = ThumbnailService.getBlurhashOrNull(thumbnail)
@@ -320,7 +320,7 @@ object FileService {
             throw FileNotFoundException()
         }
 
-        file.owner.decreaseCurrentDiskQuota(file.size)
+        file.owner.decreaseDiskQuota(file.size)
         file.delete()
         DiskFileService.delete(file.ownerId, file.code)
 
@@ -346,7 +346,7 @@ object FileService {
 
         // Decrease the current disk quota of the user
         val user = User[userId]
-        user.decreaseCurrentDiskQuota(deletedFiles.sumOf { it.size })
+        user.decreaseDiskQuota(deletedFiles.sumOf { it.size })
 
         BulkActionResponse.of(
             BulkActions.Files.Delete,

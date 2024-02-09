@@ -7,6 +7,7 @@ import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
+import com.kamelia.hedera.rest.user.DiskQuotaService.getDiskQuota
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserEvents
 import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
@@ -109,14 +110,15 @@ object SessionManager {
     }
 
     suspend fun updateSession(userId: UUID, user: User): Unit = mutex.withReentrantLock {
+        val (currentDiskQuota, maximumDiskQuota) = user.getDiskQuota()
         loggedUsers[userId]?.apply {
             username = user.username
             email = user.email
             role = user.role
             enabled = user.enabled
             forceChangePassword = user.forceChangePassword
-            currentDiskQuota = user.currentDiskQuota
-            maximumDiskQuota = user.maximumDiskQuota
+            this.currentDiskQuota = currentDiskQuota
+            this.maximumDiskQuota = maximumDiskQuota
         }
 
         if (!user.enabled) {

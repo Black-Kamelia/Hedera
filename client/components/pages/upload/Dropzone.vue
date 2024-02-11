@@ -41,7 +41,7 @@ function onBeforeLeave(el: Element) {
   <div ref="dropzone" class="dropzone" :class="{ 'dropzone-over': isOverDropZone }">
     <Transition name="fade">
       <div v-show="empty" class="placeholder select-none">
-        <img class="w-10em pointer-events-none" src="/assets/img/new_file.png" alt="">
+        <img class="w-10em pointer-events-none" :src="useEmptyState('files_upload').value" alt="">
         <h1 class="text-2xl">
           {{ t('pages.upload.dropzone.title') }}
         </h1>

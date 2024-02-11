@@ -26,7 +26,7 @@ const pageDefinition = computed<PageDefinitionDTO>(() => ({
   sorter: sortDefinition.value,
 }))
 
-const { data, pending, refresh } = useLazyFetchAPI<PageableDTO<UserRepresentationDTO>>('/users/search', {
+const { data, pending, refresh, error } = useLazyFetchAPI<PageableDTO<UserRepresentationDTO>>('/users/search', {
   method: 'POST',
   body: pageDefinition,
   query: { page, pageSize },
@@ -67,12 +67,32 @@ function openRowContextMenu(event: Event) {
 <template>
   <UsersTableContextMenu />
 
-  <div class="p-card flex flex-row items-center gap-7 w-full overflow-hidden">
+  <div class="p-card flex flex-row items-center gap-7 w-full h-full max-h-100em overflow-hidden">
+    <div v-if="error" class="h-full w-full flex flex-col justify-center items-center">
+      <!-- TODO: Error state illustration -->
+      <img class="w-10em" :src="useEmptyState('user_list_error').value" alt="Error file">
+      <h1 class="text-2xl">
+        {{ t('pages.configuration.users.error.title') }}
+      </h1>
+      <p class="pb-10">
+        {{ t('pages.configuration.users.error.description') }}
+      </p>
+      <PButton
+        v-if="error.statusCode === 400"
+        :loading="pending"
+        rounded
+        :label="t('pages.configuration.users.error.reset_button')"
+        @click="refresh()"
+      />
+      <PButton v-else :loading="pending" rounded :label="t('pages.files.error.retry_button')" @click="refresh()" />
+    </div>
+
     <PDataTable
+      v-else
       v-model:selection="selectedRows"
       v-model:contextMenuSelection="selectedRow"
       v-model:multi-sort-meta="sort"
-      class="w-full"
+      class="h-full w-full relative"
       data-key="id"
       lazy
       :value="loading ? Array.from({ length: rows }) : users"
@@ -185,6 +205,7 @@ function openRowContextMenu(event: Event) {
 
   <div class="flex flex-row-reverse">
     <PButton
+      v-show="!error"
       :label="t('pages.configuration.users.create_user')"
       icon="i-tabler-plus"
       outlined

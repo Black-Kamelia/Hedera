@@ -270,6 +270,10 @@ pages:
         input: Pour confirmer, veuillez saisir {username} dans le champ ci-dessous.
         cancel: Annuler
         submit: Supprimer
+      error:
+        title: Quelque chose s’est mal passé
+        description: Impossible de charger la liste des utilisateurs
+        retry_button: Réessayer
     maintenance:
       title: Maintenance
       clear_thumbnail_cache:

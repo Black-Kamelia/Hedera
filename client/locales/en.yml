@@ -270,6 +270,10 @@ pages:
         input: To confirm, please enter {username} in the field below.
         cancel: Cancel
         submit: Delete
+      error:
+        title: Something went wrong
+        description: Failed to load the list of users
+        retry_button: Retry
     maintenance:
       title: Maintenance
       clear_thumbnail_cache:

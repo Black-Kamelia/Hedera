@@ -97,6 +97,10 @@ function openRowContextMenu(event: Event) {
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   fileDoubleClickEvent.emit({ file: event.data })
 }
+
+const filesErrorState = useEmptyState('files_error')
+const noSearchResultsState = useEmptyState('no_search_results')
+const filesEmptyState = useEmptyState('files_empty')
 </script>
 
 <template>
@@ -104,7 +108,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
   <div v-if="error" class="h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Error state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="Error file">
+    <img class="w-10em" :src="filesErrorState" alt="Error file">
     <h1 class="text-2xl">
       {{ t('pages.files.error.title') }}
     </h1>
@@ -126,7 +130,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     class="h-full w-full flex flex-col justify-center items-center"
   >
     <!-- TODO: Empty state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <img class="w-10em" :src="noSearchResultsState" alt="New file">
     <h1 class="text-2xl">
       {{ t('pages.files.no_results.title') }}
     </h1>
@@ -138,7 +142,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
   <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <img class="w-10em" :src="filesEmptyState" alt="New file">
     <h1 class="text-2xl">
       {{ t('pages.files.empty.title') }}
     </h1>

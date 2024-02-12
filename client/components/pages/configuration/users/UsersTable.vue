@@ -62,6 +62,8 @@ function onRowContextMenu(event: DataTableRowContextMenuEvent) {
 function openRowContextMenu(event: Event) {
   contextMenu.value?.show(event)
 }
+
+const userListErrorState = useEmptyState('user_list_error')
 </script>
 
 <template>
@@ -70,7 +72,7 @@ function openRowContextMenu(event: Event) {
   <div class="p-card flex flex-row items-center gap-7 w-full h-full max-h-100em overflow-hidden">
     <div v-if="error" class="h-full w-full flex flex-col justify-center items-center">
       <!-- TODO: Error state illustration -->
-      <img class="w-10em" :src="useEmptyState('user_list_error').value" alt="Error file">
+      <img class="w-10em" :src="userListErrorState" alt="Error file">
       <h1 class="text-2xl">
         {{ t('pages.configuration.users.error.title') }}
       </h1>

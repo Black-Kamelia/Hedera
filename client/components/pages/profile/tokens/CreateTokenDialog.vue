@@ -53,22 +53,24 @@ function onHide() {
   >
     <div class="relative">
       <SlideTransitionContainer>
-        <div v-if="!newToken" class="flex flex-col gap-3">
-          <p class="text-[--text-color-secondary]">
-            {{ t('pages.profile.tokens.create_dialog.summary') }}
-          </p>
+        <div v-if="!newToken">
+          <div class="flex flex-col gap-3">
+            <p class="text-[--text-color-secondary]">
+              {{ t('pages.profile.tokens.create_dialog.summary') }}
+            </p>
 
-          <FormInputText
-            id="token_name"
-            name="name"
-            :label="t('pages.profile.tokens.create_dialog.fields.name')"
-            :placeholder="t('pages.profile.tokens.create_dialog.fields.name_placeholder', { name: getRandomDeveloper().firstName })"
-            class="w-full"
-            autofocus
-            @keydown.enter="submit"
-          />
+            <FormInputText
+              id="token_name"
+              name="name"
+              :label="t('pages.profile.tokens.create_dialog.fields.name')"
+              :placeholder="t('pages.profile.tokens.create_dialog.fields.name_placeholder', { name: getRandomDeveloper().firstName })"
+              class="w-full"
+              autofocus
+              @keydown.enter="submit"
+            />
+          </div>
 
-          <div class="flex flex-row justify-end gap-2 mt-5 items-center">
+          <div class="flex flex-row justify-end gap-2 pt-9 items-center">
             <PButton
               :label="t('pages.profile.tokens.create_dialog.cancel')"
               text
@@ -79,6 +81,7 @@ function onHide() {
               :label="t('pages.profile.tokens.create_dialog.submit')"
               :loading="pending"
               type="submit"
+              icon="i-tabler-check"
               @click="submit"
             />
           </div>
@@ -113,7 +116,7 @@ function onHide() {
                 @click="getUpicConfiguration(newToken!.name, token)"
               />
             </div>
-            <div class="flex flex-row-reverse gap-2 items-center">
+            <div class="flex flex-row-reverse gap-3 items-center">
               <PButton size="small" text :label="t('pages.profile.tokens.create_dialog.documentation')" icon="i-tabler-help-circle-filled" />
               <PButton size="small" text :label="t('pages.profile.tokens.create_dialog.propose_app')" icon="i-tabler-message-report" />
             </div>

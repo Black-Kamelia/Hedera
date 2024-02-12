@@ -52,58 +52,59 @@ watch(visible, (val) => {
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="resetForm()"
   >
-    <div class="flex flex-col gap-3">
-      <i18n-t
-        keypath="pages.configuration.users.delete_dialog.summary"
-        class="color-[--text-color-secondary]"
-        scope="global"
-        tag="p"
-      >
-        <template #username>
-          <b class="color-[--text-color]">{{ username }}</b>
-        </template>
-      </i18n-t>
+    <form @submit="submit">
+      <div class="flex flex-col gap-3">
+        <i18n-t
+          keypath="pages.configuration.users.delete_dialog.summary"
+          class="color-[--text-color-secondary]"
+          scope="global"
+          tag="p"
+        >
+          <template #username>
+            <b class="color-[--text-color]">{{ username }}</b>
+          </template>
+        </i18n-t>
 
-      <i18n-t
-        keypath="pages.configuration.users.delete_dialog.input"
-        class="color-[--text-color-secondary]"
-        scope="global"
-        tag="p"
-      >
-        <template #username>
-          <b class="color-[--text-color]">{{ username }}</b>
-        </template>
-      </i18n-t>
+        <i18n-t
+          keypath="pages.configuration.users.delete_dialog.input"
+          class="color-[--text-color-secondary]"
+          scope="global"
+          tag="p"
+        >
+          <template #username>
+            <b class="color-[--text-color]">{{ username }}</b>
+          </template>
+        </i18n-t>
 
-      <FormInputText
-        id="deleteUser_username"
-        name="username"
-        label=""
-        class="w-full"
-        :disabled="pending"
-        autocomplete="off"
-        autofocus
-        @keydown.enter="submit"
-        @paste.prevent
-      />
-    </div>
+        <FormInputText
+          id="deleteUser_username"
+          name="username"
+          label=""
+          class="w-full"
+          :disabled="pending"
+          autocomplete="off"
+          autofocus
+          @paste.prevent
+        />
+      </div>
 
-    <template #footer>
-      <PButton
-        :label="t('pages.configuration.users.delete_dialog.cancel')"
-        text
-        :disabled="pending"
-        @click="visible = false"
-      />
-      <PButton
-        :label="t('pages.configuration.users.delete_dialog.submit')"
-        :loading="pending"
-        icon="i-tabler-trash"
-        severity="danger"
-        type="submit"
-        :disabled="!usernamesMatch"
-        @click="submit"
-      />
-    </template>
+      <div class="flex flex-row justify-end gap-2 pt-9 items-center">
+        <PButton
+          :label="t('pages.configuration.users.delete_dialog.cancel')"
+          text
+          :disabled="pending"
+          @click="visible = false"
+        />
+        <PButton
+          :label="t('pages.configuration.users.delete_dialog.submit')"
+          :loading="pending"
+          icon="i-tabler-trash"
+          severity="danger"
+          type="submit"
+          :disabled="!usernamesMatch"
+          @click="submit"
+        />
+      </div>
+    </form>
   </PDialog>
 </template>

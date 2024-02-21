@@ -60,7 +60,7 @@ export function useWebsocketEvent<T extends HederaWebsocketPayload['type']>(
   event: T,
   handler: (payload: Extract<HederaWebsocketPayload, { type: T }>['data']) => void,
 ) {
-  useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
+  useEventBus(WebsocketPacketReceivedEvent).on((_, { payload }) => {
     if (payload.type === event) handler(payload.data as any)
   })
 }

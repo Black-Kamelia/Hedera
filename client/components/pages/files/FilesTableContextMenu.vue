@@ -31,7 +31,7 @@ function _deleteFile() {
   })
 }
 
-fileDoubleClickEvent.on(({ file }) => {
+fileDoubleClickEvent.on((_, { file }) => {
   switch (settings.fileDoubleClickAction) {
     case 'OPEN_NEW_TAB':
       window.open(`/m/${file.code}`)

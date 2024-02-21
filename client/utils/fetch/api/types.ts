@@ -15,7 +15,12 @@ type ComputedOptions<T extends Record<string, any>> = {
 type ComputedFetchOptions<R extends NitroFetchRequest, M extends AvailableRouterMethod<R>> = ComputedOptions<NitroFetchOptions<R, M>>
 
 export interface UseFetchAPIOptions<
-  ResT, DataT = ResT, PickKeys extends KeysOf<DataT> = KeysOf<DataT>, DefaultT = null, R extends NitroFetchRequest = string & {}, M extends AvailableRouterMethod<R> = AvailableRouterMethod<R>,
+  ResT,
+  DataT = ResT,
+  PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
+  DefaultT = null,
+  R extends NitroFetchRequest = string & {},
+  M extends AvailableRouterMethod<R> = AvailableRouterMethod<R>,
 > extends Omit<AsyncDataOptions<ResT, DataT, PickKeys, DefaultT>, 'watch'>, ComputedFetchOptions<R, M> {
   key?: string
   $fetch?: typeof globalThis.$fetch

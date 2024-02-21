@@ -10,7 +10,7 @@ const { computeShift } = useHumanFileSize()
 const model = defineModel<Nullable<number>>()
 const inputModel = ref<Nullable<FileSize>>(model.value ? computeShift(model.value) : null)
 
-const sizes = computed<{ name: string; shift: FileSizeShift }[]>(() => {
+const sizes = computed<{ name: string, shift: FileSizeShift }[]>(() => {
   switch (filesSizeScale.value) {
     case 'BINARY': return [
       { name: t('size_units.binary.0'), shift: 0 },

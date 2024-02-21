@@ -15,8 +15,7 @@ async function exportIcons() {
   })
 
   await iconSet.forEach(async (name, type) => {
-    if (type !== 'icon')
-      return
+    if (type !== 'icon') return
 
     const svg = iconSet.toSVG(name)
     if (!svg) {
@@ -27,8 +26,7 @@ async function exportIcons() {
     try {
       cleanupSVG(svg)
       runSVGO(svg)
-    }
-    catch (err) {
+    } catch (err) {
       console.log('Error cleaning up SVG: ', err)
       iconSet.remove(name)
       return

@@ -7,7 +7,7 @@ definePageMeta({
   middleware: ['auth', 'register', 'card-transitions'],
 })
 
-useEventBus(LoggedInEvent).on((event) => {
+useEventBus(LoggedInEvent).on((_, event) => {
   if (!event.error) navigateTo('/files', { replace: true })
 })
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const { sorted, sortOrder = 0 } = defineProps<{ sorted: boolean; sortOrder?: number }>()
+const { sorted, sortOrder = 0 } = defineProps<{ sorted: boolean, sortOrder?: number }>()
 </script>
 
 <template>

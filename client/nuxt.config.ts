@@ -1,5 +1,6 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import process from 'node:process'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { transformShortVmodel } from '@vue-macros/short-vmodel'
 import runtimeConfig from './env.config.json'

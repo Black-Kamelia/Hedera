@@ -10,7 +10,7 @@ const { locale } = useI18n()
 const { currentRoute } = useRouter()
 const { fetchConfiguration, updateConfiguration } = useGlobalConfiguration()
 
-useEventBus(WebsocketPacketReceivedEvent).on(({ payload }) => {
+useEventBus(WebsocketPacketReceivedEvent).on((_, { payload }) => {
   switch (payload.type) {
     case 'user-connected':
     case 'user-updated': {

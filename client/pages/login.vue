@@ -49,7 +49,7 @@ function redirectToApplication() {
   }
 }
 
-useEventBus(LoggedInEvent).on((event) => {
+useEventBus(LoggedInEvent).on((_, event) => {
   if (!event.error) {
     const user = event.user
     message.content = null

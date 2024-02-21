@@ -1,9 +1,9 @@
 // BEGIN SECTION: Utils
-type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
+type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>
 
 declare global {
   type Nullable<T> = T | null | undefined
-  type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
+  type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never
   type KeysOf<T> = Array<
     T extends T // Include all keys of union types, not just common keys
       ? keyof T extends string
@@ -23,14 +23,12 @@ declare global {
 }
 // END SECTION: Utils
 
-
 // BEGIN SECTION: DOM
 declare global {
   type CompElement<T = {}> = { $el: HTMLElement } & T
-  type OnlyProps<T> = Omit<T, "$attrs">
+  type OnlyProps<T> = Omit<T, '$attrs'>
 }
 // END SECTION: DOM
-
 
 // BEGIN SECTION: Others
 declare global {
@@ -53,15 +51,14 @@ declare global {
 }
 // END SECTION: Others
 
-
 // BEGIN SECTION: DTO
 declare global {
   interface PageDTO<E> {
-    items: Array<E>,
-    page: number,
-    pageSize: number,
-    totalPages: number,
-    totalItems: number,
+    items: Array<E>
+    page: number
+    pageSize: number
+    totalPages: number
+    totalItems: number
   }
 
   interface PageableDTO<E> {
@@ -99,16 +96,16 @@ declare global {
   }
 
   interface FileRepresentationDTO {
-    id: string,
-    code: string,
-    name: string,
-    mimeType: string,
-    size: number,
-    blurhash: string | null,
-    visibility: string,
-    customLink: Nullable<string>,
-    owner: FileOwnerDTO,
-    createdAt: string,
+    id: string
+    code: string
+    name: string
+    mimeType: string
+    size: number
+    blurhash: string | null
+    visibility: string
+    customLink: Nullable<string>
+    owner: FileOwnerDTO
+    createdAt: string
   }
 
   interface BulkActionSummaryDTO<E> {
@@ -223,6 +220,5 @@ declare global {
   }
 }
 // END SECTION: DTO
-
 
 export {}

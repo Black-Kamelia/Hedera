@@ -11,6 +11,7 @@
     "nuxi": "nuxi",
     "taze": "taze major -I",
     "lint": "eslint .",
+    "lint:report": "eslint . --format=html --output-file=eslint-report.html",
     "icons": "node ./scripts/export-icons.cjs",
     "minify": "node ./scripts/css-minify.cjs",
     "tsc": "tsc --noEmit && vue-tsc --noEmit"

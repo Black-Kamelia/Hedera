@@ -30,7 +30,7 @@ tasks {
 
     outputs.file(file("${rootProject.projectDir}/client/eslint-report.html"))
 
-    pnpmCommand.set(listOf("lint"))
+    pnpmCommand.set(listOf("lint:report"))
   }
 
   val icons = register<PnpmTask>("icons") {

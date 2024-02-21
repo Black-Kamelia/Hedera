@@ -7,7 +7,7 @@ const cm = inject(FileTableContextMenuKey)
 const { t } = useI18n()
 const { isSupported } = useClipboard()
 const { selectedRow } = useFilesTable()
-const confirm = useConfirm()
+const confirm = useConfirmEvent()
 const settings = useUserSettings()
 const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 

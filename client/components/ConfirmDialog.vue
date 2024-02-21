@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import ConfirmationEventBus from 'primevue/confirmationeventbus/confirmationeventbus.esm'
-import type { ConfirmationOptions } from 'primevue/confirmationoptions'
-
-const confirmation = ref<ConfirmationOptions | null>(null)
+const confirmation = ref<ConfirmOptions | null>(null)
 const visible = ref(false)
 
 const loadingAccept = ref(false)
 const loadingReject = ref(false)
 
-function confirmationListener(options: ConfirmationOptions) {
+function confirmationListener(options: ConfirmOptions) {
   confirmation.value = options
   if (options.onShow) {
     options.onShow()
@@ -46,14 +43,7 @@ function onHide() {
   visible.value = false
 }
 
-onMounted(() => {
-  ConfirmationEventBus.on('confirm', confirmationListener)
-  ConfirmationEventBus.on('close', closeListener)
-})
-onBeforeUnmount(() => {
-  ConfirmationEventBus.off('confirm', confirmationListener)
-  ConfirmationEventBus.off('close', closeListener)
-})
+useSubscribeConfirmEvent(confirmationListener, closeListener)
 </script>
 
 <template>

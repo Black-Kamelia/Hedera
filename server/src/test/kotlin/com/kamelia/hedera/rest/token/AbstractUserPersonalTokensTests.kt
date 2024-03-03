@@ -40,23 +40,3 @@ abstract class AbstractUserPersonalTokensTests(
         }
     }
 }
-
-class UserPersonalTokensTestsExpectedResults(
-    val deleteOwnPersonalToken: HttpStatusCode,
-
-    createPersonalToken: HttpStatusCode,
-    listPersonalTokens: HttpStatusCode,
-    deleteOthersPersonalToken: Map<UserRole, HttpStatusCode>,
-) : PersonalTokensTestsExpectedResults(
-    createPersonalToken,
-    listPersonalTokens,
-    deleteOthersPersonalToken
-)
-
-class UserPersonalTokensTestsInput(
-    val deleteOwnPersonalTokenId: UUID,
-
-    deleteOthersPersonalTokenId: Map<UserRole, UUID>,
-) : PersonalTokensTestsInput(
-    deleteOthersPersonalTokenId
-)

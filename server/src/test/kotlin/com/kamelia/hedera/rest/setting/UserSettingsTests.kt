@@ -17,28 +17,28 @@ class UserSettingsTests {
     @Nested
     inner class OwnerFilesTests : AbstractUserSettingsTests(
         owner,
-        UserSettingsTestsExpectedResults(OK, OK)
+        ownerExpectedResults
     )
 
     @DisplayName("User settings tests as admin")
     @Nested
     inner class AdminFilesTests : AbstractUserSettingsTests(
         admin,
-        UserSettingsTestsExpectedResults(OK, OK)
+        adminExpectedResults
     )
 
     @DisplayName("User settings tests as regular user")
     @Nested
     inner class RegularUserFilesTests : AbstractUserSettingsTests(
         user,
-        UserSettingsTestsExpectedResults(OK, OK)
+        regularUserExpectedResults
     )
 
     @DisplayName("User settings tests as guest")
     @Nested
     inner class GuestFilesTests : AbstractUserSettingsTests(
         guest,
-        UserSettingsTestsExpectedResults(Unauthorized, Unauthorized)
+        guestExpectedResults
     )
 
     companion object {

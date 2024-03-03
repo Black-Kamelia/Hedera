@@ -20,84 +20,32 @@ class PersonalTokensTests {
     @Nested
     inner class OwnerPersonalTokensTests : AbstractUserPersonalTokensTests(
         owner,
-        UserPersonalTokensTestsExpectedResults(
-            deleteOwnPersonalToken = OK,
-
-            listPersonalTokens = OK,
-            createPersonalToken = Created,
-            deleteOthersPersonalToken = mapOfRole(Forbidden, Forbidden, Forbidden),
-        ),
-        UserPersonalTokensTestsInput(
-            deleteOwnPersonalTokenId = "00000001-0002-0000-0001-000000000000".uuid(),
-
-            deleteOthersPersonalTokenId = mapOfRole(
-                "00000001-0002-0000-0001-000000000001".uuid(),
-                "00000002-0002-0000-0001-000000000001".uuid(),
-                "00000003-0002-0000-0001-000000000001".uuid(),
-            )
-        ),
+        ownerExpectedResults,
+        ownerInput,
     )
 
     @DisplayName("Personal tokens as admin")
     @Nested
     inner class AdminPersonalTokensTests : AbstractUserPersonalTokensTests(
         admin,
-        UserPersonalTokensTestsExpectedResults(
-            deleteOwnPersonalToken = OK,
-
-            listPersonalTokens = OK,
-            createPersonalToken = Created,
-            deleteOthersPersonalToken = mapOfRole(Forbidden, Forbidden, Forbidden),
-        ),
-        UserPersonalTokensTestsInput(
-            deleteOwnPersonalTokenId = "00000002-0002-0000-0001-000000000000".uuid(),
-
-            deleteOthersPersonalTokenId = mapOfRole(
-                "00000001-0002-0000-0001-000000000002".uuid(),
-                "00000002-0002-0000-0001-000000000002".uuid(),
-                "00000003-0002-0000-0001-000000000002".uuid(),
-            ),
-        ),
+        adminExpectedResults,
+        adminInput,
     )
 
     @DisplayName("Personal tokens as regular user")
     @Nested
     inner class RegularUserPersonalTokensTests : AbstractUserPersonalTokensTests(
         user,
-        UserPersonalTokensTestsExpectedResults(
-            deleteOwnPersonalToken = OK,
-
-            listPersonalTokens = OK,
-            createPersonalToken = Created,
-            deleteOthersPersonalToken = mapOfRole(Forbidden, Forbidden, Forbidden),
-        ),
-        UserPersonalTokensTestsInput(
-            deleteOwnPersonalTokenId = "00000003-0002-0000-0001-000000000000".uuid(),
-
-            deleteOthersPersonalTokenId = mapOfRole(
-                "00000001-0002-0000-0001-000000000003".uuid(),
-                "00000002-0002-0000-0001-000000000003".uuid(),
-                "00000003-0002-0000-0001-000000000003".uuid(),
-            ),
-        ),
+        regularUserFilesTests,
+        regularUserInput,
     )
 
     @DisplayName("Personal tokens as guest")
     @Nested
     inner class GuestPersonalTokensTests : AbstractPersonalTokensTests(
         guest,
-        PersonalTokensTestsExpectedResults(
-            listPersonalTokens = Unauthorized,
-            createPersonalToken = Unauthorized,
-            deleteOthersPersonalToken = mapOfRole(Unauthorized, Unauthorized, Unauthorized),
-        ),
-        PersonalTokensTestsInput(
-            deleteOthersPersonalTokenId = mapOfRole(
-                "00000001-0002-0000-0001-000000000004".uuid(),
-                "00000002-0002-0000-0001-000000000004".uuid(),
-                "00000003-0002-0000-0001-000000000004".uuid(),
-            ),
-        ),
+        guestExpectedResults,
+        guestInput,
     )
 
     companion object {

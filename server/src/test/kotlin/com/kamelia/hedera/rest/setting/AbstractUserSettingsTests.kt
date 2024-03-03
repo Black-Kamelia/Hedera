@@ -133,8 +133,3 @@ abstract class AbstractUserSettingsTests(
         ).stream()
     }
 }
-
-open class UserSettingsTestsExpectedResults(
-    val getSettings: HttpStatusCode,
-    val updateSetting: HttpStatusCode,
-)

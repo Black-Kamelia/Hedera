@@ -249,28 +249,3 @@ abstract class AbstractUsersTests(
         }
     }
 }
-
-open class UsersTestsExpectedResults(
-    val listUsers: HttpStatusCode,
-    val createUser: Map<UserRole, HttpStatusCode>,
-
-    val updateOthersUsername: Map<UserRole, HttpStatusCode>,
-    val updateOthersEmail: Map<UserRole, HttpStatusCode>,
-    val updateOthersRole: Map<UserRole, Map<UserRole, HttpStatusCode>>,
-    val updateOthersQuota: Map<UserRole, HttpStatusCode>,
-    val updateOthersPassword: Map<UserRole, HttpStatusCode>,
-    val activateUser: Map<UserRole, HttpStatusCode>,
-    val deactivateUser: Map<UserRole, HttpStatusCode>,
-    val deleteUser: Map<UserRole, HttpStatusCode>,
-)
-
-open class UsersTestsInput(
-    val updateOthersUsernameUserId: Map<UserRole, UUID>,
-    val updateOthersEmailUserId: Map<UserRole, UUID>,
-    val updateOthersRoleUserId: Map<UserRole, Map<UserRole, UUID>>,
-    val updateOthersQuotaUserId: Map<UserRole, UUID>,
-    val updateOthersPasswordUserId: Map<UserRole, UUID>,
-    val activateUserId: Map<UserRole, UUID>,
-    val deactivateUserId: Map<UserRole, UUID>,
-    val deleteUserId: Map<UserRole, UUID>,
-)

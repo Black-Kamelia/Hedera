@@ -31,14 +31,12 @@ function submit() {
     :pt="{ content: { class: 'overflow-hidden' } }"
   >
     <div class="flex flex-col gap-3">
-      <div class="flex flex-col gap-3 items-start">
-        <p class="text-[--text-color-secondary]">
-          {{ t('pages.files.bulk_actions.delete.description', { count: selection.length }) }}
-        </p>
-      </div>
+      <p class="text-[--text-color-secondary]">
+        {{ t('pages.files.bulk_actions.delete.description', { count: selection.length }) }}
+      </p>
     </div>
 
-    <div class="flex flex-row justify-end gap-3 pt-6">
+    <div class="flex flex-row justify-end gap-2 pt-9 items-center">
       <PButton
         :label="t('pages.files.bulk_actions.delete.cancel')"
         text

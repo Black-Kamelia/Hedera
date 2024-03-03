@@ -102,90 +102,88 @@ watch(visible, (val) => {
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="resetForm()"
   >
-    <div class="flex flex-col gap-3">
-      <PMessage
-        severity="info"
-        class="mb-3"
-        :closable="false" icon="i-tabler-info-circle-filled"
-        :pt="{ root: { style: { marginTop: 0 } } }"
-      >
-        {{ t('pages.configuration.users.edit_dialog.password_summary') }}
-        <NuxtLink v-if="selectedRow?.id === user?.id" class="underline" to="/profile/security">
-          {{ t('pages.configuration.users.edit_dialog.password_change_yours') }}
-        </NuxtLink>
-      </PMessage>
+    <form @submit="submit">
+      <div class="flex flex-col gap-3">
+        <PMessage
+          severity="info"
+          class="mb-3"
+          :closable="false" icon="i-tabler-info-circle-filled"
+          :pt="{ root: { style: { marginTop: 0 } } }"
+        >
+          {{ t('pages.configuration.users.edit_dialog.password_summary') }}
+          <NuxtLink v-if="selectedRow?.id === user?.id" class="underline" to="/profile/security">
+            {{ t('pages.configuration.users.edit_dialog.password_change_yours') }}
+          </NuxtLink>
+        </PMessage>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-        <FormInputText
-          id="username"
-          name="username"
-          :label="t('forms.create_user.fields.username')"
-          :placeholder="dev"
-          :transform-value="usernameRestrict"
-          class="w-full"
-          autofocus
-          @keydown.enter="submit"
-        />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+          <FormInputText
+            id="username"
+            name="username"
+            :label="t('forms.create_user.fields.username')"
+            :placeholder="dev"
+            :transform-value="usernameRestrict"
+            class="w-full"
+            autofocus
+          />
 
-        <FormInputText
-          id="email"
-          name="email"
-          :label="t('forms.create_user.fields.email')"
-          :placeholder="`${dev}@example.com`"
-          type="email"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormInputText
+            id="email"
+            name="email"
+            :label="t('forms.create_user.fields.email')"
+            :placeholder="`${dev}@example.com`"
+            type="email"
+            class="w-full"
+          />
 
-        <FormDropdown
-          id="role"
-          name="role"
-          :label="t('forms.create_user.fields.role')"
-          :placeholder="t('forms.create_user.fields.role_placeholder')"
-          :options="roles"
-          :disabled="selectedRow?.role === 'OWNER' || user?.role !== 'OWNER'"
-          option-label="label"
-          option-value="value"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormDropdown
+            id="role"
+            name="role"
+            :label="t('forms.create_user.fields.role')"
+            :placeholder="t('forms.create_user.fields.role_placeholder')"
+            :options="roles"
+            :disabled="selectedRow?.role === 'OWNER' || user?.role !== 'OWNER'"
+            option-label="label"
+            option-value="value"
+            class="w-full"
+          />
 
-        <FormInputFileSize
-          id="diskQuota"
-          name="diskQuota"
-          :label="t('forms.create_user.fields.disk_quota')"
-          :placeholder="quotaPlaceholder"
-          :disabled="unlimitedQuota"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormInputFileSize
+            id="diskQuota"
+            name="diskQuota"
+            :label="t('forms.create_user.fields.disk_quota')"
+            :placeholder="quotaPlaceholder"
+            :disabled="unlimitedQuota"
+            class="w-full"
+          />
+        </div>
+
+        <div class="mt-3 flex flex-col gap-3">
+          <FormCheckbox
+            id="unlimitedDiskQuota"
+            v-model="unlimitedQuota"
+            name="unlimitedDiskQuota"
+            :label="t('forms.create_user.fields.unlimited_disk_quota')"
+            binary
+          />
+        </div>
       </div>
 
-      <div class="mt-3 flex flex-col gap-3">
-        <FormCheckbox
-          id="unlimitedDiskQuota"
-          v-model="unlimitedQuota"
-          name="unlimitedDiskQuota"
-          :label="t('forms.create_user.fields.unlimited_disk_quota')"
-          binary
+      <div class="flex flex-row justify-end gap-2 pt-9 items-center">
+        <PButton
+          :label="t('pages.configuration.users.edit_dialog.cancel')"
+          text
+          :disabled="pending"
+          @click="visible = false"
+        />
+        <PButton
+          :label="t('pages.configuration.users.edit_dialog.submit')"
+          :loading="pending"
+          icon="i-tabler-check"
+          type="submit"
+          @click="submit"
         />
       </div>
-    </div>
-
-    <template #footer>
-      <PButton
-        :label="t('pages.configuration.users.edit_dialog.cancel')"
-        text
-        :disabled="pending"
-        @click="visible = false"
-      />
-      <PButton
-        :label="t('pages.configuration.users.edit_dialog.submit')"
-        :loading="pending"
-        icon="i-tabler-check"
-        type="submit"
-        @click="submit"
-      />
-    </template>
+    </form>
   </PDialog>
 </template>

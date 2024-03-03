@@ -5,7 +5,7 @@ export default function useDeleteToken() {
     return $fetchAPI<MessageDTO<PersonalTokenDTO>>(`/personalTokens/${tokenId}`, { method: 'DELETE' })
   })
   const { t } = useI18n()
-  const confirm = useConfirm()
+  const confirm = useConfirmEvent()
 
   function deleteToken(tokenId: string): Promise<MessageDTO<PersonalTokenDTO> | void> {
     return new Promise((resolve, reject) => {

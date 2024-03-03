@@ -8,7 +8,7 @@ const { t } = useI18n()
 const { logout } = useAuth()
 const updatePassword = useUpdatePassword()
 const { setUser } = useAuth()
-const dialog = useConfirm()
+const dialog = useConfirmEvent()
 
 const loading = ref(false)
 const passwordField = ref<Nullable<CompElement>>(null)

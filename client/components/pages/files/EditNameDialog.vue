@@ -73,39 +73,40 @@ watch(visible, (val) => {
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="onHide"
   >
-    <div class="flex flex-col gap-3">
-      <div class="flex flex-col gap-3 items-start">
-        <p class="text-[--text-color-secondary]">
-          {{ t('pages.files.rename.summary') }}
-        </p>
+    <form @submit="submit">
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 items-start">
+          <p class="text-[--text-color-secondary]">
+            {{ t('pages.files.rename.summary') }}
+          </p>
 
-        <FormInputText
-          id="filename"
-          v-model="filename"
-          name="filename"
-          :label="t('forms.rename_file.fields.filename')"
-          class="w-full mt-0.5"
-          autofocus
-          @keydown.enter="submit"
+          <FormInputText
+            id="filename"
+            v-model="filename"
+            name="filename"
+            :label="t('forms.rename_file.fields.filename')"
+            class="w-full mt-0.5"
+            autofocus
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-row justify-end gap-2 pt-9 items-center">
+        <PButton
+          :label="t('forms.rename_file.cancel')"
+          text
+          :disabled="savePending"
+          @click="visible = false"
+        />
+        <PButton
+          :label="t('forms.rename_file.submit')"
+          :loading="savePending"
+          icon="i-tabler-check"
+          type="submit"
+          @click="submit"
         />
       </div>
-    </div>
-
-    <div class="flex flex-row justify-end gap-3 pt-6">
-      <PButton
-        :label="t('forms.rename_file.cancel')"
-        text
-        :disabled="savePending"
-        @click="visible = false"
-      />
-      <PButton
-        :label="t('forms.rename_file.submit')"
-        :loading="savePending"
-        icon="i-tabler-check"
-        type="submit"
-        @click="submit"
-      />
-    </div>
+    </form>
   </PDialog>
 </template>
 

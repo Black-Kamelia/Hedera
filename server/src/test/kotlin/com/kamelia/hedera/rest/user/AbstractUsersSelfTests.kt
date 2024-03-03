@@ -2,9 +2,8 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.login
-import com.kamelia.hedera.uuid
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

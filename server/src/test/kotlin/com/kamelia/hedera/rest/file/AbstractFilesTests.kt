@@ -3,11 +3,10 @@ package com.kamelia.hedera.rest.file
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.Actions
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest2.FileTest
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -50,7 +49,7 @@ abstract class AbstractFilesTests(
         }
 
         val uploadFolder = File(
-            FileTest::class.java.getResource("/test_files/upload")?.toURI()
+            AbstractFilesTests::class.java.getResource("/test_files/upload")?.toURI()
                 ?: throw Exception("Missing resource folder")
         )
 
@@ -135,8 +134,8 @@ abstract class AbstractFilesTests(
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
-            assertEquals(Actions.Files.Update.Name.Success.TITLE, responseDto.title.key)
-            assertEquals(Actions.Files.Update.Name.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(Actions.Files.Update.Name.success.title.key, responseDto.title.key)
+            assertEquals(Actions.Files.Update.Name.success.message.key, responseDto.message!!.key)
             assertEquals("bar.txt", responseDto.payload!!.name)
         }
     }
@@ -162,8 +161,8 @@ abstract class AbstractFilesTests(
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
-            assertEquals(Actions.Files.Update.Visibility.Success.TITLE, responseDto.title.key)
-            assertEquals(Actions.Files.Update.Visibility.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(Actions.Files.Update.Visibility.success.title.key, responseDto.title.key)
+            assertEquals(Actions.Files.Update.Visibility.success.message.key, responseDto.message!!.key)
             assertEquals(newVisibility, responseDto.payload!!.visibility)
         }
     }
@@ -189,8 +188,8 @@ abstract class AbstractFilesTests(
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
-            assertEquals(Actions.Files.Update.CustomLink.Success.TITLE, responseDto.title.key)
-            assertEquals(Actions.Files.Update.CustomLink.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(Actions.Files.Update.CustomLink.success.title.key, responseDto.title.key)
+            assertEquals(Actions.Files.Update.CustomLink.success.message.key, responseDto.message!!.key)
             assertEquals(customLink, responseDto.payload!!.customLink)
         }
     }
@@ -213,7 +212,7 @@ abstract class AbstractFilesTests(
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
-            assertEquals(Actions.Files.Update.RemoveCustomLink.Success.TITLE, responseDto.title.key)
+            assertEquals(Actions.Files.Update.RemoveCustomLink.success.title.key, responseDto.title.key)
             assertNull(responseDto.payload!!.customLink)
         }
     }
@@ -235,8 +234,8 @@ abstract class AbstractFilesTests(
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
-            assertEquals(Actions.Files.Delete.Success.TITLE, responseDto.title.key)
-            assertEquals(Actions.Files.Delete.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(Actions.Files.Delete.success.title.key, responseDto.title.key)
+            assertEquals(Actions.Files.Delete.success.message.key, responseDto.message!!.key)
         }
     }
 

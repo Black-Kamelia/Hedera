@@ -2,8 +2,8 @@ package com.kamelia.hedera.rest.token
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.Actions
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -46,8 +46,8 @@ abstract class AbstractPersonalTokensTests(
 
         if (response.status == HttpStatusCode.Created) {
             val responseDto = Json.decodeFromString<MessageDTO<PersonalTokenDTO>>(response.bodyAsText())
-            assertEquals(Actions.Tokens.Create.Success.TITLE, responseDto.title.key)
-            assertEquals(Actions.Tokens.Create.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(Actions.Tokens.Create.success.title.key, responseDto.title.key)
+            assertEquals(Actions.Tokens.Create.success.message.key, responseDto.message!!.key)
             assertEquals(tokenName, responseDto.payload!!.name)
             assertNotNull(responseDto.payload!!.token)
         }
@@ -90,8 +90,8 @@ abstract class AbstractPersonalTokensTests(
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
-            assertEquals(Actions.Tokens.Delete.Success.TITLE, responseDto.title.key)
-            assertEquals(Actions.Tokens.Delete.Success.MESSAGE, responseDto.message!!.key)
+            assertEquals(Actions.Tokens.Delete.success.title.key, responseDto.title.key)
+            assertEquals(Actions.Tokens.Delete.success.message.key, responseDto.message!!.key)
         }
     }
 

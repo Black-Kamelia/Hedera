@@ -91,7 +91,7 @@ watch(visible, (val) => {
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="onHide"
   >
-    <div class="flex flex-col gap-3">
+    <form @submit="submit">
       <div class="flex flex-col gap-3 items-start">
         <i18n-t
           keypath="pages.files.edit_custom_link.old_link_summary"
@@ -117,7 +117,6 @@ watch(visible, (val) => {
             class="flex-grow"
             :start-addons="[`${origin}/c/`]"
             autofocus
-            @keydown.enter="submit"
           />
         </div>
 
@@ -139,33 +138,33 @@ watch(visible, (val) => {
           </template>
         </i18n-t>
       </div>
-    </div>
 
-    <div class="flex flex-row justify-between gap-3 pt-6">
-      <PButton
-        :label="t('forms.edit_custom_link.remove_link')"
-        text
-        :loading="removePending"
-        :disabled="savePending || !selectedRow?.customLink"
-        @click="removeLink"
-      />
-      <div class="flex flex-row gap-3">
+      <div class="flex flex-row justify-between gap-2 pt-9 items-center">
         <PButton
-          :label="t('forms.edit_custom_link.cancel')"
+          :label="t('forms.edit_custom_link.remove_link')"
           text
-          :disabled="savePending || removePending"
-          @click="visible = false"
+          :loading="removePending"
+          :disabled="savePending || !selectedRow?.customLink"
+          @click="removeLink"
         />
-        <PButton
-          :label="t('forms.edit_custom_link.submit')"
-          :loading="savePending"
-          :disabled="removePending"
-          icon="i-tabler-check"
-          type="submit"
-          @click="submit"
-        />
+        <div class="flex flex-row gap-3">
+          <PButton
+            :label="t('forms.edit_custom_link.cancel')"
+            text
+            :disabled="savePending || removePending"
+            @click="visible = false"
+          />
+          <PButton
+            :label="t('forms.edit_custom_link.submit')"
+            :loading="savePending"
+            :disabled="removePending"
+            icon="i-tabler-check"
+            type="submit"
+            @click="submit"
+          />
+        </div>
       </div>
-    </div>
+    </form>
   </PDialog>
 </template>
 

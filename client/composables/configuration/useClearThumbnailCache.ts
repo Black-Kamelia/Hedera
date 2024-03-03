@@ -5,7 +5,7 @@ export default function useClearThumbnailCache() {
     return $fetchAPI<MessageDTO<void>>('/configuration/maintenance/clear-thumbnail-cache', { method: 'POST' })
   })
   const { t } = useI18n()
-  const confirm = useConfirm()
+  const confirm = useConfirmEvent()
 
   function clearCache(): Promise<void | MessageDTO<void>> {
     return new Promise((resolve, reject) => {

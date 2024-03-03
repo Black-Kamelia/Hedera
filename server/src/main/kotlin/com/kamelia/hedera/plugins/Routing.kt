@@ -1,7 +1,7 @@
 package com.kamelia.hedera.plugins
 
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respondNoSuccess
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.respondNoSuccess
 import com.kamelia.hedera.rest.auth.authRoutes
 import com.kamelia.hedera.rest.configuration.globalConfigurationRoutes
 import com.kamelia.hedera.rest.file.filesRoutes

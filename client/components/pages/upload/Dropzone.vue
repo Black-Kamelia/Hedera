@@ -35,13 +35,15 @@ function onBeforeLeave(el: Element) {
   htmlEl.style.height = height
   htmlEl.style.zIndex = '1'
 }
+
+const filesUploadState = useEmptyState('files_upload')
 </script>
 
 <template>
   <div ref="dropzone" class="dropzone" :class="{ 'dropzone-over': isOverDropZone }">
     <Transition name="fade">
       <div v-show="empty" class="placeholder select-none">
-        <img class="w-10em pointer-events-none" src="/assets/img/new_file.png" alt="">
+        <img class="w-10em pointer-events-none" :src="filesUploadState" alt="">
         <h1 class="text-2xl">
           {{ t('pages.upload.dropzone.title') }}
         </h1>
@@ -58,10 +60,11 @@ function onBeforeLeave(el: Element) {
 
     <TransitionGroup name="list" class="files" tag="div" @before-leave="onBeforeLeave">
       <FileTile
-        v-for="({ file, status }, index) of files"
+        v-for="({ file, status, statusDetail }, index) of files"
         :key="file.name + file.type + file.size"
         :file="file"
         :status="status"
+        :reason="statusDetail"
         @remove="onRemove(index)"
       />
     </TransitionGroup>

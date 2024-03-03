@@ -1,5 +1,11 @@
 import type { FetchError } from 'ofetch'
-import { blobToBase64 } from '~/utils/blobs'
+import type { MaybeRef } from 'vue'
+
+const SUPPORTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif']
+const CACHE_LIMIT = 50
+
+const thumbnails: Record<string, string> = {}
+const queue: string[] = []
 
 /**
  * Composable for getting a thumbnail of a file. If the file type does not support thumbnails, the thumbnail will be null.
@@ -9,29 +15,45 @@ import { blobToBase64 } from '~/utils/blobs'
  *
  * @returns Thumbnail, loading state and error state
  */
-export function useThumbnail(code: string, mimeType: string) {
-  const thumbnail = ref<string | null>(null)
-  const isLoading = ref(true)
-  const isError = ref(false)
+export function useThumbnail(code: MaybeRef<string>, mimeType: MaybeRef<string>) {
+  const data = ref<string | null>(null)
+  const loading = ref(false)
+  const error = ref<FetchError | null>(null)
 
-  if (mimeTypeToMediaType(mimeType) === 'image') {
-    $fetchAPI<Blob>(`/files/${code}`, { responseType: 'blob' })
-      .then(response => blobToBase64(response))
-      .then(base64 => thumbnail.value = base64)
-      .catch((error: FetchError) => {
-        if (error.response && error.response.status !== 200) {
-          isError.value = true
-        }
-        thumbnail.value = null
+  watchEffect((onCleanup) => {
+    const rawCode = unref(code)
+    const rawMimeType = unref(mimeType)
+
+    if (!SUPPORTED_IMAGE_TYPES.includes(rawMimeType)) /* mime type is not supported */ return
+
+    const thumbnail = thumbnails[rawCode]
+    if (thumbnail) {
+      data.value = thumbnail
+      return
+    }
+
+    if (queue.length >= CACHE_LIMIT) {
+      const oldest = queue.pop()
+      if (oldest) delete thumbnails[oldest]
+    }
+
+    const abortController = new AbortController()
+    loading.value = true
+    $fetchAPI<Blob>(`/files/${rawCode}/thumbnail`, { responseType: 'blob', signal: abortController.signal })
+      .then(data => blobToBase64(data))
+      .then((base64) => {
+        thumbnails[rawCode] = base64
+        queue.unshift(rawCode)
+        data.value = base64
       })
-      .finally(() => isLoading.value = false)
-  } else {
-    isLoading.value = false
-  }
+      .catch((err) => {
+        error.value = err
+      })
+      .finally(() => {
+        loading.value = false
+      })
+    onCleanup(() => abortController.abort())
+  })
 
-  return {
-    thumbnail,
-    isLoading,
-    isError,
-  }
+  return { thumbnail: data, loading: readonly(loading), error: readonly(error) }
 }

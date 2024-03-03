@@ -48,6 +48,7 @@ declare global {
   export interface FileUpload {
     file: File
     status: UploadStatus
+    statusDetail?: string
   }
 }
 // END SECTION: Others
@@ -103,10 +104,19 @@ declare global {
     name: string,
     mimeType: string,
     size: number,
+    blurhash: string | null,
     visibility: string,
     customLink: Nullable<string>,
     owner: FileOwnerDTO,
     createdAt: string,
+  }
+
+  interface BulkActionSummaryDTO<E> {
+    success: number
+    successItems: E[]
+    fail: number
+    failItems: E[]
+    total: number
   }
 
   interface TokenData {
@@ -196,6 +206,7 @@ declare global {
     enableRegistrations: boolean
     defaultDiskQuotaPolicy: DiskQuotaPolicy
     defaultDiskQuota: number | null
+    maximumThumbnailCount: number
   }
 
   interface GlobalConfigurationRepresentationDTO extends GlobalConfiguration {}
@@ -204,6 +215,11 @@ declare global {
     enableRegistrations?: boolean
     defaultDiskQuotaPolicy?: DiskQuotaPolicy
     defaultDiskQuota?: number
+  }
+
+  interface ResetPasswordTokenDTO {
+    userId: string
+    expiration: string
   }
 }
 // END SECTION: DTO

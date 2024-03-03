@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import useObjectURL from '~/composables/useObjectURL'
 
-const { file, status } = defineProps<{
+interface FileTileProps {
   file: File
   status: UploadStatus
-}>()
+  reason?: string
+}
+
+const { file, status, reason = null } = defineProps<FileTileProps>()
 
 const emit = defineEmits<{
   (event: 'remove'): void
@@ -12,6 +15,19 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { format } = useHumanFileSize()
+
+const tagValue = computed(() => {
+  if (status === 'error' && reason !== null) {
+    return reason
+  }
+
+  return t({
+    pending: 'pages.upload.status.pending',
+    uploading: 'pages.upload.status.uploading',
+    completed: 'pages.upload.status.completed',
+    error: 'pages.upload.status.error',
+  }[status])
+})
 
 const thumbnail = useObjectURL(file)
 </script>
@@ -30,7 +46,7 @@ const thumbnail = useObjectURL(file)
       />
 
       <PTag
-        class="absolute bottom-2 left-3 z-100"
+        class="absolute bottom-2 left-3 z-100 max-w-[calc(100%-1.5em)] justify-start text-truncate"
         :severity="{
           pending: 'warning',
           uploading: 'warning',
@@ -43,12 +59,8 @@ const thumbnail = useObjectURL(file)
           completed: 'i-tabler-check',
           error: 'i-tabler-x',
         }[status]"
-        :value="t({
-          pending: 'pages.upload.status.pending',
-          uploading: 'pages.upload.status.uploading',
-          completed: 'pages.upload.status.completed',
-          error: 'pages.upload.status.error',
-        }[status])"
+        :value="tagValue"
+        :title="tagValue"
         rounded
       />
     </div>

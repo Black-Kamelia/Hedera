@@ -26,6 +26,9 @@ onMounted(() => {
     if (query.reason === 'registration_disabled') {
       message.severity = 'error'
     }
+    if (query.reason === 'password_reset') {
+      message.severity = 'success'
+    }
   }
 })
 
@@ -59,11 +62,6 @@ useEventBus(LoggedInEvent).on((event) => {
     } else {
       redirectToApplication()
     }
-  }
-})
-useEventBus(LoggedOutEvent).on((event) => {
-  if (event?.abortLogin) {
-    navigateTo('/login', { replace: true })
   }
 })
 </script>

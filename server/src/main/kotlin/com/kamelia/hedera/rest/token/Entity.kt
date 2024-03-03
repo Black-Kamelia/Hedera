@@ -12,8 +12,8 @@ import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.max
@@ -54,7 +54,7 @@ class PersonalToken(id: EntityID<UUID>) : UUIDEntity(id) {
         fun allWithLastUsed(
             userId: UUID,
         ): List<Pair<PersonalToken, Instant?>> {
-            val lastUsed = FileTable.createdAt.max().alias("lastUsed")
+            val lastUsed = FileTable.createdAt.max()
             return PersonalTokenTable
                 .leftJoin(FileTable, { id }, { uploadToken })
                 .slice(PersonalTokenTable.columns + lastUsed)
@@ -62,6 +62,19 @@ class PersonalToken(id: EntityID<UUID>) : UUIDEntity(id) {
                 .groupBy(PersonalTokenTable.id)
                 .orderBy(PersonalTokenTable.createdAt, SortOrder.DESC)
                 .map { PersonalToken.wrapRow(it) to it.getOrNull(lastUsed) }
+        }
+
+        fun allWithUsage(
+            userId: UUID
+        ): List<Pair<PersonalToken, Long>> {
+            val usage = FileTable.id.count()
+            return PersonalTokenTable
+                .leftJoin(FileTable, { id }, { uploadToken })
+                .slice(PersonalTokenTable.columns + usage)
+                .select { (PersonalTokenTable.owner eq userId) }
+                .groupBy(PersonalTokenTable.id)
+                .orderBy(usage, SortOrder.DESC)
+                .map { PersonalToken.wrapRow(it) to it[usage] }
         }
 
     }
@@ -72,7 +85,7 @@ class PersonalToken(id: EntityID<UUID>) : UUIDEntity(id) {
     var deleted by PersonalTokenTable.deleted
     var createdAt by PersonalTokenTable.createdAt
 
-    val ownerId get() = transaction { owner.uuid }
+    val ownerId get() = readValues[PersonalTokenTable.owner].value
 
     override fun delete() {
         token = "deleted_${id.value}"

@@ -5,7 +5,7 @@ const { data } = defineProps<{
 
 const previewOpen = ref(false)
 
-const { thumbnail, isLoading, isError } = useThumbnail(data.code, data.mimeType)
+const { thumbnail, loading, error } = useThumbnail(data.code, data.mimeType)
 
 const type = computed(() => mimeTypeToMediaType(data.mimeType))
 </script>
@@ -19,10 +19,11 @@ const type = computed(() => mimeTypeToMediaType(data.mimeType))
 
     <Thumbnail
       :src="thumbnail"
+      :blurhash="data.blurhash"
       :alt="data.name"
       :type="data.mimeType"
-      :loading="isLoading"
-      :error="isError"
+      :loading="loading"
+      :error="error as boolean"
       @open-preview="previewOpen = true"
     />
   </div>

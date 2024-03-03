@@ -15,6 +15,9 @@ function handleDelete(tokenId: string) {
   if (!data.value) return
   data.value = data.value.filter(token => token.id !== tokenId)
 }
+
+const tokenListErrorState = useEmptyState('token_list_error')
+const tokenListEmptyState = useEmptyState('token_list_empty')
 </script>
 
 <template>
@@ -39,7 +42,7 @@ function handleDelete(tokenId: string) {
   </div>
   <div v-else-if="error" class="p-card p-7 py-15 h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="New token">
+    <img class="w-10em" :src="tokenListErrorState" alt="New token">
     <h1 class="text-2xl">
       {{ t('pages.profile.tokens.error.title') }}
     </h1>
@@ -50,7 +53,7 @@ function handleDelete(tokenId: string) {
   </div>
   <div v-else class="p-card p-7 py-15 h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="New token">
+    <img class="w-10em" :src="tokenListEmptyState" alt="New token">
     <h1 class="text-2xl">
       {{ t('pages.profile.tokens.empty.title') }}
     </h1>

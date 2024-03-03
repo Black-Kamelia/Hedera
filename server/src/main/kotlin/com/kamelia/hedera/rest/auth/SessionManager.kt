@@ -4,9 +4,10 @@ import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
+import com.kamelia.hedera.rest.user.DiskQuotaService.getDiskQuota
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.UserEvents
 import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
@@ -17,6 +18,7 @@ import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.withReentrantLock
 import io.ktor.server.auth.*
+import io.ktor.util.logging.*
 import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -29,6 +31,7 @@ import kotlinx.coroutines.sync.Mutex
 
 object SessionManager {
 
+    private val LOGGER = KtorSimpleLogger("SessionManager")
     private val PURGE_INTERVAL = 5.minutes
 
     private val mutex = Mutex()
@@ -43,17 +46,25 @@ object SessionManager {
         if (pruneJob != null) return
         pruneJob = coroutineScope.launchPeriodic(PURGE_INTERVAL) {
             val now = System.currentTimeMillis()
+            var sessionCount = 0
+            var refreshTokenCount = 0
             mutex.withReentrantLock {
                 sessions.entries.removeIf {
-                    it.value.tokenData.accessTokenExpiration < now
+                    val b = it.value.tokenData.accessTokenExpiration < now
+                    if (b) sessionCount++
+                    b
                 }
                 loggedUsers.entries.removeIf {
                     sessions.values.none { session -> session.user.uuid == it.key }
                 }
                 refreshTokens.entries.removeIf {
-                    it.value.refreshTokenExpiration < now
+                    val b = it.value.refreshTokenExpiration < now
+                    if (b) refreshTokenCount++
+                    b
                 }
             }
+            if (sessionCount > 0) LOGGER.info("Pruned $sessionCount sessions")
+            if (refreshTokenCount > 0) LOGGER.info("Pruned $refreshTokenCount refresh tokens")
         }
     }
 
@@ -99,14 +110,15 @@ object SessionManager {
     }
 
     suspend fun updateSession(userId: UUID, user: User): Unit = mutex.withReentrantLock {
+        val (currentDiskQuota, maximumDiskQuota) = user.getDiskQuota()
         loggedUsers[userId]?.apply {
             username = user.username
             email = user.email
             role = user.role
             enabled = user.enabled
             forceChangePassword = user.forceChangePassword
-            currentDiskQuota = user.currentDiskQuota
-            maximumDiskQuota = user.maximumDiskQuota
+            this.currentDiskQuota = currentDiskQuota
+            this.maximumDiskQuota = maximumDiskQuota
         }
 
         if (!user.enabled) {

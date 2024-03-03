@@ -16,6 +16,7 @@ fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
     name,
     mimeType,
     size,
+    blurhash,
     visibility,
     customLink,
     FileOwnerDTO(owner.uuid, owner.username),
@@ -46,6 +47,7 @@ data class FileRepresentationDTO(
     val name: String,
     val mimeType: String,
     val size: Long,
+    val blurhash: String? = null,
     val visibility: FileVisibility,
     val customLink: String? = null,
     val owner: FileOwnerDTO,
@@ -61,4 +63,15 @@ data class FileOwnerDTO(
 @Serializable
 data class FilePageDTO(
     val page: PageDTO<FileRepresentationDTO>,
+) : DTO
+
+@Serializable
+data class BulkUpdateVisibilityDTO(
+    val ids: List<UUID>,
+    val fileVisibility: FileVisibility,
+) : DTO
+
+@Serializable
+data class BulkDeleteDTO(
+    val ids: List<UUID>,
 ) : DTO

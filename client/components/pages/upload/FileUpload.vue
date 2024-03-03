@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { t } = useI18n()
+import { FetchError } from 'ofetch'
+
+const { t, m } = useI18n()
 const toast = useToast()
 const uploadFile = useUploadFile()
 
@@ -68,7 +70,12 @@ function upload() {
       file.status = 'uploading'
       return uploadFile(file.file)
         .then(() => file.status = 'completed')
-        .catch(() => file.status = 'error') as Promise<UploadStatus>
+        .catch((error) => {
+          if (error !== undefined && error instanceof FetchError && error.response) {
+            file.statusDetail = m(error.response._data.title)
+          }
+          file.status = 'error'
+        }) as Promise<UploadStatus>
     })
 
   Promise.all(uploadPromises).then(uploadSummary)

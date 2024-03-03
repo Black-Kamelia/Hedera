@@ -3,7 +3,7 @@ package com.kamelia.hedera.rest2
 import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.MessageDTO
+import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.rest.user.UserCreationDTO
 import com.kamelia.hedera.rest.user.UserPasswordUpdateDTO

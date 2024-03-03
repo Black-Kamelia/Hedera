@@ -53,7 +53,7 @@ watch(currentRoute, redirect, { immediate: true })
       <div class="adaptive-width flex overflow-y-auto self-center py-4 px-4 sm:px-8 w-full xl:w-70%">
         <TabNavigation :items="menus" :route-match="(path, item) => path.endsWith(item.path)" />
       </div>
-      <hr>
+      <hr class="sep">
     </div>
     <div class="adaptive-width self-center px-4 sm:px-8 my-5 w-full xl:w-70%">
       <NuxtPage />

@@ -7,9 +7,6 @@ definePageMeta({ layout: 'main', middleware: ['auth'] })
 
 const openFiltersDialog = ref(false)
 const searchQuery = ref('')
-
-const selectedRows = ref<Array<FileRepresentationDTO>>([])
-const selecting = computed(() => selectedRows.value.length > 0)
 </script>
 
 <template>
@@ -29,16 +26,8 @@ const selecting = computed(() => selectedRows.value.length > 0)
     </div>
 
     <div class="p-card p-0 overflow-hidden flex-grow">
-      <FilesTable v-model:selectedRows="selectedRows" v-model:query="searchQuery" />
+      <FilesTable v-model:query="searchQuery" />
     </div>
-
-    <ActionButtons
-      :selecting="selecting"
-      @download="console.log('Download')"
-      @change-visibility="console.log('Change visibility')"
-      @unselect="console.log('Unselect')"
-      @delete="console.log('Delete')"
-    />
 
     <FiltersDialog v-model:visible="openFiltersDialog" />
   </div>

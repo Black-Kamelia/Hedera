@@ -10,19 +10,20 @@ import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.InvalidUUIDException
-import com.kamelia.hedera.core.MessageDTO
-import com.kamelia.hedera.core.MessageKeyDTO
 import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MissingTokenException
 import com.kamelia.hedera.core.MultipartParseException
+import com.kamelia.hedera.core.PasswordResetMessagingException
 import com.kamelia.hedera.core.PersonalTokenNotFoundException
-import com.kamelia.hedera.core.Response
+import com.kamelia.hedera.core.TooManyPasswordResetRequestsException
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
 import com.kamelia.hedera.core.UserNotFoundException
-import com.kamelia.hedera.core.asMessage
-import com.kamelia.hedera.core.respondNoSuccess
+import com.kamelia.hedera.core.response.MessageDTO
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.asMessage
+import com.kamelia.hedera.core.response.respondNoSuccess
 import com.kamelia.hedera.util.Environment
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -39,7 +40,7 @@ fun Application.configureExceptionAdvisors() {
 
 private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
     if (Environment.isDev) {
-        call.application.environment.log.info("Exception caught: ${cause.javaClass.name}", cause)
+        call.application.environment.log.info("[DEV] Exception caught: ${cause.javaClass.name}", cause)
     }
 
     when (cause) {
@@ -60,12 +61,15 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is IllegalActionException,
         is DisabledRegistrationsException,
         is InsufficientDiskQuotaException,
-        is InsufficientPermissionsException -> forbiddenMessage(call, cause)
+        is InsufficientPermissionsException,
+        is TooManyPasswordResetRequestsException -> forbiddenMessage(call, cause)
 
         is FileNotFoundException,
         is UserNotFoundException,
         is PersonalTokenNotFoundException,
         is NotFoundException -> notFound(call, cause)
+
+        is PasswordResetMessagingException -> serverError(call, cause)
 
         else -> unhandledError(call, cause)
     }
@@ -82,17 +86,17 @@ private suspend fun badRequestMessage(call: ApplicationCall, cause: Throwable) =
         )
     )
 
-    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.badRequest(cause.message ?: Errors.UNKNOWN))
 }
 
 private suspend fun unauthorizedMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.unauthorized(cause.error))
-    else -> call.respondNoSuccess(Response.unauthorized(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.unauthorized(Errors.UNKNOWN))
 }
 
 private suspend fun forbiddenMessage(call: ApplicationCall, cause: Throwable) = when (cause) {
     is HederaException -> call.respondNoSuccess(Response.forbidden(cause.error))
-    else -> call.respondNoSuccess(Response.forbidden(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.forbidden(Errors.UNKNOWN))
 }
 
 private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (cause) {
@@ -106,10 +110,21 @@ private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (ca
         )
     )
 
-    else -> call.respondNoSuccess(Response.notFound(cause.message ?: cause.javaClass.name))
+    else -> call.respondNoSuccess(Response.notFound(Errors.UNKNOWN))
+}
+
+private suspend fun serverError(call: ApplicationCall, cause: Throwable) = when (cause) {
+    is HederaException -> call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, cause.error))
+    else -> call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, Errors.UNKNOWN.asMessage()))
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(HttpStatusCode.InternalServerError, MessageKeyDTO(Errors.UNKNOWN)))
+    call.respondNoSuccess(Response.error(
+        HttpStatusCode.InternalServerError,
+        MessageDTO.simple(
+            title = Errors.UNKNOWN.asMessage(),
+            message = cause.message?.let { Errors.UNKNOWN_MESSAGE.asMessage("hint" to it) },
+        )
+    ))
     call.application.log.error("Unexpected error", cause)
 }

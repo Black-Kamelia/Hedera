@@ -10,6 +10,8 @@ export interface FileFilters {
   minimalViews: number | null
   maximalViews: number | null
   formats: string[]
+  tokens: string[]
+  noToken: boolean
   owners: string[]
 }
 
@@ -22,6 +24,8 @@ export interface FilesFiltersStore {
   minimalViews: Ref<number | null>
   maximalViews: Ref<number | null>
   formats: Ref<string[]>
+  tokens: Ref<string[]>
+  noToken: Ref<boolean>
   owners: Ref<string[]>
   activeFilters: Ref<number>
   isEmpty: Ref<boolean>
@@ -38,6 +42,8 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
   const minimalViews = ref<number | null>(null)
   const maximalViews = ref<number | null>(null)
   const formats = ref<string[]>([])
+  const tokens = ref<string[]>([])
+  const noToken = ref<boolean>(false)
   const owners = ref<string[]>([])
 
   const activeFilters = computed(() => {
@@ -50,6 +56,7 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
       + (minimalViews.value !== null ? 1 : 0)
       + (maximalViews.value !== null ? 1 : 0)
       + (formats.value.length > 0 ? 1 : 0)
+      + (tokens.value.length > 0 || noToken.value ? 1 : 0)
       + (owners.value.length > 0 ? 1 : 0)
     )
   })
@@ -65,6 +72,8 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
     if (filters.minimalViews !== undefined) minimalViews.value = filters.minimalViews
     if (filters.maximalViews !== undefined) maximalViews.value = filters.maximalViews
     if (filters.formats !== undefined) formats.value = filters.formats
+    if (filters.tokens !== undefined) tokens.value = filters.tokens
+    if (filters.noToken !== undefined) noToken.value = filters.noToken
     if (filters.owners !== undefined) owners.value = filters.owners
   }
 
@@ -77,6 +86,8 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
     minimalViews.value = null
     maximalViews.value = null
     formats.value = []
+    tokens.value = []
+    noToken.value = false
     owners.value = []
   }
 
@@ -89,6 +100,8 @@ export const useFilesFilters = defineStore('filesFilters', (): FilesFiltersStore
     minimalViews,
     maximalViews,
     formats,
+    tokens,
+    noToken,
     owners,
     activeFilters,
     isEmpty,
@@ -112,6 +125,8 @@ export function reactiveFilters(filters: ReturnType<typeof useFilesFilters>) {
     minimalViews: filters.minimalViews,
     maximalViews: filters.maximalViews,
     formats: filters.formats,
+    tokens: filters.tokens,
+    noToken: filters.noToken,
     owners: filters.owners,
   })
 }
@@ -125,6 +140,8 @@ export function loadFilters(localFilters: FileFilters, filters: ReturnType<typeo
   localFilters.minimalViews = filters.minimalViews
   localFilters.maximalViews = filters.maximalViews
   localFilters.formats = filters.formats
+  localFilters.tokens = filters.tokens
+  localFilters.noToken = filters.noToken
   localFilters.owners = filters.owners
 }
 
@@ -137,5 +154,7 @@ export function resetFilters(localFilters: FileFilters) {
   localFilters.minimalViews = null
   localFilters.maximalViews = null
   localFilters.formats = []
+  localFilters.tokens = []
+  localFilters.noToken = false
   localFilters.owners = []
 }

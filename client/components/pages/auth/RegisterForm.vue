@@ -18,7 +18,7 @@ const schema = object({
     .matches(/^[a-z0-9_\-.]+$/, t('forms.register.errors.invalid_username')),
   email: string()
     .required(t('forms.register.errors.missing_email'))
-    .email(t('forms.create_user.errors.invalid_email')),
+    .email(t('forms.register.errors.invalid_email')),
   password: string()
     .required(t('forms.register.errors.missing_password'))
     .min(CREATE_USER_FORM.password.min, t('forms.register.errors.password_too_short', { min: CREATE_USER_FORM.password.min }))
@@ -90,8 +90,8 @@ const onSubmit = handleSubmit(async (values) => {
       />
     </div>
 
-    <div class="flex flex-row items-center justify-end mb-6 w-100%">
-      <NuxtLink to="/login" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">
+    <div class="flex flex-row items-center justify-end mb-6 px-2 w-100%">
+      <NuxtLink to="/login" class="font-medium no-underline text-blue-500 text-right cursor-pointer">
         {{ t('pages.register.back') }}
       </NuxtLink>
     </div>

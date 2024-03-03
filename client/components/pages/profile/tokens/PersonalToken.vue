@@ -41,8 +41,11 @@ function handleDelete() {
         </span>
 
         <span
-          v-if="token.lastUsed" class="text-[--text-color-secondary]"
-          :class="{ 'text-[--green-500]': recentlyUsed }"
+          v-if="token.lastUsed"
+          :class="{
+            'text-[--text-color-secondary]': !recentlyUsed,
+            'text-[--green-500]': recentlyUsed,
+          }"
         >
           {{ t('pages.profile.tokens.last_used', { date: DateTime.fromISO(token.lastUsed).toRelativeCalendar() }) }}
         </span>

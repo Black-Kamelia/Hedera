@@ -40,6 +40,7 @@ pages:
       password_changed: Your password has been changed, please log in again
       session_terminated: Your session has been terminated
       registration_disabled: Registrations are not enabled
+      password_reset: Your password has been reset, please log in again
   complete_otp:
     title: Two-factor authentication
   register:
@@ -51,6 +52,8 @@ pages:
   reset_password:
     title: Reset password
     login: Back to login
+    input_token: I have a key
+    back: Go back
   files:
     title: Files
     link_copied: The link has been copied to the clipboard
@@ -76,6 +79,7 @@ pages:
       name: Name
       size: Size
       format: Format
+      token: Personal token
       owner: Owner
       visibility: Visibility
       creation_date: Creation date
@@ -94,6 +98,17 @@ pages:
       download: Download
       delete: Delete
       unselect: Unselect
+    bulk_actions:
+      edit_visibility:
+        header: Change the visibility of the selected files
+        description: "The selected file will be modified. Are you sure you want to change the visibility of this file? | The {count} selected files will be modified. Are you sure you want to change the visibility of these files?"
+        cancel: Cancel
+        submit: Change visibility
+      delete:
+        header: Delete the selected files
+        description: "The selected file will be deleted. This action is irreversible. Are you sure you want to delete this file? | The {count} selected files will be deleted. This action is irreversible. Are you sure you want to delete these files?"
+        cancel: Cancel
+        submit: Delete
     advanced_filters: Advanced filters
     filters:
       minimum_size: Minimum size
@@ -103,7 +118,13 @@ pages:
       start_date: Start date
       end_date: End date
       formats: "{count} format selected | {count} formats selected"
+      tokens: "{count} personal token selected | {count} personal tokens selected"
+      tokens_files: "No file | {count} file | {count} files"
       all_formats: All formats
+      tokens_unset: Indifferent
+      files_without_token: Files sent without personal token
+      token_deleted: Deleted
+      no_token: Files without personal token only
       reset: Reset
       apply: Apply filters
     rename:
@@ -179,9 +200,11 @@ pages:
     menu:
       general: General
       users: Users
+      maintenance: Maintenance
     general:
       headers:
         registrations: Registrations of new users
+        files: Files
       toggle_registration:
         title: Allow registrations
         description: If this option is enabled, visitors will be able to create an account on your Hedera instance. Otherwise, only administrators will be able to create accounts.
@@ -192,6 +215,10 @@ pages:
         limited: Limited
         choose: Choose a policy
         placeholder: Enter a size
+      maximum_thumbnail_count:
+        title: Amount of thumbnails to keep
+        description: Set the maximum amount of thumbnails to keep in cache for each user. The oldest thumbnails will be deleted when new thumbnails need to be generated.
+        advice: A value that is too low can lead to excessive CPU usage, while a value that is too high can lead to increased disk space usage. The recommended range is between 100 and 200.
     users:
       title: Users
       role:
@@ -243,6 +270,22 @@ pages:
         input: To confirm, please enter {username} in the field below.
         cancel: Cancel
         submit: Delete
+      error:
+        title: Something went wrong
+        description: Failed to load the list of users
+        retry_button: Retry
+    maintenance:
+      title: Maintenance
+      clear_thumbnail_cache:
+        title: Clear thumbnail cache
+        description: Delete all file thumbnails stored in cache. Thumbnails will be recreated as soon as the files are listed again.
+        clear_cache: Clear cache
+        cache_size: 'Current cache size: {size}'
+      clear_thumbnail_cache_dialog:
+        title: Clear thumbnail cache
+        summary: The CPU may be more solicited than usual during the next file searches. This action is irreversible. Are you sure you want to clear the thumbnail cache?
+        cancel: Cancel
+        submit: Clear cache
   debug:
     title: Debug
   profile:
@@ -398,13 +441,6 @@ forms:
     fields:
       password: New password
       confirm_password: Confirm the new password
-  reset_password:
-    errors:
-      missing_email: Email is required
-      invalid_email: Invalid email address format
-    fields:
-      email: Email address
-    submit: Send reset link
   update_details:
     submit: Update
     errors:
@@ -485,6 +521,14 @@ forms:
       name_too_long: The name must be at most {max} characters long
     fields:
       filename: New file name
+  bulk_change_visibility:
+    submit: Change visibility
+    cancel: Cancel
+    errors:
+      missing_visibility: Visibility is required
+    fields:
+      visibility: Visibility
+      visibility_placeholder: Select a visibility
   edit_custom_link:
     submit: Save
     cancel: Cancel
@@ -495,6 +539,33 @@ forms:
     errors:
       missing_slug: Slug is required
       invalid_slug: Invalid slug format
+  reset_password_request:
+    submit: Send reset link
+    errors:
+      missing_email: Email is required
+      invalid_email: Invalid email address format
+    fields:
+      email: Email address
+  reset_password_token:
+    submit: Continue
+    message: Please input the reset key you received by email
+    errors:
+      missing_token: Reset key is required
+      invalid_token: Invalid reset key format
+    fields:
+      token: Reset key
+  reset_password:
+    submit: Reset password
+    message: Your reset key expires {expiration}
+    errors:
+      missing_password: Password is required
+      password_too_short: The password must be at least {min} characters long
+      password_too_long: The password must be at most {max} characters long
+      missing_password_confirmation: Password confirmation is required
+      passwords_mismatch: The passwords do not match
+    fields:
+      password: New password
+      password_confirmation: Confirm new password
 
 actions:
   files:
@@ -518,6 +589,10 @@ actions:
       remove_custom_link:
         success:
           title: Custom link removed
+  maintenance:
+    clear_thumbnail_cache:
+      success:
+        title: The thumbnail cache has been cleared
   users:
     update_password:
       success:
@@ -538,10 +613,12 @@ actions:
       success:
         title: User deactivated
         message: The user “{username}” has been deactivated
+    self_update:
+      success:
+        title: Your profile has been edited
     update:
       success:
         title: User edited
-        title_self: Your profile has been edited
         message: The user “{username}” has been edited
       error:
         title: Could not edit user
@@ -559,8 +636,33 @@ actions:
         title: Token deleted
         message: The token “{name}” has been deleted
 
+bulk_actions:
+  files:
+    update:
+      visibility:
+        success:
+          title: Visibility changed
+          message: "The file is now {newVisibility} | {success} files are now {newVisibility}"
+        partial:
+          title: Visibility changed with errors
+          message: "{success} file out of {total} is now {newVisibility} | {success} files out of {total} are now {newVisibility}"
+        fail:
+          title: Failed to change visibility of files
+          message: "The file could not be modified | {fail} files could not be modified"
+    delete:
+      success:
+        title: Files deleted
+        message: "The file has been deleted | {success} files have been deleted"
+      partial:
+        title: Files deleted with errors
+        message: "{success} file out of {total} has been deleted | {success} files out of {total} have been deleted"
+      fail:
+        title: Failed to delete files
+        message: "The file could not be deleted | {fail} files could not be deleted"
+
 errors:
   unknown: An unknown error has occurred
+  unknown_message: "Hint: {hint}"
   network: Network is unreachable
   auth:
     invalid_credentials: Username or password is incorrect
@@ -574,6 +676,7 @@ errors:
     custom_link:
       already_exists: This custom link is already taken
   users:
+    not_found: This user does not exist
     password:
       incorrect_password: Incorrect password
     username:
@@ -582,6 +685,12 @@ errors:
       already_exists: This email address is already taken
     disk_quota:
       invalid_disk_quota: Invalid disk quota
+    insufficient_disk_quota: Insufficient disk quota
+    reset_password:
+      too_many_requests: Please wait before requesting a new reset link
+      token_not_found: This reset key is invalid
+      token_expired: This reset key has expired
+      request_not_sent: Failed to send the password reset email, please contact an administrator
 
 theme:
   system: System

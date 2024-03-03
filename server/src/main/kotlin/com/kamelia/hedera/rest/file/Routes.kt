@@ -2,13 +2,14 @@ package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.FileNotFoundException
-import com.kamelia.hedera.core.Response
-import com.kamelia.hedera.core.respond
-import com.kamelia.hedera.core.respondNoSuccess
-import com.kamelia.hedera.core.respondNothing
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.respond
+import com.kamelia.hedera.core.response.respondNoSuccess
+import com.kamelia.hedera.core.response.respondNothing
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.util.FileUtils
+import com.kamelia.hedera.rest.token.PersonalTokenService
+import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.util.adminRestrict
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.doWithForm
@@ -23,6 +24,7 @@ import com.kamelia.hedera.util.respondFileInline
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.filesRoutes() = route("/files") {
@@ -32,13 +34,25 @@ fun Route.filesRoutes() = route("/files") {
         getFile()
         uploadFile()
         searchFiles()
+        getFileThumbnail()
         getFilesFormats()
+
+        route("/filters") {
+            getFilesFormats()
+            getPersonalTokens()
+        }
+
         // editFile()
         editFileVisibility()
         editFileName()
         editFileCustomLink()
         removeFileCustomLink()
         deleteFile()
+
+        route("/bulk") {
+            editFileVisibilityBulk()
+            deleteBulk()
+        }
     }
 
     // authenticate(AuthJwt, optional = true) {
@@ -54,7 +68,7 @@ fun Route.rawFileRoute() = get("""/m/(?<code>[a-zA-Z0-9]{10})""".toRegex()) {
     try {
         FileService.getFileFromCode(code, authedId).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.owner.id, code)
+            val file = DiskFileService.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
@@ -73,7 +87,7 @@ fun Route.rawFileCustomLinkRoute() = get("""/c/(?<link>[a-z0-9\-]+)""".toRegex()
     try {
         FileService.getFileFromCustomLink(link).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.owner.id, data.code)
+            val file = DiskFileService.getOrNull(data.owner.id, data.code)
             if (file != null) {
                 call.respondFileInline(file, ContentType.parse(data.mimeType))
             } else {
@@ -113,7 +127,7 @@ private fun Route.getFile() = get("/{code}") {
     FileService.getFileFromCode(code, authedId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
-            val file = FileUtils.getOrNull(data.owner.id, code)
+            val file = DiskFileService.getOrNull(data.owner.id, code)
             if (file != null) {
                 call.respondFile(file, data.name, data.mimeType)
             } else {
@@ -125,6 +139,19 @@ private fun Route.getFile() = get("/{code}") {
             call.respondNothing(Response.notFound())
         },
     )
+}
+
+private fun Route.getFileThumbnail() = get("/{code}/thumbnail") {
+    val authedId = call.authenticatedUser!!.uuid
+    val code = call.getParam("code")
+
+    val thumbnail = ThumbnailService.getThumbnail(authedId, code)
+
+    if (thumbnail == null || !thumbnail.exists()) {
+        call.respondNothing(Response.notFound())
+    } else {
+        call.respondFile(thumbnail, thumbnail.name, "image/jpg")
+    }
 }
 
 private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->
@@ -142,11 +169,23 @@ private fun Route.getFilesFormats() = get("/formats") {
     call.respond(FileService.getFilesFormats(userId))
 }
 
+private fun Route.getPersonalTokens() = get("/tokens") {
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(PersonalTokenService.getPersonalTokensWithUsage(userId))
+}
+
 private fun Route.editFileVisibility() = put<FileUpdateDTO>("/{uuid}/visibility") { body ->
     val fileId = call.getUUID("uuid")
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.updateFileVisibility(fileId, userId, body))
+}
+
+private fun Route.editFileVisibilityBulk() = post<BulkUpdateVisibilityDTO>("/visibility") { body ->
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.bulkUpdateFilesVisibility(userId, body))
 }
 
 private fun Route.editFileName() = put<FileUpdateDTO>("/{uuid}/name") { body ->
@@ -175,4 +214,10 @@ private fun Route.deleteFile() = delete("/{uuid}") {
     val userId = call.authenticatedUser!!.uuid
 
     call.respond(FileService.deleteFile(fileId, userId))
+}
+
+private fun Route.deleteBulk() = post<BulkDeleteDTO>("/delete") { body ->
+    val userId = call.authenticatedUser!!.uuid
+
+    call.respond(FileService.bulkDeleteFiles(body.ids, userId))
 }

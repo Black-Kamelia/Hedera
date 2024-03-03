@@ -18,7 +18,7 @@ const filters = useFilesFilters()
 const { format } = useHumanFileSize()
 const fileDoubleClickEvent = useEventBus(FilesTableDoubleClickEvent)
 
-const selectedRows = defineModel<Array<FileRepresentationDTO>>('selectedRows', { default: () => [] })
+const selectedRows = ref<FileRepresentationDTO[]>([])
 const selectedRow = ref<Nullable<FileRepresentationDTO>>(null)
 
 const query = defineModel<string>('query', { default: DEFAULT_QUERY })
@@ -97,6 +97,10 @@ function openRowContextMenu(event: Event) {
 function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
   fileDoubleClickEvent.emit({ file: event.data })
 }
+
+const filesErrorState = useEmptyState('files_error')
+const noSearchResultsState = useEmptyState('no_search_results')
+const filesEmptyState = useEmptyState('files_empty')
 </script>
 
 <template>
@@ -104,7 +108,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
   <div v-if="error" class="h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Error state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="Error file">
+    <img class="w-10em" :src="filesErrorState" alt="Error file">
     <h1 class="text-2xl">
       {{ t('pages.files.error.title') }}
     </h1>
@@ -126,7 +130,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     class="h-full w-full flex flex-col justify-center items-center"
   >
     <!-- TODO: Empty state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <img class="w-10em" :src="noSearchResultsState" alt="New file">
     <h1 class="text-2xl">
       {{ t('pages.files.no_results.title') }}
     </h1>
@@ -138,7 +142,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
 
   <div v-else-if="files.length === 0 && !pending" class="h-full w-full flex flex-col justify-center items-center">
     <!-- TODO: Empty state illustration -->
-    <img class="w-10em" src="/assets/img/new_file.png" alt="New file">
+    <img class="w-10em" :src="filesEmptyState" alt="New file">
     <h1 class="text-2xl">
       {{ t('pages.files.empty.title') }}
     </h1>
@@ -153,7 +157,7 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     v-model:selection="selectedRows"
     v-model:contextMenuSelection="selectedRow"
     v-model:multi-sort-meta="sort"
-    class="h-full"
+    class="h-full relative"
     data-key="id"
     lazy
     :value="loading ? Array.from({ length: rows }) : files"
@@ -168,17 +172,22 @@ function onRowDoubleClick(event: DataTableRowDoubleClickEvent) {
     sort-mode="multiple"
     removable-sort
     context-menu
+    :pt="{ footer: { class: 'p-0 border-none' } }"
     @page="onPage"
     @row-contextmenu="onRowContextMenu"
     @row-dblclick="onRowDoubleClick"
   >
+    <template #footer>
+      <div class="h-0 relative">
+        <ActionButtons v-model:selection="selectedRows" />
+      </div>
+    </template>
+
     <PColumn class="w-3.375em" selection-mode="multiple" />
 
     <PColumn class="w-6em" field="code" :header="t('pages.files.table.preview')" :sortable="false">
       <template #body="slotProps">
-        <Transition v-if="slotProps.data" name="fade" mode="out-in">
-          <MediaThumbnail :key="slotProps.data.mimeType" :data="slotProps.data" />
-        </Transition>
+        <MediaThumbnail v-if="slotProps.data" :key="slotProps.data.code" :data="slotProps.data" />
         <PSkeleton v-else width="6rem" height="4rem" />
       </template>
     </PColumn>

@@ -9,12 +9,19 @@ import java.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
-fun PersonalToken.toRepresentationDTO(token: String? = null, lastUsed: Instant? = null) = PersonalTokenDTO(
+fun PersonalToken.toRepresentationDTO(
+    token: String? = null,
+    lastUsed: Instant? = null,
+    usage: Long? = null,
+    deleted: Boolean? = null,
+) = PersonalTokenDTO(
     id = id.value,
     token = if (token != null) "${id.value.toString().replace("-", "")}$token" else null,
     name = name,
     createdAt = createdAt.toString(),
     lastUsed = lastUsed?.toString(),
+    usage = usage,
+    deleted = deleted,
 )
 
 @Serializable
@@ -29,4 +36,6 @@ data class PersonalTokenDTO(
     val name: String,
     val createdAt: String,
     val lastUsed: String? = null,
+    val usage: Long? = null,
+    val deleted: Boolean? = null,
 ) : DTO

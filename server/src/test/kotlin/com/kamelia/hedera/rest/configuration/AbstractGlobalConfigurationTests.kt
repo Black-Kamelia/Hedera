@@ -83,6 +83,28 @@ abstract class AbstractGlobalConfigurationTests(
         }
     }
 
+    @DisplayName("Get thumbnail cache size")
+    @Test
+    fun getThumbnailCacheSize() = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.get("/api/configuration/maintenance/thumbnail-cache-size") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.getThumbnailCacheSize, response.status)
+    }
+
+    @DisplayName("Clear thumbnail cache size")
+    @Test
+    fun clearThumbnailCacheSize() = testApplication {
+        val (tokens, _) = user
+        val client = client()
+        val response = client.post("/api/configuration/maintenance/clear-thumbnail-cache") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.clearThumbnailCacheSize, response.status)
+    }
+
     companion object {
 
         @JvmStatic

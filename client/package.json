@@ -19,7 +19,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "^2.7.0",
     "@iconify-json/tabler": "^1.1.106",
-    "@iconify/tools": "^4.0.2",
     "@intlify/unplugin-vue-i18n": "^2.0.0",
     "@nuxtjs/color-mode": "^3.3.2",
     "@nuxtjs/critters": "^0.6.0",
@@ -27,6 +26,7 @@
     "@pinia/nuxt": "^0.5.1",
     "@types/luxon": "^3.4.2",
     "@unocss/nuxt": "^0.58.5",
+    "@unocss/preset-icons": "^0.58.5",
     "@vee-validate/nuxt": "^4.12.5",
     "@vee-validate/yup": "^4.12.5",
     "@vue-macros/nuxt": "^1.9.21",

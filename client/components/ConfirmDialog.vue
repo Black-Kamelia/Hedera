@@ -7,9 +7,7 @@ const loadingReject = ref(false)
 
 function confirmationListener(options: ConfirmOptions) {
   confirmation.value = options
-  if (options.onShow) {
-    options.onShow()
-  }
+  options.onShow?.()
   visible.value = true
 }
 

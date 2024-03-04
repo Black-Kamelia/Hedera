@@ -70,9 +70,7 @@ object MailService {
         user: User,
         token: String,
     ) {
-        val locale = Locale.Builder().setLanguageTag(user.settings.preferredLocale.name).build()
-
-
+        val locale = user.settings.preferredLocale.javaLocale
         with(I18N.withNewCurrentLocale(locale).section("mails.reset_password")) {
             val subject = t("subject")
             val html = FreeMarkerContent("mails/ResetPasswordRequest.ftl", mapOf(

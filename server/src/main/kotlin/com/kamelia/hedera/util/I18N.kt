@@ -1,7 +1,6 @@
 package com.kamelia.hedera.util
 
 import com.kamelia.sprinkler.i18n.Translator
-import com.kamelia.sprinkler.i18n.VariableFormatter
 import com.kamelia.sprinkler.util.VariableDelimiter
 import io.ktor.server.application.*
 import java.util.*

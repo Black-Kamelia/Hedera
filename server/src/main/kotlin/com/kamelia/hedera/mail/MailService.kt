@@ -3,7 +3,6 @@ package com.kamelia.hedera.mail
 import com.kamelia.hedera.core.MailSendingException
 import com.kamelia.hedera.core.PasswordResetMessagingException
 import com.kamelia.hedera.plugins.toHTML
-import com.kamelia.hedera.rest.setting.Locale
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.mailFrom
@@ -14,6 +13,7 @@ import com.kamelia.hedera.util.Environment.mailPort
 import com.kamelia.hedera.util.Environment.mailUseAuth
 import com.kamelia.hedera.util.Environment.mailUseTLS
 import com.kamelia.hedera.util.Environment.mailUsername
+import com.kamelia.hedera.util.I18N
 import io.ktor.server.freemarker.*
 import jakarta.mail.Authenticator
 import jakarta.mail.MessagingException
@@ -70,27 +70,31 @@ object MailService {
         user: User,
         token: String,
     ) {
-        val locale = user.settings.preferredLocale
-        val subject = RESET_PASSWORD_VALUES[locale]!!["subject"]!!
-        val html = FreeMarkerContent("mails/ResetPasswordRequest.ftl", mapOf(
-            "URL" to Environment.URL,
-            "subject" to RESET_PASSWORD_VALUES[locale]!!["subject"]!!,
-            "greetings" to RESET_PASSWORD_VALUES[locale]!!["greetings"]!!.replace("{username}", user.username),
-            "paragraph1" to RESET_PASSWORD_VALUES[locale]!!["paragraph1"]!!,
-            "paragraph2" to RESET_PASSWORD_VALUES[locale]!!["paragraph2"]!!,
-            "paragraph3" to RESET_PASSWORD_VALUES[locale]!!["paragraph3"]!!,
-            "paragraph4" to RESET_PASSWORD_VALUES[locale]!!["paragraph4"]!!,
-            "button" to RESET_PASSWORD_VALUES[locale]!!["button"]!!,
-            "salutations" to RESET_PASSWORD_VALUES[locale]!!["salutations"]!!,
-            "footer1" to RESET_PASSWORD_VALUES[locale]!!["footer1"]!!.replace("{email}", user.email),
-            "footer2" to RESET_PASSWORD_VALUES[locale]!!["footer2"]!!,
-            "token" to token,
-        )).toHTML()
+        val locale = Locale.Builder().setLanguageTag(user.settings.preferredLocale.name).build()
 
-        try {
-            sendMail(user.email, subject, html)
-        } catch (e: MailSendingException) {
-            throw PasswordResetMessagingException()
+
+        with(I18N.withNewCurrentLocale(locale).section("mails.reset_password")) {
+            val subject = t("subject")
+            val html = FreeMarkerContent("mails/ResetPasswordRequest.ftl", mapOf(
+                "URL" to Environment.URL,
+                "subject" to t("subject"),
+                "greetings" to t("greetings", mapOf("username" to user.username)),
+                "paragraph1" to t("paragraph1"),
+                "paragraph2" to t("paragraph2"),
+                "paragraph3" to t("paragraph3"),
+                "paragraph4" to t("paragraph4"),
+                "button" to t("button"),
+                "salutations" to t("salutations"),
+                "footer1" to t("footer1", mapOf("email" to user.email)),
+                "footer2" to t("footer2"),
+                "token" to token,
+            )).toHTML()
+
+            try {
+                sendMail(user.email, subject, html)
+            } catch (e: MailSendingException) {
+                throw PasswordResetMessagingException()
+            }
         }
     }
 }

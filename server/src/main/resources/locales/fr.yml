@@ -1,0 +1,18 @@
+mails:
+  reset_password:
+    subject: Réinitialiser votre mot de passe
+    greetings: Bonjour {username},
+    paragraph1: Vous avez récemment demandé à réinitialiser le mot de passe de votre compte Hedera. Si ce n'était pas vous, merci d'ignorer ce message.
+    paragraph2: 'Vous pouvez réinitialiser votre mot de passe en cliquant sur le bouton ci-dessous :'
+    paragraph3: 'Ou, vous pouvez copier et coller la clé de réinitialisation suivante dans le formulaire de réinitialisation du mot de passe :'
+    paragraph4: La clé de réinitialisation est valide pendant 10 minutes seulement.
+    button: Réinitialiser le mot de passe
+    salutations: Cordialement,
+    footer1: Ce message a été envoyé à {email}. Si vous pensez avoir reçu cet message par erreur, veuillez l'ignorer et le supprimer.
+    footer2: Ce message a été envoyé automatiquement, merci de ne pas répondre à ce message.
+
+responses:
+  file_upload:
+    errors:
+      quota_exceeded: Quota de disque insuffisant.
+      invalid_personal_token: Jeton personnel invalide.

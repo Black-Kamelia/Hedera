@@ -9,6 +9,7 @@ import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.InvalidPersonalTokenException
 import com.kamelia.hedera.core.InvalidUUIDException
 import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
@@ -56,6 +57,7 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is BadRequestException -> badRequestMessage(call, cause)
 
         is MissingTokenException,
+        is InvalidPersonalTokenException,
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
         is IllegalActionException,

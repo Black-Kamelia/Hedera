@@ -1,11 +1,11 @@
 package com.kamelia.hedera.rest.file
 
 import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.FileNotFoundException
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.InvalidPersonalTokenException
 import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.constant.BulkActions
 import com.kamelia.hedera.core.response.ActionResponse
@@ -46,15 +46,16 @@ object FileService {
         part: PartData.FileItem,
         creatorToken: String
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
-        if (!PERSONAL_TOKEN_REGEX.matches(creatorToken)) throw ExpiredOrInvalidTokenException()
+        if (!PERSONAL_TOKEN_REGEX.matches(creatorToken)) throw InvalidPersonalTokenException()
 
         val tokenId = creatorToken.substring(0, 32).toUUIDShort()
         val token = creatorToken.substring(32)
 
-        val personalToken = PersonalToken.findById(tokenId) ?: throw ExpiredOrInvalidTokenException()
-        if (personalToken.deleted) throw ExpiredOrInvalidTokenException()
-        if (personalToken.token.startsWith("deleted_")) throw ExpiredOrInvalidTokenException()
-        if (!Hasher.verify(token, personalToken.token).verified) throw ExpiredOrInvalidTokenException()
+        val personalToken = PersonalToken.findById(tokenId) ?: throw InvalidPersonalTokenException()
+        val locale = personalToken.owner.settings.preferredLocale
+        if (personalToken.deleted) throw InvalidPersonalTokenException(locale)
+        if (personalToken.token.startsWith("deleted_")) throw InvalidPersonalTokenException(locale)
+        if (!Hasher.verify(token, personalToken.token).verified) throw InvalidPersonalTokenException(locale)
 
         handleFile(part, personalToken.owner, personalToken)
     }
@@ -79,6 +80,7 @@ object FileService {
         val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
         creator.increaseDiskQuota(uploadedFile.size)
 
+        // TODO: handle thumbnail creation failure
         val thumbnail = ThumbnailService.createThumbnail(uploadedFile.file, creator.id.value, uploadedFile.mimeType, uploadedFile.code)
         val blurhash = ThumbnailService.getBlurhashOrNull(thumbnail)
         val file = File.create(

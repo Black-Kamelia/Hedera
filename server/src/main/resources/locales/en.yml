@@ -1,0 +1,18 @@
+mails:
+  reset_password:
+    subject: Reset your password
+    greetings: Hello {username},
+    paragraph1: You recently requested to reset your Hedera account password. If this wasn't you, please ignore this message.
+    paragraph2: 'You can reset your password by clicking the button below:'
+    paragraph3: 'Or, you can copy and paste the following reset key into the password reset form:'
+    paragraph4: The reset key is valid for 10 minutes only.
+    button: Reset password
+    salutations: Regards,
+    footer1: This message was sent to {email}. If you think you received this message by mistake, please ignore and delete it.
+    footer2: This message was sent automatically, please do not reply to this message.
+
+responses:
+  file_upload:
+    errors:
+      quota_exceeded: Insufficient disk quota.
+      invalid_personal_token: Invalid personal token.

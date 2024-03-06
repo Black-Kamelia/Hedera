@@ -65,7 +65,7 @@ object DiskFileService {
             tmpDiskQuota += readBytes
             if (tmpDiskQuota >= maximumDiskQuota && maximumDiskQuota != -1L) {
                 Files.delete(filePath)
-                throw InsufficientDiskQuotaException()
+                throw InsufficientDiskQuotaException(owner.settings.preferredLocale)
             }
             outputStream.write(buffer, 0, readBytes)
         } while (readBytes != 0)

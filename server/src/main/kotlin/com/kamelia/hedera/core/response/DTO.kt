@@ -12,6 +12,7 @@ import kotlinx.serialization.UseSerializers
 data class MessageKeyDTO(
     val key: String,
     val parameters: Map<String, MessageKeyDTO>? = null,
+    val humanString: String? = null,
 ) : DTO {
     constructor(key: String, vararg parameters: Pair<String, MessageKeyDTO>) : this(key, mapOf(*parameters))
 

@@ -107,6 +107,7 @@ object Errors {
         private const val PREFIX = "${Errors.PREFIX}.personal_tokens"
 
         const val NOT_FOUND = "$PREFIX.not_found"
+        const val INVALID_TOKEN = "$PREFIX.invalid_token"
 
     }
 

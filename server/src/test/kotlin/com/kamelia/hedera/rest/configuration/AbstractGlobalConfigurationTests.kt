@@ -65,7 +65,6 @@ abstract class AbstractGlobalConfigurationTests(
             if (getResponse.status == HttpStatusCode.OK) {
                 val responseDto = Json.decodeFromString<GlobalConfigurationRepresentationDTO>(getResponse.bodyAsText())
                 assertFalse(dtoCheck(responseDto))
-                println(responseDto)
             }
 
             val response = client.patch("/api/configuration") {

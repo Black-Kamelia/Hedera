@@ -43,9 +43,10 @@ val guestExpectedResults = GlobalConfigurationExpectedResults(
 suspend fun isolateGlobalConfiguration(
     block: suspend () -> Unit,
 ) {
-    val originalConfiguration = GlobalConfigurationService.currentConfiguration
-    block()
     val field = GlobalConfigurationService::class.java.getDeclaredField("_currentConfiguration")
     field.isAccessible = true
+    val originalConfiguration = field.get(GlobalConfigurationService) as GlobalConfiguration
+    block()
     field.set(GlobalConfigurationService, originalConfiguration)
+    field.isAccessible = false
 }

@@ -115,5 +115,5 @@ gradle assemble
 
 ## 🖤 Acknowledgements
 
-Special thanks to [Ghozy Muhtarom](https://dribbble.com/byghozy) for his work on the illustrations used througout the application.
+Special thanks to [Ghozy Muhtarom](https://dribbble.com/byghozy) for his work on the illustrations used throughout the application.
     

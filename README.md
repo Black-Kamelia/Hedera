@@ -19,7 +19,7 @@
 > [!IMPORTANT]
 > Hedera is currently in developement phase. As such, no stable release nor Docker image is available as of now.
 >
-> You can run a dev build using Docker with this image: `bkamelia/hedera:nightly` *(Updated every night GMT+1)*
+> You can run a dev build using Docker with this image: [`bkamelia/hedera:nightly`](https://hub.docker.com/r/bkamelia/hedera) *(Updated every night GMT+1)*
 
 **Hedera** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Nuxt 3](https://nuxt.com/)**.
 It is the next iteration of [Selfish](https://github.com/SlamaFR/Selfish). Like its predecessor, it is highly inspired
@@ -27,9 +27,8 @@ by [XBackBone](https://github.com/SergiX44/XBackBone).
 
 You can see Hedera like a self-hosted Imgur. You simply take screenshots and host them on your Hedera server.
 
-But it's much more than that. It's also a file manager, and gallery editor and viewer !
-
-👉 YES. Hedera will also be shipped in a Docker image.
+> [!NOTE]
+> Hedera is expected to be released soon. It will be shipped as a standalone JAR and a Docker image ready to deploy.
 
 ## ✨ Features
 
@@ -94,8 +93,6 @@ gradle assemble
 - [Nuxt 3](https://nuxt.com/) : JavaScript frontend framework for making performant web applications, based on Vue 3.
 - [VueUse](https://vueuse.org/) : A set of useful Vue 3 Composable functions and components.
 - [Primevue](https://primevue.org/) : A collection of rich UI components for Vue 3.
-- [UnoCSS](https://unocss.dev/) : A utility-first CSS framework for rapidly building custom user interfaces.
-- [Axios](https://axios-http.com) : A fast Promise based HTTP client for the browser and Node.js.
 
 ### Building
 
@@ -105,4 +102,8 @@ gradle assemble
 - [Node.js](https://nodejs.org/) : A JavaScript runtime built on Chrome's V8 JavaScript engine.
 - [Vite](https://vitejs.dev/) : A JavaScript build tool for modern web development.
 - [Gradle Node plugin](https://github.com/node-gradle/gradle-node-plugin/) : Gradle plugin for Node.js.
+
+## 🖤 Acknowledgements
+
+Special thanks to [Ghozy Muhtarom](https://dribbble.com/byghozy) for his work on the illustrations used througout the application.
     

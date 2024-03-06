@@ -16,6 +16,11 @@
 
 ## 🤔 What is it?
 
+> [!IMPORTANT]
+> Hedera is currently in developement phase. As such, no stable release nor Docker image is available as of now.
+>
+> You can run a dev build using Docker with this image: `bkamelia/hedera:nightly` *(Updated every night GMT+1)*
+
 **Hedera** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Nuxt 3](https://nuxt.com/)**.
 It is the next iteration of [Selfish](https://github.com/SlamaFR/Selfish). Like its predecessor, it is highly inspired
 by [XBackBone](https://github.com/SergiX44/XBackBone).

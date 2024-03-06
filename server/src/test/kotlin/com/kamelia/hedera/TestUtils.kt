@@ -3,6 +3,8 @@ package com.kamelia.hedera
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.auth.LoginDTO
 import com.kamelia.hedera.rest.auth.SessionOpeningDTO
+import com.kamelia.hedera.rest.configuration.GlobalConfiguration
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
@@ -47,7 +49,7 @@ fun <T> mapOfRole(
     UserRole.REGULAR to regular,
 )
 
-fun String.uuid() = UUID.fromString(this)
+fun String.uuid(): UUID = UUID.fromString(this)
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {
@@ -117,5 +119,6 @@ fun authTestApplication(
     environment {
         config = ApplicationConfig("application-auth-test.yaml")
     }
+    GlobalConfigurationService.init()
     block()
 }

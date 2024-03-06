@@ -32,15 +32,33 @@ You can see Hedera like a self-hosted Imgur. You simply take screenshots and hos
 
 ## ✨ Features
 
-- **User accounts** — You can create multiple accounts, or let users sign up.
+- **User accounts**<br>
+  You can create multiple accounts, or let users sign up.
   Each screenshots uploaded is bound to its user account.
-- **Disk quota** — You can set a disk quota not to exceed ; this way you can upload files without worrying about stuffing your disk completely.
+- **Disk space quota**<br>
+  You can set a disk quota not to exceed; this way you can upload files without worrying about stuffing your disk completely.
   You can choose to set a custom quota for each user, or allow unlimited storage.
-- **Auto-deletion** — Imagine being unable to upload a fantastic screenshot because you're about to exceed your quota? No problem, auto-deletion will delete the oldest files to free some space.
-- **[ShareX](https://getsharex.com/) integration** — ShareX is an awesome open-source software to take screenshots or record your screen.
-  You can download a [custom uploader](https://getsharex.com/docs/custom-uploader) file on your profile page to allow ShareX to upload your screenshots directly to your Hedera account.
+- **Files visibility**<br>
+  Uploaded a screenshot you would like to keep private? No problem, just change this one's visibility and you're done. Other files will get the default visibility you set.
+- **Custom links**<br>
+  Want to send your favorite meme but can't remember the random gigberish link? Set a custom link to type it directly.
+- **Advanced filters**<br>
+  A while back, you uploaded a file you're struggling to find again? Just set a bunch of filters to refine your search.
+- **Third-party software integrations**<br>
+  Use third-party applications to take screenshots and upload them directly to Hedera.<br>
+  Supported: [ShareX](https://getsharex.com/), [uPic](https://github.com/gee1k/uPic), *Apple Shortcut (Coming soon)*
+
+And a lot more to come later... Stay tuned 👀
 
 ## 🛠 Installation
+
+*Coming soon*
+
+## ⚙ How to update?
+
+*Coming soon*
+
+## 📸 Screenshots
 
 *Coming soon*
 
@@ -74,14 +92,6 @@ This tasks bundles the front-end, and compiles the JAR using the shadow plugin.
 ```bash
 gradle assemble
 ```
-
-## ⚙ How to update?
-
-*Coming soon*
-
-## 📸 Screenshots
-
-*Coming soon*
 
 ## 📦 Dependencies
 

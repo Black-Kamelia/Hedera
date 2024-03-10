@@ -103,12 +103,12 @@ suspend fun ApplicationTestBuilder.loginBlocking(
     return response to body?.tokens
 }
 
-fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(
+fun FormBuilder.appendFile(path: String, name: String?, type: String, key: String = "file") = append(
     key,
     this::class.java.getResource(path)!!.readBytes(),
     Headers.build {
         append(HttpHeaders.ContentType, type)
-        append(HttpHeaders.ContentDisposition, "filename=\"$name\"")
+        append(HttpHeaders.ContentDisposition, name?.let {"filename=\"$it\""} ?: "file")
     }
 )
 

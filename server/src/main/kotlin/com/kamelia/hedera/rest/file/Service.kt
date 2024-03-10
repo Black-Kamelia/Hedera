@@ -74,7 +74,7 @@ object FileService {
         creator: User,
         uploadToken: PersonalToken? = null,
     ): ActionResponse<FileRepresentationDTO> {
-        val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
+        val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.MISSING_FILE_NAME }
         require(fileName.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
 
         val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
@@ -186,22 +186,30 @@ object FileService {
         userId: UUID,
         dto: FileUpdateDTO,
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
-        val file = File.findById(fileId) ?: throw FileNotFoundException()
-        val user = User[userId]
+        validate {
+            if (dto.visibility == null) {
+                raiseError("visibility", Errors.Files.Visibility.MISSING_VISIBILITY)
+            }
 
-        val oldVisibility = file.visibility
-        val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
-        val payload = updatedFile.toRepresentationDTO()
+            catchErrors()
 
-        ActionResponse.ok(
-            title = Actions.Files.Update.Visibility.success.title,
-            message = Actions.Files.Update.Visibility.success.message.withParameters(
-                "name" to file.name,
-                "oldVisibility" to oldVisibility.toMessageKey(),
-                "newVisibility" to payload.visibility.toMessageKey()
-            ),
-            payload = payload
-        )
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
+
+            val oldVisibility = file.visibility
+            val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
+            val payload = updatedFile.toRepresentationDTO()
+
+            ActionResponse.ok(
+                title = Actions.Files.Update.Visibility.success.title,
+                message = Actions.Files.Update.Visibility.success.message.withParameters(
+                    "name" to file.name,
+                    "oldVisibility" to oldVisibility.toMessageKey(),
+                    "newVisibility" to payload.visibility.toMessageKey()
+                ),
+                payload = payload
+            )
+        }
     }
 
     suspend fun bulkUpdateFilesVisibility(
@@ -230,16 +238,18 @@ object FileService {
         dto: FileUpdateDTO,
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         validate {
-            val file = File.findById(fileId) ?: throw FileNotFoundException()
-            val user = User[userId]
-
             if (dto.name == null) {
                 raiseError("name", Errors.Files.Name.MISSING_NAME)
+            } else if (dto.name.isEmpty()) {
+                raiseError("name", Errors.Files.Name.EMPTY_NAME)
             } else {
                 if (dto.name.length > 255) raiseError("name", Errors.Files.Name.NAME_TOO_LONG)
             }
 
             catchErrors()
+
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
 
             val oldName = file.name
             val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))

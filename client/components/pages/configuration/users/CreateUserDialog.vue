@@ -110,107 +110,104 @@ function onHide() {
     :pt="{ content: { class: 'overflow-hidden' } }"
     @hide="onHide"
   >
-    <div class="flex flex-col gap-3">
-      <p class="text-[--text-color-secondary] mb-3">
-        {{ t('pages.configuration.users.create_dialog.summary') }}
-      </p>
+    <form @submit="submit">
+      <div class="flex flex-col gap-3">
+        <p class="text-[--text-color-secondary] mb-3">
+          {{ t('pages.configuration.users.create_dialog.summary') }}
+        </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-        <FormInputText
-          id="username"
-          name="username"
-          :label="t('forms.create_user.fields.username')"
-          :placeholder="dev"
-          :transform-value="usernameRestrict"
-          class="w-full"
-          autofocus
-          @keydown.enter="submit"
-        />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+          <FormInputText
+            id="username"
+            name="username"
+            :label="t('forms.create_user.fields.username')"
+            :placeholder="dev"
+            :transform-value="usernameRestrict"
+            class="w-full"
+            autofocus
+          />
 
-        <FormInputText
-          id="email"
-          name="email"
-          :label="t('forms.create_user.fields.email')"
-          :placeholder="`${dev}@example.com`"
-          type="email"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormInputText
+            id="email"
+            name="email"
+            :label="t('forms.create_user.fields.email')"
+            :placeholder="`${dev}@example.com`"
+            type="email"
+            class="w-full"
+          />
 
-        <FormInputText
-          id="password"
-          name="password"
-          :label="t('forms.create_user.fields.password')"
-          placeholder="••••••••••••••••"
-          type="password"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormInputText
+            id="password"
+            name="password"
+            :label="t('forms.create_user.fields.password')"
+            placeholder="••••••••••••••••"
+            type="password"
+            class="w-full"
+          />
 
-        <FormInputText
-          id="confirmPassword"
-          name="confirmPassword"
-          :label="t('forms.create_user.fields.confirm_password')"
-          placeholder="••••••••••••••••"
-          type="password"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormInputText
+            id="confirmPassword"
+            name="confirmPassword"
+            :label="t('forms.create_user.fields.confirm_password')"
+            placeholder="••••••••••••••••"
+            type="password"
+            class="w-full"
+          />
 
-        <FormDropdown
-          id="role"
-          name="role"
-          :label="t('forms.create_user.fields.role')"
-          :placeholder="t('forms.create_user.fields.role_placeholder')"
-          :options="roles"
-          option-label="label"
-          option-value="value"
-          :option-disabled="roleDisabled"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormDropdown
+            id="role"
+            name="role"
+            :label="t('forms.create_user.fields.role')"
+            :placeholder="t('forms.create_user.fields.role_placeholder')"
+            :options="roles"
+            option-label="label"
+            option-value="value"
+            :option-disabled="roleDisabled"
+            class="w-full"
+          />
 
-        <FormInputFileSize
-          id="diskQuota"
-          name="diskQuota"
-          :label="t('forms.create_user.fields.disk_quota')"
-          :placeholder="quotaPlaceholder"
-          :disabled="unlimitedQuota"
-          class="w-full"
-          @keydown.enter="submit"
-        />
+          <FormInputFileSize
+            id="diskQuota"
+            name="diskQuota"
+            :label="t('forms.create_user.fields.disk_quota')"
+            :placeholder="quotaPlaceholder"
+            :disabled="unlimitedQuota"
+            class="w-full"
+          />
+        </div>
+
+        <div class="mt-3 flex flex-col gap-3">
+          <FormCheckbox
+            id="forceChangePassword"
+            name="forceChangePassword"
+            :label="t('forms.create_user.fields.force_change_password')"
+            binary
+          />
+          <FormCheckbox
+            id="unlimitedDiskQuota"
+            v-model="unlimitedQuota"
+            name="unlimitedDiskQuota"
+            :label="t('forms.create_user.fields.unlimited_disk_quota')"
+            binary
+          />
+        </div>
       </div>
 
-      <div class="mt-3 flex flex-col gap-3">
-        <FormCheckbox
-          id="forceChangePassword"
-          name="forceChangePassword"
-          :label="t('forms.create_user.fields.force_change_password')"
-          binary
+      <div class="flex flex-row justify-end gap-2 pt-9 items-center">
+        <PButton
+          :label="t('pages.configuration.users.create_dialog.cancel')"
+          text
+          :disabled="pending"
+          @click="visible = false"
         />
-        <FormCheckbox
-          id="unlimitedDiskQuota"
-          v-model="unlimitedQuota"
-          name="unlimitedDiskQuota"
-          :label="t('forms.create_user.fields.unlimited_disk_quota')"
-          binary
+        <PButton
+          :label="t('pages.configuration.users.create_dialog.submit')"
+          :loading="pending"
+          icon="i-tabler-check"
+          type="submit"
+          @click="submit"
         />
       </div>
-    </div>
-
-    <template #footer>
-      <PButton
-        :label="t('pages.configuration.users.create_dialog.cancel')"
-        text
-        :disabled="pending"
-        @click="visible = false"
-      />
-      <PButton
-        :label="t('pages.configuration.users.create_dialog.submit')"
-        :loading="pending"
-        type="submit"
-        @click="submit"
-      />
-    </template>
+    </form>
   </PDialog>
 </template>

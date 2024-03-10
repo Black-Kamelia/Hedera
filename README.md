@@ -16,27 +16,49 @@
 
 ## 🤔 What is it?
 
+> [!IMPORTANT]
+> Hedera is currently in developement phase. As such, no stable release nor Docker image is available as of now.
+>
+> You can run a dev build using Docker with this image: [`bkamelia/hedera:nightly`](https://hub.docker.com/r/bkamelia/hedera) *(Updated every night GMT+1)*
+
 **Hedera** is an open-source web application built with **[Ktor](https://ktor.io/)** and **[Nuxt 3](https://nuxt.com/)**.
 It is the next iteration of [Selfish](https://github.com/SlamaFR/Selfish). Like its predecessor, it is highly inspired
 by [XBackBone](https://github.com/SergiX44/XBackBone).
 
 You can see Hedera like a self-hosted Imgur. You simply take screenshots and host them on your Hedera server.
 
-But it's much more than that. It's also a file manager, and gallery editor and viewer !
-
-👉 YES. Hedera will also be shipped in a Docker image.
+> [!NOTE]
+> Hedera is expected to be released soon. It will be shipped as a standalone JAR and a Docker image ready to deploy.
 
 ## ✨ Features
 
-- **User accounts** — You can create multiple accounts, or let users sign up.
+- **User accounts**<br>
+  You can create multiple accounts, or let users sign up.
   Each screenshots uploaded is bound to its user account.
-- **Disk quota** — You can set a disk quota not to exceed ; this way you can upload files without worrying about stuffing your disk completely.
+- **Disk space quota**<br>
+  You can set a disk quota not to exceed; this way you can upload files without worrying about stuffing your disk completely.
   You can choose to set a custom quota for each user, or allow unlimited storage.
-- **Auto-deletion** — Imagine being unable to upload a fantastic screenshot because you're about to exceed your quota? No problem, auto-deletion will delete the oldest files to free some space.
-- **[ShareX](https://getsharex.com/) integration** — ShareX is an awesome open-source software to take screenshots or record your screen.
-  You can download a [custom uploader](https://getsharex.com/docs/custom-uploader) file on your profile page to allow ShareX to upload your screenshots directly to your Hedera account.
+- **Files visibility**<br>
+  Uploaded a screenshot you would like to keep private? No problem, just change this one's visibility and you're done. Other files will get the default visibility you set.
+- **Custom links**<br>
+  Want to send your favorite meme but can't remember the random gigberish link? Set a custom link to type it directly.
+- **Advanced filters**<br>
+  A while back, you uploaded a file you're struggling to find again? Just set a bunch of filters to refine your search.
+- **Third-party software integrations**<br>
+  Use third-party applications to take screenshots and upload them directly to Hedera.<br>
+  Supported: [ShareX](https://getsharex.com/), [uPic](https://github.com/gee1k/uPic), *Apple Shortcut (Coming soon)*
+
+And a lot more to come later... Stay tuned 👀
 
 ## 🛠 Installation
+
+*Coming soon*
+
+## ⚙ How to update?
+
+*Coming soon*
+
+## 📸 Screenshots
 
 *Coming soon*
 
@@ -71,14 +93,6 @@ This tasks bundles the front-end, and compiles the JAR using the shadow plugin.
 gradle assemble
 ```
 
-## ⚙ How to update?
-
-*Coming soon*
-
-## 📸 Screenshots
-
-*Coming soon*
-
 ## 📦 Dependencies
 
 ### Core
@@ -89,8 +103,6 @@ gradle assemble
 - [Nuxt 3](https://nuxt.com/) : JavaScript frontend framework for making performant web applications, based on Vue 3.
 - [VueUse](https://vueuse.org/) : A set of useful Vue 3 Composable functions and components.
 - [Primevue](https://primevue.org/) : A collection of rich UI components for Vue 3.
-- [UnoCSS](https://unocss.dev/) : A utility-first CSS framework for rapidly building custom user interfaces.
-- [Axios](https://axios-http.com) : A fast Promise based HTTP client for the browser and Node.js.
 
 ### Building
 
@@ -100,4 +112,8 @@ gradle assemble
 - [Node.js](https://nodejs.org/) : A JavaScript runtime built on Chrome's V8 JavaScript engine.
 - [Vite](https://vitejs.dev/) : A JavaScript build tool for modern web development.
 - [Gradle Node plugin](https://github.com/node-gradle/gradle-node-plugin/) : Gradle plugin for Node.js.
+
+## 🖤 Acknowledgements
+
+Special thanks to [Ghozy Muhtarom](https://dribbble.com/byghozy) for his work on the illustrations used throughout the application.
     

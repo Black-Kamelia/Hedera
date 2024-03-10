@@ -1,9 +1,13 @@
 package com.kamelia.hedera.rest.setting
 
+import java.util.Locale as JLocale
+
 @Suppress("EnumEntryName")
-enum class Locale {
-    en,
-    fr,
+enum class Locale(
+    val javaLocale: JLocale
+) {
+    en(JLocale.ENGLISH),
+    fr(JLocale.FRENCH),
 }
 
 enum class DateStyle {

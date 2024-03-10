@@ -5,7 +5,7 @@ const cm = inject(UsersTableContextMenuKey)
 
 const { t } = useI18n()
 const { user } = useAuth()
-const confirm = useConfirm()
+const confirm = useConfirmEvent()
 const { selectedRow, selectedRowId, unselectRow, refresh } = useUsersTable()
 
 const { activate, deactivate } = useUpdateUserStatus()

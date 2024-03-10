@@ -152,7 +152,7 @@ object ThumbnailService {
             }
             thumbnail
         } catch (e: UnsupportedFormatException) {
-            LOGGER.info("Failed to generate thumbnail for file $fileCode: ${e.message}")
+            LOGGER.error("Failed to generate thumbnail for file $fileCode: ${e.message}")
             null
         }
     }

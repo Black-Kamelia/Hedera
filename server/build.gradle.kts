@@ -61,6 +61,8 @@ dependencies {
     implementation("io.trbl", "blurhash", "1.0.0")
     implementation("net.coobird", "thumbnailator", "0.4.20")
     implementation("com.sun.mail", "jakarta.mail", "2.0.1")
+    implementation("com.black-kamelia.sprinkler", "i18n", "1.0.0")
+    implementation("com.black-kamelia.sprinkler", "utils", "2.1.0")
 
     testImplementation("com.h2database", "h2", h2Version)
     testImplementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)

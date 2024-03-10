@@ -10,7 +10,7 @@ class SharexConfiguration {
   private URL: string
   private ThumbnailURL: string
   private DeletionURL = ''
-  private ErrorMessage = ''
+  private ErrorMessage = '{json:title.humanString}'
 
   constructor(name: string, baseURL: string, token: string) {
     this.Name = name

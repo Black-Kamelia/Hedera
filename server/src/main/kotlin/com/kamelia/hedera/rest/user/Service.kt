@@ -263,6 +263,7 @@ object UserService {
 private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null) {
     when {
         email == null -> return
+        email.length > 128 -> raiseError("email", Errors.Users.Email.TOO_LONG)
         "@" !in email -> raiseError("email", Errors.Users.Email.INVALID_EMAIL)
         else -> User.findByEmail(email)?.let {
             if (it.uuid != toEdit?.uuid) {
@@ -275,6 +276,8 @@ private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null) {
 private fun ValidationScope.checkUsername(username: String?, toEdit: User? = null) {
     when {
         username == null -> return
+        username.length < 8 -> raiseError("username", Errors.Users.Username.TOO_SHORT)
+        username.length > 128 -> raiseError("username", Errors.Users.Username.TOO_LONG)
         !USERNAME_REGEX.matches(username) -> raiseError("username", Errors.Users.Username.INVALID_USERNAME)
         else -> User.findByUsername(username)?.let {
             if (it.uuid != toEdit?.uuid) {

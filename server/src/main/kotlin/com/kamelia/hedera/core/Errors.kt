@@ -178,6 +178,7 @@ object Errors {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.email"
 
+            const val TOO_LONG = "$PREFIX.too_long"
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_EMAIL = "$PREFIX.invalid_email"
 
@@ -209,6 +210,8 @@ object Errors {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.username"
 
+            const val TOO_SHORT = "$PREFIX.too_short"
+            const val TOO_LONG = "$PREFIX.too_long"
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_USERNAME = "$PREFIX.invalid_username"
 

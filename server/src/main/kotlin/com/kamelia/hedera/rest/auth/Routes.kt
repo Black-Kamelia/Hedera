@@ -50,12 +50,12 @@ private fun Route.login() = post<LoginDTO>("/login") { body ->
 }
 
 private fun Route.logoutAll() = post("/logout/all") {
-    val userId = call.authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val userId = call.authenticatedUser!!.uuid
     call.respondNoSuccess(AuthService.logoutAll(userId))
 }
 
 private fun Route.logout() = post("/logout") {
-    val token = call.accessToken ?: throw MissingTokenException()
+    val token = call.accessToken!!
     call.respond(AuthService.logout(token))
 }
 

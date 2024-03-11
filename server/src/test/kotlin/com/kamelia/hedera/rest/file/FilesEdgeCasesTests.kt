@@ -145,6 +145,22 @@ class FilesEdgeCasesTests {
          */
     }
 
+    @DisplayName("Upload file with name too long")
+    @Test
+    fun uploadFileWithNameTooLong() = testApplication {
+        val (tokens, _) = user
+
+        val response = client().submitFormWithBinaryData("/api/files/upload", formData {
+            appendFile("/test_files/test.txt", "a".repeat(512), "text/plain")
+        }) {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Files.Name.NAME_TOO_LONG, responseDto.title.key)
+    }
+
     @DisplayName("Upload file with no file")
     @Test
     fun uploadFileWithNoFile() = testApplication {

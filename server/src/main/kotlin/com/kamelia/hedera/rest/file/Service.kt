@@ -27,6 +27,7 @@ import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.server.plugins.*
 import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
@@ -76,6 +77,10 @@ object FileService {
     ): ActionResponse<FileRepresentationDTO> {
         val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.MISSING_FILE_NAME }
         require(fileName.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
+
+        if (fileName.length > 255) {
+            throw IllegalArgumentException(Errors.Files.Name.NAME_TOO_LONG)
+        }
 
         val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
         creator.increaseDiskQuota(uploadedFile.size)

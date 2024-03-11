@@ -49,23 +49,42 @@ abstract class AbstractAuthenticationTests(
     @DisplayName("Logout current session")
     @Test
     fun logout() = testApplication {
-        val (tokens, _) = user
+        val (username, password) = input.login
+        val (_, tokens) = loginBlocking(username, password)
+        val client = client()
 
-        val response = client().post("/api/logout") {
+        val response = client.post("/api/logout") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
 
         assertEquals(expectedResults.logoutSession, response.status)
+
+        val response2 = client.post("/api/logout") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response2.status)
     }
 
     @DisplayName("Logout all sessions")
     @Test
     fun logoutAll() = testApplication {
-        val (tokens, _) = user
+        val (username, password) = input.login
+        val (_, tokens1) = loginBlocking(username, password)
+        val (_, tokens2) = loginBlocking(username, password)
+        val client = client()
 
-        val response = client().post("/api/logout/all") {
-            tokens?.let { bearerAuth(it.accessToken) }
+        val response = client.post("/api/logout/all") {
+            tokens1?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.logoutAllSessions, response.status)
+
+        val response2 = client.post("/api/logout") {
+            tokens1?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response2.status)
+        val response3 = client.post("/api/logout") {
+            tokens2?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Unauthorized, response3.status)
     }
 }

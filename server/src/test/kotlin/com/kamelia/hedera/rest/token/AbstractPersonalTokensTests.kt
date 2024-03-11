@@ -69,7 +69,31 @@ abstract class AbstractPersonalTokensTests(
                 .filter { !it.name.matches(""".*(create|delete).*""".toRegex()) }
 
             assertEquals(2, tokensList.size)
-            tokensList.forEach { assertNull(it.token) }
+            tokensList.forEach {
+                assertNotNull(it.name)
+                assertNull(it.token)
+            }
+        }
+    }
+
+    @DisplayName("List personal tokens with usage count")
+    @Test
+    fun listPersonalTokensUsageCountTest() = testApplication {
+        val (tokens, _) = user
+        val client = client()
+
+        val response = client.get("/api/files/filters/tokens") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.listPersonalTokensWithUsages, response.status)
+
+        if (response.status == HttpStatusCode.OK) {
+            val tokensList = Json.decodeFromString<List<PersonalTokenDTO>>(response.bodyAsText())
+            tokensList.forEach {
+                assertNotNull(it.name)
+                assertNull(it.token)
+                assertEquals(0, it.usage)
+            }
         }
     }
 

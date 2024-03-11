@@ -10,6 +10,7 @@ import java.util.*
 open class PersonalTokensTestsExpectedResults(
     val createPersonalToken: HttpStatusCode,
     val listPersonalTokens: HttpStatusCode,
+    val listPersonalTokensWithUsages: HttpStatusCode,
     val deleteOthersPersonalToken: Map<UserRole, HttpStatusCode>,
 )
 
@@ -22,11 +23,13 @@ class UserPersonalTokensTestsExpectedResults(
 
     createPersonalToken: HttpStatusCode,
     listPersonalTokens: HttpStatusCode,
+    listPersonalTokensWithUsages: HttpStatusCode,
     deleteOthersPersonalToken: Map<UserRole, HttpStatusCode>,
 ) : PersonalTokensTestsExpectedResults(
     createPersonalToken,
     listPersonalTokens,
-    deleteOthersPersonalToken
+    listPersonalTokensWithUsages,
+    deleteOthersPersonalToken,
 )
 
 class UserPersonalTokensTestsInput(
@@ -41,6 +44,7 @@ val ownerExpectedResults = UserPersonalTokensTestsExpectedResults(
     deleteOwnPersonalToken = HttpStatusCode.OK,
 
     listPersonalTokens = HttpStatusCode.OK,
+    listPersonalTokensWithUsages = HttpStatusCode.OK,
     createPersonalToken = HttpStatusCode.Created,
     deleteOthersPersonalToken = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.Forbidden),
 )
@@ -48,6 +52,7 @@ val adminExpectedResults = UserPersonalTokensTestsExpectedResults(
     deleteOwnPersonalToken = HttpStatusCode.OK,
 
     listPersonalTokens = HttpStatusCode.OK,
+    listPersonalTokensWithUsages = HttpStatusCode.OK,
     createPersonalToken = HttpStatusCode.Created,
     deleteOthersPersonalToken = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.Forbidden),
 )
@@ -55,11 +60,13 @@ val regularUserFilesTests = UserPersonalTokensTestsExpectedResults(
     deleteOwnPersonalToken = HttpStatusCode.OK,
 
     listPersonalTokens = HttpStatusCode.OK,
+    listPersonalTokensWithUsages = HttpStatusCode.OK,
     createPersonalToken = HttpStatusCode.Created,
     deleteOthersPersonalToken = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.Forbidden),
 )
 val guestExpectedResults = PersonalTokensTestsExpectedResults(
     listPersonalTokens = HttpStatusCode.Unauthorized,
+    listPersonalTokensWithUsages = HttpStatusCode.Unauthorized,
     createPersonalToken = HttpStatusCode.Unauthorized,
     deleteOthersPersonalToken = mapOfRole(
         HttpStatusCode.Unauthorized,

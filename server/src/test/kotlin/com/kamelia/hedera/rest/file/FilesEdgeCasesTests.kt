@@ -401,7 +401,7 @@ class FilesEdgeCasesTests {
     fun viewFileBelongingToDeactivatedUser() = testApplication {
         val (tokens, _) = user
 
-        val response = client().get("/api/files/11a0040000") {
+        val response = client().get("/api/files/01a0040000") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.NotFound, response.status)

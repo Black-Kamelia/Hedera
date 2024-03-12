@@ -24,9 +24,7 @@ fun Application.configureAuthentication() {
             handleForceChangePassword(userState, call)
             UserPrincipal(userState.uuid, userState, token)
         }
-        configureJWT(RefreshJwt, Environment.secretRefresh) { call, cred ->
-            val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
-            SessionManager.verifyRefresh(token)
+        configureJWT(RefreshJwt, Environment.secretRefresh) { _, cred ->
             JWTPrincipal(cred.payload)
         }
     }

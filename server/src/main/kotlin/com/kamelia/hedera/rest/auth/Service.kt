@@ -51,8 +51,8 @@ object AuthService {
         Response.ok(session)
     }
 
-    suspend fun logout(token: String): Response<Boolean> = Connection.transaction {
-        SessionManager.logout(token)
+    suspend fun logout(accessToken: String): Response<Boolean> = Connection.transaction {
+        SessionManager.logout(accessToken)
         Response.noContent()
     }
 

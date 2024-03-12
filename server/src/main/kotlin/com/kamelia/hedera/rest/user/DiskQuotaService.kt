@@ -88,7 +88,7 @@ object DiskQuotaService {
             currentDiskQuota = current
             maximumDiskQuota = maximum
         }
-        SessionManager.updateSession(this.uuid, this)
+        SessionManager.updateSession(toUserState())
     }
 
     private suspend inline fun <T> withLock(noinline block: suspend () -> T): T = mutex.withReentrantLock(block)

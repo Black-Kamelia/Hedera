@@ -1,6 +1,6 @@
 package com.kamelia.hedera.database
 
-import com.kamelia.hedera.util.Environment.liquibaseMaster
+import com.kamelia.hedera.util.Environment
 import liquibase.Contexts
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
@@ -12,7 +12,7 @@ fun configureLiquibase() {
     val jdbcConnection = JdbcConnection(Connection.connection)
     val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection)
     val liquibase = Liquibase(
-        liquibaseMaster,
+        Environment.liquibaseMaster,
         ClassLoaderResourceAccessor(),
         database
     )

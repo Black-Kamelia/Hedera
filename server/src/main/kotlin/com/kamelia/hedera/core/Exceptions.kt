@@ -4,10 +4,10 @@ import com.kamelia.hedera.core.response.MessageKeyDTO
 import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.setting.Locale
-import com.kamelia.hedera.util.Environment.isProd
+import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.I18N
 
-open class HederaException(val error: MessageKeyDTO) : Exception(error.key, null, true, !isProd) {
+open class HederaException(val error: MessageKeyDTO) : Exception(error.key, null, true, !Environment.isProd) {
 
     constructor(key: String) : this(MessageKeyDTO(key))
 

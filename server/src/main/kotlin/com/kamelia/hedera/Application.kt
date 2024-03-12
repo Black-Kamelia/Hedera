@@ -14,7 +14,7 @@ import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.rest.user.PasswordResetService
 import com.kamelia.hedera.util.Environment
-import com.kamelia.hedera.util.Environment.isDev
+import com.kamelia.hedera.util.EnvironmentValues
 import com.kamelia.hedera.util.MimeTypes
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
@@ -27,8 +27,8 @@ fun main(args: Array<String>) = EngineMain.main(args)
 @Suppress("unused") // Referenced in application.yaml
 fun Application.module() = runBlocking {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-    Environment.application = this@module
-    if (isDev) log.info("Running in development mode")
+    Environment = EnvironmentValues( this@module.environment.config)
+    if (Environment.isDev) log.info("Running in development mode")
 
     Connection.init()
     MimeTypes.init()

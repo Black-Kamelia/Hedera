@@ -11,7 +11,7 @@ import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MultipartParseException
 import com.kamelia.hedera.plugins.UserPrincipal
-import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*

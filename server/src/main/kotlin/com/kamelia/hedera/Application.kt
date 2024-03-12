@@ -9,7 +9,6 @@ import com.kamelia.hedera.plugins.configureFreemarker
 import com.kamelia.hedera.plugins.configureRouting
 import com.kamelia.hedera.plugins.configureSerialization
 import com.kamelia.hedera.plugins.configureWebSockets
-import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.thumbnail.ThumbnailService
 import com.kamelia.hedera.rest.user.PasswordResetService

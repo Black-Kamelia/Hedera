@@ -3,7 +3,6 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
-import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO

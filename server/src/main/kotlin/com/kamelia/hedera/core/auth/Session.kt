@@ -1,12 +1,10 @@
-package com.kamelia.hedera.core
+package com.kamelia.hedera.core.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.Environment.secretAccess
 import com.kamelia.hedera.util.Environment.secretRefresh
-import com.kamelia.hedera.util.uuid
 import java.util.*
 import kotlinx.serialization.Serializable
 

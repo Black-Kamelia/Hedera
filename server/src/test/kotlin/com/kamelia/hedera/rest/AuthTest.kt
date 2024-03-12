@@ -8,7 +8,7 @@ import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
 import com.kamelia.hedera.loginBlocking
-import com.kamelia.hedera.rest.auth.SessionManager
+import com.kamelia.hedera.core.auth.SessionManager
 import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.rest.user.UserUpdateDTO
 import com.kamelia.hedera.util.Environment

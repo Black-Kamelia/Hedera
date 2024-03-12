@@ -3,8 +3,8 @@ package com.kamelia.hedera.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.rest.auth.SessionManager
-import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.core.auth.SessionManager
+import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.getHeader
 import io.ktor.http.*

@@ -2,7 +2,7 @@
 
 package com.kamelia.hedera.rest.auth
 
-import com.kamelia.hedera.core.Session
+import com.kamelia.hedera.core.auth.Session
 import com.kamelia.hedera.rest.core.DTO
 import com.kamelia.hedera.rest.setting.UserSettingsRepresentationDTO
 import com.kamelia.hedera.rest.user.UserRepresentationDTO

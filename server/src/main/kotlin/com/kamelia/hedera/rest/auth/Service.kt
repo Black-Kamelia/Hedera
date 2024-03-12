@@ -1,21 +1,19 @@
 package com.kamelia.hedera.rest.auth
 
-import com.auth0.jwt.interfaces.Payload
 import com.kamelia.hedera.core.AccountDisabledException
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.InvalidCredentialsException
-import com.kamelia.hedera.core.SESSION_ID_CLAIM
-import com.kamelia.hedera.core.Session
+import com.kamelia.hedera.core.auth.Session
+import com.kamelia.hedera.core.auth.SessionManager
+import com.kamelia.hedera.core.auth.toUserState
 import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.Environment
-import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.uuid
-import java.util.*
 import kotlinx.coroutines.delay
 
 object AuthService {

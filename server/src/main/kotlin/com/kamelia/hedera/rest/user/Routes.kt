@@ -86,7 +86,7 @@ private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/p
     val sessionId = call.sessionId ?: throw ExpiredOrInvalidTokenException()
     idRestrict(uuid)
 
-    call.respond(UserService.updateUserPassword(uuid, call.authToken, sessionId, body, forced))
+    call.respond(UserService.updateUserPassword(uuid, sessionId, body, forced))
 }
 
 private fun Route.deleteUser() = delete("/{uuid}") {

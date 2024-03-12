@@ -5,6 +5,8 @@ import com.kamelia.hedera.core.auth.UserState
 import java.util.*
 
 interface SessionStore {
+    suspend fun getUserOrNull(userId: UUID): UserState?
+
     suspend fun createSession(userId: UUID, userState: UserState): Session
     suspend fun verify(token: String): UserState?
     suspend fun removeSession(userId: UUID, sessionId: UUID)

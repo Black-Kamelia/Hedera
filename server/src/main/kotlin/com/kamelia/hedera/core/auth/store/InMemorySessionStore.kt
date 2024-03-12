@@ -19,6 +19,10 @@ object InMemorySessionStore : SessionStore {
     private val mutex = Mutex()
     private var userIdToSession = HashMap<UUID, UserSessions>()
 
+    override suspend fun getUserOrNull(userId: UUID): UserState? = mutex.withReentrantLock {
+        userIdToSession[userId]?.userState
+    }
+
     override suspend fun createSession(userId: UUID, userState: UserState): Session = mutex.withReentrantLock {
         userIdToSession.computeIfAbsent(userId) { UserSessions(userState) }.createSession()
     }

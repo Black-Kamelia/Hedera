@@ -16,4 +16,6 @@ interface SessionStore {
      */
     suspend fun refreshSession(userId: UUID, sessionId: UUID): Session?
     suspend fun updateUserState(userId: UUID, userState: UserState)
+
+    suspend fun purgeExpiredSessions()
 }

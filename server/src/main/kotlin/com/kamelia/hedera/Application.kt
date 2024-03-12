@@ -1,5 +1,6 @@
 package com.kamelia.hedera
 
+import com.kamelia.hedera.core.auth.SessionManager
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.database.configureLiquibase
 import com.kamelia.hedera.plugins.configureAuthentication
@@ -44,6 +45,6 @@ fun Application.module() = runBlocking {
     configureFreemarker()
     install(AutoHeadResponse)
 
-    //SessionManager.startPruning()
+    SessionManager.startPruning()
     PasswordResetService.startPruning()
 }

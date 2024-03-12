@@ -3,42 +3,50 @@ package com.kamelia.hedera.core.auth
 import com.auth0.jwt.JWT
 import com.kamelia.hedera.core.auth.store.InMemorySessionStore
 import com.kamelia.hedera.core.auth.store.SessionStore
+import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.withReentrantLock
 import java.util.*
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.sync.Mutex
 
 object SessionManager {
 
     private val store: SessionStore = InMemorySessionStore
-    private val mutex = Mutex()
 
-    suspend fun createSession(userId: UUID, userState: UserState): Session = mutex.withReentrantLock {
+    suspend fun createSession(userId: UUID, userState: UserState): Session =
         store.createSession(userId, userState)
-    }
 
-    suspend fun verify(accessToken: String): UserState? = mutex.withReentrantLock {
+    suspend fun verify(accessToken: String): UserState?  {
         val (userId, sessionId) = decodeJWT(accessToken)
-        store.verify(userId, sessionId)
+        return store.verify(userId, sessionId)
     }
 
-    suspend fun refreshSession(refreshToken: String): Session? = mutex.withReentrantLock {
+    suspend fun refreshSession(refreshToken: String): Session?  {
         val (userId, sessionId) = decodeJWT(refreshToken)
-        store.refreshSession(userId, sessionId)
+        return store.refreshSession(userId, sessionId)
     }
 
-    suspend fun logout(accessToken: String) = mutex.withReentrantLock {
+    suspend fun logout(accessToken: String)  {
         val (userId, sessionId) = decodeJWT(accessToken)
-        store.removeSession(userId, sessionId)
+        return store.removeSession(userId, sessionId)
     }
 
-    suspend fun logoutAll(accessToken: String) = mutex.withReentrantLock {
+    suspend fun logoutAll(accessToken: String)  {
         val (userId, _) = decodeJWT(accessToken)
-        store.removeAllSessions(userId)
+        return store.removeAllSessions(userId)
     }
 
-    suspend fun updateSession(userState: UserState) = mutex.withReentrantLock {
-        store.updateUserState(userState.uuid, userState)
+    suspend fun updateSession(userState: UserState)  {
+        return store.updateUserState(userState.uuid, userState)
+    }
+
+    fun startPruning() = CoroutineScope(Dispatchers.Default).launchPeriodic(10.seconds) {
+        store.purgeExpiredSessions()
     }
 
     private fun decodeJWT(token: String): Pair<UUID, UUID> {

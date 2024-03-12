@@ -45,6 +45,6 @@ fun Application.module() = runBlocking {
     configureFreemarker()
     install(AutoHeadResponse)
 
-    SessionManager.startPruning()
+    //SessionManager.startPruning()
     PasswordResetService.startPruning()
 }

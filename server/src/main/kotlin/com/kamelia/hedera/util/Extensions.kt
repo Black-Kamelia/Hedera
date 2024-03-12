@@ -98,9 +98,6 @@ fun ApplicationCall.jwtOrNull(): Payload? = this.principal<JWTPrincipal>()?.payl
 
 fun ApplicationCall.userOrNull(): UserPrincipal? = this.principal()
 
-val ApplicationCall.authToken: String
-    get() = getHeader(HttpHeaders.Authorization).removePrefix("Bearer ")
-
 val ApplicationCall.jwt: Payload
     get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 

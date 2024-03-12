@@ -1,19 +1,11 @@
 package com.kamelia.hedera.rest.auth
 
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.MissingTokenException
-import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.core.response.respondNoSuccess
-import com.kamelia.hedera.core.response.respondNothing
-import com.kamelia.hedera.mail.MailService
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.rest.user.PasswordResetService
 import com.kamelia.hedera.util.accessToken
-import com.kamelia.hedera.util.authToken
-import com.kamelia.hedera.util.authenticatedUser
-import com.kamelia.hedera.util.jwt
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
@@ -60,5 +52,7 @@ private fun Route.logout() = post("/logout") {
 }
 
 private fun Route.refresh() = post("/refresh") {
-    call.respond(AuthService.refresh(call.jwt, call.authToken))
+    // c pas le meme principal que le access donc ca marche pas c normal
+    //val token = call.accessToken!!
+    //call.respond(AuthService.refresh(token))
 }

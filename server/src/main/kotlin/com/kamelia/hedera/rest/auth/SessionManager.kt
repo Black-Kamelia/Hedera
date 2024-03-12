@@ -1,34 +1,6 @@
 package com.kamelia.hedera.rest.auth
 
-import com.auth0.jwt.interfaces.Payload
-import com.kamelia.hedera.core.Errors
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.core.Hasher
-import com.kamelia.hedera.core.response.Response
-import com.kamelia.hedera.core.TokenData
-import com.kamelia.hedera.rest.setting.toRepresentationDTO
-import com.kamelia.hedera.rest.user.DiskQuotaService.getDiskQuota
-import com.kamelia.hedera.rest.user.User
-import com.kamelia.hedera.rest.user.UserEvents
-import com.kamelia.hedera.rest.user.UserForcefullyLoggedOutDTO
-import com.kamelia.hedera.rest.user.UserRepresentationDTO
-import com.kamelia.hedera.rest.user.UserRole
-import com.kamelia.hedera.rest.user.toRepresentationDTO
-import com.kamelia.hedera.util.Environment
-import com.kamelia.hedera.util.launchPeriodic
-import com.kamelia.hedera.util.withReentrantLock
-import io.ktor.server.auth.*
-import io.ktor.util.logging.*
-import java.time.Instant
-import java.util.*
-import kotlin.time.Duration.Companion.minutes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-
+/*
 object SessionManager {
 
     private val LOGGER = KtorSimpleLogger("SessionManager")
@@ -36,9 +8,13 @@ object SessionManager {
 
     private val mutex = Mutex()
 
+    // accessToken -> session
     private val sessions = mutableMapOf<String, Session>()
-    private val refreshTokens = mutableMapOf<String, TokenData>()
+    // refreshToken -> access+refresh (tokendata)
+    private val refreshTokens = mutableMapOf<String, Session>()
+    // userId -> userState
     private val loggedUsers = mutableMapOf<UUID, UserState>()
+
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var pruneJob: Job? = null
 
@@ -78,7 +54,7 @@ object SessionManager {
         user: User,
         sessionId: UUID? = null,
         refreshToken: String? = null
-    ): TokenData = mutex.withReentrantLock {
+    ): Session = mutex.withReentrantLock {
         require((sessionId == null) xor (refreshToken == null)) { "Either sessionId or token must be provided" }
 
         val userState = loggedUsers.computeIfAbsent(user.id.value) {
@@ -94,7 +70,7 @@ object SessionManager {
                 user.createdAt
             )
         }
-        val tokenData = TokenData.from(user)
+        val tokenData = Session.from(user)
 
         if (sessionId == null) {
             val oldTokens = refreshTokens.remove(refreshToken) ?: throw ExpiredOrInvalidTokenException()
@@ -154,7 +130,7 @@ object SessionManager {
         ))
     }
 
-    suspend fun refresh(jwt: Payload, token: String): Response<TokenData> {
+    suspend fun refresh(jwt: Payload, token: String): Response<Session> {
         val user = User.findByUsername(jwt.subject) ?: throw ExpiredOrInvalidTokenException()
         return Response.created(generateTokens(user, refreshToken = token))
     }
@@ -238,5 +214,6 @@ data class UserState(
 data class Session(
     val sessionId: UUID,
     val user: UserState,
-    val tokenData: TokenData,
+    val tokenData: Session,
 )
+ */

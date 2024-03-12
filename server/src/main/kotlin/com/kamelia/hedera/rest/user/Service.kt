@@ -215,7 +215,7 @@ object UserService {
             toEdit.updatePassword(dto)
 
             if (forced) {
-                SessionManager.logoutAllExceptCurrent(toEdit, authToken, sessionId, "password_changed")
+                //SessionManager.logoutAllExceptCurrent(toEdit, authToken, sessionId, "password_changed")
             }
 
             ActionResponse.ok(

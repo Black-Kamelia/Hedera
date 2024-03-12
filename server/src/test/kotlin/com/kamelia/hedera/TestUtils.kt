@@ -1,6 +1,5 @@
 package com.kamelia.hedera
 
-import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.rest.auth.LoginDTO
 import com.kamelia.hedera.rest.auth.SessionOpeningDTO
 import com.kamelia.hedera.rest.core.DTO
@@ -23,7 +22,8 @@ import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-typealias TestUser = Pair<TokenData?, UUID>
+data class TokenPair(val accessToken: String, val refreshToken: String)
+typealias TestUser = Pair<TokenPair?, UUID>
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {
@@ -42,7 +42,7 @@ fun ApplicationTestBuilder.client() = createClient {
 suspend fun ApplicationTestBuilder.login(
     username: String,
     password: String,
-): Pair<HttpResponse, TokenData?> {
+): Pair<HttpResponse, TokenPair?> {
     val dto = LoginDTO(username, password)
     val response = client().post("/api/login") {
         contentType(ContentType.Application.Json)
@@ -54,13 +54,13 @@ suspend fun ApplicationTestBuilder.login(
         System.err.println(response.bodyAsText())
         null
     }
-    return response to body?.tokens
+    return response to body?.tokens?.let { TokenPair(it.accessToken.token, it.refreshToken.token) }
 }
 
 suspend fun ApplicationTestBuilder.loginBlocking(
     username: String,
     password: String,
-): Pair<HttpResponse, TokenData?> {
+): Pair<HttpResponse, TokenPair?> {
     val dto = LoginDTO(username, password)
     val response = runBlocking {
          client().post("/api/login") {
@@ -74,7 +74,7 @@ suspend fun ApplicationTestBuilder.loginBlocking(
         System.err.println(response.bodyAsText())
         null
     }
-    return response to body?.tokens
+    return response to body?.tokens?.let { TokenPair(it.accessToken.token, it.refreshToken.token) }
 }
 
 fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(

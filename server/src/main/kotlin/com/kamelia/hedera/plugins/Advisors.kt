@@ -1,5 +1,6 @@
 package com.kamelia.hedera.plugins
 
+import com.kamelia.hedera.core.AccountDisabledException
 import com.kamelia.hedera.core.DisabledRegistrationsException
 import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
@@ -9,6 +10,7 @@ import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.IllegalFilterException
 import com.kamelia.hedera.core.InsufficientDiskQuotaException
 import com.kamelia.hedera.core.InsufficientPermissionsException
+import com.kamelia.hedera.core.InvalidCredentialsException
 import com.kamelia.hedera.core.InvalidPersonalTokenException
 import com.kamelia.hedera.core.InvalidUUIDException
 import com.kamelia.hedera.core.MissingHeaderException
@@ -42,6 +44,7 @@ fun Application.configureExceptionAdvisors() {
 private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
     if (Environment.isDev) {
         call.application.environment.log.info("[DEV] Exception caught: ${cause.javaClass.name}", cause)
+        cause.printStackTrace()
     }
 
     when (cause) {
@@ -57,11 +60,13 @@ private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
         is BadRequestException -> badRequestMessage(call, cause)
 
         is MissingTokenException,
+        is InvalidCredentialsException,
         is InvalidPersonalTokenException,
         is ExpiredOrInvalidTokenException -> unauthorizedMessage(call, cause)
 
         is IllegalActionException,
         is DisabledRegistrationsException,
+        is AccountDisabledException,
         is InsufficientDiskQuotaException,
         is InsufficientPermissionsException,
         is TooManyPasswordResetRequestsException -> forbiddenMessage(call, cause)
@@ -121,12 +126,14 @@ private suspend fun serverError(call: ApplicationCall, cause: Throwable) = when 
 }
 
 private suspend fun unhandledError(call: ApplicationCall, cause: Throwable) {
-    call.respondNoSuccess(Response.error(
-        HttpStatusCode.InternalServerError,
-        MessageDTO.simple(
-            title = Errors.UNKNOWN.asMessage(),
-            message = cause.message?.let { Errors.UNKNOWN_MESSAGE.asMessage("hint" to it) },
+    call.respondNoSuccess(
+        Response.error(
+            HttpStatusCode.InternalServerError,
+            MessageDTO.simple(
+                title = Errors.UNKNOWN.asMessage(),
+                message = cause.message?.let { Errors.UNKNOWN_MESSAGE.asMessage("hint" to it) },
+            )
         )
-    ))
+    )
     call.application.log.error("Unexpected error", cause)
 }

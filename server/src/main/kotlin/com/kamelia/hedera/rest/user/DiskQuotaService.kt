@@ -2,6 +2,8 @@ package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.auth.SessionManager
+import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.rest.auth.toUserState
 import com.kamelia.hedera.util.uuid
 import com.kamelia.hedera.util.withReentrantLock
 import java.sql.Connection.TRANSACTION_REPEATABLE_READ

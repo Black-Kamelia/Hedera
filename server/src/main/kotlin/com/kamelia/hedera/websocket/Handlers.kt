@@ -38,8 +38,8 @@ private suspend fun WebSocketServerSession.onUserForcefullyLoggedOut(currentId: 
 
 private const val CONFIGURATION_UPDATED = "configuration-updated"
 private suspend fun WebSocketServerSession.onConfigurationUpdate(userId: UUID, payload: GlobalConfigurationRepresentationDTO) {
-    val user = SessionManager.getUserOrNull(userId)!!
-    if (user.role === UserRole.REGULAR) return
+    //val user = SessionManager.getUserOrNull(userId)!!
+    //if (user.role === UserRole.REGULAR) return
     sendEvent(CONFIGURATION_UPDATED, payload)
 }
 
@@ -49,9 +49,9 @@ private const val CONNECTION_CLOSED_BY_CLIENT = "connection-closed-by-client"
 private const val INVALID_FRAME = "invalid-frame"
 private suspend fun WebSocketServerSession.keepAlive(userId: UUID, vararg closers: () -> Unit) {
     val terminator: () -> Unit = { closers.forEach { it() } }
-    val user = SessionManager.getUserOrNull(userId) ?: return forcefullyClose(INVALID_USER_ID, terminator)
+    //val user = SessionManager.getUserOrNull(userId) ?: return forcefullyClose(INVALID_USER_ID, terminator)
 
-    sendEvent(USER_CONNECTED, user.toUserRepresentationDTO())
+    //sendEvent(USER_CONNECTED, user.toUserRepresentationDTO())
     pingPong(terminator)
     gracefullyClose(CONNECTION_CLOSED_BY_CLIENT, terminator)
 }

@@ -6,13 +6,17 @@ import com.kamelia.hedera.rest.core.pageable.FilterObject
 import com.kamelia.hedera.rest.setting.Locale
 import com.kamelia.hedera.util.I18N
 
-open class HederaException(val error: MessageKeyDTO) : Exception(error.key, null, true, false) {
+open class HederaException(val error: MessageKeyDTO) : Exception(error.key){//}, null, true, false) {
 
     constructor(key: String) : this(MessageKeyDTO(key))
 
 }
 
 class InvalidUUIDException : HederaException(Errors.Parsing.INVALID_UUID)
+
+class InvalidCredentialsException : HederaException(Errors.Auth.INVALID_CREDENTIALS)
+
+class AccountDisabledException : HederaException(Errors.Auth.ACCOUNT_DISABLED)
 
 class MissingParameterException(parameter: String) :
     HederaException(MessageKeyDTO(Errors.Parameters.MISSING_PARAMETER, "parameter" to parameter.asMessage()))

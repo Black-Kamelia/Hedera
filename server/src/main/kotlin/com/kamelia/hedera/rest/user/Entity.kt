@@ -181,14 +181,14 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             maximumDiskQuota = it
         }
 
-        SessionManager.updateSession(uuid, this)
+        //SessionManager.updateSession(uuid, this)
         onUpdate(updater)
     }
 
     suspend fun updateStatus(enabled: Boolean, updater: User = this): User = apply {
         this.enabled = enabled
 
-        SessionManager.updateSession(uuid, this)
+        //SessionManager.updateSession(uuid, this)
         onUpdate(updater)
     }
 
@@ -196,7 +196,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         password = Hasher.hash(dto.newPassword)
         forceChangePassword = false
 
-        SessionManager.updateSession(uuid, this)
+        //SessionManager.updateSession(uuid, this)
         onUpdate(this)
     }
 }

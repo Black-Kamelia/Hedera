@@ -20,11 +20,9 @@ fun Application.configureAuthentication() {
     install(Authentication) {
         configureJWT(AuthJwt, Environment.secretAccess) { call, _ ->
             val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
-            val session = SessionManager.verify(token)
-            requireNotNull(session)
-            requireNotNull(session.user)
-            handleForceChangePassword(session.user, call)
-            UserPrincipal(session.sessionId, session.user, token)
+            val userState = SessionManager.verify(token) ?: throw ExpiredOrInvalidTokenException()
+            handleForceChangePassword(userState, call)
+            UserPrincipal(userState.uuid, userState, token)
         }
         configureJWT(RefreshJwt, Environment.secretRefresh) { call, cred ->
             val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
@@ -48,6 +46,7 @@ private fun AuthenticationConfig.configureJWT(
         runCatching {
             block(this, credential)
         }.onFailure {
+            it.printStackTrace()
             if (it !is IllegalArgumentException) throw it
         }.getOrNull()
     }

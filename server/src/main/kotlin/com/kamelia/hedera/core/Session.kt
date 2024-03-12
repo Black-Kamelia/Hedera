@@ -35,6 +35,8 @@ class Session(
 
             val refreshTokenExpiration = now + Environment.expirationRefresh
             val refreshToken = JWT.create()
+                .withClaim(USER_ID_CLAIM, userId.toString())
+                .withClaim(SESSION_ID_CLAIM, sessionId.toString())
                 .withExpiresAt(Date(refreshTokenExpiration))
                 .withIssuedAt(Date(now))
                 .sign(Algorithm.HMAC256(secretRefresh))

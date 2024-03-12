@@ -5,7 +5,7 @@ import com.kamelia.hedera.core.response.respondNoSuccess
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.rest.user.PasswordResetService
-import com.kamelia.hedera.util.accessToken
+import com.kamelia.hedera.util.authToken
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
@@ -53,6 +53,6 @@ private fun Route.logout() = post("/logout") {
 
 private fun Route.refresh() = post("/refresh") {
     // c pas le meme principal que le access donc ca marche pas c normal
-    //val token = call.accessToken!!
-    //call.respond(AuthService.refresh(token))
+    val token = call.authToken
+    call.respond(AuthService.refresh(token))
 }

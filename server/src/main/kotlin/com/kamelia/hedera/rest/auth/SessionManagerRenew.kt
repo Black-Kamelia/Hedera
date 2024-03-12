@@ -134,7 +134,7 @@ object InMemorySessionStore : SessionStore {
             }
         }
 
-        fun verify(sessionId: UUID): UserState? = if (sessionId !in sessionIdToSession) {
+        fun verify(sessionId: UUID): UserState? = if (sessionId in sessionIdToSession) {
             userState
         } else {
             null

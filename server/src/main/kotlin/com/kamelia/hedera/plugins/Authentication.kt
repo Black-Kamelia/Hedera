@@ -46,7 +46,6 @@ private fun AuthenticationConfig.configureJWT(
         runCatching {
             block(this, credential)
         }.onFailure {
-            it.printStackTrace()
             if (it !is IllegalArgumentException) throw it
         }.getOrNull()
     }

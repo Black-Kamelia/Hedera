@@ -104,8 +104,8 @@ val ApplicationCall.jwt: Payload
 val ApplicationCall.authenticatedUser: UserState?
     get() = userOrNull()?.state
 
-val ApplicationCall.accessToken: String?
-    get() = userOrNull()?.accessToken
+val ApplicationCall.authToken: String
+    get() = getHeader("Authorization").replace("Bearer ", "")
 
 val ApplicationCall.sessionId: UUID?
     get() = userOrNull()?.sessionId

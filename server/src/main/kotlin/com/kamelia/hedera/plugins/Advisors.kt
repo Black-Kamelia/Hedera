@@ -43,7 +43,7 @@ fun Application.configureExceptionAdvisors() {
 
 private suspend fun handleException(call: ApplicationCall, cause: Throwable) {
     if (Environment.isDev) {
-        call.application.environment.log.info("[DEV] Exception caught: ${cause.javaClass.name}", cause)
+        call.application.environment.log.info("[DEV] Exception caught: ${cause.javaClass.name}")
         cause.printStackTrace()
     }
 

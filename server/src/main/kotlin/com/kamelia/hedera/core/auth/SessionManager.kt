@@ -1,6 +1,7 @@
 package com.kamelia.hedera.core.auth
 
 import com.auth0.jwt.JWT
+import com.auth0.jwt.interfaces.DecodedJWT
 import com.kamelia.hedera.core.auth.store.InMemorySessionStore
 import com.kamelia.hedera.core.auth.store.SessionStore
 import com.kamelia.hedera.rest.user.UserEvents

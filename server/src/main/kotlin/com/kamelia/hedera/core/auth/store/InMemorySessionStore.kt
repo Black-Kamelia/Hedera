@@ -1,7 +1,6 @@
 package com.kamelia.hedera.core.auth.store
 
 import com.auth0.jwt.JWT
-import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.auth.SESSION_ID_CLAIM
 import com.kamelia.hedera.core.auth.Session
 import com.kamelia.hedera.core.auth.USER_ID_CLAIM
@@ -9,10 +8,10 @@ import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.withReentrantLock
+import kotlinx.coroutines.sync.Mutex
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
-import kotlinx.coroutines.sync.Mutex
 
 object InMemorySessionStore : SessionStore {
 
@@ -79,20 +78,19 @@ object InMemorySessionStore : SessionStore {
 
         fun removeAllSessionsExcept(sessionId: UUID) {
             val toSave = sessionIdToSession[sessionId] ?: return removeAllSessions()
-            sessionIdToSession = HashMap<UUID, Session>().apply { put(sessionId, toSave) }
+            sessionIdToSession = hashMapOf(sessionId to toSave)
         }
 
         fun removeAllSessions() {
-            sessionIdToSession = HashMap()
+            sessionIdToSession = hashMapOf()
         }
 
         fun createSession(): Session {
             if (sessionIdToSession.size == Environment.maximumSessionsPerUser) {
-                val oldestSession = sessionIdToSession.entries.stream()
+                sessionIdToSession.entries.stream()
                     .min(Comparator.comparingLong { it.value.lastUsed })
                     .map { it.key }
-                    .orElseThrow { AssertionError("Oldest session not found") }
-                sessionIdToSession.remove(oldestSession)
+                    .ifPresent { sessionIdToSession.remove(it) }
             }
 
             val sessionId = UUID.randomUUID()
@@ -101,15 +99,12 @@ object InMemorySessionStore : SessionStore {
             }
         }
 
-        fun verify(sessionId: UUID, token: String): UserState? = if (sessionId in sessionIdToSession) {
-            if (sessionIdToSession[sessionId]?.accessToken?.token != token) {
-                null
-            } else {
+        fun verify(sessionId: UUID, token: String): UserState? =
+            if (sessionId in sessionIdToSession && sessionIdToSession[sessionId]?.accessToken?.token == token) {
                 userState
+            } else {
+                null
             }
-        } else {
-            null
-        }
 
         fun refreshSession(sessionId: UUID): Session? =
             sessionIdToSession.computeIfPresent(sessionId) { _, _ -> Session.from(userState.uuid, sessionId) }

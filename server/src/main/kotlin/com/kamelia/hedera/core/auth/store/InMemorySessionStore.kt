@@ -3,10 +3,12 @@ package com.kamelia.hedera.core.auth.store
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.auth.Session
 import com.kamelia.hedera.core.auth.UserState
+import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.withReentrantLock
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
+import kotlin.jvm.optionals.getOrNull
 import kotlinx.coroutines.sync.Mutex
 
 object InMemorySessionStore : SessionStore {
@@ -56,7 +58,7 @@ object InMemorySessionStore : SessionStore {
         userState: UserState
     ) {
 
-        private var sessionIdToSession = HashMap<UUID, Session>()
+        private var sessionIdToSession = HashMap<UUID, Session>(Environment.maximumSessionsPerUser)
         var userState: UserState = userState
             private set
 
@@ -74,6 +76,14 @@ object InMemorySessionStore : SessionStore {
         }
 
         fun createSession(): Session {
+            if (sessionIdToSession.size == Environment.maximumSessionsPerUser) {
+                val oldestSession = sessionIdToSession.entries.stream()
+                    .min(Comparator.comparingLong { it.value.lastUsed })
+                    .map { it.key }
+                    .orElseThrow { AssertionError("Oldest session not found") }
+                sessionIdToSession.remove(oldestSession)
+            }
+
             val sessionId = UUID.randomUUID()
             return Session.from(userState.uuid, sessionId).also {
                 sessionIdToSession[sessionId] = it

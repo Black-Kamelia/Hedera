@@ -18,6 +18,7 @@ data class TokenContainer(val token: String, val expiration: Long)
 class Session(
     val accessToken: TokenContainer,
     val refreshToken: TokenContainer,
+    var lastUsed: Long,
 ) {
     companion object {
         fun from(userId: UUID, sessionId: UUID): Session {
@@ -42,6 +43,7 @@ class Session(
             return Session(
                 TokenContainer(accessToken, accessTokenExpiration),
                 TokenContainer(refreshToken, refreshTokenExpiration),
+                now
             )
         }
     }

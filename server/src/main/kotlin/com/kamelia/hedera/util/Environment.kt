@@ -1,6 +1,5 @@
 package com.kamelia.hedera.util
 
-import io.ktor.http.*
 import io.ktor.server.application.*
 
 object Environment {
@@ -19,7 +18,10 @@ object Environment {
     val thumbnailFolder get() = config.property("hedera.thumbnailFolder").getString()
     val globalConfigurationFile get() = config.property("hedera.globalConfigurationFile").getString()
     val searchMaxDistance get() = config.property("hedera.searchMaxDistance").getString().toDouble()
-    val loginThrottle get() = config.property("hedera.loginThrottle").getString().toLong()
+
+    val loginThrottle get() = config.property("hedera.auth.loginThrottle").getString().toLong()
+    val sessionPurgePeriod get() = config.property("hedera.auth.sessionPurgePeriod").getString().toLong()
+    val maximumSessionsPerUser get() = config.property("hedera.auth.maximumSessionsPerUser").getString().toInt()
 
     val secretAccess get() = config.property("hedera.jwt.secretAccess").getString()
     val expirationAccess get() = config.property("hedera.jwt.expirationAccess").getString().toLong()
@@ -43,6 +45,8 @@ object Environment {
     val mailPassword get() = config.property("hedera.mail.password").getString()
     val mailFrom get() = config.property("hedera.mail.from").getString()
     val mailFromName get() = config.property("hedera.mail.fromName").getString()
-}
 
-val ApplicationJSON = ContentType.parse("application/json")
+    fun checkVariables() {
+        TODO("Not yet implemented")
+    }
+}

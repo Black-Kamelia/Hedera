@@ -3,10 +3,12 @@ package com.kamelia.hedera.core.auth
 import com.auth0.jwt.JWT
 import com.kamelia.hedera.core.auth.store.InMemorySessionStore
 import com.kamelia.hedera.core.auth.store.SessionStore
+import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.launchPeriodic
 import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.withReentrantLock
 import java.util.*
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +47,7 @@ object SessionManager {
         return store.updateUserState(userState.uuid, userState)
     }
 
-    fun startPruning() = CoroutineScope(Dispatchers.Default).launchPeriodic(10.seconds) {
+    fun startPruning() = CoroutineScope(Dispatchers.Default).launchPeriodic(Environment.sessionPurgePeriod.milliseconds) {
         store.purgeExpiredSessions()
     }
 

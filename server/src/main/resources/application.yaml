@@ -17,7 +17,11 @@ hedera:
   thumbnailFolder: "$HEDERA_UPLOAD_FOLDER:thumbnails"
   globalConfigurationFile: "$HEDERA_GLOBAL_CONFIGURATION_FILE:global_configuration.json"
   searchMaxDistance: "$HEDERA_SEARCH_MAX_DISTANCE:0.85"
-  loginThrottle: "$HEDERA_LOGIN_THROTTLE:3000" # Default 3 seconds
+
+  auth:
+    loginThrottle: "$HEDERA_LOGIN_THROTTLE:3000" # Default 3 seconds
+    sessionPurgePeriod: "$HEDERA_SESSION_PURGE_PERIOD:21600000" # Default 6 hours
+    maximumSessionsPerUser: "$HEDERA_MAXIMUM_SESSIONS_PER_USER:10" # Default 10
 
   jwt:
     secretAccess: $HEDERA_JWT_SECRET

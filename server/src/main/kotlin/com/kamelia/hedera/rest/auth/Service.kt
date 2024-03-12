@@ -56,9 +56,8 @@ object AuthService {
         Response.noContent()
     }
 
-    suspend fun logoutAll(userId: UUID): Response<Nothing> = Connection.transaction {
-        val user = User[userId]
-        SessionManager.logoutAll(user)
+    suspend fun logoutAll(accessToken: String): Response<Nothing> = Connection.transaction {
+        SessionManager.logoutAll(accessToken)
         Response.noContent()
     }
 }

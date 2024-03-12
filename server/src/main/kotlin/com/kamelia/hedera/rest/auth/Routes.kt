@@ -6,7 +6,6 @@ import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.plugins.RefreshJwt
 import com.kamelia.hedera.rest.user.PasswordResetService
 import com.kamelia.hedera.util.authToken
-import com.kamelia.hedera.util.authenticatedUser
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
@@ -43,7 +42,7 @@ private fun Route.login() = post<LoginDTO>("/login") { body ->
 }
 
 private fun Route.logoutAll() = post("/logout/all") {
-    val userId = call.authenticatedUser!!.uuid
+    val token = call.authToken
     call.respondNoSuccess(AuthService.logoutAll(token))
 }
 

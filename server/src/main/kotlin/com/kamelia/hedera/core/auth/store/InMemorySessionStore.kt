@@ -1,12 +1,11 @@
 package com.kamelia.hedera.core.auth.store
 
 import com.auth0.jwt.JWT
-import com.kamelia.hedera.core.auth.SESSION_ID_CLAIM
 import com.kamelia.hedera.core.auth.Session
-import com.kamelia.hedera.core.auth.USER_ID_CLAIM
 import com.kamelia.hedera.core.auth.UserState
+import com.kamelia.hedera.core.auth.sessionId
+import com.kamelia.hedera.core.auth.userId
 import com.kamelia.hedera.util.Environment
-import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.withReentrantLock
 import kotlinx.coroutines.sync.Mutex
 import java.util.*
@@ -28,9 +27,12 @@ object InMemorySessionStore : SessionStore {
 
     override suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
         val decoded = JWT.decode(token)
-        val userId = decoded.getClaim(USER_ID_CLAIM).asString().toUUID()
-        val sessionId = decoded.getClaim(SESSION_ID_CLAIM).asString().toUUID()
-        userIdToSession[userId]?.verify(sessionId, token)
+        userIdToSession[decoded.userId]?.verify(decoded.sessionId, token)
+    }
+
+    override suspend fun verifyRefresh(token: String): Boolean {
+        val decoded = JWT.decode(token)
+        return userIdToSession[decoded.userId]?.verifyRefresh(decoded.sessionId, token) ?: false
     }
 
     override suspend fun removeSession(userId: UUID, sessionId: UUID): Unit = mutex.withReentrantLock {
@@ -106,6 +108,9 @@ object InMemorySessionStore : SessionStore {
                 null
             }
 
+        fun verifyRefresh(sessionId: UUID, token: String): Boolean =
+            sessionId in sessionIdToSession && sessionIdToSession[sessionId]?.refreshToken?.token == token
+
         fun refreshSession(sessionId: UUID): Session? =
             sessionIdToSession.computeIfPresent(sessionId) { _, _ -> Session.from(userState.uuid, sessionId) }
 
@@ -122,7 +127,7 @@ object InMemorySessionStore : SessionStore {
     }
 }
 
-fun <E : Map.Entry<K, V>, K, V> Stream<E>.toHashMap(): HashMap<K, V> = collect(Collectors.toMap(
+private fun <E : Map.Entry<K, V>, K, V> Stream<E>.toHashMap(): HashMap<K, V> = collect(Collectors.toMap(
     { it.key },
     { it.value },
     { _, _ -> throw AssertionError() },

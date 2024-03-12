@@ -27,7 +27,8 @@ fun main(args: Array<String>) = EngineMain.main(args)
 @Suppress("unused") // Referenced in application.yaml
 fun Application.module() = runBlocking {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-    Environment = EnvironmentValues( this@module.environment.config)
+
+    Environment = EnvironmentValues(this@module.environment.config)
     if (Environment.isDev) log.info("Running in development mode")
 
     Connection.init()

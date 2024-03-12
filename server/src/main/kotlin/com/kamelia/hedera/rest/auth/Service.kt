@@ -7,15 +7,14 @@ import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.InvalidCredentialsException
 import com.kamelia.hedera.core.auth.Session
 import com.kamelia.hedera.core.auth.SessionManager
-import com.kamelia.hedera.core.auth.USER_ID_CLAIM
 import com.kamelia.hedera.core.auth.toUserState
+import com.kamelia.hedera.core.auth.userId
 import com.kamelia.hedera.core.response.Response
 import com.kamelia.hedera.database.Connection
 import com.kamelia.hedera.rest.setting.toRepresentationDTO
 import com.kamelia.hedera.rest.user.User
 import com.kamelia.hedera.rest.user.toRepresentationDTO
 import com.kamelia.hedera.util.Environment
-import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.uuid
 import kotlinx.coroutines.delay
 
@@ -59,8 +58,7 @@ object AuthService {
 
     suspend fun logoutAll(accessToken: String): Response<Nothing> = Connection.transaction {
         val decoded = JWT.decode(accessToken)
-        val userId = decoded.getClaim(USER_ID_CLAIM).asString().toUUID()
-        SessionManager.logoutAll(userId)
+        SessionManager.logoutAll(decoded.userId)
         Response.noContent()
     }
 }

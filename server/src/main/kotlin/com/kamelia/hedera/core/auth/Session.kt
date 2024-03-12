@@ -2,11 +2,12 @@ package com.kamelia.hedera.core.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.interfaces.DecodedJWT
 import com.kamelia.hedera.util.Environment
+import com.kamelia.hedera.util.toUUID
 import java.util.*
 import kotlinx.serialization.Serializable
 
-const val USER_ID_CLAIM = "userId"
 const val SESSION_ID_CLAIM = "sessionId"
 
 @Serializable
@@ -24,8 +25,8 @@ class Session(
 
             val accessTokenExpiration = now + Environment.expirationAccess
             val accessToken = JWT.create()
-                .withSubject(UUID.randomUUID().toString())
-                .withClaim(USER_ID_CLAIM, userId.toString())
+                .withSubject(userId.toString())
+                .withClaim("tokenId", UUID.randomUUID().toString())
                 .withClaim(SESSION_ID_CLAIM, sessionId.toString())
                 .withExpiresAt(Date(accessTokenExpiration))
                 .withIssuedAt(Date(now))
@@ -33,8 +34,8 @@ class Session(
 
             val refreshTokenExpiration = now + Environment.expirationRefresh
             val refreshToken = JWT.create()
-                .withSubject(UUID.randomUUID().toString())
-                .withClaim(USER_ID_CLAIM, userId.toString())
+                .withSubject(userId.toString())
+                .withClaim("tokenId", UUID.randomUUID().toString())
                 .withClaim(SESSION_ID_CLAIM, sessionId.toString())
                 .withExpiresAt(Date(refreshTokenExpiration))
                 .withIssuedAt(Date(now))
@@ -48,3 +49,9 @@ class Session(
         }
     }
 }
+
+val DecodedJWT.userId: UUID
+    get() = subject.toString().toUUID()
+
+val DecodedJWT.sessionId: UUID
+    get() = getClaim(SESSION_ID_CLAIM).asString().toUUID()

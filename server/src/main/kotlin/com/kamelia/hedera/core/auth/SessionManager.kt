@@ -27,6 +27,9 @@ object SessionManager {
     suspend fun verify(accessToken: String): UserState? =
         store.verify(accessToken)
 
+    suspend fun verifyRefresh(refreshToken: String): Boolean =
+        store.verifyRefresh(refreshToken)
+
     suspend fun refreshSession(refreshToken: String): Session? {
         val (userId, sessionId) = decodeJWT(refreshToken)
         return store.refreshSession(userId, sessionId)
@@ -70,9 +73,7 @@ object SessionManager {
 
     private fun decodeJWT(token: String): Pair<UUID, UUID> {
         val decoded = JWT.decode(token)
-        val userId = decoded.getClaim(USER_ID_CLAIM).asString().toUUID()
-        val sessionId = decoded.getClaim(SESSION_ID_CLAIM).asString().toUUID()
-        return userId to sessionId
+        return decoded.userId to decoded.sessionId
     }
 
 }

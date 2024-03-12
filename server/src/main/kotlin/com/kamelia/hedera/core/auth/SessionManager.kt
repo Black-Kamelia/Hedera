@@ -24,8 +24,7 @@ object SessionManager {
         store.createSession(userId, userState)
 
     suspend fun verify(accessToken: String): UserState?  {
-        val (userId, sessionId) = decodeJWT(accessToken)
-        return store.verify(userId, sessionId)
+        return store.verify(accessToken)
     }
 
     suspend fun refreshSession(refreshToken: String): Session?  {

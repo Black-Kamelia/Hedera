@@ -46,7 +46,7 @@ object AuthService {
 
     suspend fun refresh(refreshToken: String): Response<Session> = Connection.transaction {
         val session = SessionManager.refreshSession(refreshToken) ?: throw ExpiredOrInvalidTokenException()
-        Response.ok(session)
+        Response.created(session)
     }
 
     suspend fun logout(accessToken: String): Response<Boolean> = Connection.transaction {

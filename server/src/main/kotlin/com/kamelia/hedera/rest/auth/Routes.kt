@@ -52,7 +52,6 @@ private fun Route.logout() = post("/logout") {
 }
 
 private fun Route.refresh() = post("/refresh") {
-    // c pas le meme principal que le access donc ca marche pas c normal
     val token = call.authToken
     call.respond(AuthService.refresh(token))
 }

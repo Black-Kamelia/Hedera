@@ -24,6 +24,7 @@ class Session(
 
             val accessTokenExpiration = now + Environment.expirationAccess
             val accessToken = JWT.create()
+                .withSubject(UUID.randomUUID().toString())
                 .withClaim(USER_ID_CLAIM, userId.toString())
                 .withClaim(SESSION_ID_CLAIM, sessionId.toString())
                 .withExpiresAt(Date(accessTokenExpiration))
@@ -32,6 +33,7 @@ class Session(
 
             val refreshTokenExpiration = now + Environment.expirationRefresh
             val refreshToken = JWT.create()
+                .withSubject(UUID.randomUUID().toString())
                 .withClaim(USER_ID_CLAIM, userId.toString())
                 .withClaim(SESSION_ID_CLAIM, sessionId.toString())
                 .withExpiresAt(Date(refreshTokenExpiration))

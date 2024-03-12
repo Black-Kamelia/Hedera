@@ -3,6 +3,8 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.core.Hasher
 import com.kamelia.hedera.core.UnknownFilterFieldException
 import com.kamelia.hedera.core.UnknownSortFieldException
+import com.kamelia.hedera.core.auth.SessionManager
+import com.kamelia.hedera.core.auth.toUserState
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDEntity
 import com.kamelia.hedera.rest.core.auditable.AuditableUUIDTable
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
@@ -180,14 +182,14 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
             maximumDiskQuota = it
         }
 
-        //SessionManager.updateSession(uuid, this)
+        SessionManager.updateSession(toUserState())
         onUpdate(updater)
     }
 
     suspend fun updateStatus(enabled: Boolean, updater: User = this): User = apply {
         this.enabled = enabled
 
-        //SessionManager.updateSession(uuid, this)
+        SessionManager.updateSession(toUserState())
         onUpdate(updater)
     }
 
@@ -195,7 +197,7 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         password = Hasher.hash(dto.newPassword)
         forceChangePassword = false
 
-        //SessionManager.updateSession(uuid, this)
+        SessionManager.updateSession(toUserState())
         onUpdate(this)
     }
 }

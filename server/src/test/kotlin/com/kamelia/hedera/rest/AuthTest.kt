@@ -4,8 +4,8 @@ import com.kamelia.hedera.GlobalConfigurationSetup
 import com.kamelia.hedera.authTestApplication
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.auth.Session
 import com.kamelia.hedera.core.response.MessageDTO
-import com.kamelia.hedera.core.TokenData
 import com.kamelia.hedera.login
 import com.kamelia.hedera.loginBlocking
 import com.kamelia.hedera.core.auth.SessionManager
@@ -129,10 +129,10 @@ class AuthTest {
             bearerAuth(tokens.refreshToken)
         }
         assertEquals(HttpStatusCode.Created, response.status)
-        val newTokens = Json.decodeFromString(TokenData.serializer(), response.bodyAsText())
+        val newTokens = Json.decodeFromString<Session>(response.bodyAsText())
 
-        assertNotEquals(tokens.accessToken, newTokens.accessToken)
-        assertNotEquals(tokens.refreshToken, newTokens.refreshToken)
+        assertNotEquals(tokens.accessToken, newTokens.accessToken.token)
+        assertNotEquals(tokens.refreshToken, newTokens.refreshToken.token)
     }
 
     @DisplayName("Refreshing session gives working new tokens")
@@ -147,10 +147,10 @@ class AuthTest {
         }
         assertEquals(HttpStatusCode.Created, response.status)
 
-        val newTokens = Json.decodeFromString<TokenData>(response.bodyAsText())
+        val newTokens = Json.decodeFromString<Session>(response.bodyAsText())
 
         val testResponse = client().get("/api/users/00000000-0000-0000-0000-000000000003") {
-            bearerAuth(newTokens.accessToken)
+            bearerAuth(newTokens.accessToken.token)
         }
         assertEquals(HttpStatusCode.OK, testResponse.status)
     }
@@ -276,7 +276,7 @@ class AuthTest {
         assertEquals(HttpStatusCode.OK, response.status)
 
         val userState = SessionManager.verify(tokens!!.accessToken) ?: fail("User state should not be null")
-        assertEquals("new_username", userState.user.username)
+        assertEquals("new_username", userState.username)
     }
 
     @DisplayName("Session updates role when promoting user")

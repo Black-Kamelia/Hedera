@@ -6,7 +6,7 @@ import java.util.*
 
 interface SessionStore {
     suspend fun createSession(userId: UUID, userState: UserState): Session
-    suspend fun verify(userId: UUID, sessionId: UUID): UserState?
+    suspend fun verify(token: String): UserState?
     suspend fun removeSession(userId: UUID, sessionId: UUID)
     suspend fun removeAllSessionsExcept(userId: UUID, sessionId: UUID)
     suspend fun removeAllSessions(userId: UUID)

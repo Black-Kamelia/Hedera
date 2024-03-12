@@ -1,14 +1,17 @@
 package com.kamelia.hedera.core.auth.store
 
+import com.auth0.jwt.JWT
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
+import com.kamelia.hedera.core.auth.SESSION_ID_CLAIM
 import com.kamelia.hedera.core.auth.Session
+import com.kamelia.hedera.core.auth.USER_ID_CLAIM
 import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.util.Environment
+import com.kamelia.hedera.util.toUUID
 import com.kamelia.hedera.util.withReentrantLock
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
-import kotlin.jvm.optionals.getOrNull
 import kotlinx.coroutines.sync.Mutex
 
 object InMemorySessionStore : SessionStore {
@@ -16,35 +19,39 @@ object InMemorySessionStore : SessionStore {
     private val mutex = Mutex()
     private var userIdToSession = HashMap<UUID, UserSessions>()
 
-    private fun getSessions(userId: UUID): UserSessions =
-        userIdToSession[userId] ?: throw ExpiredOrInvalidTokenException()
-
     override suspend fun createSession(userId: UUID, userState: UserState): Session = mutex.withReentrantLock {
         userIdToSession.computeIfAbsent(userId) { UserSessions(userState) }.createSession()
     }
 
-    override suspend fun verify(userId: UUID, sessionId: UUID): UserState? = mutex.withReentrantLock {
-        getSessions(userId).verify(sessionId)
+    override suspend fun verify(token: String): UserState? = mutex.withReentrantLock {
+        val decoded = JWT.decode(token)
+        val userId = decoded.getClaim(USER_ID_CLAIM).asString().toUUID()
+        val sessionId = decoded.getClaim(SESSION_ID_CLAIM).asString().toUUID()
+        userIdToSession[userId]?.verify(sessionId, token)
     }
 
     override suspend fun removeSession(userId: UUID, sessionId: UUID): Unit = mutex.withReentrantLock {
-        getSessions(userId).removeSession(sessionId)
+        userIdToSession[userId]?.removeSession(sessionId)
     }
 
     override suspend fun removeAllSessionsExcept(userId: UUID, sessionId: UUID): Unit = mutex.withReentrantLock {
-        getSessions(userId).removeAllSessionsExcept(sessionId)
+        userIdToSession[userId]?.removeAllSessionsExcept(sessionId)
     }
 
     override suspend fun removeAllSessions(userId: UUID): Unit = mutex.withReentrantLock {
-        getSessions(userId).removeAllSessions()
+        userIdToSession[userId]?.removeAllSessions()
     }
 
     override suspend fun refreshSession(userId: UUID, sessionId: UUID): Session? = mutex.withReentrantLock {
-        getSessions(userId).refreshSession(sessionId)
+        userIdToSession[userId]?.refreshSession(sessionId)
     }
 
-    override suspend fun updateUserState(userId: UUID, userState: UserState) = mutex.withReentrantLock {
-        getSessions(userId).updateSession(userState)
+    override suspend fun updateUserState(userId: UUID, userState: UserState): Unit = mutex.withReentrantLock {
+        if (!userState.enabled) {
+            removeAllSessions(userId)
+        } else {
+            userIdToSession[userId]?.updateSession(userState)
+        }
     }
 
     override suspend fun purgeExpiredSessions() = mutex.withReentrantLock {
@@ -90,8 +97,12 @@ object InMemorySessionStore : SessionStore {
             }
         }
 
-        fun verify(sessionId: UUID): UserState? = if (sessionId in sessionIdToSession) {
-            userState
+        fun verify(sessionId: UUID, token: String): UserState? = if (sessionId in sessionIdToSession) {
+            if (sessionIdToSession[sessionId]?.accessToken?.token != token) {
+                null
+            } else {
+                userState
+            }
         } else {
             null
         }

@@ -4,14 +4,13 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.response.BulkActionSummaryDTO
 import com.kamelia.hedera.core.response.MessageDTO
-import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import java.util.*
 import java.util.stream.Stream
 import kotlin.test.assertNull
 import kotlinx.serialization.json.Json
@@ -210,6 +209,34 @@ abstract class AbstractUserFilesTests(
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
             assertEquals(Actions.Files.Delete.success.title.key, responseDto.title.key)
             assertEquals(Actions.Files.Delete.success.message.key, responseDto.message!!.key)
+        }
+    }
+
+    @DisplayName("Bulk delete own files")
+    @ParameterizedTest(name = "Bulk delete own {0} files")
+    @MethodSource("visibilities")
+    fun bulkDeleteOwnFileTest(
+        visibility: FileVisibility,
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+
+        val filesId = input.bulkDeleteOwnFilesId[visibility]!!
+        val response = client.post("/api/files/bulk/delete") {
+            contentType(ContentType.Application.Json)
+            setBody(BulkDeleteDTO(filesId))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.bulkDeleteOwnFile, response.status)
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<BulkActionSummaryDTO<String>>>(response.bodyAsText())
+            println(responseDto)
+            //assertEquals(BulkActions.Files.Delete.success.title.key, responseDto.title.key)
+            //assertEquals(BulkActions.Files.Delete.success.message(2, 0, 2).key, responseDto.message!!.key)
+            assertEquals(expectedResults.bulkDeleteOwnFileResult[visibility], responseDto.payload!!.success)
+            assertEquals(0, responseDto.payload!!.fail)
+            assertEquals(2, responseDto.payload!!.total)
         }
     }
 

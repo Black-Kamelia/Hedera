@@ -4,6 +4,7 @@ import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.appendFile
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.constant.Actions
+import com.kamelia.hedera.core.response.BulkActionSummaryDTO
 import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
 import com.kamelia.hedera.rest.user.UserRole
@@ -15,7 +16,6 @@ import io.ktor.server.testing.*
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.*
 import java.util.stream.Stream
 import kotlin.test.assertNull
 import kotlinx.serialization.json.Json
@@ -184,7 +184,11 @@ abstract class AbstractFilesTests(
             setBody(FileUpdateDTO(customLink = customLink))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.updateCustomLinkOthersFile[target]!![visibility], response.status, response.bodyAsText())
+        assertEquals(
+            expectedResults.updateCustomLinkOthersFile[target]!![visibility],
+            response.status,
+            response.bodyAsText()
+        )
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -208,7 +212,11 @@ abstract class AbstractFilesTests(
         val response = client.delete("/api/files/$fileId/custom-link") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.removeCustomLinkOthersFile[target]!![visibility], response.status, response.bodyAsText())
+        assertEquals(
+            expectedResults.removeCustomLinkOthersFile[target]!![visibility],
+            response.status,
+            response.bodyAsText()
+        )
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -236,6 +244,34 @@ abstract class AbstractFilesTests(
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
             assertEquals(Actions.Files.Delete.success.title.key, responseDto.title.key)
             assertEquals(Actions.Files.Delete.success.message.key, responseDto.message!!.key)
+        }
+    }
+
+    @DisplayName("Bulk delete others files")
+    @ParameterizedTest(name = "Bulk delete {0}''s {1} files")
+    @MethodSource("rolesVisibilitiesCombo")
+    fun bulkDeleteOthersFileTest(
+        target: UserRole,
+        visibility: FileVisibility,
+    ) = testApplication {
+        val (tokens, _) = user
+        val client = client()
+
+        val filesId = input.bulkDeleteOthersFileId[target]!![visibility]!!
+        val response = client.post("/api/files/bulk/delete") {
+            contentType(ContentType.Application.Json)
+            setBody(BulkDeleteDTO(filesId))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.bulkDeleteOthersFile, response.status)
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<BulkActionSummaryDTO<String>>>(response.bodyAsText())
+            //assertEquals(BulkActions.Files.Delete.success.title.key, responseDto.title.key)
+            //assertEquals(BulkActions.Files.Delete.success.message(2, 0, 2).key, responseDto.message!!.key)
+            assertEquals(expectedResults.bulkDeleteOthersFileResult[target]!![visibility], responseDto.payload!!.success)
+            assertEquals(0, responseDto.payload!!.fail)
+            assertEquals(2, responseDto.payload!!.total)
         }
     }
 

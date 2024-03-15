@@ -43,23 +43,19 @@ object SessionManager {
     suspend fun logoutAllExcept(userId: UUID, sessionId: UUID, reason: String = "logout_all") {
         UserEvents.userForcefullyLoggedOutEvent(
             UserForcefullyLoggedOutDTO(userId, reason),
-            ignoredSessions = listOf(sessionId)
+            ignoredSessions = listOf(sessionId),
         )
         store.removeAllSessionsExcept(userId, sessionId)
     }
 
     suspend fun logoutAll(userId: UUID, reason: String = "logout_all") {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutDTO(userId,reason)
+            UserForcefullyLoggedOutDTO(userId, reason)
         )
         store.removeAllSessions(userId)
     }
 
     suspend fun updateSession(userState: UserState) {
-        //if (!userState.enabled) {
-        //    logoutAll(userState.uuid, "account_disabled")
-        //    return
-        //}
         UserEvents.userUpdatedEvent(userState.toUserRepresentationDTO())
         store.updateUserState(userState.uuid, userState)
     }

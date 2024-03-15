@@ -85,10 +85,10 @@ class File(id: EntityID<UUID>) : AuditableUUIDEntity(id, FileTable) {
             name: String,
             mimeType: String,
             size: Long,
-            blurhash: String? = null,
+            blurhash: String?,
             visibility: FileVisibility,
             creator: User,
-            uploadToken: PersonalToken? = null,
+            uploadToken: PersonalToken?,
         ): File = new {
             this.code = code
             this.name = name

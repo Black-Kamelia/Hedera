@@ -12,10 +12,16 @@ liquibase:
   master: "classpath:db/db.changelog-test.xml"
 
 hedera:
+  url: "http://localhost"
   uploadFolder: _tests/upload
   thumbnailFolder: _tests/thumbnails
   globalConfigurationFile: _tests/global_configuration.json
-  loginThrottle: "0"
+  searchMaxDistance: "$HEDERA_SEARCH_MAX_DISTANCE:0.85"
+
+  auth:
+    loginThrottle: 3000
+    sessionPurgePeriod: 21600000
+    maximumSessionsPerUser: 1000
 
   jwt:
     secretAccess: $HEDERA_JWT_SECRET
@@ -25,3 +31,20 @@ hedera:
     secretWSToken: $HEDERA_JWT_WS_SECRET
     expirationWSToken: "$HEDERA_JWT_EXPIRATION_WS_TOKEN:300000" # Default 5 minutes
     realm: hedera login-locked
+
+  database:
+    host: ""
+    port: 0
+    name: ""
+    username: ""
+    password: ""
+
+  mail:
+    host: ""
+    port: 0
+    tls: ""
+    auth: ""
+    username: ""
+    password: ""
+    from: ""
+    fromName: ""

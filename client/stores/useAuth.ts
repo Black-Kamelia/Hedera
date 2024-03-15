@@ -2,16 +2,11 @@ import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
 import type { HederaUserConnectedPayload } from '~/utils/websocketEvents'
 
-export interface Tokens {
-  accessToken: string
-  refreshToken: string
-}
-
 export interface User extends HederaUserConnectedPayload {}
 
 export interface UseAuthComposer {
   user: Ref<Nullable<User>>
-  tokens: Ref<Nullable<Tokens>>
+  tokens: Ref<Nullable<TokenData>>
   isAuthenticated: ComputedRef<boolean>
 
   setUser: (newUser: Nullable<Partial<User>>) => void

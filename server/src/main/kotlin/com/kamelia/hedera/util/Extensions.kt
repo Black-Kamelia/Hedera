@@ -11,7 +11,7 @@ import com.kamelia.hedera.core.MissingHeaderException
 import com.kamelia.hedera.core.MissingParameterException
 import com.kamelia.hedera.core.MultipartParseException
 import com.kamelia.hedera.plugins.UserPrincipal
-import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.rest.user.UserRole
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -98,17 +98,14 @@ fun ApplicationCall.jwtOrNull(): Payload? = this.principal<JWTPrincipal>()?.payl
 
 fun ApplicationCall.userOrNull(): UserPrincipal? = this.principal()
 
-val ApplicationCall.authToken: String
-    get() = getHeader(HttpHeaders.Authorization).removePrefix("Bearer ")
-
 val ApplicationCall.jwt: Payload
     get() = jwtOrNull() ?: throw ExpiredOrInvalidTokenException()
 
 val ApplicationCall.authenticatedUser: UserState?
     get() = userOrNull()?.state
 
-val ApplicationCall.accessToken: String?
-    get() = userOrNull()?.accessToken
+val ApplicationCall.authToken: String
+    get() = getHeader("Authorization").replace("Bearer ", "")
 
 val ApplicationCall.sessionId: UUID?
     get() = userOrNull()?.sessionId

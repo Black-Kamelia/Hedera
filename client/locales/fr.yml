@@ -36,7 +36,7 @@ pages:
     reasons:
       expired: Votre session a expiré, veuillez vous reconnecter
       logout_all: Vous avez été déconnecté de tous les appareils
-      disabled: Votre compte a été désactivé
+      account_disabled: Votre compte a été désactivé
       password_changed: Votre mot de passe a été modifié, veuillez vous reconnecter
       session_terminated: Votre session a été terminée
       registration_disabled: Les inscriptions ne sont pas activées

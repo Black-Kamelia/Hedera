@@ -4,8 +4,8 @@ import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
 import com.kamelia.hedera.core.response.respond
 import com.kamelia.hedera.plugins.AuthJwt
 import com.kamelia.hedera.rest.core.pageable.PageDefinitionDTO
-import com.kamelia.hedera.util.adminRestrict
 import com.kamelia.hedera.util.authToken
+import com.kamelia.hedera.util.adminRestrict
 import com.kamelia.hedera.util.authenticatedUser
 import com.kamelia.hedera.util.getPageParameters
 import com.kamelia.hedera.util.getUUID
@@ -86,7 +86,7 @@ private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/p
     val sessionId = call.sessionId ?: throw ExpiredOrInvalidTokenException()
     idRestrict(uuid)
 
-    call.respond(UserService.updateUserPassword(uuid, call.authToken, sessionId, body, forced))
+    call.respond(UserService.updateUserPassword(uuid, sessionId, body, forced))
 }
 
 private fun Route.deleteUser() = delete("/{uuid}") {

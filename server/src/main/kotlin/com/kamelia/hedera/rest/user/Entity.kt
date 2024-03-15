@@ -189,7 +189,11 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
     suspend fun updateStatus(enabled: Boolean, updater: User = this): User = apply {
         this.enabled = enabled
 
-        SessionManager.updateSession(toUserState())
+        if (!enabled) {
+            SessionManager.logoutAll(uuid, "account_disabled")
+        } else {
+            SessionManager.updateSession(toUserState())
+        }
         onUpdate(updater)
     }
 

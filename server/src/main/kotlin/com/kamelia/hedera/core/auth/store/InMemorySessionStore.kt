@@ -52,11 +52,7 @@ object InMemorySessionStore : SessionStore {
     }
 
     override suspend fun updateUserState(userId: UUID, userState: UserState): Unit = mutex.withReentrantLock {
-        if (!userState.enabled) {
-            removeAllSessions(userId)
-        } else {
-            userIdToSession[userId]?.updateSession(userState)
-        }
+        userIdToSession[userId]?.updateSession(userState)
     }
 
     override suspend fun purgeExpiredSessions() = mutex.withReentrantLock {

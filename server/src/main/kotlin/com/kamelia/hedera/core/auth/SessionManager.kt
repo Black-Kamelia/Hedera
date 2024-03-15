@@ -37,33 +37,31 @@ object SessionManager {
 
     suspend fun logout(accessToken: String) {
         val (userId, sessionId) = decodeJWT(accessToken)
-        return store.removeSession(userId, sessionId)
+        store.removeSession(userId, sessionId)
     }
 
     suspend fun logoutAllExcept(userId: UUID, sessionId: UUID, reason: String = "logout_all") {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutDTO(
-                userId = userId,
-                reason = reason,
-            ),
+            UserForcefullyLoggedOutDTO(userId, reason),
             ignoredSessions = listOf(sessionId)
         )
-
-        return store.removeAllSessionsExcept(userId, sessionId)
+        store.removeAllSessionsExcept(userId, sessionId)
     }
 
     suspend fun logoutAll(userId: UUID, reason: String = "logout_all") {
         UserEvents.userForcefullyLoggedOutEvent(
-            UserForcefullyLoggedOutDTO(
-                userId = userId,
-                reason = reason,
-            )
+            UserForcefullyLoggedOutDTO(userId,reason)
         )
-        return store.removeAllSessions(userId)
+        store.removeAllSessions(userId)
     }
 
     suspend fun updateSession(userState: UserState) {
-        return store.updateUserState(userState.uuid, userState)
+        //if (!userState.enabled) {
+        //    logoutAll(userState.uuid, "account_disabled")
+        //    return
+        //}
+        UserEvents.userUpdatedEvent(userState.toUserRepresentationDTO())
+        store.updateUserState(userState.uuid, userState)
     }
 
     fun startPruning() =

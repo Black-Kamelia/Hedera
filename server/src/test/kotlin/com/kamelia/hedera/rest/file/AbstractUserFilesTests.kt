@@ -31,14 +31,13 @@ abstract class AbstractUserFilesTests(
     @Test
     fun uploadFileTokenTest() = testApplication {
         val (_, userId) = user
-        val client = client()
 
-        val response = client.submitFormWithBinaryData("/api/files/upload/token", formData {
+        val response = client().submitFormWithBinaryData("/api/files/upload/token", formData {
             appendFile("/test_files/test.txt", "test.txt", "text/plain")
         }) {
             header("Upload-Token", input.uploadToken)
         }
-        assertEquals(expectedResults.uploadFile, response.status)
+        assertEquals(expectedResults.uploadFile, response.status, response.bodyAsText())
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<FileRepresentationDTO>(response.bodyAsText())
@@ -56,13 +55,12 @@ abstract class AbstractUserFilesTests(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
-        val client = client()
 
         val fileCode = input.viewOwnFileCode[visibility]!!
-        val response = client.get("/api/files/$fileCode") {
+        val response = client().get("/api/files/$fileCode") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.viewOwnFile[visibility], response.status)
+        assertEquals(expectedResults.viewOwnFile[visibility], response.status, response.bodyAsText())
     }
 
     @DisplayName("View file publicly")
@@ -71,11 +69,9 @@ abstract class AbstractUserFilesTests(
     fun viewFilePubliclyTest(
         visibility: FileVisibility
     ) = testApplication {
-        val client = client()
-
         val fileCode = input.viewPubliclyFileCode[visibility]!!
-        val response = client.get("/m/$fileCode")
-        assertEquals(expectedResults.viewPubliclyFileCode[visibility], response.status)
+        val response = client().get("/m/$fileCode")
+        assertEquals(expectedResults.viewPubliclyFileCode[visibility], response.status, response.bodyAsText())
     }
 
     @DisplayName("View file publicly via custom link")
@@ -84,11 +80,9 @@ abstract class AbstractUserFilesTests(
     fun viewFilePubliclyCustomLinkTest(
         visibility: FileVisibility
     ) = testApplication {
-        val client = client()
-
         val customLink = input.viewPubliclyFileCustomLink[visibility]!!
-        val response = client.get("/c/$customLink")
-        assertEquals(expectedResults.viewPubliclyFileCustomLink[visibility], response.status)
+        val response = client().get("/c/$customLink")
+        assertEquals(expectedResults.viewPubliclyFileCustomLink[visibility], response.status, response.bodyAsText())
     }
 
     @DisplayName("Rename own file")
@@ -98,15 +92,14 @@ abstract class AbstractUserFilesTests(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
-        val client = client()
 
         val fileId = input.renameOwnFileId[visibility]!!
-        val response = client.put("/api/files/$fileId/name") {
+        val response = client().put("/api/files/$fileId/name") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(name = "bar.txt"))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.renameOwnFile[visibility], response.status)
+        assertEquals(expectedResults.renameOwnFile[visibility], response.status, response.bodyAsText())
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -118,21 +111,45 @@ abstract class AbstractUserFilesTests(
 
     @DisplayName("Update own file visibility")
     @ParameterizedTest(name = "Update own {0} file visibility to {1}")
-    @MethodSource
+    @MethodSource("visibilityCartesianProduct")
     fun updateVisibilityOwnFileTest(
         visibility: FileVisibility,
         newVisibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
-        val client = client()
+
+        val filesId = input.bulkUpdateVisibilityOwnFilesId[visibility]!!
+        val response = client().post("/api/files/bulk/visibility") {
+            contentType(ContentType.Application.Json)
+            setBody(BulkUpdateVisibilityDTO(filesId, newVisibility))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.updateVisibilityOwnFile[visibility], response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<MessageDTO<BulkActionSummaryDTO<String>>>(response.bodyAsText())
+            assertEquals(expectedResults.bulkUpdateVisibilityOwnFileResult[visibility], responseDto.payload!!.success)
+            assertEquals(0, responseDto.payload!!.fail)
+            assertEquals(2, responseDto.payload!!.total)
+        }
+    }
+
+    @DisplayName("Bulk update own files visibility")
+    @ParameterizedTest(name = "Bulk update own {0} files visibility to {1}")
+    @MethodSource("visibilityCartesianProduct")
+    fun bulkUpdateVisibilityOwnFileTest(
+        visibility: FileVisibility,
+        newVisibility: FileVisibility,
+    ) = testApplication {
+        val (tokens, _) = user
 
         val fileId = input.updateVisibilityOwnFileId[visibility]!!
-        val response = client.put("/api/files/$fileId/visibility") {
+        val response = client().put("/api/files/$fileId/visibility") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(visibility = newVisibility))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.updateVisibilityOwnFile[visibility], response.status)
+        assertEquals(expectedResults.updateVisibilityOwnFile[visibility], response.status, response.bodyAsText())
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -149,11 +166,10 @@ abstract class AbstractUserFilesTests(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, uuid) = user
-        val client = client()
 
         val fileId = input.updateCustomLinkOwnFileId[visibility]!!
         val customLink = "$uuid-$fileId-$visibility".lowercase()
-        val response = client.put("/api/files/$fileId/custom-link") {
+        val response = client().put("/api/files/$fileId/custom-link") {
             contentType(ContentType.Application.Json)
             setBody(FileUpdateDTO(customLink = customLink))
             tokens?.let { bearerAuth(it.accessToken) }
@@ -175,10 +191,9 @@ abstract class AbstractUserFilesTests(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
-        val client = client()
 
         val fileId = input.removeCustomLinkOwnFileId[visibility]!!
-        val response = client.delete("/api/files/$fileId/custom-link") {
+        val response = client().delete("/api/files/$fileId/custom-link") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.removeCustomLinkOwnFile[visibility], response.status, response.bodyAsText())
@@ -197,13 +212,12 @@ abstract class AbstractUserFilesTests(
         visibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
-        val client = client()
 
         val fileId = input.deleteOwnFileId[visibility]!!
-        val response = client.delete("/api/files/$fileId") {
+        val response = client().delete("/api/files/$fileId") {
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.deleteOwnFile[visibility], response.status)
+        assertEquals(expectedResults.deleteOwnFile[visibility], response.status, response.bodyAsText())
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<FileRepresentationDTO>>(response.bodyAsText())
@@ -219,21 +233,17 @@ abstract class AbstractUserFilesTests(
         visibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
-        val client = client()
 
         val filesId = input.bulkDeleteOwnFilesId[visibility]!!
-        val response = client.post("/api/files/bulk/delete") {
+        val response = client().post("/api/files/bulk/delete") {
             contentType(ContentType.Application.Json)
             setBody(BulkDeleteDTO(filesId))
             tokens?.let { bearerAuth(it.accessToken) }
         }
-        assertEquals(expectedResults.bulkDeleteOwnFile, response.status)
+        assertEquals(expectedResults.bulkDeleteOwnFile, response.status, response.bodyAsText())
 
         if (response.status == HttpStatusCode.OK) {
             val responseDto = Json.decodeFromString<MessageDTO<BulkActionSummaryDTO<String>>>(response.bodyAsText())
-            println(responseDto)
-            //assertEquals(BulkActions.Files.Delete.success.title.key, responseDto.title.key)
-            //assertEquals(BulkActions.Files.Delete.success.message(2, 0, 2).key, responseDto.message!!.key)
             assertEquals(expectedResults.bulkDeleteOwnFileResult[visibility], responseDto.payload!!.success)
             assertEquals(0, responseDto.payload!!.fail)
             assertEquals(2, responseDto.payload!!.total)
@@ -246,7 +256,7 @@ abstract class AbstractUserFilesTests(
         fun visibilities(): Stream<Arguments> = visibilities.map { Arguments.of(it) }.stream()
 
         @JvmStatic
-        fun updateVisibilityOwnFileTest(): Stream<Arguments> {
+        fun visibilityCartesianProduct(): Stream<Arguments> {
             return visibilities.flatMap { visibility ->
                 visibilities.map { newVisibility ->
                     Arguments.of(visibility, newVisibility)

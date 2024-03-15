@@ -271,6 +271,22 @@ class FilesEdgeCasesTests {
         assertEquals(Errors.Files.Name.EMPTY_NAME, responseDto.fields!!["name"]!!.key)
     }
 
+    @DisplayName("Rename file with name too long")
+    @Test
+    fun renameFileWithNameTooLong() = testApplication {
+        val (tokens, _) = user
+
+        val response = client().put("/api/files/10000001-000a-0000-0005-000000000001/name") {
+            contentType(ContentType.Application.Json)
+            setBody(FileUpdateDTO(name = "a".repeat(300)))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Files.Name.NAME_TOO_LONG, responseDto.fields!!["name"]!!.key)
+    }
+
     @DisplayName("Edit unknown file's visibility")
     @Test
     fun editUnknownFileVisibility() = testApplication {
@@ -424,6 +440,13 @@ class FilesEdgeCasesTests {
 
         val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
         assertEquals(Errors.Files.NOT_FOUND, responseDto.title.key)
+    }
+
+    @DisplayName("View file using unknown custom link")
+    @Test
+    fun viewFileUsingUnknownCustomLink() = testApplication {
+        val response = client().get("/c/unknown-custom-link")
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
     @DisplayName("Filter files on unknown field")

@@ -15,6 +15,8 @@ open class FilesTestsExpectedResults(
     val viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    val bulkUpdateVisibilityOthersFile: HttpStatusCode,
+    val bulkUpdateVisibilityOthersFileResult: Map<UserRole, Map<FileVisibility, Int>>,
     val updateCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val removeCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
@@ -26,6 +28,7 @@ open class FilesTestsInput(
     val viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
     val renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     val updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    val bulkUpdateVisibilityOthersFilesId: Map<UserRole, Map<FileVisibility, List<UUID>>>,
     val updateCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     val removeCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     val deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
@@ -41,6 +44,8 @@ class UserFilesTestsExpectedResults(
     val viewPubliclyFileCustomLink: Map<FileVisibility, HttpStatusCode>,
     val renameOwnFile: Map<FileVisibility, HttpStatusCode>,
     val updateVisibilityOwnFile: Map<FileVisibility, HttpStatusCode>,
+    val bulkUpdateVisibilityOwnFile: HttpStatusCode,
+    val bulkUpdateVisibilityOwnFileResult: Map<FileVisibility, Int>,
     val updateCustomLinkOwnFile: Map<FileVisibility, HttpStatusCode>,
     val removeCustomLinkOwnFile: Map<FileVisibility, HttpStatusCode>,
     val deleteOwnFile: Map<FileVisibility, HttpStatusCode>,
@@ -50,6 +55,8 @@ class UserFilesTestsExpectedResults(
     viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     updateVisibilityOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
+    bulkUpdateVisibilityOthersFile: HttpStatusCode,
+    bulkUpdateVisibilityOthersFileResult: Map<UserRole, Map<FileVisibility, Int>>,
     updateCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     removeCustomLinkOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     deleteOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
@@ -61,6 +68,8 @@ class UserFilesTestsExpectedResults(
     viewOthersFileAPI,
     renameOthersFile,
     updateVisibilityOthersFile,
+    bulkUpdateVisibilityOthersFile,
+    bulkUpdateVisibilityOthersFileResult,
     updateCustomLinkOthersFile,
     removeCustomLinkOthersFile,
     deleteOthersFile,
@@ -75,6 +84,7 @@ class UserFilesTestsInput(
     val viewPubliclyFileCustomLink: Map<FileVisibility, String>,
     val renameOwnFileId: Map<FileVisibility, UUID>,
     val updateVisibilityOwnFileId: Map<FileVisibility, UUID>,
+    val bulkUpdateVisibilityOwnFilesId: Map<FileVisibility, List<UUID>>,
     val updateCustomLinkOwnFileId: Map<FileVisibility, UUID>,
     val removeCustomLinkOwnFileId: Map<FileVisibility, UUID>,
     val deleteOwnFileId: Map<FileVisibility, UUID>,
@@ -83,6 +93,7 @@ class UserFilesTestsInput(
     viewOthersFileCode: Map<UserRole, Map<FileVisibility, String>>,
     renameOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     updateVisibilityOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
+    bulkUpdateVisibilityOthersFilesId: Map<UserRole, Map<FileVisibility, List<UUID>>>,
     updateCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     removeCustomLinkOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
     deleteOthersFileId: Map<UserRole, Map<FileVisibility, UUID>>,
@@ -91,6 +102,7 @@ class UserFilesTestsInput(
     viewOthersFileCode,
     renameOthersFileId,
     updateVisibilityOthersFileId,
+    bulkUpdateVisibilityOthersFilesId,
     updateCustomLinkOthersFileId,
     removeCustomLinkOthersFileId,
     deleteOthersFileId,
@@ -107,6 +119,8 @@ val ownerExpectedResults = UserFilesTestsExpectedResults(
     viewPubliclyFileCustomLink = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.NotFound),
     renameOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     updateVisibilityOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+    bulkUpdateVisibilityOwnFile = HttpStatusCode.OK,
+    bulkUpdateVisibilityOwnFileResult = mapOfVisibility(2, 2, 2),
     updateCustomLinkOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     removeCustomLinkOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     deleteOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
@@ -128,6 +142,12 @@ val ownerExpectedResults = UserFilesTestsExpectedResults(
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
+    ),
+    bulkUpdateVisibilityOthersFile = HttpStatusCode.OK,
+    bulkUpdateVisibilityOthersFileResult = mapOfRole(
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
     ),
     updateCustomLinkOthersFile = mapOfRole(
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
@@ -161,6 +181,8 @@ val adminExpectedResults = UserFilesTestsExpectedResults(
     viewPubliclyFileCustomLink = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.NotFound),
     renameOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     updateVisibilityOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+    bulkUpdateVisibilityOwnFile = HttpStatusCode.OK,
+    bulkUpdateVisibilityOwnFileResult = mapOfVisibility(2, 2, 2),
     updateCustomLinkOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     removeCustomLinkOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     deleteOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
@@ -182,6 +204,12 @@ val adminExpectedResults = UserFilesTestsExpectedResults(
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
+    ),
+    bulkUpdateVisibilityOthersFile = HttpStatusCode.OK,
+    bulkUpdateVisibilityOthersFileResult = mapOfRole(
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
     ),
     updateCustomLinkOthersFile = mapOfRole(
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
@@ -215,6 +243,8 @@ val regularUserExpectedResults = UserFilesTestsExpectedResults(
     viewPubliclyFileCustomLink = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.NotFound),
     renameOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     updateVisibilityOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+    bulkUpdateVisibilityOwnFile = HttpStatusCode.OK,
+    bulkUpdateVisibilityOwnFileResult = mapOfVisibility(2, 2, 2),
     updateCustomLinkOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     removeCustomLinkOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
     deleteOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
@@ -236,6 +266,12 @@ val regularUserExpectedResults = UserFilesTestsExpectedResults(
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
+    ),
+    bulkUpdateVisibilityOthersFile = HttpStatusCode.OK,
+    bulkUpdateVisibilityOthersFileResult = mapOfRole(
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
     ),
     updateCustomLinkOthersFile = mapOfRole(
         mapOfVisibility(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.NotFound),
@@ -279,6 +315,12 @@ val guestExpectedResults = FilesTestsExpectedResults(
         mapOfVisibility(HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized),
         mapOfVisibility(HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized),
     ),
+    bulkUpdateVisibilityOthersFile = HttpStatusCode.Unauthorized,
+    bulkUpdateVisibilityOthersFileResult = mapOfRole(
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
+        mapOfVisibility(0, 0, 0),
+    ),
     updateCustomLinkOthersFile = mapOfRole(
         mapOfVisibility(HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized),
         mapOfVisibility(HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized),
@@ -320,6 +362,11 @@ val ownerInput = UserFilesTestsInput(
         "00000001-0000-0000-0004-000000000001".uuid(),
         "00000001-0000-0000-0004-000000000002".uuid(),
         "00000001-0000-0000-0004-000000000003".uuid(),
+    ),
+    bulkUpdateVisibilityOwnFilesId = mapOfVisibility(
+        listOf("00000001-0000-0000-0010-000000000011".uuid(), "00000001-0000-0000-0010-000000000012".uuid()),
+        listOf("00000001-0000-0000-0010-000000000021".uuid(), "00000001-0000-0000-0010-000000000022".uuid()),
+        listOf("00000001-0000-0000-0010-000000000031".uuid(), "00000001-0000-0000-0010-000000000032".uuid()),
     ),
     updateCustomLinkOwnFileId = mapOfVisibility(
         "00000001-0000-0000-0006-000000000001".uuid(),
@@ -379,6 +426,23 @@ val ownerInput = UserFilesTestsInput(
             "10000003-0001-0000-0004-000000000001".uuid(),
             "10000003-0001-0000-0004-000000000002".uuid(),
             "10000003-0001-0000-0004-000000000003".uuid(),
+        ),
+    ),
+    bulkUpdateVisibilityOthersFilesId = mapOfRole(
+        mapOfVisibility(
+            listOf("10000001-0001-0000-0010-000000000011".uuid(), "10000001-0001-0000-0010-000000000012".uuid()),
+            listOf("10000001-0001-0000-0010-000000000021".uuid(), "10000001-0001-0000-0010-000000000022".uuid()),
+            listOf("10000001-0001-0000-0010-000000000031".uuid(), "10000001-0001-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000002-0001-0000-0010-000000000011".uuid(), "10000002-0001-0000-0010-000000000012".uuid()),
+            listOf("10000002-0001-0000-0010-000000000021".uuid(), "10000002-0001-0000-0010-000000000022".uuid()),
+            listOf("10000002-0001-0000-0010-000000000031".uuid(), "10000002-0001-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000003-0001-0000-0010-000000000011".uuid(), "10000003-0001-0000-0010-000000000012".uuid()),
+            listOf("10000003-0001-0000-0010-000000000021".uuid(), "10000003-0001-0000-0010-000000000022".uuid()),
+            listOf("10000003-0001-0000-0010-000000000031".uuid(), "10000003-0001-0000-0010-000000000032".uuid()),
         ),
     ),
     updateCustomLinkOthersFileId = mapOfRole(
@@ -469,6 +533,11 @@ val adminInput = UserFilesTestsInput(
         "00000002-0000-0000-0004-000000000002".uuid(),
         "00000002-0000-0000-0004-000000000003".uuid(),
     ),
+    bulkUpdateVisibilityOwnFilesId = mapOfVisibility(
+        listOf("00000002-0000-0000-0010-000000000011".uuid(), "00000002-0000-0000-0010-000000000012".uuid()),
+        listOf("00000002-0000-0000-0010-000000000021".uuid(), "00000002-0000-0000-0010-000000000022".uuid()),
+        listOf("00000002-0000-0000-0010-000000000031".uuid(), "00000002-0000-0000-0010-000000000032".uuid()),
+    ),
     updateCustomLinkOwnFileId = mapOfVisibility(
         "00000002-0000-0000-0006-000000000001".uuid(),
         "00000002-0000-0000-0006-000000000002".uuid(),
@@ -527,6 +596,23 @@ val adminInput = UserFilesTestsInput(
             "10000003-0002-0000-0004-000000000001".uuid(),
             "10000003-0002-0000-0004-000000000002".uuid(),
             "10000003-0002-0000-0004-000000000003".uuid(),
+        ),
+    ),
+    bulkUpdateVisibilityOthersFilesId = mapOfRole(
+        mapOfVisibility(
+            listOf("10000001-0002-0000-0010-000000000011".uuid(), "10000001-0002-0000-0010-000000000012".uuid()),
+            listOf("10000001-0002-0000-0010-000000000021".uuid(), "10000001-0002-0000-0010-000000000022".uuid()),
+            listOf("10000001-0002-0000-0010-000000000031".uuid(), "10000001-0002-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000002-0002-0000-0010-000000000011".uuid(), "10000002-0002-0000-0010-000000000012".uuid()),
+            listOf("10000002-0002-0000-0010-000000000021".uuid(), "10000002-0002-0000-0010-000000000022".uuid()),
+            listOf("10000002-0002-0000-0010-000000000031".uuid(), "10000002-0002-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000003-0002-0000-0010-000000000011".uuid(), "10000003-0002-0000-0010-000000000012".uuid()),
+            listOf("10000003-0002-0000-0010-000000000021".uuid(), "10000003-0002-0000-0010-000000000022".uuid()),
+            listOf("10000003-0002-0000-0010-000000000031".uuid(), "10000003-0002-0000-0010-000000000032".uuid()),
         ),
     ),
     updateCustomLinkOthersFileId = mapOfRole(
@@ -617,6 +703,11 @@ val regularUserInput = UserFilesTestsInput(
         "00000003-0000-0000-0004-000000000002".uuid(),
         "00000003-0000-0000-0004-000000000003".uuid(),
     ),
+    bulkUpdateVisibilityOwnFilesId = mapOfVisibility(
+        listOf("00000003-0000-0000-0010-000000000011".uuid(), "00000003-0000-0000-0010-000000000012".uuid()),
+        listOf("00000003-0000-0000-0010-000000000021".uuid(), "00000003-0000-0000-0010-000000000022".uuid()),
+        listOf("00000003-0000-0000-0010-000000000031".uuid(), "00000003-0000-0000-0010-000000000032".uuid()),
+    ),
     updateCustomLinkOwnFileId = mapOfVisibility(
         "00000003-0000-0000-0006-000000000001".uuid(),
         "00000003-0000-0000-0006-000000000002".uuid(),
@@ -675,6 +766,23 @@ val regularUserInput = UserFilesTestsInput(
             "10000003-0003-0000-0004-000000000001".uuid(),
             "10000003-0003-0000-0004-000000000002".uuid(),
             "10000003-0003-0000-0004-000000000003".uuid(),
+        ),
+    ),
+    bulkUpdateVisibilityOthersFilesId = mapOfRole(
+        mapOfVisibility(
+            listOf("10000001-0003-0000-0010-000000000011".uuid(), "10000001-0003-0000-0010-000000000012".uuid()),
+            listOf("10000001-0003-0000-0010-000000000021".uuid(), "10000001-0003-0000-0010-000000000022".uuid()),
+            listOf("10000001-0003-0000-0010-000000000031".uuid(), "10000001-0003-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000002-0003-0000-0010-000000000011".uuid(), "10000002-0003-0000-0010-000000000012".uuid()),
+            listOf("10000002-0003-0000-0010-000000000021".uuid(), "10000002-0003-0000-0010-000000000022".uuid()),
+            listOf("10000002-0003-0000-0010-000000000031".uuid(), "10000002-0003-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000003-0003-0000-0010-000000000011".uuid(), "10000003-0003-0000-0010-000000000012".uuid()),
+            listOf("10000003-0003-0000-0010-000000000021".uuid(), "10000003-0003-0000-0010-000000000022".uuid()),
+            listOf("10000003-0003-0000-0010-000000000031".uuid(), "10000003-0003-0000-0010-000000000032".uuid()),
         ),
     ),
     updateCustomLinkOthersFileId = mapOfRole(
@@ -784,6 +892,23 @@ val guestInput = FilesTestsInput(
             "10000003-000f-0000-0004-000000000001".uuid(),
             "10000003-000f-0000-0004-000000000002".uuid(),
             "10000003-000f-0000-0004-000000000003".uuid(),
+        ),
+    ),
+    bulkUpdateVisibilityOthersFilesId = mapOfRole(
+        mapOfVisibility(
+            listOf("10000001-000f-0000-0010-000000000011".uuid(), "10000001-000f-0000-0010-000000000012".uuid()),
+            listOf("10000001-000f-0000-0010-000000000021".uuid(), "10000001-000f-0000-0010-000000000022".uuid()),
+            listOf("10000001-000f-0000-0010-000000000031".uuid(), "10000001-000f-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000002-000f-0000-0010-000000000011".uuid(), "10000002-000f-0000-0010-000000000012".uuid()),
+            listOf("10000002-000f-0000-0010-000000000021".uuid(), "10000002-000f-0000-0010-000000000022".uuid()),
+            listOf("10000002-000f-0000-0010-000000000031".uuid(), "10000002-000f-0000-0010-000000000032".uuid()),
+        ),
+        mapOfVisibility(
+            listOf("10000003-000f-0000-0010-000000000011".uuid(), "10000003-000f-0000-0010-000000000012".uuid()),
+            listOf("10000003-000f-0000-0010-000000000021".uuid(), "10000003-000f-0000-0010-000000000022".uuid()),
+            listOf("10000003-000f-0000-0010-000000000031".uuid(), "10000003-000f-0000-0010-000000000032".uuid()),
         ),
     ),
     updateCustomLinkOthersFileId = mapOfRole(

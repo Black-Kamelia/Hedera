@@ -2,7 +2,7 @@ package com.kamelia.hedera.rest.auth
 
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
-import com.kamelia.hedera.core.TokenData
+import com.kamelia.hedera.core.auth.Session
 import com.kamelia.hedera.loginBlocking
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -35,7 +35,7 @@ abstract class AbstractAuthenticationTests(
         assertEquals(expectedResults.refreshSession, response.status)
 
         if (response.status == HttpStatusCode.Created) {
-            val responseDto = Json.decodeFromString<TokenData>(response.bodyAsText())
+            val responseDto = Json.decodeFromString<Session>(response.bodyAsText())
             assertNotEquals(tokens?.refreshToken, responseDto.refreshToken)
             assertNotEquals(tokens?.accessToken, responseDto.accessToken)
         }

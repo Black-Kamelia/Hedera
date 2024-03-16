@@ -7,15 +7,13 @@ import com.kamelia.hedera.core.IllegalActionException
 import com.kamelia.hedera.core.InsufficientPermissionsException
 import com.kamelia.hedera.core.UserNotFoundException
 import com.kamelia.hedera.core.ValidationScope
+import com.kamelia.hedera.core.auth.SessionManager
 import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.response.ActionResponse
 import com.kamelia.hedera.core.response.MessageDTO
-import com.kamelia.hedera.core.response.MessageKeyDTO
 import com.kamelia.hedera.core.response.Response
-import com.kamelia.hedera.core.response.asMessage
 import com.kamelia.hedera.core.validate
 import com.kamelia.hedera.database.Connection
-import com.kamelia.hedera.rest.auth.SessionManager
 import com.kamelia.hedera.rest.configuration.DiskQuotaPolicy
 import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.core.pageable.PageDTO
@@ -196,7 +194,6 @@ object UserService {
 
     suspend fun updateUserPassword(
         id: UUID,
-        authToken: String,
         sessionId: UUID,
         dto: UserPasswordUpdateDTO,
         forced: Boolean,
@@ -221,9 +218,8 @@ object UserService {
             catchErrors()
 
             toEdit.updatePassword(dto)
-
             if (forced) {
-                SessionManager.logoutAllExceptCurrent(toEdit, authToken, sessionId, "password_changed")
+                SessionManager.logoutAllExcept(toEdit.uuid, sessionId, "password_changed")
             }
 
             ActionResponse.ok(

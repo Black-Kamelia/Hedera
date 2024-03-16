@@ -17,7 +17,7 @@ const $fetchRefresh = configureRefreshFetch({
     return fetch<Tokens>('/api/refresh', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${auth.tokens?.refreshToken}`,
+        'Authorization': `Bearer ${auth.tokens?.refreshToken.token}`,
         'Access-Control-Allow-Origin': '*',
       },
     }).then((response) => {

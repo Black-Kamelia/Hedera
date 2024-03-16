@@ -119,11 +119,14 @@ declare global {
     total: number
   }
 
+  interface TokenContainer {
+    token: string
+    expiration: number
+  }
+
   interface TokenData {
-    accessToken: string
-    accessTokenExpiration: number
-    refreshToken: string
-    refreshTokenExpiration: number
+    accessToken: TokenContainer
+    refreshToken: TokenContainer
   }
 
   type Role = 'REGULAR' | 'ADMIN' | 'OWNER'

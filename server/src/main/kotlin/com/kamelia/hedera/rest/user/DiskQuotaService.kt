@@ -1,8 +1,8 @@
 package com.kamelia.hedera.rest.user
 
 import com.kamelia.hedera.database.Connection
-import com.kamelia.hedera.rest.auth.SessionManager
-import com.kamelia.hedera.util.uuid
+import com.kamelia.hedera.core.auth.SessionManager
+import com.kamelia.hedera.core.auth.toUserState
 import com.kamelia.hedera.util.withReentrantLock
 import java.sql.Connection.TRANSACTION_REPEATABLE_READ
 import java.time.Instant
@@ -86,7 +86,7 @@ object DiskQuotaService {
             currentDiskQuota = current
             maximumDiskQuota = maximum
         }
-        SessionManager.updateSession(this.uuid, this)
+        SessionManager.updateSession(toUserState())
     }
 
     private suspend inline fun <T> withLock(noinline block: suspend () -> T): T = mutex.withReentrantLock(block)

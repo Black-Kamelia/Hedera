@@ -3,8 +3,8 @@ package com.kamelia.hedera.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.kamelia.hedera.core.ExpiredOrInvalidTokenException
-import com.kamelia.hedera.rest.auth.SessionManager
-import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.core.auth.SessionManager
+import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.util.Environment
 import com.kamelia.hedera.util.getHeader
 import io.ktor.http.*
@@ -20,15 +20,13 @@ fun Application.configureAuthentication() {
     install(Authentication) {
         configureJWT(AuthJwt, Environment.secretAccess) { call, _ ->
             val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
-            val session = SessionManager.verify(token)
-            requireNotNull(session)
-            requireNotNull(session.user)
-            handleForceChangePassword(session.user, call)
-            UserPrincipal(session.sessionId, session.user, token)
+            val userState = SessionManager.verify(token) ?: throw ExpiredOrInvalidTokenException()
+            handleForceChangePassword(userState, call)
+            UserPrincipal(userState.uuid, userState, token)
         }
         configureJWT(RefreshJwt, Environment.secretRefresh) { call, cred ->
             val token = call.getHeader(HttpHeaders.Authorization).replace("Bearer ", "")
-            SessionManager.verifyRefresh(token)
+            if (!SessionManager.verifyRefresh(token)) throw ExpiredOrInvalidTokenException()
             JWTPrincipal(cred.payload)
         }
     }

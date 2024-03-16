@@ -8,7 +8,7 @@ export const onRequestInterceptors = defineInterceptors<'onRequest'>([
       const { tokens } = storeToRefs(useAuth())
       if (tokens.value) {
         options.headers = {
-          Authorization: `Bearer ${tokens.value.accessToken}`,
+          Authorization: `Bearer ${tokens.value.accessToken.token}`,
           ...options.headers,
         }
       }

@@ -3,7 +3,7 @@ package com.kamelia.hedera.websocket
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import com.kamelia.hedera.rest.auth.UserState
+import com.kamelia.hedera.core.auth.UserState
 import com.kamelia.hedera.util.Environment
 import java.util.*
 

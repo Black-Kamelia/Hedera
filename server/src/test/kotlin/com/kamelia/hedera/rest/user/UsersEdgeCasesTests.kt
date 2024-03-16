@@ -20,7 +20,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with username too long")
     @Test
     fun createUserWithUsernameTooLong() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "long".repeat(256),
@@ -41,7 +41,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with username too short")
     @Test
     fun createUserWithUsernameTooShort() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "a",
@@ -62,7 +62,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with invalid username")
     @Test
     fun createUserWithInvalidUsername() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "invalid@user-NAME",
@@ -83,7 +83,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with already existing username")
     @Test
     fun createUserWithAlreadyExistingUsername() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "user.create.username.already.exists",
@@ -104,7 +104,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with password too long")
     @Test
     fun createUserWithPasswordTooLong() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "username.long.password",
@@ -125,7 +125,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with password too short")
     @Test
     fun createUserWithPasswordTooShort() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "username.short.password",
@@ -146,7 +146,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with e-mail too long")
     @Test
     fun createUserWithEmailTooLong() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "user.long.email",
@@ -190,7 +190,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with invalid e-mail")
     @Test
     fun createUserWithInvalidEmail() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "user.invalid.email",
@@ -211,7 +211,7 @@ class UsersEdgeCasesTests {
     @DisplayName("Create user with already existing e-mail")
     @Test
     fun createUserWithAlreadyExistingEmail() = testApplication {
-        val (tokens, _) = user
+        val (tokens, _) = owner
 
         val userDto = UserCreationDTO(
             username = "user.create.email.exists",
@@ -229,15 +229,94 @@ class UsersEdgeCasesTests {
         assertEquals(Errors.Users.Email.ALREADY_EXISTS, responseDto.fields!!["email"]!!.key)
     }
 
+    @DisplayName("Edit unknown user")
+    @Test
+    fun editUnknownUser() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().patch("/api/users/00000000-0000-0000-0000-000000000000") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(username="new.username"))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
+    }
+
+    @DisplayName("Edit own disk quota as non-owner")
+    @Test
+    fun editOwnDiskQuotaNonOwner() = testApplication {
+        val (tokens, _) = regular
+
+        val response = client().patch("/api/users/ffffffff-0003-0000-0003-000000000000") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(diskQuota = 42000))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.ILLEGAL_ACTION, responseDto.title.key)
+    }
+
+    @DisplayName("Activate unknown user")
+    @Test
+    fun activateUnknownUser() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().post("/api/users/00000000-0000-0000-0000-000000000000/activate") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
+    }
+
+    @DisplayName("Deactivate unknown user")
+    @Test
+    fun deactivateUnknownUser() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().post("/api/users/00000000-0000-0000-0000-000000000000/deactivate") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
+    }
+
+    @DisplayName("Delete unknown user")
+    @Test
+    fun deleteUnknownUser() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().delete("/api/users/00000000-0000-0000-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
+    }
+
     companion object {
 
-        private lateinit var user: TestUser
+        private lateinit var owner: TestUser
+        private lateinit var regular: TestUser
 
         init {
             testApplication {
-                user = Pair(
+                owner = Pair(
                     login("users.owner", "password").second ?: throw Exception("Login failed"),
                     "ffffffff-0003-0000-0001-000000000000".uuid()
+                )
+                regular = Pair(
+                    login("users.user", "password").second ?: throw Exception("Login failed"),
+                    "ffffffff-0003-0000-0003-000000000000".uuid()
                 )
             }
         }

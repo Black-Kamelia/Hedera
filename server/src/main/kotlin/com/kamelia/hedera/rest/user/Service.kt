@@ -125,7 +125,6 @@ object UserService {
 
             // Self updating
             if (updater.id == toEdit.id) {
-                dto.enabled?.let { throw IllegalActionException() }
                 dto.role?.let { throw IllegalActionException() }
                 dto.diskQuota?.let { if (it != toEdit.maximumDiskQuota && toEdit.role !== UserRole.OWNER) throw IllegalActionException() }
             }

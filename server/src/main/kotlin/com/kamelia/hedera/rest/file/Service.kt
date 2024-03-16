@@ -126,18 +126,17 @@ object FileService {
 
     suspend fun getFileFromCode(
         code: String,
-        authId: UUID? = null,
+        userId: UUID?,
     ): Response<FileRepresentationDTO> = Connection.transaction {
         val (file, owner) = File.findByCodeWithOwner(code) ?: throw FileNotFoundException()
-        getFile(file, owner, authId)
+        getFile(file, owner, userId)
     }
 
     suspend fun getFileFromCustomLink(
         customLink: String,
-        authId: UUID? = null,
     ): Response<FileRepresentationDTO> = Connection.transaction {
         val (file, owner) = File.findByCustomLinkWithOwner(customLink) ?: throw FileNotFoundException()
-        getFile(file, owner, authId)
+        getFile(file, owner)
     }
 
     suspend fun getFiles(

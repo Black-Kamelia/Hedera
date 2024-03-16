@@ -400,6 +400,20 @@ class FilesEdgeCasesTests {
         assertEquals(Errors.Files.CustomLink.ALREADY_EXISTS, responseDto.fields!!["customLink"]!!.key)
     }
 
+    @DisplayName("Remove custom link on unknown file")
+    @Test
+    fun removeCustomLinkOnUnknownFile() = testApplication {
+        val (tokens, _) = user
+
+        val response = client().delete("/api/files/00000000-0000-0000-0000-000000000000/custom-link") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Files.NOT_FOUND, responseDto.title.key)
+    }
+
     @DisplayName("Delete unknown file")
     @Test
     fun deleteUnknownFile() = testApplication {

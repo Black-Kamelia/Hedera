@@ -3,6 +3,7 @@ package com.kamelia.hedera.rest.user
 import com.kamelia.hedera.TestUser
 import com.kamelia.hedera.client
 import com.kamelia.hedera.core.Errors
+import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.login
 import com.kamelia.hedera.uuid
@@ -289,6 +290,40 @@ class UsersEdgeCasesTests {
         assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
     }
 
+    @DisplayName("Change password without old password")
+    @Test
+    fun changePasswordWithoutOldPassword() = testApplication {
+        val (tokens, userId) = owner
+
+        val response = client().patch("/api/users/$userId/password") {
+            contentType(ContentType.Application.Json)
+            setBody(UserPasswordUpdateDTO(newPassword = "new.password"))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Actions.Users.UpdatePassword.fail.title.key, responseDto.title.key)
+        assertEquals(Errors.Users.Password.MISSING_OLD_PASSWORD, responseDto.fields!!["oldPassword"]!!.key)
+    }
+
+    @DisplayName("Change password with incorrect old password")
+    @Test
+    fun changePasswordWithIncorrectOldPassword() = testApplication {
+        val (tokens, userId) = owner
+
+        val response = client().patch("/api/users/$userId/password") {
+            contentType(ContentType.Application.Json)
+            setBody(UserPasswordUpdateDTO(oldPassword = "incorrect.password", newPassword = "new.password"))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Actions.Users.UpdatePassword.fail.title.key, responseDto.title.key)
+        assertEquals(Errors.Users.Password.INCORRECT_PASSWORD, responseDto.fields!!["oldPassword"]!!.key)
+    }
+
     @DisplayName("Delete unknown user")
     @Test
     fun deleteUnknownUser() = testApplication {
@@ -301,6 +336,36 @@ class UsersEdgeCasesTests {
 
         val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
         assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
+    }
+
+    @DisplayName("Delete owner")
+    @Test
+    fun deleteOwner() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().delete("/api/users/00000000-000a-0003-0000-000000000000") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.ILLEGAL_ACTION, responseDto.title.key)
+    }
+
+    @DisplayName("Update disk quota with incorrect quota")
+    @Test
+    fun updateDiskQuotaWithIncorrectQuota() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().patch("/api/users/00000000-000a-0004-0000-000000000000") {
+            contentType(ContentType.Application.Json)
+            setBody(UserUpdateDTO(diskQuota = -10))
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.DiskQuota.INVALID_DISK_QUOTA, responseDto.fields!!["diskQuota"]!!.key)
     }
 
     companion object {

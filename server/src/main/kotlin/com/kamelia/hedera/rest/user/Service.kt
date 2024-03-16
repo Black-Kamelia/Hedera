@@ -238,12 +238,12 @@ object UserService {
             throw IllegalActionException()
         }
 
-        if (toDelete.role ge User[updaterID].role) {
-            throw InsufficientPermissionsException()
-        }
-
         if (toDelete.role == UserRole.OWNER) {
             throw IllegalActionException()
+        }
+
+        if (toDelete.role ge User[updaterID].role) {
+            throw InsufficientPermissionsException()
         }
 
         toDelete.delete()

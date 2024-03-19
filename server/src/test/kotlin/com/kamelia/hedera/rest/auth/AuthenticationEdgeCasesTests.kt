@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
+@DisplayName("Authentication edge cases tests")
 class AuthenticationEdgeCasesTests {
 
     @DisplayName("Login with no username")

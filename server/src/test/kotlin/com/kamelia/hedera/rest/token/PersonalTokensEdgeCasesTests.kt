@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
+@DisplayName("Personal token edge cases tests")
 class PersonalTokensEdgeCasesTests {
 
     @DisplayName("List token does not list deleted tokens")

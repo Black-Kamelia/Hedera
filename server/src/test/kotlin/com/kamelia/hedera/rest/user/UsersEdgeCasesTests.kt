@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
+@DisplayName("Users edge cases tests")
 class UsersEdgeCasesTests {
 
     @DisplayName("Create user with username too long")

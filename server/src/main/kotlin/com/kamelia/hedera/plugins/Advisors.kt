@@ -111,7 +111,7 @@ private suspend fun notFound(call: ApplicationCall, cause: Throwable) = when (ca
     is NotFoundException -> call.respondNoSuccess(
         Response.notFound(
             MessageDTO.simple(
-                title = Errors.BAD_REQUEST_RAW.asMessage(),
+                title = Errors.NOT_FOUND_RAW.asMessage(),
                 message = (cause.message ?: cause.javaClass.name).asMessage(),
             )
         )

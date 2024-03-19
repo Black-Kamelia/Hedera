@@ -35,7 +35,6 @@ fun Route.filesRoutes() = route("/files") {
         uploadFile()
         searchFiles()
         getFileThumbnail()
-        getFilesFormats()
         editFileVisibility()
         editFileName()
         editFileCustomLink()

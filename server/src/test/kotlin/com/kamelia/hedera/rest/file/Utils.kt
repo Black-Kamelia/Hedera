@@ -11,6 +11,7 @@ import java.util.*
 open class FilesTestsExpectedResults(
     val uploadFile: HttpStatusCode,
     val listFiles: HttpStatusCode,
+    val listFilesFormats: HttpStatusCode,
 
     val viewOthersFileAPI: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
     val renameOthersFile: Map<UserRole, Map<FileVisibility, HttpStatusCode>>,
@@ -38,6 +39,7 @@ open class FilesTestsInput(
 class UserFilesTestsExpectedResults(
     uploadFile: HttpStatusCode,
     listFiles: HttpStatusCode,
+    listFilesFormats: HttpStatusCode,
 
     val viewOwnFile: Map<FileVisibility, HttpStatusCode>,
     val viewPubliclyFileCode: Map<FileVisibility, HttpStatusCode>,
@@ -65,6 +67,7 @@ class UserFilesTestsExpectedResults(
 ) : FilesTestsExpectedResults(
     uploadFile,
     listFiles,
+    listFilesFormats,
     viewOthersFileAPI,
     renameOthersFile,
     updateVisibilityOthersFile,
@@ -112,6 +115,7 @@ class UserFilesTestsInput(
 val ownerExpectedResults = UserFilesTestsExpectedResults(
     uploadFile = HttpStatusCode.Created,
     listFiles = HttpStatusCode.OK,
+    listFilesFormats = HttpStatusCode.OK,
 
     // OWN FILES
     viewOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
@@ -174,6 +178,7 @@ val ownerExpectedResults = UserFilesTestsExpectedResults(
 val adminExpectedResults = UserFilesTestsExpectedResults(
     uploadFile = HttpStatusCode.Created,
     listFiles = HttpStatusCode.OK,
+    listFilesFormats = HttpStatusCode.OK,
 
     // OWN FILES
     viewOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
@@ -236,6 +241,7 @@ val adminExpectedResults = UserFilesTestsExpectedResults(
 val regularUserExpectedResults = UserFilesTestsExpectedResults(
     uploadFile = HttpStatusCode.Created,
     listFiles = HttpStatusCode.OK,
+    listFilesFormats = HttpStatusCode.OK,
 
     // OWN FILES
     viewOwnFile = mapOfVisibility(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
@@ -298,6 +304,7 @@ val regularUserExpectedResults = UserFilesTestsExpectedResults(
 val guestExpectedResults = FilesTestsExpectedResults(
     uploadFile = HttpStatusCode.Unauthorized,
     listFiles = HttpStatusCode.Unauthorized,
+    listFilesFormats = HttpStatusCode.Unauthorized,
 
     // OTHERS FILES
     viewOthersFileAPI = mapOfRole(

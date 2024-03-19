@@ -95,6 +95,22 @@ abstract class AbstractFilesTests(
         assertEquals(expectedResults.listFiles, response.status, response.bodyAsText())
     }
 
+    @DisplayName("List files formats")
+    @Test
+    fun listFilesFormatsTest() = testApplication {
+        val (tokens, _) = user
+
+        val response = client().get("/api/files/filters/formats") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.listFilesFormats, response.status, response.bodyAsText())
+
+        if (response.status == HttpStatusCode.OK) {
+            val responseDto = Json.decodeFromString<List<String>>(response.bodyAsText())
+            assertEquals(setOf("text/plain", "image/png"), responseDto.toSet())
+        }
+    }
+
     @DisplayName("View others file (via API)")
     @ParameterizedTest(name = "View {0}''s {1} file")
     @MethodSource("rolesVisibilitiesCombo")

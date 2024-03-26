@@ -125,7 +125,7 @@ abstract class AbstractUsersSelfTests(
     @DisplayName("Edit own role")
     @ParameterizedTest(name = "Edit own role to ''{0}''")
     @MethodSource("roles")
-    fun editOwnRoleTest(
+    fun editOwnRole(
         newRole: UserRole,
     ) = testApplication {
         val (tokens, userId) = roleUser[newRole]!!

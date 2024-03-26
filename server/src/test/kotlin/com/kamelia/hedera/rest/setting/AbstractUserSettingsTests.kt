@@ -28,7 +28,7 @@ abstract class AbstractUserSettingsTests(
 
     @DisplayName("Get user settings")
     @Test
-    fun getUserSettingsTest() = testApplication {
+    fun getUserSettings() = testApplication {
         val (tokens, _) = user
         val client = client()
 
@@ -41,7 +41,7 @@ abstract class AbstractUserSettingsTests(
     @DisplayName("Update user setting")
     @ParameterizedTest(name = "Update ''{0}'' setting ")
     @MethodSource
-    fun updateUserSettingTest(
+    fun updateUserSetting(
         newSettings: UserSettingsUpdateDTO,
         dtoCheck: (UserSettingsRepresentationDTO) -> Boolean,
     ) = testApplication {
@@ -73,7 +73,7 @@ abstract class AbstractUserSettingsTests(
     companion object {
 
         @JvmStatic
-        fun updateUserSettingTest(): Stream<Arguments> = listOf(
+        fun updateUserSetting(): Stream<Arguments> = listOf(
             Arguments.of(
                 Named.of(
                     "Default file visibility",

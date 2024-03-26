@@ -23,7 +23,7 @@ abstract class AbstractUserPersonalTokensTests(
 
     @DisplayName("Delete own personal token")
     @Test
-    fun deleteOwnPersonalTokenTest() = testApplication {
+    fun deleteOwnPersonalToken() = testApplication {
         val (tokens, _) = user
         val client = client()
 

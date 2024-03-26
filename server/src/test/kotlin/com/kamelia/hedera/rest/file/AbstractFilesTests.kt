@@ -63,7 +63,7 @@ abstract class AbstractFilesTests(
 
     @DisplayName("Upload a file")
     @Test
-    fun uploadFileTest() = testApplication {
+    fun uploadFile() = testApplication {
         val (tokens, userId) = user
 
         val response = client().submitFormWithBinaryData("/api/files/upload", formData {
@@ -84,7 +84,7 @@ abstract class AbstractFilesTests(
 
     @DisplayName("List files")
     @Test
-    fun listFilesTest() = testApplication {
+    fun listFiles() = testApplication {
         val (tokens, _) = user
 
         val response = client().post("/api/files/search") {
@@ -97,7 +97,7 @@ abstract class AbstractFilesTests(
 
     @DisplayName("List files formats")
     @Test
-    fun listFilesFormatsTest() = testApplication {
+    fun listFilesFormats() = testApplication {
         val (tokens, _) = user
 
         val response = client().get("/api/files/filters/formats") {
@@ -114,7 +114,7 @@ abstract class AbstractFilesTests(
     @DisplayName("View others file (via API)")
     @ParameterizedTest(name = "View {0}''s {1} file")
     @MethodSource("rolesVisibilitiesCombo")
-    fun viewOthersFileAPITest(
+    fun viewOthersFileAPI(
         target: UserRole,
         visibility: FileVisibility,
     ) = testApplication {
@@ -130,7 +130,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Rename others file")
     @ParameterizedTest(name = "Rename {0}''s {1} file")
     @MethodSource("rolesVisibilitiesCombo")
-    fun renameOthersFileTest(
+    fun renameOthersFile(
         target: UserRole,
         visibility: FileVisibility,
     ) = testApplication {
@@ -155,7 +155,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Update others file visibility")
     @ParameterizedTest(name = "Update {0}''s {1} file visibility to {2}")
     @MethodSource("rolesVisibilitiesCartesianProductCombo")
-    fun updateVisibilityOthersFileTest(
+    fun updateVisibilityOthersFile(
         target: UserRole,
         visibility: FileVisibility,
         newVisibility: FileVisibility,
@@ -185,7 +185,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Bulk update others files visibility")
     @ParameterizedTest(name = "Bulk update {0}''s {1} files visibility to {2}")
     @MethodSource("rolesVisibilitiesCartesianProductCombo")
-    fun bulkUpdateVisibilityOthersFileTest(
+    fun bulkUpdateVisibilityOthersFile(
         target: UserRole,
         visibility: FileVisibility,
         newVisibility: FileVisibility,
@@ -214,7 +214,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Update others file's custom link")
     @ParameterizedTest(name = "Update {0}''s {1} file's custom link")
     @MethodSource("rolesVisibilitiesCombo")
-    fun updateOtherFileCustomLinkTest(
+    fun updateOtherFileCustomLink(
         target: UserRole,
         visibility: FileVisibility,
     ) = testApplication {
@@ -244,7 +244,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Remove others file's custom link")
     @ParameterizedTest(name = "Remove {0}''s {1} file's custom link")
     @MethodSource("rolesVisibilitiesCombo")
-    fun removeOtherFileCustomLinkTest(
+    fun removeOtherFileCustomLink(
         target: UserRole,
         visibility: FileVisibility,
     ) = testApplication {
@@ -270,7 +270,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Delete others file")
     @ParameterizedTest(name = "Delete {0}''s {1} file")
     @MethodSource("rolesVisibilitiesCombo")
-    fun deleteOthersFileTest(
+    fun deleteOthersFile(
         target: UserRole,
         visibility: FileVisibility,
     ) = testApplication {
@@ -291,7 +291,7 @@ abstract class AbstractFilesTests(
     @DisplayName("Bulk delete others files")
     @ParameterizedTest(name = "Bulk delete {0}''s {1} files")
     @MethodSource("rolesVisibilitiesCombo")
-    fun bulkDeleteOthersFileTest(
+    fun bulkDeleteOthersFile(
         target: UserRole,
         visibility: FileVisibility,
     ) = testApplication {

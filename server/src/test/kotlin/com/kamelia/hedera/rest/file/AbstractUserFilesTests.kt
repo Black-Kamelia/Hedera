@@ -29,7 +29,7 @@ abstract class AbstractUserFilesTests(
 
     @DisplayName("Upload a file using token")
     @Test
-    fun uploadFileTokenTest() = testApplication {
+    fun uploadFileToken() = testApplication {
         val (_, userId) = user
 
         val response = client().submitFormWithBinaryData("/api/files/upload/token", formData {
@@ -51,7 +51,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("View own file (via API)")
     @ParameterizedTest(name = "View own {0} file")
     @MethodSource("visibilities")
-    fun viewOwnFileAPITest(
+    fun viewOwnFileAPI(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
@@ -66,7 +66,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("View file publicly")
     @ParameterizedTest(name = "View {0} file publicly")
     @MethodSource("visibilities")
-    fun viewFilePubliclyTest(
+    fun viewFilePublicly(
         visibility: FileVisibility
     ) = testApplication {
         val fileCode = input.viewPubliclyFileCode[visibility]!!
@@ -77,7 +77,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("View file publicly via custom link")
     @ParameterizedTest(name = "View {0} file publicly via custom link")
     @MethodSource("visibilities")
-    fun viewFilePubliclyCustomLinkTest(
+    fun viewFilePubliclyCustomLink(
         visibility: FileVisibility
     ) = testApplication {
         val customLink = input.viewPubliclyFileCustomLink[visibility]!!
@@ -88,7 +88,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Rename own file")
     @ParameterizedTest(name = "Rename own {0} file")
     @MethodSource("visibilities")
-    fun renameOwnFileTest(
+    fun renameOwnFile(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
@@ -112,7 +112,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Update own file visibility")
     @ParameterizedTest(name = "Update own {0} file visibility to {1}")
     @MethodSource("visibilityCartesianProduct")
-    fun updateVisibilityOwnFileTest(
+    fun updateVisibilityOwnFile(
         visibility: FileVisibility,
         newVisibility: FileVisibility,
     ) = testApplication {
@@ -137,7 +137,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Bulk update own files visibility")
     @ParameterizedTest(name = "Bulk update own {0} files visibility to {1}")
     @MethodSource("visibilityCartesianProduct")
-    fun bulkUpdateVisibilityOwnFileTest(
+    fun bulkUpdateVisibilityOwnFile(
         visibility: FileVisibility,
         newVisibility: FileVisibility,
     ) = testApplication {
@@ -162,7 +162,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Update own file's custom link")
     @ParameterizedTest(name = "Update own {0} file's custom link")
     @MethodSource("visibilities")
-    fun updateOwnFileCustomLinkTest(
+    fun updateOwnFileCustomLink(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, uuid) = user
@@ -187,7 +187,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Remove own file's custom link")
     @ParameterizedTest(name = "Remove own {0} file's custom link")
     @MethodSource("visibilities")
-    fun removeOwnFileCustomLinkTest(
+    fun removeOwnFileCustomLink(
         visibility: FileVisibility
     ) = testApplication {
         val (tokens, _) = user
@@ -208,7 +208,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Delete own file")
     @ParameterizedTest(name = "Delete own {0} file")
     @MethodSource("visibilities")
-    fun deleteOwnFileTest(
+    fun deleteOwnFile(
         visibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user
@@ -229,7 +229,7 @@ abstract class AbstractUserFilesTests(
     @DisplayName("Bulk delete own files")
     @ParameterizedTest(name = "Bulk delete own {0} files")
     @MethodSource("visibilities")
-    fun bulkDeleteOwnFileTest(
+    fun bulkDeleteOwnFile(
         visibility: FileVisibility,
     ) = testApplication {
         val (tokens, _) = user

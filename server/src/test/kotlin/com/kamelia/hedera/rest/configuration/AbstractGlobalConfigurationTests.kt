@@ -50,7 +50,7 @@ abstract class AbstractGlobalConfigurationTests(
     @DisplayName("Update global configuration")
     @ParameterizedTest(name = "Update ''{0}'' setting")
     @MethodSource
-    fun updateConfigurationSettingTest(
+    fun updateConfigurationSetting(
         newConfiguration: GlobalConfigurationUpdateDTO,
         dtoCheck: (GlobalConfigurationRepresentationDTO) -> Boolean,
     ) = testApplication {
@@ -107,7 +107,7 @@ abstract class AbstractGlobalConfigurationTests(
     companion object {
 
         @JvmStatic
-        fun updateConfigurationSettingTest(): Stream<Arguments> = listOf(
+        fun updateConfigurationSetting(): Stream<Arguments> = listOf(
             Arguments.of(
                 Named.of(
                     "Enable registrations",

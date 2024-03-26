@@ -57,7 +57,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Create user")
     @ParameterizedTest(name = "Create user with role ''{0}''")
     @MethodSource("roles")
-    fun createUserTest(
+    fun createUser(
         role: UserRole
     ) = testApplication {
         val (tokens, userId) = user
@@ -86,7 +86,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Edit others username")
     @ParameterizedTest(name = "Edit {0}''s username")
     @MethodSource("roles")
-    fun editOthersUsernameTest(
+    fun editOthersUsername(
         target: UserRole,
     ) = testApplication {
         val (tokens, id) = user
@@ -108,7 +108,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Edit others email address")
     @ParameterizedTest(name = "Edit {0}''s email address")
     @MethodSource("roles")
-    fun editOthersEmailTest(
+    fun editOthersEmail(
         target: UserRole,
     ) = testApplication {
         val (tokens, id) = user
@@ -130,7 +130,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Edit others role")
     @ParameterizedTest(name = "Edit {0}''s role to ''{1}''")
     @MethodSource("rolesRolesCombo")
-    fun editOthersRoleTest(
+    fun editOthersRole(
         target: UserRole,
         newRole: UserRole,
     ) = testApplication {
@@ -152,7 +152,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Edit others disk space quota")
     @ParameterizedTest(name = "Edit {0}''s disk space quota")
     @MethodSource("roles")
-    fun editOthersDiskQuotaTest(
+    fun editOthersDiskQuota(
         target: UserRole,
     ) = testApplication {
         val (tokens, _) = user
@@ -173,7 +173,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Edit others password")
     @ParameterizedTest(name = "Edit {0}''s password")
     @MethodSource("roles")
-    fun editOthersPasswordTest(
+    fun editOthersPassword(
         target: UserRole
     ) = testApplication {
         val (tokens, _) = user
@@ -190,7 +190,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Activate user")
     @ParameterizedTest(name = "Activate {0}")
     @MethodSource("roles")
-    fun activateUserTest(
+    fun activateUser(
         target: UserRole,
     ) = testApplication {
         val (tokens, _) = user
@@ -209,7 +209,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Deactivate user")
     @ParameterizedTest(name = "Deactivate {0}")
     @MethodSource("roles")
-    fun deactivateUserTest(
+    fun deactivateUser(
         target: UserRole,
     ) = testApplication {
         val (tokens, _) = user
@@ -228,7 +228,7 @@ abstract class AbstractUsersTests(
     @DisplayName("Delete user")
     @ParameterizedTest(name = "Delete {0}")
     @MethodSource("roles")
-    fun deleteUserTest(
+    fun deleteUser(
         target: UserRole,
     ) = testApplication {
         val (tokens, _) = user

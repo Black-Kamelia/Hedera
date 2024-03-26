@@ -32,7 +32,7 @@ abstract class AbstractPersonalTokensTests(
 
     @DisplayName("Create personal token")
     @Test
-    fun createPersonalTokenTest() = testApplication {
+    fun createPersonalToken() = testApplication {
         val (tokens, userId) = user
         val client = client()
 
@@ -55,7 +55,7 @@ abstract class AbstractPersonalTokensTests(
 
     @DisplayName("List personal tokens")
     @Test
-    fun listPersonalTokensTest() = testApplication {
+    fun listPersonalTokens() = testApplication {
         val (tokens, _) = user
         val client = client()
 
@@ -78,7 +78,7 @@ abstract class AbstractPersonalTokensTests(
 
     @DisplayName("List personal tokens with usage count")
     @Test
-    fun listPersonalTokensUsageCountTest() = testApplication {
+    fun listPersonalTokensUsageCount() = testApplication {
         val (tokens, _) = user
         val client = client()
 
@@ -100,7 +100,7 @@ abstract class AbstractPersonalTokensTests(
     @DisplayName("Delete others personal token")
     @ParameterizedTest(name = "Delete {0}''s personal token")
     @MethodSource("roles")
-    fun deleteOthersPersonalTokenTest(
+    fun deleteOthersPersonalToken(
         target: UserRole,
     ) = testApplication {
         val (tokens, _) = user

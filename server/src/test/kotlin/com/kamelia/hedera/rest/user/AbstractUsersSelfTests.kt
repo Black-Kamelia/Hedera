@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class AbstractUsersSelfTests(
-    user: TestUser,
+    private val user: TestUser,
     private val expectedResults: SelfUsersTestsExpectedResults,
     private val input: SelfUsersTestsInput,
     selfRole: UserRole,
@@ -47,7 +47,8 @@ abstract class AbstractUsersSelfTests(
             )
             roleUser = UserRole.entries.associateWith {
                 Pair(
-                    login("$role.edit.role.${it.name}".lowercase(), "password").second ?: throw Exception("Login failed"),
+                    login("$role.edit.role.${it.name}".lowercase(), "password").second
+                        ?: throw Exception("Login failed"),
                     input.updateOwnRoleUserId[it] ?: throw Exception("Missing user ID for role $role")
                 )
             }
@@ -74,9 +75,20 @@ abstract class AbstractUsersSelfTests(
         }
     }
 
+    @DisplayName("Get self")
+    @Test
+    fun getSelf() = testApplication {
+        val (tokens, userId) = user
+
+        val response = client().get("/api/users/$userId") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.getSelf, response.status, response.bodyAsText())
+    }
+
     @DisplayName("Edit own username")
     @Test
-    fun editOwnUsernameTest() = testApplication {
+    fun editOwnUsername() = testApplication {
         val (tokens, userId) = usernameUser
         val newUsername = "$userId-edit-username".lowercase()
         val client = client()
@@ -94,7 +106,7 @@ abstract class AbstractUsersSelfTests(
 
     @DisplayName("Edit own email address")
     @Test
-    fun editOwnEmailTest() = testApplication {
+    fun editOwnEmail() = testApplication {
         val (tokens, userId) = emailUser
         val newEmail = "$userId-edit-email@test.local".lowercase()
         val client = client()
@@ -132,7 +144,7 @@ abstract class AbstractUsersSelfTests(
 
     @DisplayName("Edit own disk space quota")
     @Test
-    fun editOwnDiskQuotaTest() = testApplication {
+    fun editOwnDiskQuota() = testApplication {
         val (tokens, userId) = quotaUser
         val client = client()
         val response = client.patch("/api/users/$userId") {
@@ -149,7 +161,7 @@ abstract class AbstractUsersSelfTests(
 
     @DisplayName("Edit own password")
     @Test
-    fun editOwnPasswordTest() = testApplication {
+    fun editOwnPassword() = testApplication {
         val (tokens, userId) = passwordUser
         val client = client()
         val response = client.patch("/api/users/$userId/password") {
@@ -162,7 +174,7 @@ abstract class AbstractUsersSelfTests(
 
     @DisplayName("Activate self")
     @Test
-    fun activateSelfTest() = testApplication {
+    fun activateSelf() = testApplication {
         val (tokens, userId) = activationUser
         val client = client()
         val response = client.post("/api/users/$userId/activate") {
@@ -177,7 +189,7 @@ abstract class AbstractUsersSelfTests(
 
     @DisplayName("Deactivate self")
     @Test
-    fun deactivateSelfTest() = testApplication {
+    fun deactivateSelf() = testApplication {
         val (tokens, userId) = deactivationUser
         val client = client()
         val response = client.post("/api/users/$userId/deactivate") {
@@ -192,7 +204,7 @@ abstract class AbstractUsersSelfTests(
 
     @DisplayName("Delete self")
     @Test
-    fun deleteSelfTest() = testApplication {
+    fun deleteSelf() = testApplication {
         val (tokens, userId) = deletionUser
         val client = client()
         val response = client.delete("/api/users/$userId") {

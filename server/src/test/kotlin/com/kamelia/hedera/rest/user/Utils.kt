@@ -7,6 +7,8 @@ import java.util.*
 
 open class SelfUsersTestsExpectedResults(
     listUsers: HttpStatusCode,
+    getUser: Map<UserRole, HttpStatusCode>,
+    val getSelf: HttpStatusCode,
     createUser: Map<UserRole, HttpStatusCode>,
     val updateOwnUsername: HttpStatusCode,
     val updateOwnEmail: HttpStatusCode,
@@ -27,6 +29,7 @@ open class SelfUsersTestsExpectedResults(
     deleteUser: Map<UserRole, HttpStatusCode>,
 ) : UsersTestsExpectedResults(
     listUsers,
+    getUser,
     createUser,
     updateOthersUsername,
     updateOthersEmail,
@@ -48,6 +51,7 @@ open class SelfUsersTestsInput(
     val deactivateSelfUserId: UUID,
     val deleteSelfUserId: UUID,
 
+    getUserId: Map<UserRole, UUID>,
     updateOthersUsernameUserId: Map<UserRole, UUID>,
     updateOthersEmailUserId: Map<UserRole, UUID>,
     updateOthersRoleUserId: Map<UserRole, Map<UserRole, UUID>>,
@@ -57,6 +61,7 @@ open class SelfUsersTestsInput(
     deactivateUserId: Map<UserRole, UUID>,
     deleteUserId: Map<UserRole, UUID>,
 ) : UsersTestsInput(
+    getUserId,
     updateOthersUsernameUserId,
     updateOthersEmailUserId,
     updateOthersRoleUserId,
@@ -69,6 +74,7 @@ open class SelfUsersTestsInput(
 
 open class UsersTestsExpectedResults(
     val listUsers: HttpStatusCode,
+    val getUser: Map<UserRole, HttpStatusCode>,
     val createUser: Map<UserRole, HttpStatusCode>,
 
     val updateOthersUsername: Map<UserRole, HttpStatusCode>,
@@ -82,6 +88,7 @@ open class UsersTestsExpectedResults(
 )
 
 open class UsersTestsInput(
+    val getUserId: Map<UserRole, UUID>,
     val updateOthersUsernameUserId: Map<UserRole, UUID>,
     val updateOthersEmailUserId: Map<UserRole, UUID>,
     val updateOthersRoleUserId: Map<UserRole, Map<UserRole, UUID>>,
@@ -94,6 +101,8 @@ open class UsersTestsInput(
 
 val ownerExpectedResults = SelfUsersTestsExpectedResults(
     listUsers = HttpStatusCode.OK,
+    getUser = mapOfRole(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+    getSelf = HttpStatusCode.OK,
     createUser = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Created, HttpStatusCode.Created),
 
     updateOwnUsername = HttpStatusCode.OK,
@@ -120,6 +129,8 @@ val ownerExpectedResults = SelfUsersTestsExpectedResults(
 )
 val adminExpectedResults = SelfUsersTestsExpectedResults(
     listUsers = HttpStatusCode.OK,
+    getUser = mapOfRole(HttpStatusCode.OK, HttpStatusCode.OK, HttpStatusCode.OK),
+    getSelf = HttpStatusCode.OK,
     createUser = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.Created),
 
     updateOwnUsername = HttpStatusCode.OK,
@@ -146,6 +157,8 @@ val adminExpectedResults = SelfUsersTestsExpectedResults(
 )
 val regularUserExpectedResults = SelfUsersTestsExpectedResults(
     listUsers = HttpStatusCode.Forbidden,
+    getUser = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.Forbidden),
+    getSelf = HttpStatusCode.OK,
     createUser = mapOfRole(HttpStatusCode.Forbidden, HttpStatusCode.Forbidden, HttpStatusCode.Forbidden),
 
     updateOwnUsername = HttpStatusCode.OK,
@@ -172,6 +185,7 @@ val regularUserExpectedResults = SelfUsersTestsExpectedResults(
 )
 val guestExpectedResults = UsersTestsExpectedResults(
     listUsers = HttpStatusCode.Unauthorized,
+    getUser = mapOfRole(HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized),
     createUser = mapOfRole(HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized),
 
     updateOthersUsername = mapOfRole(
@@ -197,6 +211,11 @@ val guestExpectedResults = UsersTestsExpectedResults(
 )
 
 val ownerInput = SelfUsersTestsInput(
+    getUserId = mapOfRole(
+        "00000000-0002-0009-0000-000000000001".uuid(),
+        "00000000-0002-0009-0000-000000000002".uuid(),
+        "00000000-0002-0009-0000-000000000003".uuid(),
+    ),
     updateOwnUsernameUserId = "ffffffff-0002-0000-0001-000000000001".uuid(),
     updateOwnEmailUserId = "ffffffff-0002-0000-0001-000000000002".uuid(),
     updateOwnRoleUserId = mapOfRole(
@@ -264,6 +283,11 @@ val ownerInput = SelfUsersTestsInput(
     ),
 )
 val adminInput = SelfUsersTestsInput(
+    getUserId = mapOfRole(
+        "00000000-0002-0009-0000-000000000001".uuid(),
+        "00000000-0002-0009-0000-000000000002".uuid(),
+        "00000000-0002-0009-0000-000000000003".uuid(),
+    ),
     updateOwnUsernameUserId = "ffffffff-0002-0000-0002-000000000001".uuid(),
     updateOwnEmailUserId = "ffffffff-0002-0000-0002-000000000002".uuid(),
     updateOwnRoleUserId = mapOfRole(
@@ -331,6 +355,11 @@ val adminInput = SelfUsersTestsInput(
     ),
 )
 val regularUserInput = SelfUsersTestsInput(
+    getUserId = mapOfRole(
+        "00000000-0002-0009-0000-000000000001".uuid(),
+        "00000000-0002-0009-0000-000000000002".uuid(),
+        "00000000-0002-0009-0000-000000000003".uuid(),
+    ),
     updateOwnUsernameUserId = "ffffffff-0002-0000-0003-000000000001".uuid(),
     updateOwnEmailUserId = "ffffffff-0002-0000-0003-000000000002".uuid(),
     updateOwnRoleUserId = mapOfRole(
@@ -398,6 +427,11 @@ val regularUserInput = SelfUsersTestsInput(
     ),
 )
 val guestInput = UsersTestsInput(
+    getUserId = mapOfRole(
+        "00000000-0002-0009-0000-000000000001".uuid(),
+        "00000000-0002-0009-0000-000000000002".uuid(),
+        "00000000-0002-0009-0000-000000000003".uuid(),
+    ),
     updateOthersUsernameUserId = mapOfRole(
         "00000000-0002-0001-0004-000000000001".uuid(),
         "00000000-0002-0001-0004-000000000002".uuid(),

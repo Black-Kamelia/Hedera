@@ -29,15 +29,29 @@ abstract class AbstractUsersTests(
 
     @DisplayName("List users")
     @Test
-    fun listUsersTest() = testApplication {
+    fun listUsers() = testApplication {
         val (tokens, _) = user
-        val client = client()
-        val response = client.post("/api/users/search") {
+
+        val response = client().post("/api/users/search") {
             contentType(ContentType.Application.Json)
             setBody(PageDefinitionDTO())
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(expectedResults.listUsers, response.status, response.bodyAsText())
+    }
+
+    @DisplayName("Get user")
+    @ParameterizedTest(name = "Get {0}")
+    @MethodSource("roles")
+    fun getUser(
+        role: UserRole
+    ) = testApplication {
+        val (tokens, _) = user
+
+        val response = client().get("/api/users/${input.getUserId[role]!!}") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(expectedResults.getUser[role], response.status, response.bodyAsText())
     }
 
     @DisplayName("Create user")
@@ -53,8 +67,8 @@ abstract class AbstractUsersTests(
             email = "$userId-create-$role@test.local".lowercase(),
             role = role,
         )
-        val client = client()
-        val response = client.post("/api/users") {
+
+        val response = client().post("/api/users") {
             contentType(ContentType.Application.Json)
             setBody(userDto)
             tokens?.let { bearerAuth(it.accessToken) }

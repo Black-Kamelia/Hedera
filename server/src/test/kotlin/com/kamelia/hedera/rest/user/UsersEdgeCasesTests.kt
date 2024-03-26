@@ -6,11 +6,15 @@ import com.kamelia.hedera.core.Errors
 import com.kamelia.hedera.core.constant.Actions
 import com.kamelia.hedera.core.response.MessageDTO
 import com.kamelia.hedera.login
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationUpdateDTO
+import com.kamelia.hedera.rest.configuration.isolateGlobalConfiguration
 import com.kamelia.hedera.uuid
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import java.util.*
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
@@ -166,29 +170,6 @@ class UsersEdgeCasesTests {
         assertEquals(Errors.Users.Email.TOO_LONG, responseDto.fields!!["email"]!!.key)
     }
 
-    /*
-    @DisplayName("Create user with e-mail too short")
-    @Test
-    fun createUserWithEmailTooShort() = testApplication {
-        val (tokens, _) = user
-
-        val userDto = UserCreationDTO(
-            username = "user.short.email",
-            password = "password",
-            email = "a@a.com",
-        )
-        val response = client().post("/api/users") {
-            contentType(ContentType.Application.Json)
-            setBody(userDto)
-            tokens?.let { bearerAuth(it.accessToken) }
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-
-        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
-        assertEquals(Errors.Users.Email.TOO_SHORT, responseDto.fields!!["email"]!!.key)
-    }
-     */
-
     @DisplayName("Create user with invalid e-mail")
     @Test
     fun createUserWithInvalidEmail() = testApplication {
@@ -231,6 +212,57 @@ class UsersEdgeCasesTests {
         assertEquals(Errors.Users.Email.ALREADY_EXISTS, responseDto.fields!!["email"]!!.key)
     }
 
+    @DisplayName("Sign up while registrations are disabled")
+    @Test
+    fun signUpWhileRegistrationsDisabled() = testApplication {
+        isolateGlobalConfiguration {
+            GlobalConfigurationService.updateConfiguration(
+                GlobalConfigurationUpdateDTO(enableRegistrations = false)
+            )
+
+            val response = client().post("/api/users/signup") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    UserCreationDTO(
+                        username = "user.registrations.disabled",
+                        password = "password",
+                        email = "user.registrations.disabled@test.local"
+                    )
+                )
+            }
+            assertEquals(HttpStatusCode.Forbidden, response.status)
+
+            val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+            assertEquals(Errors.Registrations.DISABLED, responseDto.title.key)
+        }
+    }
+
+    @DisplayName("Sign up with role higher than regular")
+    @Test
+    fun signUpWithRoleHigherThanRegular() = testApplication {
+        isolateGlobalConfiguration {
+            GlobalConfigurationService.updateConfiguration(
+                GlobalConfigurationUpdateDTO(enableRegistrations = true)
+            )
+
+            val response = client().post("/api/users/signup") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    UserCreationDTO(
+                        username = "user.role.higher",
+                        password = "password",
+                        email = "user.role.higher@test.local",
+                        role = UserRole.ADMIN
+                    )
+                )
+            }
+            assertEquals(HttpStatusCode.Forbidden, response.status)
+
+            val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+            assertEquals(Errors.ILLEGAL_ACTION, responseDto.title.key)
+        }
+    }
+
     @DisplayName("Edit unknown user")
     @Test
     fun editUnknownUser() = testApplication {
@@ -238,7 +270,7 @@ class UsersEdgeCasesTests {
 
         val response = client().patch("/api/users/00000000-0000-0000-0000-000000000000") {
             contentType(ContentType.Application.Json)
-            setBody(UserUpdateDTO(username="new.username"))
+            setBody(UserUpdateDTO(username = "new.username"))
             tokens?.let { bearerAuth(it.accessToken) }
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
@@ -367,6 +399,20 @@ class UsersEdgeCasesTests {
 
         val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
         assertEquals(Errors.Users.DiskQuota.INVALID_DISK_QUOTA, responseDto.fields!!["diskQuota"]!!.key)
+    }
+
+    @DisplayName("Get unknown user")
+    @Test
+    fun getUnknownUser() = testApplication {
+        val (tokens, _) = owner
+
+        val response = client().get("/api/users/${UUID(0, 0)}") {
+            tokens?.let { bearerAuth(it.accessToken) }
+        }
+        assertEquals(HttpStatusCode.NotFound, response.status, response.bodyAsText())
+
+        val responseDto = Json.decodeFromString<MessageDTO<Nothing>>(response.bodyAsText())
+        assertEquals(Errors.Users.NOT_FOUND, responseDto.title.key)
     }
 
     companion object {

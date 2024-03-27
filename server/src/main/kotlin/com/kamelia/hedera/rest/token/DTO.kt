@@ -16,7 +16,7 @@ fun PersonalToken.toRepresentationDTO(
     deleted: Boolean? = null,
 ) = PersonalTokenDTO(
     id = id.value,
-    token = "${id.value.toString().replace("-", "")}$token",
+    token = if (token != null) "${id.value.toString().replace("-", "")}$token" else null,
     name = name,
     createdAt = createdAt.toString(),
     lastUsed = lastUsed?.toString(),

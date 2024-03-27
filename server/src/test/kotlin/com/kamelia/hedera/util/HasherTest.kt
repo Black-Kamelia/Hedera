@@ -6,6 +6,7 @@ import kotlin.test.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
+@DisplayName("Hasher tests")
 class HasherTest {
 
     @DisplayName("Verifying correct password is ok")

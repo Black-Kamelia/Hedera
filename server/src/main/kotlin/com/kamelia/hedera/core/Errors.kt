@@ -44,7 +44,16 @@ object Errors {
             private const val PREFIX = "${Errors.Files.PREFIX}.name"
 
             const val MISSING_NAME = "$PREFIX.missing_name"
+            const val EMPTY_NAME = "$PREFIX.empty_name"
             const val NAME_TOO_LONG = "$PREFIX.name_too_long"
+
+        }
+
+        object Visibility {
+
+            private const val PREFIX = "${Errors.Files.PREFIX}.visibility"
+
+            const val MISSING_VISIBILITY = "$PREFIX.missing_visibility"
 
         }
 
@@ -151,6 +160,7 @@ object Errors {
         const val TOKEN_GENERATION = "$PREFIX.token_generation"
         const val MULTIPART_PARSE = "$PREFIX.multipart_parse"
         const val MISSING_FILE = "$PREFIX.missing_file"
+        const val MISSING_FILE_NAME = "$PREFIX.missing_file_name"
         const val EMPTY_FILE_NAME = "$PREFIX.empty_file_name"
 
     }
@@ -168,6 +178,7 @@ object Errors {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.email"
 
+            const val TOO_LONG = "$PREFIX.too_long"
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_EMAIL = "$PREFIX.invalid_email"
 
@@ -199,6 +210,8 @@ object Errors {
 
             private const val PREFIX = "${Errors.Users.PREFIX}.username"
 
+            const val TOO_SHORT = "$PREFIX.too_short"
+            const val TOO_LONG = "$PREFIX.too_long"
             const val ALREADY_EXISTS = "$PREFIX.already_exists"
             const val INVALID_USERNAME = "$PREFIX.invalid_username"
 

@@ -31,41 +31,34 @@ fun Route.filesRoutes() = route("/files") {
     uploadFileFromToken()
 
     authenticate(AuthJwt) {
+        getFile()
         uploadFile()
         searchFiles()
         getFileThumbnail()
-        getFilesFormats()
-
-        route("/filters") {
-            getFilesFormats()
-            getPersonalTokens()
-        }
-
-        // editFile()
         editFileVisibility()
         editFileName()
         editFileCustomLink()
         removeFileCustomLink()
         deleteFile()
 
+        route("/filters") {
+            getFilesFormats()
+            getPersonalTokens()
+        }
+
         route("/bulk") {
             editFileVisibilityBulk()
             deleteBulk()
         }
     }
-
-    authenticate(AuthJwt, optional = true) {
-        getFile()
-    }
 }
 
 
 fun Route.rawFileRoute() = get("""/m/(?<code>[a-zA-Z0-9]{10})""".toRegex()) {
-    val authedId = call.authenticatedUser?.uuid
     val code = call.getParam("code")
 
     try {
-        FileService.getFileFromCode(code, authedId).ifSuccess { (data) ->
+        FileService.getFileFromCode(code, null).ifSuccess { (data) ->
             checkNotNull(data) { "File not found" }
             val file = DiskFileService.getOrNull(data.owner.id, code)
             if (file != null) {
@@ -120,10 +113,10 @@ private fun Route.uploadFileFromToken() = post("/upload/token") {
 }
 
 private fun Route.getFile() = get("/{code}") {
-    val authedId = call.authenticatedUser?.uuid
+    val userId = call.authenticatedUser!!.uuid
     val code = call.getParam("code")
 
-    FileService.getFileFromCode(code, authedId).ifSuccessOrElse(
+    FileService.getFileFromCode(code, userId).ifSuccessOrElse(
         onSuccess = { (data) ->
             checkNotNull(data) { "File not found" }
             val file = DiskFileService.getOrNull(data.owner.id, code)
@@ -153,13 +146,11 @@ private fun Route.getFileThumbnail() = get("/{code}/thumbnail") {
     }
 }
 
-private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->
-    val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = call.authenticatedUser!!.uuid
-    val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
+private fun Route.searchFiles() = post<PageDefinitionDTO>("/search") { body ->
+    val userId = call.authenticatedUser!!.uuid
     val (page, pageSize) = call.getPageParameters()
 
-    call.respond(FileService.getFiles(userId, page, pageSize, body, asOwner = uuid == null))
+    call.respond(FileService.getFiles(userId, page, pageSize, body))
 }
 
 private fun Route.getFilesFormats() = get("/formats") {

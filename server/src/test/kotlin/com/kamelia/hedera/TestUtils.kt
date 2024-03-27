@@ -2,8 +2,12 @@ package com.kamelia.hedera
 
 import com.kamelia.hedera.rest.auth.LoginDTO
 import com.kamelia.hedera.rest.auth.SessionOpeningDTO
+import com.kamelia.hedera.rest.configuration.GlobalConfiguration
+import com.kamelia.hedera.rest.configuration.GlobalConfigurationService
 import com.kamelia.hedera.rest.core.DTO
+import com.kamelia.hedera.rest.file.FileVisibility
 import com.kamelia.hedera.rest.user.UserRepresentationDTO
+import com.kamelia.hedera.rest.user.UserRole
 import com.kamelia.hedera.util.UUIDSerializer
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -24,6 +28,28 @@ import kotlinx.serialization.modules.subclass
 
 data class TokenPair(val accessToken: String, val refreshToken: String)
 typealias TestUser = Pair<TokenPair?, UUID>
+
+fun <T> mapOfVisibility(
+    public: T,
+    unlisted: T,
+    private: T,
+) = mapOf(
+    FileVisibility.PUBLIC to public,
+    FileVisibility.UNLISTED to unlisted,
+    FileVisibility.PRIVATE to private,
+)
+
+fun <T> mapOfRole(
+    owner: T,
+    admin: T,
+    regular: T,
+) = mapOf(
+    UserRole.OWNER to owner,
+    UserRole.ADMIN to admin,
+    UserRole.REGULAR to regular,
+)
+
+fun String.uuid(): UUID = UUID.fromString(this)
 
 fun ApplicationTestBuilder.client() = createClient {
     install(ContentNegotiation) {
@@ -63,7 +89,7 @@ suspend fun ApplicationTestBuilder.loginBlocking(
 ): Pair<HttpResponse, TokenPair?> {
     val dto = LoginDTO(username, password)
     val response = runBlocking {
-         client().post("/api/login") {
+        client().post("/api/login") {
             contentType(ContentType.Application.Json)
             setBody(dto)
         }
@@ -77,12 +103,12 @@ suspend fun ApplicationTestBuilder.loginBlocking(
     return response to body?.tokens?.let { TokenPair(it.accessToken.token, it.refreshToken.token) }
 }
 
-fun FormBuilder.appendFile(path: String, name: String, type: String, key: String = "file") = append(
+fun FormBuilder.appendFile(path: String, name: String?, type: String, key: String = "file") = append(
     key,
     this::class.java.getResource(path)!!.readBytes(),
     Headers.build {
         append(HttpHeaders.ContentType, type)
-        append(HttpHeaders.ContentDisposition, "filename=\"$name\"")
+        append(HttpHeaders.ContentDisposition, name?.let {"filename=\"$it\""} ?: "file")
     }
 )
 
@@ -93,5 +119,6 @@ fun authTestApplication(
     environment {
         config = ApplicationConfig("application-auth-test.yaml")
     }
+    GlobalConfigurationService.init()
     block()
 }

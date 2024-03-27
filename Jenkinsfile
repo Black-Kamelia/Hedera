@@ -39,6 +39,8 @@ pipeline {
                             post {
                                 always {
                                     junit checksName: 'Back-end tests', allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                                }
+                                success {
                                     recordCoverage sourceDirectories: [[path: 'server/src/main/kotlin']], tools: [[pattern: '**/build/reports/kover/report.xml']]
                                 }
                             }

@@ -38,8 +38,9 @@ private fun Route.signup() = post<UserCreationDTO>("/signup") { body ->
 
 private fun Route.createUser() = post<UserCreationDTO> { body ->
     adminRestrict()
+    val creatorID = call.authenticatedUser!!.uuid
 
-    call.respond(UserService.createUser(body))
+    call.respond(UserService.createUser(body, creatorID))
 }
 
 private fun Route.getUserById() = get("/{uuid}") {
@@ -59,14 +60,14 @@ private fun Route.searchUsers() = post<PageDefinitionDTO>("/search") { body ->
 private fun Route.updateUser() = patch<UserUpdateDTO>("/{uuid}") { body ->
     val uuid = call.getUUID()
     ifRegular { idRestrict(uuid) }
-    val updaterID = call.authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val updaterID = call.authenticatedUser!!.uuid
 
     call.respond(UserService.updateUser(uuid, body, updaterID))
 }
 
 private fun Route.activateUser() = post("/{uuid}/activate") {
     val uuid = call.getUUID()
-    val updaterID = call.authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val updaterID = call.authenticatedUser!!.uuid
     adminRestrict()
 
     call.respond(UserService.updateUserStatus(uuid, true, updaterID))
@@ -74,7 +75,7 @@ private fun Route.activateUser() = post("/{uuid}/activate") {
 
 private fun Route.deactivateUser() = post("/{uuid}/deactivate") {
     val uuid = call.getUUID()
-    val updaterID = call.authenticatedUser?.uuid ?: throw ExpiredOrInvalidTokenException()
+    val updaterID = call.authenticatedUser!!.uuid
     adminRestrict()
 
     call.respond(UserService.updateUserStatus(uuid, false, updaterID))
@@ -91,7 +92,8 @@ private fun Route.updateUserPassword() = patch<UserPasswordUpdateDTO>("/{uuid}/p
 
 private fun Route.deleteUser() = delete("/{uuid}") {
     val uuid = call.getUUID()
+    val deleterId = call.authenticatedUser!!.uuid
     ifRegular { idRestrict(uuid) }
 
-    call.respond(UserService.deleteUser(uuid))
+    call.respond(UserService.deleteUser(uuid, deleterId))
 }

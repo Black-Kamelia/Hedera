@@ -27,6 +27,7 @@ import com.kamelia.hedera.util.toUUIDShort
 import com.kamelia.hedera.util.uuid
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.server.plugins.*
 import java.time.Instant
 import java.util.*
 import kotlin.math.ceil
@@ -74,8 +75,12 @@ object FileService {
         creator: User,
         uploadToken: PersonalToken? = null,
     ): ActionResponse<FileRepresentationDTO> {
-        val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.EMPTY_FILE_NAME }
+        val fileName = requireNotNull(part.originalFileName) { Errors.Uploads.MISSING_FILE_NAME }
         require(fileName.isNotBlank()) { Errors.Uploads.EMPTY_FILE_NAME }
+
+        if (fileName.length > 255) {
+            throw IllegalArgumentException(Errors.Files.Name.NAME_TOO_LONG)
+        }
 
         val uploadedFile = DiskFileService.receiveFile(creator, part, fileName)
         creator.increaseDiskQuota(uploadedFile.size)
@@ -121,18 +126,17 @@ object FileService {
 
     suspend fun getFileFromCode(
         code: String,
-        authId: UUID? = null,
+        userId: UUID?,
     ): Response<FileRepresentationDTO> = Connection.transaction {
         val (file, owner) = File.findByCodeWithOwner(code) ?: throw FileNotFoundException()
-        getFile(file, owner, authId)
+        getFile(file, owner, userId)
     }
 
     suspend fun getFileFromCustomLink(
         customLink: String,
-        authId: UUID? = null,
     ): Response<FileRepresentationDTO> = Connection.transaction {
         val (file, owner) = File.findByCustomLinkWithOwner(customLink) ?: throw FileNotFoundException()
-        getFile(file, owner, authId)
+        getFile(file, owner)
     }
 
     suspend fun getFiles(
@@ -140,10 +144,9 @@ object FileService {
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
-        asOwner: Boolean = false,
     ): Response<FilePageDTO> = Connection.transaction {
         val user = User[userId]
-        val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
+        val (files, total) = user.getFiles(page, pageSize, definition)
 
         Response.ok(
             FilePageDTO(
@@ -172,7 +175,7 @@ object FileService {
         dto: FileUpdateDTO,
     ): File {
         if (file.ownerId != user.uuid) {
-            if (file.visibility != FileVisibility.PRIVATE || !(user.role ne UserRole.OWNER)) {
+            if (file.visibility != FileVisibility.PRIVATE) {
                 throw IllegalActionException()
             }
             throw FileNotFoundException()
@@ -186,22 +189,30 @@ object FileService {
         userId: UUID,
         dto: FileUpdateDTO,
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
-        val file = File.findById(fileId) ?: throw FileNotFoundException()
-        val user = User[userId]
+        validate {
+            if (dto.visibility == null) {
+                raiseError("visibility", Errors.Files.Visibility.MISSING_VISIBILITY)
+            }
 
-        val oldVisibility = file.visibility
-        val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
-        val payload = updatedFile.toRepresentationDTO()
+            catchErrors()
 
-        ActionResponse.ok(
-            title = Actions.Files.Update.Visibility.success.title,
-            message = Actions.Files.Update.Visibility.success.message.withParameters(
-                "name" to file.name,
-                "oldVisibility" to oldVisibility.toMessageKey(),
-                "newVisibility" to payload.visibility.toMessageKey()
-            ),
-            payload = payload
-        )
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
+
+            val oldVisibility = file.visibility
+            val updatedFile = updateFile(file, user, FileUpdateDTO(visibility = dto.visibility))
+            val payload = updatedFile.toRepresentationDTO()
+
+            ActionResponse.ok(
+                title = Actions.Files.Update.Visibility.success.title,
+                message = Actions.Files.Update.Visibility.success.message.withParameters(
+                    "name" to file.name,
+                    "oldVisibility" to oldVisibility.toMessageKey(),
+                    "newVisibility" to payload.visibility.toMessageKey()
+                ),
+                payload = payload
+            )
+        }
     }
 
     suspend fun bulkUpdateFilesVisibility(
@@ -230,16 +241,18 @@ object FileService {
         dto: FileUpdateDTO,
     ): ActionResponse<FileRepresentationDTO> = Connection.transaction {
         validate {
-            val file = File.findById(fileId) ?: throw FileNotFoundException()
-            val user = User[userId]
-
             if (dto.name == null) {
                 raiseError("name", Errors.Files.Name.MISSING_NAME)
+            } else if (dto.name.isEmpty()) {
+                raiseError("name", Errors.Files.Name.EMPTY_NAME)
             } else {
                 if (dto.name.length > 255) raiseError("name", Errors.Files.Name.NAME_TOO_LONG)
             }
 
             catchErrors()
+
+            val file = File.findById(fileId) ?: throw FileNotFoundException()
+            val user = User[userId]
 
             val oldName = file.name
             val updatedFile = updateFile(file, user, FileUpdateDTO(name = dto.name))

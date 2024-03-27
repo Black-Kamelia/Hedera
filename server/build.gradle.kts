@@ -14,7 +14,7 @@ val junitVersion: String = project.properties["junit.version"] as String
 
 plugins {
     application
-    id("org.jetbrains.kotlinx.kover") version "0.7.2"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
     kotlin("jvm")
     kotlin("plugin.serialization") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"

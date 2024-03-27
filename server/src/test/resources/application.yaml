@@ -1,5 +1,5 @@
 ktor:
-  environment: dev
+  environment: test
 
   deployment:
     port: 8080

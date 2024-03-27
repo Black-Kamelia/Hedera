@@ -10,6 +10,7 @@ class EnvironmentValues(
 
     private val envKind = config.property("ktor.environment").getString()
     val isDev = envKind == "dev"
+    val isTest = envKind == "test"
     val isProd = envKind == "prod"
 
     val liquibaseMaster = config.property("liquibase.master").getString()

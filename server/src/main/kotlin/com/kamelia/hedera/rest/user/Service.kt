@@ -57,7 +57,8 @@ object UserService {
     }
 
     suspend fun createUser(
-        dto: UserCreationDTO
+        dto: UserCreationDTO,
+        creatorID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         validate(MessageDTO.simple(Actions.Users.Create.fail.title)) {
             checkEmail(dto.email)
@@ -67,6 +68,11 @@ object UserService {
 
             if (dto.role == UserRole.OWNER) {
                 throw IllegalActionException()
+            }
+
+            val updater = User[creatorID]
+            if (dto.role ge updater.role) {
+                throw InsufficientPermissionsException()
             }
 
             catchErrors()
@@ -119,8 +125,7 @@ object UserService {
 
             // Self updating
             if (updater.id == toEdit.id) {
-                dto.enabled?.let { throw IllegalActionException() }
-                dto.role?.let { if (it != toEdit.role) throw IllegalActionException() }
+                dto.role?.let { throw IllegalActionException() }
                 dto.diskQuota?.let { if (it != toEdit.maximumDiskQuota && toEdit.role !== UserRole.OWNER) throw IllegalActionException() }
             }
 
@@ -161,7 +166,7 @@ object UserService {
         id: UUID,
         enable: Boolean,
         updaterID: UUID,
-    ): ActionResponse<Nothing> = Connection.transaction {
+    ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         val toEdit = User.findById(id) ?: throw UserNotFoundException()
         val updater = User[updaterID]
 
@@ -175,11 +180,13 @@ object UserService {
             ActionResponse.ok(
                 title = Actions.Users.Activate.success.title,
                 message = Actions.Users.Activate.success.message.withParameters("username" to toEdit.username),
+                payload = toEdit.toRepresentationDTO(),
             )
         } else {
             ActionResponse.ok(
                 title = Actions.Users.Deactivate.success.title,
                 message = Actions.Users.Deactivate.success.message.withParameters("username" to toEdit.username),
+                payload = toEdit.toRepresentationDTO(),
             )
         }
     }
@@ -222,9 +229,22 @@ object UserService {
     }
 
     suspend fun deleteUser(
-        id: UUID
+        id: UUID,
+        updaterID: UUID,
     ): ActionResponse<UserRepresentationDTO> = Connection.transaction {
         val toDelete = User.findById(id) ?: throw UserNotFoundException()
+
+        if (id == updaterID) {
+            throw IllegalActionException()
+        }
+
+        if (toDelete.role == UserRole.OWNER) {
+            throw IllegalActionException()
+        }
+
+        if (toDelete.role ge User[updaterID].role) {
+            throw InsufficientPermissionsException()
+        }
 
         toDelete.delete()
         ActionResponse.ok(
@@ -238,6 +258,7 @@ object UserService {
 private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null) {
     when {
         email == null -> return
+        email.length > 128 -> raiseError("email", Errors.Users.Email.TOO_LONG)
         "@" !in email -> raiseError("email", Errors.Users.Email.INVALID_EMAIL)
         else -> User.findByEmail(email)?.let {
             if (it.uuid != toEdit?.uuid) {
@@ -250,6 +271,8 @@ private fun ValidationScope.checkEmail(email: String?, toEdit: User? = null) {
 private fun ValidationScope.checkUsername(username: String?, toEdit: User? = null) {
     when {
         username == null -> return
+        username.length < 8 -> raiseError("username", Errors.Users.Username.TOO_SHORT)
+        username.length > 128 -> raiseError("username", Errors.Users.Username.TOO_LONG)
         !USERNAME_REGEX.matches(username) -> raiseError("username", Errors.Users.Username.INVALID_USERNAME)
         else -> User.findByUsername(username)?.let {
             if (it.uuid != toEdit?.uuid) {

@@ -1,5 +1,7 @@
 package com.kamelia.hedera.plugins
 
+import com.kamelia.hedera.core.response.Response
+import com.kamelia.hedera.core.response.respondNoSuccess
 import com.kamelia.hedera.rest.auth.authRoutes
 import com.kamelia.hedera.rest.configuration.globalConfigurationRoutes
 import com.kamelia.hedera.rest.file.filesRoutes
@@ -31,6 +33,10 @@ fun Application.configureRouting() {
         when {
             Environment.isDev -> get("/") {
                 call.respondRedirect("http://localhost:3000")
+            }
+
+            Environment.isTest -> get("/") {
+                call.respondNoSuccess(Response.notFound())
             }
 
             Environment.isProd -> singlePageApplication {

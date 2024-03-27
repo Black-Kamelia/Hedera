@@ -146,13 +146,11 @@ private fun Route.getFileThumbnail() = get("/{code}/thumbnail") {
     }
 }
 
-private fun Route.searchFiles() = post<PageDefinitionDTO>("/search/{uuid?}") { body ->
-    val uuid = call.getUUIDOrNull("uuid")
-    val jwtId = call.authenticatedUser!!.uuid
-    val userId = uuid?.apply { if (uuid != jwtId) adminRestrict() } ?: jwtId
+private fun Route.searchFiles() = post<PageDefinitionDTO>("/search") { body ->
+    val userId = call.authenticatedUser!!.uuid
     val (page, pageSize) = call.getPageParameters()
 
-    call.respond(FileService.getFiles(userId, page, pageSize, body, asOwner = uuid == null))
+    call.respond(FileService.getFiles(userId, page, pageSize, body))
 }
 
 private fun Route.getFilesFormats() = get("/formats") {

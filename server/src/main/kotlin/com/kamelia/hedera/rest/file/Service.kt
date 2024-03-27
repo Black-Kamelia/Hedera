@@ -144,10 +144,9 @@ object FileService {
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
-        asOwner: Boolean = false,
     ): Response<FilePageDTO> = Connection.transaction {
         val user = User[userId]
-        val (files, total) = user.getFiles(page, pageSize, definition, asOwner)
+        val (files, total) = user.getFiles(page, pageSize, definition)
 
         Response.ok(
             FilePageDTO(

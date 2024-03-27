@@ -24,7 +24,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.selectAll
 
-enum class UserRole(private val power: Int) {
+enum class UserRole(val power: Int) {
     REGULAR(1),
     ADMIN(10),
     OWNER(100),
@@ -138,11 +138,9 @@ class User(id: EntityID<UUID>) : AuditableUUIDEntity(id, UserTable) {
         page: Long,
         pageSize: Int,
         definition: PageDefinitionDTO,
-        asOwner: Boolean
     ): Pair<List<File>, Long> = FileTable
         .selectAll()
         .andWhere { FileTable.owner eq uuid }
-        .apply { if (!asOwner) andWhere { FileTable.visibility eq FileVisibility.PUBLIC } }
         .applyFilters(definition.filters) {
             when (it.field) {
                 "name" -> FileTable.name.filter(it)

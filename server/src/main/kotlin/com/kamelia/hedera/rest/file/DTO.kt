@@ -19,6 +19,7 @@ fun File.toRepresentationDTO(): FileRepresentationDTO = FileRepresentationDTO(
     blurhash,
     visibility,
     customLink,
+    uploadToken?.uuid.toString(),
     FileOwnerDTO(owner.uuid, owner.username),
     createdAt.toString(),
 )
@@ -50,6 +51,7 @@ data class FileRepresentationDTO(
     val blurhash: String? = null,
     val visibility: FileVisibility,
     val customLink: String? = null,
+    val uploadTokenId: String? = null,
     val owner: FileOwnerDTO,
     val createdAt: String,
 ) : DTO

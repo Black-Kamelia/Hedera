@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@DisplayName("User role tests")
 class UserRoleTests {
 
     @DisplayName("Find user role by name")
